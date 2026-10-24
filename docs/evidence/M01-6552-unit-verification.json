@@ -1,0 +1,34 @@
+{
+  "run": 40085261372,
+  "head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+  "result_commit_matches": true,
+  "maintained_selector": 524,
+  "actual_cases": 524,
+  "unique_cases": 524,
+  "missing": [],
+  "extra": [],
+  "duplicates": [],
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "exact_filter_matches": true,
+  "status": "passed",
+  "exit_code": 0,
+  "timings": [
+    "Build complete! (899.84s)",
+    "\u2714 Test run with 524 tests passed after 190.899 seconds."
+  ],
+  "artifact": {
+    "id": 12557406610,
+    "bytes": 88808,
+    "digest": "sha256:790a6d078c0f92d13b1bbb5f757186b7b6b7ae2212a4cc8eb5a9c68737bb4a47",
+    "sole_download": true,
+    "path": "/tmp/elite-mba-6552-unit40085261372"
+  },
+  "hashes": {
+    "/tmp/elite-mba-6552-unit40085261372/result.json": "ee9285d3a404024c0d12b5694f45d244d8529abdbe7057bafc9235bbd04db7de",
+    "/tmp/elite-mba-6552-unit40085261372/tests-swift-testing.xml": "ae03716bb095d902dbc23e68614b97ae407673c1b6221d754f2077a0b307bd37",
+    "/tmp/elite-mba-6552-unit40085261372/output.log": "1c4f3d86e7c9d394add7c55a0b327d3237e189267ab0dd2bfe838acf842f0422"
+  },
+  "qualification": "Published6552exact524isolatedunitPASS separatefrom47fdfocused6/25andpendingfullquality. Unitartifactidentifiescommit/filter, noindependentfullinputmanifest. No fullM01/releasepass orreviewerexecution/rerun."
+}

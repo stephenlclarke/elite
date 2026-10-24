@@ -14,6 +14,14 @@ extension Commander {
     }
   }
   mutating func apply(_ action: PackAction, state: inout MissionProgress) throws {
+    var permit: PackReservedCargoPermit?
+    try apply(action, state: &state, reservedCargo: &permit)
+  }
+
+  mutating func apply(
+    _ action: PackAction, state: inout MissionProgress,
+    reservedCargo: inout PackReservedCargoPermit?
+  ) throws {
     let amount = action.amount ?? 0
     let key = action.key ?? ""
     switch action.kind {
@@ -26,8 +34,8 @@ extension Commander {
     case "killsWrapped": kills = (kills + amount) & 0xffff
     case "legalSet": legal = amount
     case "legalFloor": legal = max(legal, amount)
-    case "equipmentAdd": equipment.insert(key)
-    case "equipmentRemove": equipment.remove(key)
+    case "equipmentAdd": try grantMissionEquipment(key, digest: state.digest)
+    case "equipmentRemove": try removeFittedEquipment(key)
     case "flagSet": state.flags[key] = amount
     case "receipt": state.receipts.insert(key)
     case "payloadAdd":
@@ -45,7 +53,12 @@ extension Commander {
         throw MissionPackError("Invalid commodity.")
       }
       if action.kind == "cargoRemove" {
-        guard cargo[index] >= amount else {
+        let consumesOwnReservedItem =
+          reservedCargo?.consume(
+            index: index, amount: amount, digest: state.digest, version: state.version,
+            stage: state.stage,
+            markedFirearms: markedFirearms, physicalQuantity: cargo[index]) ?? false
+        guard consumesOwnReservedItem || sellableCargo(index) >= amount else {
           throw MissionPackError("Marked mission cargo required.")
         }
         cargo[index] -= amount
@@ -69,7 +82,7 @@ extension Commander {
 
 extension GameRuntime {
   public func loadMissionPacks(directory: URL = MissionPackLibrary.userDirectory) {
-    game.missionPacks = .installed(directory: directory)
+    game.replaceMissionPacks(.installed(directory: directory))
     game.migrateMissionProgress()
   }
   public func installMissionPack(from url: URL, directory: URL = MissionPackLibrary.userDirectory)
@@ -93,15 +106,27 @@ extension GameRuntime {
     }
     let library = try MissionPackLibrary.checked(
       disk.entries.filter { $0.pack.id != entry.pack.id } + [entry])
+    let files =
+      FileManager.default.fileExists(atPath: directory.path)
+      ? try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        .filter { $0.pathExtension == "toml" } : []
+    let existingFile = try files.first { try MissionPackLibrary.read($0).pack.id == entry.pack.id }
+    guard files.count + (existingFile == nil ? 1 : 0) <= 64 else {
+      throw MissionPackError("At most 64 external packs may be installed.")
+    }
+    // Reinstall the original file, even if its name differs from the pack ID.
+    let destination = existingFile ?? directory.appendingPathComponent(entry.pack.id + ".toml")
+    guard existingFile != nil || !FileManager.default.fileExists(atPath: destination.path) else {
+      throw MissionPackError("Another installed pack uses this filename.")
+    }
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    let destination = directory.appendingPathComponent(entry.pack.id + ".toml")
     let data = try Data(contentsOf: url)
     // Revalidate the exact bytes copied, including the identity/hash, before enabling them.
     guard try MissionPackLibrary.decode(data).digest == entry.digest else {
       throw MissionPackError("Pack changed during installation; retry with a stable file.")
     }
     try data.write(to: destination, options: .atomic)
-    game.missionPacks = library
+    game.replaceMissionPacks(library)
     game.notify("MISSION PACK INSTALLED - SEE MISSION GALLERY")
   }
 }

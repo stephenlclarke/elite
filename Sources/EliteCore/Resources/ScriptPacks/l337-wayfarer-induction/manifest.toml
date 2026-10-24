@@ -1,0 +1,27 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.wayfarer-exchange"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "native-wayfarer-induction-v1"]
+priority = 610
+source = "Original C08 Wayfarer Exchange opening. Explicit project balancing decision: the sealed induction clinic crate has 1800 armed-flight seconds from confirmed pickup, independently of W01. Only commission and clinic collection are currently supported."
+license = "MIT"
+environments = ["orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "wayfarer-exchange"
+title = "Wayfarer Exchange"
+briefing = "SENN: These routes belong to the clinics, workshops and crews using them. Review the Avenor induction after an ordinary delivery or recorded native commodity sale. Keep one free tonne. At Renas main orbital clinic, review Navidor as the receiving destination and Confirm the unique sealed 1t cold crate with its independent cooling unit. Its allowance is 1800 seconds (30 minutes) of armed flight after pickup. Preparation is untimed; normal pause stops the clock, while save/load and reopening preserve the original deadline. At zero remaining allowance it is spoiled. Later receiving and stages 3-14 remain unavailable. This opening pays nothing and grants no accreditation or clue."
+destination = "Renas main orbital clinic; crate intended for Navidor G01-S164"
+reward = "7600 CR only at the full final accreditation; opening pays 0 CR."
+milestones = ["Accept the Wayfarer network-induction commission at Avenor.", "Collect the one-tonne sealed clinic sample at Renas.", "Deliver the intact cold crate to Navidor's registered clinic berth.", "Collect Enmadan's one-tonne failed workshop cassette for a closed repair exchange.", "Return the cassette through the Renas repair desk and confirm its receiving record.", "Review Enlirin's seed-transfer consent and loan the one-tonne vault key.", "Escort the registered seed ark to Lareria's receiving cradle and return the vault key.", "Recover the one-tonne custody recorder beside Cevilis's disabled service tender.", "Escort the identified rescue launch to Enmadan reception and return its custody recorder.", "Restore three named external service handoffs at Enron.", "Choose the Exchange's published route-allocation charter at Avenor.", "Obtain three verified operator signatures for the chosen charter.", "Verify all induction receiving records and the working utility route with Veil.", "Confirm accreditation, collect the induction fee and open the advanced service board."]
+
+[wayfarerInduction]
+profile = "native-senn-clinic-v1"
+flightAllowance = 1800.0
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"

@@ -1,0 +1,60 @@
+schemaVersion = 2
+missionAPI = 2
+id = "project.generated-couriers"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "local-flight-clocks-v2", "contracts-basic-v2", "courier-contracts-basic-v2", "mission-calendar-v2", "durable-commands-v2", "gallery-basic-v2"]
+priority = 560
+source = "PROJECT-SPACE-G02-1, approved project adaptation of S10/S18/D03/D04/O08; see docs/mission-specifications/g02-research-authority.json. Reward/duration/generation and route policies are PROJECT ESTIMATES, not recovered server distributions or live-server parity."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "courier"
+title = "Courier jobs"
+briefing = "Choose difficulty 1, 2 or 3 and encrypted data (0t) or a sealed package (1t) on Station Contracts. Native generation freezes the destination, route and PROJECT ESTIMATES before acceptance. Deliver the unique consignment to the actual named receiving contact before its inclusive mission-time deadline. Back changes nothing."
+destination = "Frozen destination main orbital / Courier Receiving Officer"
+reward = "Frozen shortest-hop payment, once on actual delivery. PROJECT ESTIMATES."
+milestones = ["Collect identified consignment", "Confirm receiving officer handoff"]
+
+[board]
+id = "courier-jobs"
+title = "Courier jobs / PROJECT ESTIMATES"
+generator = "generate"
+clock = "missionCalendar"
+refreshSeconds = 3600
+exclusiveGroup = "g02-courier"
+
+[courier]
+profile = "PROJECT-SPACE-G02-1"
+generatorRevision = 1
+deliveryContact = "courier-delivery"
+abandonContact = "courier-abandon"
+
+[[dialogs]]
+id = "courier-delivery"
+text = "Courier Receiving Officer: confirm delivery of this exact held consignment for its frozen payment. Back changes nothing."
+
+[[dialogs]]
+id = "courier-abandon"
+text = "Courier Dispatch Officer / Review abandonment: this ends the job, removes this consignment and pays 0 CR. Other property is unchanged. Back changes nothing."
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[trial]
+ship = "SH023"
+galaxy = 0
+system = 7
+credits = 100000
+cabins = 0
+flight = false
+offer = 0

@@ -1,0 +1,84 @@
+{
+  "source": "b58f3b83595392bd4f0a415bd9265ae5a9fe1a93",
+  "selection": {
+    "head": "b58f3b83595392bd4f0a415bd9265ae5a9fe1a93",
+    "baseline": "9146909960b97dca6fa03135125d256bb08aec6c",
+    "explicit_method_names": [
+      "interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID",
+      "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce"
+    ],
+    "expected_unique_methods": 2,
+    "filter": "(?:^|[./])(?:interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID|actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce)\\(",
+    "command": [
+      "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "test",
+      "--jobs",
+      "3",
+      "--enable-code-coverage",
+      "--xunit-output",
+      "/tmp/elite-m01-two-failure-followup.xml",
+      "--filter",
+      "(?:^|[./])(?:interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID|actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce)\\("
+    ]
+  },
+  "result": {
+    "head": "b58f3b83595392bd4f0a415bd9265ae5a9fe1a93",
+    "command": [
+      "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "test",
+      "--jobs",
+      "3",
+      "--enable-code-coverage",
+      "--xunit-output",
+      "/tmp/elite-m01-two-failure-followup.xml",
+      "--filter",
+      "(?:^|[./])(?:interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID|actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce)\\("
+    ],
+    "swift": "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0\n",
+    "sdk": "15.5",
+    "exit_code": 1,
+    "wall_seconds": 103.27131666700001
+  },
+  "artifacts": {
+    "/tmp/elite-m01-two-failure-followup.log": {
+      "bytes": 2232,
+      "sha256": "ba221540d026a3fa47f7056a515d813ffb53fdd25a3297a0327954b4cce79527"
+    },
+    "/tmp/elite-m01-two-failure-followup-start.json": {
+      "bytes": 647,
+      "sha256": "598215ec7dbf620533b3be9a73702e36f68aab93da5e38e2f4014c518f20021f"
+    },
+    "/tmp/elite-m01-two-failure-followup-result.json": {
+      "bytes": 703,
+      "sha256": "f2d9842f81750862b2f86e74d1af1c7518e3957a858b89ceb2cf0dc6ad75faa7"
+    }
+  },
+  "build_seconds": 43.26,
+  "test_seconds": 59.063,
+  "unique_methods": 2,
+  "passed": [
+    {
+      "method": "interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID",
+      "seconds": 10.368
+    }
+  ],
+  "failed": [
+    {
+      "method": "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce",
+      "seconds": 59.062,
+      "assertion": "captures10 >= required12",
+      "custody": {
+        "raw": 10,
+        "unfilled": 2
+      },
+      "unfilled_pending": 2,
+      "unfilled_bound": 0,
+      "unfilled_present": 0,
+      "outcome": "active",
+      "losses": []
+    }
+  ],
+  "xml_present": false,
+  "fault_markers": false,
+  "independent_verification": "Exact2selection, reviewed committed source and transferredartifact hashes verified. One passing method and one failing method; not a passing aggregate or full quality qualification."
+}

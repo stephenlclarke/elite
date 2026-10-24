@@ -22,7 +22,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 2 t | borrowed; O08 adder-player native player known player hold |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 240.0 project units/s | borrowed; O08 adder-player native player |
 | Hull energy | 85.0 project units | borrowed; O08 adder-player native player |
 | Energy recharge | 2.0 project units/s | borrowed; O08 adder-player native player |
@@ -48,11 +48,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 2 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -269,15 +269,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 16 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -350,15 +350,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 16 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -431,15 +431,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 16 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -521,15 +521,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 158 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 40 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 40 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -779,7 +779,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Anaconda Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 800 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 350.0 project units/s | estimated; Estimated Anaconda Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Anaconda Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Anaconda Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -801,15 +801,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 800 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -854,15 +854,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 158 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -917,15 +917,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 15 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 38 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 38 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1053,11 +1053,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 2 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1123,15 +1123,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1180,11 +1180,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 16 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 16 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1266,15 +1266,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 16 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 44 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 44 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1343,7 +1343,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 125 t | borrowed; O08 boa-player native player known player hold |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 240.0 project units/s | borrowed; O08 boa-player native player |
 | Hull energy | 450.0 project units | borrowed; O08 boa-player native player |
 | Energy recharge | 3.0 project units/s | borrowed; O08 boa-player native player |
@@ -1365,15 +1365,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 33 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 15 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 15 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 125 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1599,15 +1599,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 43 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 2 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 175 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 175 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1656,11 +1656,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1718,7 +1718,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Bushmaster Archimedes refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Bushmaster Archimedes refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Bushmaster Archimedes refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Bushmaster Archimedes refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -1740,15 +1740,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1794,7 +1794,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Bushmaster Elite-A refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Bushmaster Elite-A refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Bushmaster Elite-A refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Bushmaster Elite-A refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -1816,15 +1816,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1847,7 +1847,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Caiman refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Caiman refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Caiman refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Caiman refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -1869,15 +1869,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -1922,15 +1922,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 27 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 96 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 96 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2003,15 +2003,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2079,15 +2079,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 15 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 35 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 35 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2145,7 +2145,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 10 t | borrowed; O08 cobramk1-player native player known player hold |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 260.0 project units/s | borrowed; O08 cobramk1-player native player |
 | Hull energy | 150.0 project units | borrowed; O08 cobramk1-player native player |
 | Energy recharge | 2.5 project units/s | borrowed; O08 cobramk1-player native player |
@@ -2171,11 +2171,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 10 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2249,7 +2249,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | borrowed; O08 cobra3-player native player known player hold |
+| Cargo | 30 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 350.0 project units/s | borrowed; O08 cobra3-player native player |
 | Hull energy | 256.0 project units | borrowed; O08 cobra3-player native player |
 | Energy recharge | 4.0 project units/s | borrowed; O08 cobra3-player native player |
@@ -2275,11 +2275,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 30 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2399,7 +2399,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 18 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 40 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 250.0 project units/s | estimated conversion; D23 cobra_mk_iv outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 256.0 project units | estimated conversion; D23 cobra_mk_iv outfitting hull inputs, translated into O08-like project units |
 | Front shield | 192.0 project units | estimated conversion; D23 cobra_mk_iv outfitting hull inputs, translated into O08-like project units |
@@ -2425,11 +2425,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 18 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 40 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2473,84 +2473,56 @@ dataset flight crew seats, not required staffing; D23; crew is separate from pas
 
 <a id="sh025"></a>
 
-## SH025 - Cobra Mk V
+## SH025 - Peregrine Mk V
 
-**Design:** Right-On Commander original geometry; MIT.
+**Design:** Original project-authored hull; no imported mesh, coordinates or bitmap inputs; MIT.
 
-Project design; see docs/SHIP-PROVENANCE.md. Envelope is a visual adaptation, not a historical measurement.
+F01-SH025-CALIBRATION-v1: project estimate, maximum bounding extent 120 metres for size-tier-2 multirole hull; not an authored measurement or predecessor dimension. Uniform scale 36.95309420575483 from approved original nativeDesign bounds, +Z forward/+Y up; retain proportions and openings. Hull SHA256 33f4113a86ba833d4a0178984ca3bb6c963bbdeabc8eb9c38059d5a17d665671; specification SHA256 8c608e9f1a9a325b3c275f64a9428832c4f6890b7465f966c907daa70b4db313. Actual docking clearance remains unqualified.
 
-**Appearances:** ED-LIVE; **evidence:** D06.
+**Appearances:** L337 original fleet; **evidence:** Approved current original content handoff.
 
-Original project interpretation: wedge family, individual sweep/components/envelope. Full authored geometry and recipe are embedded in the TOML. No gameplay statistic was inferred from the invented shape.
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
 
-### Common project refit
+### Peregrine Mk V original standard fit
 
-Adaptation; borrowed and estimated fields, not historical native specifications.
+Original authored mechanics; retained common one-commander accommodation and fitting estimate. F01-SH025-CALIBRATION-v1: project estimate, maximum bounding extent 120 metres for size-tier-2 multirole hull; not an authored measurement or predecessor dimension. Uniform scale 36.95309420575483 from approved original nativeDesign bounds, +Z forward/+Y up; retain proportions and openings. Hull SHA256 33f4113a86ba833d4a0178984ca3bb6c963bbdeabc8eb9c38059d5a17d665671; specification SHA256 8c608e9f1a9a325b3c275f64a9428832c4f6890b7465f966c907daa70b4db313. Actual docking clearance remains unqualified.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 12 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
-| Speed | 363.75 project units/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Hull energy | 384.0 project units | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Front shield | 256.0 project units | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Rear shield | 256.0 project units | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Energy recharge | 4 project units/s | estimated; Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted. |
-| Roll | 2.1227 rad/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Pitch | 0.796 rad/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Yaw | 0.5838 rad/s | estimated conversion; D23 cobramkv outfitting hull inputs, translated into O08-like project units |
-| Acceleration | 160 project units/s2 | estimated; Project Cobra baseline borrowed from O08; native D23 equipment equations have not been substituted. |
-| Front recharge | 2 project units/s | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Rear recharge | 2 project units/s | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Jump range | 7 LY | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Jump spool | 15 s | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Fuel capacity | 70 0.1 LY | borrowed; O08/S37 classical refit baseline; project adaptation |
-| Laser facings | 1 bit mask | estimated; D23 cobramkv outfitting hull inputs, translated into O08-like project units; bit1 forward,2aft,4port,8starboard |
+| Cargo | 92 t | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Speed | 34.3 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Hull energy | 380 project units | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Front shield | 300 project units | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Rear shield | 300 project units | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Energy recharge | 4.22 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Roll | 0.79 rad/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Pitch | 0.7 rad/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Yaw | 0.65 rad/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Acceleration | 9.1 project units/s2 | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Front recharge | 1.8 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Rear recharge | 1.8 project units/s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Jump range | 9 LY | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Jump spool | 15 s | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Fuel capacity | 130 0.1 LY | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Laser facings | 15 bit mask | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
 | Forward laser | Pulse Laser | user required / borrowed equipment; User baseline plus O08 weapon definition; NPC alien weapons remain separate |
-| Missile capacity | 5 pylons | estimated; Project pylon count chosen from number of positive-size D23 hardpoints, bounded1..16. Native missile rack ammunition is separate. This does not assert a native pylon layout. |
-| Initial missiles | 1 missiles | project choice; Initial hull acquisition only; repeat selection preserves spent stock |
-| Equipment capacity | 10 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
-| Docking computer | Yes | user required; Intrinsic baseline |
-| Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
-| Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
-| Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
-| initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
-| Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
-| Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
-
-### ED Coriolis Cobra Mk V
-
-D23 0db9234b: community outfitting snapshot; equipped FSD/shield results not inferred.
-
-| Field | Source value | Status / basis |
-| --- | --- | --- |
-| Base speed | 291 m/s | source; D23 cobramkv |
-| Boost | 412 m/s | source; D23 cobramkv |
-| Pitch | 45.61 deg/s | source; D23 cobramkv |
-| Roll | 121.62 deg/s | source; D23 cobramkv |
-| Yaw | 33.45 deg/s | source; D23 cobramkv |
-| Hull mass | 150 t | source; D23 cobramkv |
-| Shield input | 160 ED raw | source; D23 cobramkv |
-| Armour input | 180 ED raw | source; D23 cobramkv |
-| Hull price | 1477085 CR | source; D23 cobramkv |
-| Retail loadout | 1989461 CR | source; |
-| Hardpoint sizes | 2, 2, 2, 1, 1, 0, 0, 0, 0 | source; |
-| Internal slots | 5, 4, 4, 4, 3, 3, 3, 2, 1, {'class': 1, 'name': 'PlanetaryApproachSuite', 'eligible': {'pas': 1}} | source; |
-
-### ED-D23-PINNED crew
-
-dataset flight crew seats, not required staffing; D23; crew is separate from passenger cabins.
-
-| Field | Source value | Status / basis |
-| --- | --- | --- |
-| Flight seats | 3 people | source; |
-| Maximum flight seats | 3 people | source; |
+| Missile capacity | 9 pylons | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Initial missiles | 1 missiles | project choice; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Equipment capacity | 10 project slots | estimated; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Docking computer | Yes | user required; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Hyperspace drive | Yes | user required; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Cargo expansion | 35 t | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Required crew | 1 people | project adoption of solo-operated ED profile; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Reserved crew quarters | 1 people | project allocation; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| initial_charter_passenger_berths | 0 | project choice; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Passengers aboard | 0 people | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Free passenger places | 0 people | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Hold used by cabins | 0 t | standard unladen refit; Retained common project standard-fit/accommodation estimate; not an original authored crew measurement. |
+| Usable cargo after fit | 92 t | original authored; Approved fleet-specs/SH025.toml, values applied without predecessor scaling. |
+| Rear laser | Supported mount, empty | original authored; Original facings bitmask15; no extra laser ownership granted. |
+| Left laser | Supported mount, empty | original authored; Original facings bitmask15; no extra laser ownership granted. |
+| Right laser | Supported mount, empty | original authored; Original facings bitmask15; no extra laser ownership granted. |
 
 <a id="sh026"></a>
 
@@ -2610,11 +2582,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 2 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2714,7 +2686,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Copperhead refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Copperhead refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Copperhead refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Copperhead refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -2736,15 +2708,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2851,15 +2823,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 17 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 48 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 48 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2936,11 +2908,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 4 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 4 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -2997,15 +2969,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3054,11 +3026,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3135,11 +3107,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3274,11 +3246,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 14 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 14 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3329,7 +3301,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Drake refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Drake refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Drake refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Drake refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -3351,15 +3323,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3404,15 +3376,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3503,11 +3475,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3622,15 +3594,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3721,11 +3693,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3838,15 +3810,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3891,15 +3863,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -3963,15 +3935,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 1208 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 52 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 52 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 6000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 6000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4016,15 +3988,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 14 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 32 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 32 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4106,15 +4078,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 23 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 76 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 76 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4183,7 +4155,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 56 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 225.0 project units/s | estimated conversion; D23 federal_dropship outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 640.0 project units | estimated conversion; D23 federal_dropship outfitting hull inputs, translated into O08-like project units |
 | Front shield | 320.0 project units | estimated conversion; D23 federal_dropship outfitting hull inputs, translated into O08-like project units |
@@ -4205,15 +4177,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 19 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 56 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4299,11 +4271,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 16 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 16 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4389,11 +4361,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 12 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 12 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4595,11 +4567,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4730,15 +4702,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 19 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 55 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 55 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4806,15 +4778,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4860,7 +4832,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Griffin refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Griffin refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Griffin refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Griffin refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -4882,15 +4854,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 12 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 12 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -4968,15 +4940,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5044,15 +5016,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5097,15 +5069,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5160,15 +5132,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 2 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5223,15 +5195,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 3 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 3 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5264,7 +5236,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 8 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 250.0 project units/s | estimated conversion; D23 hauler outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 213.3333 project units | estimated conversion; D23 hauler outfitting hull inputs, translated into O08-like project units |
 | Front shield | 80.0 project units | estimated conversion; D23 hauler outfitting hull inputs, translated into O08-like project units |
@@ -5290,11 +5262,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 8 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5367,15 +5339,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5417,7 +5389,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Hognose refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Hognose refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Hognose refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Hognose refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -5439,15 +5411,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5493,7 +5465,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 21 t | borrowed; S45 hold including equipment; project intrinsic baseline already reserved |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 416.6667 project units/s | estimated conversion; S45 released Elite-A player table translated into project units |
 | Hull energy | 256 project units | estimated; Project Cobra baseline, borrowed from O08; missing player capability in inspected S45 table, not inferred from Elite-A per-hit shield absorption. |
 | Energy recharge | 4 project units/s | estimated; Project Cobra baseline, borrowed from O08; missing player capability in inspected S45 table, not inferred from Elite-A per-hit shield absorption. |
@@ -5515,15 +5487,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 21 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5569,7 +5541,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 74 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 375.0 project units/s | estimated conversion; D23 imperial_clipper outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 576.0 project units | estimated conversion; D23 imperial_clipper outfitting hull inputs, translated into O08-like project units |
 | Front shield | 288.0 project units | estimated conversion; D23 imperial_clipper outfitting hull inputs, translated into O08-like project units |
@@ -5591,15 +5563,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 22 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 74 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5685,11 +5657,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5782,7 +5754,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 164 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 300 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 250.0 project units/s | estimated conversion; D23 imperial_cutter outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 853.3333 project units | estimated conversion; D23 imperial_cutter outfitting hull inputs, translated into O08-like project units |
 | Front shield | 960.0 project units | estimated conversion; D23 imperial_cutter outfitting hull inputs, translated into O08-like project units |
@@ -5804,15 +5776,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 40 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 164 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 300 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5907,11 +5879,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -5984,15 +5956,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 158 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 10 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 10 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6048,7 +6020,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 125 t | estimated; Estimated Imperial Trader refit from named O08 surrogate boa-player at volume scale 1 |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 240.0 project units/s | estimated; Estimated Imperial Trader refit from named O08 surrogate boa-player at volume scale 1 |
 | Hull energy | 450.0 project units | estimated; Estimated Imperial Trader refit from named O08 surrogate boa-player at volume scale 1 |
 | Energy recharge | 3.0 project units/s | estimated; Estimated Imperial Trader refit from named O08 surrogate boa-player at volume scale 1 |
@@ -6070,15 +6042,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 33 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 6 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 6 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 125 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6143,7 +6115,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 42 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 250.0 project units/s | estimated conversion; D23 keelback outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 576.0 project units | estimated conversion; D23 keelback outfitting hull inputs, translated into O08-like project units |
 | Front shield | 216.0 project units | estimated conversion; D23 keelback outfitting hull inputs, translated into O08-like project units |
@@ -6165,15 +6137,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 16 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 42 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6246,15 +6218,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6322,11 +6294,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 4 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 4 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6403,11 +6375,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 9 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 9 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6538,15 +6510,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 24 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 82 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 82 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6619,15 +6591,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 27 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 98 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 98 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6678,7 +6650,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 100 t | estimated; Estimated Lanner refit from named O08 surrogate python-player at volume scale 1 |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 200.0 project units/s | estimated; Estimated Lanner refit from named O08 surrogate python-player at volume scale 1 |
 | Hull energy | 450.0 project units | estimated; Estimated Lanner refit from named O08 surrogate python-player at volume scale 1 |
 | Energy recharge | 2.5 project units/s | estimated; Estimated Lanner refit from named O08 surrogate python-player at volume scale 1 |
@@ -6700,15 +6672,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 28 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 3 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 3 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 100 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6741,7 +6713,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 125 t | estimated; Estimated Lanner II refit from named O08 surrogate boa-player at volume scale 1 |
+| Cargo | 175 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 240.0 project units/s | estimated; Estimated Lanner II refit from named O08 surrogate boa-player at volume scale 1 |
 | Hull energy | 450.0 project units | estimated; Estimated Lanner II refit from named O08 surrogate boa-player at volume scale 1 |
 | Energy recharge | 3.0 project units/s | estimated; Estimated Lanner II refit from named O08 surrogate boa-player at volume scale 1 |
@@ -6763,15 +6735,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 33 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 3 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 3 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 125 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 175 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6804,7 +6776,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Lifter refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 350.0 project units/s | estimated; Estimated Lifter refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Lifter refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Lifter refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -6826,15 +6798,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6921,15 +6893,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 158 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 4 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 4 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -6993,15 +6965,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 608 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 100 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 100 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 3000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 3000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7056,15 +7028,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 608 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 20 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 20 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 3000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 3000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7097,7 +7069,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Lynx Highliner refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 2500 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 350.0 project units/s | estimated; Estimated Lynx Highliner refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Lynx Highliner refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Lynx Highliner refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -7119,15 +7091,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 2500 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7172,15 +7144,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 1208 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 52 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 52 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 6000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 6000 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7229,11 +7201,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 3 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 3 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7364,15 +7336,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 16 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 40 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7423,7 +7395,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Mantis refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Mantis refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Mantis refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Mantis refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -7445,15 +7417,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 8 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 8 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7508,15 +7480,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7549,7 +7521,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Moccasin refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Moccasin refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Moccasin refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Moccasin refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -7571,15 +7543,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7647,15 +7619,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 24 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 2 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 81 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 81 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7701,7 +7673,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 7 t | borrowed; O08 moray-player native player known player hold |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 300.0 project units/s | borrowed; O08 moray-player native player |
 | Hull energy | 240.0 project units | borrowed; O08 moray-player native player |
 | Energy recharge | 3.0 project units/s | borrowed; O08 moray-player native player |
@@ -7727,11 +7699,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 6 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 6 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 7 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7889,7 +7861,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Mussurana refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Mussurana refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Mussurana refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Mussurana refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -7911,15 +7883,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -7965,7 +7937,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Naga refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Naga refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Naga refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Naga refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -7987,15 +7959,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8041,7 +8013,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Nomad refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Nomad refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Nomad refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Nomad refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -8063,15 +8035,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8094,7 +8066,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 24 t | borrowed; S45 hold including equipment; project intrinsic baseline already reserved |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 425.0 project units/s | estimated conversion; S45 released Elite-A player table translated into project units |
 | Hull energy | 256 project units | estimated; Project Cobra baseline, borrowed from O08; missing player capability in inspected S45 table, not inferred from Elite-A per-hit shield absorption. |
 | Energy recharge | 4 project units/s | estimated; Project Cobra baseline, borrowed from O08; missing player capability in inspected S45 table, not inferred from Elite-A per-hit shield absorption. |
@@ -8116,15 +8088,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 24 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8192,15 +8164,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 24 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 24 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8282,15 +8254,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8354,15 +8326,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8440,15 +8412,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 158 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 12 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 12 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 750 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8513,7 +8485,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 192 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 800 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 226.25 project units/s | estimated conversion; D23 panthermkii outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 1322.6667 project units | estimated conversion; D23 panthermkii outfitting hull inputs, translated into O08-like project units |
 | Front shield | 560.0 project units | estimated conversion; D23 panthermkii outfitting hull inputs, translated into O08-like project units |
@@ -8535,15 +8507,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 46 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 192 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 800 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8594,7 +8566,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 175 t | estimated; Estimated Puma Clipper refit from named O08 surrogate boa-mk2-player at volume scale 1 |
+| Cargo | 200 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 312.0 project units/s | estimated; Estimated Puma Clipper refit from named O08 surrogate boa-mk2-player at volume scale 1 |
 | Hull energy | 525.0 project units | estimated; Estimated Puma Clipper refit from named O08 surrogate boa-mk2-player at volume scale 1 |
 | Energy recharge | 3.2 project units/s | estimated; Estimated Puma Clipper refit from named O08 surrogate boa-mk2-player at volume scale 1 |
@@ -8616,15 +8588,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 43 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 9 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 9 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 175 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 200 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -8689,7 +8661,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 100 t | borrowed; O08 python-player native player known player hold |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 200.0 project units/s | borrowed; O08 python-player native player |
 | Hull energy | 450.0 project units | borrowed; O08 python-player native player |
 | Energy recharge | 2.5 project units/s | borrowed; O08 python-player native player |
@@ -8715,11 +8687,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 20 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 20 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 100 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9018,7 +8990,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 10 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 175 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 320.0 project units/s | estimated conversion; D23 python_nx outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 597.3333 project units | estimated conversion; D23 python_nx outfitting hull inputs, translated into O08-like project units |
 | Front shield | 536.0 project units | estimated conversion; D23 python_nx outfitting hull inputs, translated into O08-like project units |
@@ -9044,11 +9016,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 10 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 175 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9121,15 +9093,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9324,15 +9296,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9365,7 +9337,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 6 t | estimated; S37 Salamander numerical model and provisional player projection |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 87.5 project units/s | estimated conversion; S37 Salamander numerical model and provisional player projection |
 | Hull energy | 32 project units | estimated; S37 Salamander numerical model and provisional player projection |
 | Energy recharge | 4 project units/s | estimated; S37 Salamander numerical model and provisional player projection |
@@ -9391,11 +9363,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 6 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9453,7 +9425,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 0 t | estimated; O08 model envelope |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 80.0 project units/s | borrowed; O08 shuttle NPC adapted for player |
 | Hull energy | 120.0 project units | borrowed; O08 shuttle NPC adapted for player |
 | Energy recharge | 1.0 project units/s | borrowed; O08 shuttle NPC adapted for player |
@@ -9479,11 +9451,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 6 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 6 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9546,7 +9518,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Shuttle Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 175 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 350.0 project units/s | estimated; Estimated Shuttle Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Shuttle Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Shuttle Mk II refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -9568,15 +9540,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 175 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9629,11 +9601,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 2 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9746,15 +9718,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 6 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 6 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9787,7 +9759,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Spar refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Spar refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Spar refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Spar refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -9809,15 +9781,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9872,15 +9844,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9935,15 +9907,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -9988,15 +9960,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10041,15 +10013,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10094,15 +10066,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10147,15 +10119,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10200,15 +10172,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10253,15 +10225,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10306,15 +10278,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10359,15 +10331,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10412,15 +10384,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10465,15 +10437,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10518,15 +10490,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10571,15 +10543,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 40 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 4 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 4 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 160 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 160 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10638,15 +10610,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 23 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 2 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 75 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 75 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10776,11 +10748,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | estimated humanoid conversion; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander Native alien/drone crew is a separate record and is not humanoid accommodation. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10861,7 +10833,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Tiercel refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Tiercel refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Tiercel refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Tiercel refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -10883,15 +10855,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 6 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 6 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -10924,7 +10896,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 100 t | estimated; Estimated Tiger Trader refit from named O08 surrogate python-player at volume scale 1 |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 200.0 project units/s | estimated; Estimated Tiger Trader refit from named O08 surrogate python-player at volume scale 1 |
 | Hull energy | 450.0 project units | estimated; Estimated Tiger Trader refit from named O08 surrogate python-player at volume scale 1 |
 | Energy recharge | 2.5 project units/s | estimated; Estimated Tiger Trader refit from named O08 surrogate python-player at volume scale 1 |
@@ -10946,15 +10918,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 28 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 5 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 5 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 100 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11019,7 +10991,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 0 t | estimated; O08 model envelope |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 100.0 project units/s | borrowed; O08 transporter NPC adapted for player |
 | Hull energy | 150.0 project units | borrowed; O08 transporter NPC adapted for player |
 | Energy recharge | 3.0 project units/s | borrowed; O08 transporter NPC adapted for player |
@@ -11045,11 +11017,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 3 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 3 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11157,7 +11129,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 220 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 300 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 223.75 project units/s | estimated conversion; D23 type_10_defender outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 1237.3333 project units | estimated conversion; D23 type_10_defender outfitting hull inputs, translated into O08-like project units |
 | Front shield | 512.0 project units | estimated conversion; D23 type_10_defender outfitting hull inputs, translated into O08-like project units |
@@ -11179,15 +11151,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 52 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 220 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 300 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11247,7 +11219,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 64 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 200 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 340.0 project units/s | estimated conversion; D23 type_11_prospector outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 746.6667 project units | estimated conversion; D23 type_11_prospector outfitting hull inputs, translated into O08-like project units |
 | Front shield | 440.0 project units | estimated conversion; D23 type_11_prospector outfitting hull inputs, translated into O08-like project units |
@@ -11269,15 +11241,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 20 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 64 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 200 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11328,7 +11300,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 50 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 275.0 project units/s | estimated conversion; D23 type_6_transporter outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 384.0 project units | estimated conversion; D23 type_6_transporter outfitting hull inputs, translated into O08-like project units |
 | Front shield | 144.0 project units | estimated conversion; D23 type_6_transporter outfitting hull inputs, translated into O08-like project units |
@@ -11350,15 +11322,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 18 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 50 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11409,7 +11381,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 128 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 200 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 225.0 project units/s | estimated conversion; D23 type_7_transport outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 725.3333 project units | estimated conversion; D23 type_7_transport outfitting hull inputs, translated into O08-like project units |
 | Front shield | 248.0 project units | estimated conversion; D23 type_7_transport outfitting hull inputs, translated into O08-like project units |
@@ -11431,15 +11403,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 33 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 128 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 200 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11490,7 +11462,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 176 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 250 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 250.0 project units/s | estimated conversion; D23 type_8_transport outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 938.6667 project units | estimated conversion; D23 type_8_transport outfitting hull inputs, translated into O08-like project units |
 | Front shield | 364.8 project units | estimated conversion; D23 type_8_transport outfitting hull inputs, translated into O08-like project units |
@@ -11512,15 +11484,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 43 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 176 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 250 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11571,7 +11543,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 348 t | borrowed; D23 standard cargo rack loadout; built-in project baseline does not consume original optional slots |
+| Cargo | 400 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 162.5 project units/s | estimated conversion; D23 type_9_heavy outfitting hull inputs, translated into O08-like project units |
 | Hull energy | 1024.0 project units | estimated conversion; D23 type_9_heavy outfitting hull inputs, translated into O08-like project units |
 | Front shield | 384.0 project units | estimated conversion; D23 type_9_heavy outfitting hull inputs, translated into O08-like project units |
@@ -11593,15 +11565,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 77 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 348 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 400 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11670,7 +11642,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Urutu refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Urutu refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Urutu refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Urutu refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -11692,15 +11664,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11753,11 +11725,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 3 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 3 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11850,15 +11822,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11917,11 +11889,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 4 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 4 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -11998,11 +11970,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 18 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 18 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12079,11 +12051,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | project adoption of solo-operated ED profile; ED flight-seat capacity is optional multicrew, not staffing minimum. Select one commander; this does not convert spare seats to passenger berths. |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 8 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 8 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12186,15 +12158,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12266,11 +12238,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 2 people | borrowed documented classic complement, project enforcement; CREW01 minimum published complement adopted for common refit; classic engine did not simulate hiring. Cobra I uses explicit single-pilot narrative despite conflicting table2. |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 1 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12406,7 +12378,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Wyvern refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Wyvern refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Wyvern refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Wyvern refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -12428,15 +12400,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 3 people | borrowed FFE operating requirement; CREW03 selected FFE table including commander; native ship aliases mapped explicitly. Does not enable excluded FFE missions. |
 | Reserved crew quarters | 3 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12491,15 +12463,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12544,15 +12516,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12597,15 +12569,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12650,15 +12622,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12726,15 +12698,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12780,7 +12752,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Santa sled refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 150 t | project gameplay balance; FR047 ratified project Santa cargo/transporter balance150t, superseding Trader25; preserve authoritative15t expansion and original historical source profile. |
 | Speed | 350.0 project units/s | estimated; Estimated Santa sled refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Santa sled refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Santa sled refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -12802,15 +12774,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR047 ratified project Santa cargo/transporter balance150t, superseding Trader25; preserve authoritative15t expansion and original historical source profile. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12840,7 +12812,7 @@ Exact selected source definition and assembled model; pre-equipment NPC fields, 
 
 <a id="sh151"></a>
 
-## SH151 - Armed reindeer escort
+## SH151 - Rudolf
 
 **Design:** Santa / Oolite expansion rendition; not proof of original or Elite Dangerous geometry; CC-BY-NC-SA-4.0.
 
@@ -12878,15 +12850,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -12932,7 +12904,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Ionics Huntsman refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 25 t | project gameplay balance; FR051 Military supersedes Huntsman formerTrader primary. Retain approved25t holdand15t expansion nondecreasing; this is preserved project capacity, not a current Military minimum. Original historical profiles unchanged. |
 | Speed | 350.0 project units/s | estimated; Estimated Ionics Huntsman refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Ionics Huntsman refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Ionics Huntsman refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -12954,15 +12926,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR051 Military supersedes Huntsman formerTrader primary. Retain approved25t holdand15t expansion nondecreasing; this is preserved project capacity, not a current Military minimum. Original historical profiles unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR051 Military supersedes Huntsman formerTrader primary. Retain approved25t holdand15t expansion nondecreasing; this is preserved project capacity, not a current Military minimum. Original historical profiles unchanged. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13030,15 +13002,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13106,15 +13078,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13160,7 +13132,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 20 t | estimated; Estimated Ionics Funnelweb refit from named O08 surrogate cobra3-player at volume scale 1 |
+| Cargo | 500 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 350.0 project units/s | estimated; Estimated Ionics Funnelweb refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Hull energy | 256.0 project units | estimated; Estimated Ionics Funnelweb refit from named O08 surrogate cobra3-player at volume scale 1 |
 | Energy recharge | 4.0 project units/s | estimated; Estimated Ionics Funnelweb refit from named O08 surrogate cobra3-player at volume scale 1 |
@@ -13182,15 +13154,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 500 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13293,15 +13265,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13369,15 +13341,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13445,15 +13417,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13521,15 +13493,15 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Project generic equipment-slot budget independent of cargo; intrinsic baseline excluded |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No unsupported cargo upgrade silently granted |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13741,11 +13713,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 12 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13768,7 +13740,7 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 
 | Field | Source value | Status / basis |
 | --- | --- | --- |
-| Cargo | 125 t | source value adopted; P30 arafura_player resolved source dictionary, before fitted equipment effects |
+| Cargo | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Speed | 300 project units/s | source value adopted; P30 arafura_player resolved source dictionary, before fitted equipment effects |
 | Hull energy | 512 project units | source value adopted; P30 arafura_player resolved source dictionary, before fitted equipment effects |
 | Energy recharge | 3.5 project units/s | source value adopted; P30 arafura_player resolved source dictionary, before fitted equipment effects |
@@ -13794,11 +13766,11 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Required crew | 2 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 2 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 125 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 150 t | project gameplay balance; FR036-FR046 project balance: Explicit project family/role balance proposal; original source profiles retained. Requires price/crew/accommodation and actual fit review before implementation. |
 | Rear laser | Empty (standard refit) | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
@@ -13851,18 +13823,813 @@ Adaptation; borrowed and estimated fields, not historical native specifications.
 | Equipment capacity | 12 project slots | estimated; Common project optional-equipment capacity8+floor(cargo/5), minimum8; intrinsic systems/operating quarters already reserved |
 | Docking computer | Yes | user required; Intrinsic baseline |
 | Hyperspace drive | Yes | user required; Intrinsic baseline |
-| Cargo expansion | 0 t | project choice; No native player shipyard/expansion evidence; selected inspector conversion has no cargo expansion |
+| Cargo expansion | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
 | Required crew | 1 people | estimated; CREW-ESTIMATE-v1: 1+floor(0.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200)), minimum1; includes commander |
 | Reserved crew quarters | 1 people | project allocation; Intrinsic crew quarters outside published usable cargo; no double subtraction from hold |
 | initial_charter_passenger_berths | 0 | project choice; Crew seats and native/lore capacity do not automatically fit charter cabins; install dedicated5tonne/1equipment-unit berths |
-| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
-| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each. |
+| Fitted passenger berths | 0 berths | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Passengers aboard | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Free passenger places | 0 people | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Hold used by cabins | 0 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
+| Usable cargo after fit | 20 t | standard unladen refit; Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places. |
 | Rear laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Left laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
 | Right laser | Unsupported mount | estimated project fitting; Facing mask is authoritative; no secondary laser is specified in this standard refit. Empty is a labelled starting-fit estimate, not extra equipment. |
+
+<a id="sh168"></a>
+
+## SH168 - Convict Miner Minnow
+
+**Design:** Commies 2.20 / Dr. Nil and contributors; see attribution profile; CC-BY-NC-SA-3.0.
+
+Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof.
+
+**Appearances:** OOLITE-OXP Commies 2.20; **evidence:** PROJECT-COMMIES-SELECTED-SHIPS-v1; selected source models, native variants and explicitly labelled player adaptation.
+
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
+
+### Common project refit
+
+Reference conversion before fitted equipment. Source outfits, cabins, equipment-unit budgets, crew and multi-emitter behavior are inspectable source facts; these profiles do not install modules or implement those mechanics. Native exchange carries the existing fit without free stock.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 0 t | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Speed | 240 project units/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Hull energy | 25 project units | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Energy recharge | 1 project units/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Roll | 1 rad/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Pitch | 0.5 rad/s | source NPC value adopted for player conversion; Commies2.20 comminer full raw inheritance before fitted player equipment |
+| Yaw | 0.5 rad/s | borrowed engine default; Pinned O08 missing yaw defaults to source pitch |
+| Acceleration | 60.0 project units/s2 | borrowed engine conversion; Source thrust12.0 times pinned O08 factor5 |
+| Front shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Front recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump range | 7 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump spool | 15 s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Fuel capacity | 70 0.1 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Laser facings | 1 bit mask | project conversion choice; One observed forward mount selected for converted Minnow; missing NPC mask default15 is not a player four-weapon grant |
+| Forward laser | Mining Laser | source NPC laser adopted for conversion; Existing forward mining laser retained; native legacy weapon_energy1 does not replace current mining weapon damage |
+| Missile capacity | 1 pylons | user minimum / project conversion; NPC0 remains0; one converted player pylon per owner minimum |
+| Initial missiles | 1 missiles | user minimum / project conversion; One first-acquisition player round; no changes to original NPC |
+| Equipment capacity | 8 project slots | estimated; Common project8+floor(standard hold/5), minimum8; intrinsic operating quarters/dock/drive reserved outside these budgets |
+| Docking computer | Yes | user required; Intrinsic baseline |
+| Hyperspace drive | Yes | user required; Intrinsic baseline |
+| Cargo expansion | 0 t | project fit policy; No source player expansion offer; no guessed extra hold on zero-hold Minnow or Sunray yard without cargo-bay option |
+| Required crew | 1 people | estimated; CREW-ESTIMATE-v1: max(1,1+floor(.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200))); numeric complement absent in selected source |
+| Reserved crew quarters | 1 people | project allocation; Operating quarters outside published usable hold; never subtract again or treat as free passenger berth |
+| First fitted passenger berths | 0 berths | project choice; No source-standard passenger module; crew quarters do not create charter places |
+| Player scanner range | 25600 project units | borrowed native player default; Pinned PlayerEntity player setup sets scanner toSCANNER_MAX_RANGE; NPC Minnow/RRS60000 remains native NPC data |
+| Source weapon mount mode | single | borrowed native default; Pinned multiply fires every listed muzzle; one controller per facing remains one owned equipment identity |
+| Source forward emitters | 1 emitters | borrowed native default; One forward source/default emitter |
+| Source first outfit | EQ_DOCK_COMP | source reference / not an installed native outfit; Native player yard extras preserved with uniquely owned first-acquisition receipts; required dock/drive added intrinsically, no NPC police/bounty/prisoner/AI authority. Sunray has real source berth; common berth cost5tonnes+1unit. NPC flags do not grant extra unlisted player equipment. Converted Minnow first fit has only required baseline/mining forward laser/one missile. |
+| Source first missile type | Missile | borrowed native player setup; Pinned PlayerEntity player setup initializes standard EQ_MISSILE; NPC Ray/Sunray EQ_HARDENED_MISSILE field is not free hardened player stock |
+| Hold used by cabins | 0 t | standard unladen refit; Retained initial charter berths use 5t each; intrinsic operating quarters are outside cargo. |
+| Usable cargo after fit | 0 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
+
+### Source variant: comminer
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0 -2.5 5.5 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 25 Oolite units | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Mining Laser | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | comminerAI.plist | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 0.5 rad/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"comminer.png":{"diffuse_map":"comminer.png","gloss":"0.7","shininess":"35","specular":["1.0","1.0","1.0","1.0"],"specular_map":{"extract_channel":"a","name":"comminer.png"}}} | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 240 Oolite units/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 12 Oolite raw | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Minnow | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | 8 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 1.3 -13.5 0.25 1.1 0.0"] | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | comminer | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 1 rad/s | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Laser color | yellowColor | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_comminer.dat | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon energy | 1 | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_SLAVES | source explicit; Commies2.20 comminer; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 12.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 0.5 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: comminer-escapee
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0 -2.5 5.5 | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 25 Oolite units | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 200 | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Mining Laser | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | comminer-escapeeAI.plist | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 0.5 rad/s | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"comminer.png":{"diffuse_map":"comminer.png","gloss":"0.7","shininess":"35","specular":["1.0","1.0","1.0","1.0"],"specular_map":{"extract_channel":"a","name":"comminer.png"}}} | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 270 Oolite units/s | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 12 Oolite raw | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Minnow (Escaping) | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | 8 | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 1.3 -13.5 0.25 1.1 0.0"] | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | comminer(0.2) commineescapee | source explicit; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 1 rad/s | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Laser color | yellowColor | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_comminer.dat | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon energy | 1 | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_SLAVES | source inherited; Commies2.20 comminer-escapee; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 12.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 0.5 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: rrs_astrominer_commies
+
+P30; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0 -2.5 5.5 | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 25 Oolite units | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 30 | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Mining Laser | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | rescue_scenario_4b_astrominerAI.plist | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 0.5 rad/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"comminer.png":{"diffuse_map":"comminer.png","gloss":"0.7","shininess":"35","specular":["1.0","1.0","1.0","1.0"],"specular_map":{"extract_channel":"a","name":"comminer.png"}}} | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 240 Oolite units/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 12 Oolite raw | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Minnow | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | 8 | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 1.3 -13.5 0.25 1.1 0.0"] | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | rrs_astrominer(1000) rrs-flightcomp-supported | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 1 rad/s | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Laser color | yellowColor | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_comminer.dat | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon energy | 1 | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_SLAVES | source inherited; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Script | rescue_scenario_4b_astrominer.js | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Is external dependency | 1 | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Hyperspace motor | 0 | source explicit; P30 rrs_astrominer_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 12.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 0.5 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | No | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Crew and source first-fit accounting
+
+Crew is an estimate including commander, not installed passenger cabins. Source first-fit numbers require a native cabin/outfit adapter; the current carried-fit exchange does not grant them.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Source first fitted berths | 0 berths | project choice; No source-standard passenger module |
+| Source first-fit remaining hold | 0 t | reference fit accounting; Standard hold less five tonnes per actually fitted source berth; not native automatic fitting |
+| Reference berth hold cost | 5 t | common project rule; CREW07 source berth conversion; requires native module support |
+| Reference berth equipment cost | 1 unit | common project rule; Common project budget; not a native equipment-unit counter |
+
+### Model attribution and adaptation
+
+Original package notices are embedded verbatim in design.custody. Geometry terms remain separate from the project-authored palette and reference-only textures.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
+
+<a id="sh169"></a>
+
+## SH169 - Ray Mk I
+
+**Design:** Commies 2.20 / Dr. Nil and contributors; see attribution profile; CC-BY-NC-SA-3.0.
+
+Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof.
+
+**Appearances:** OOLITE-OXP Commies 2.20; **evidence:** PROJECT-COMMIES-SELECTED-SHIPS-v1; selected source models, native variants and explicitly labelled player adaptation.
+
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
+
+### Common project refit
+
+Reference conversion before fitted equipment. Source outfits, cabins, equipment-unit budgets, crew and multi-emitter behavior are inspectable source facts; these profiles do not install modules or implement those mechanics. Native exchange carries the existing fit without free stock.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 30 t | project gameplay balance; FR036-FR046 usable trader hold25t after retained initial charter berth1 costs5t: project base30t, expansion0 unchanged. Preserve existing cabin/people/crew; supersedes UX unladen25 recommendation using actual retained fit evidence. |
+| Speed | 390 project units/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Hull energy | 300 project units | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Energy recharge | 3.5 project units/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Roll | 2.8 rad/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Pitch | 2.1 rad/s | source value adopted; Commies2.20 sunray-player full raw inheritance before fitted player equipment |
+| Yaw | 2.1 rad/s | borrowed engine default; Pinned O08 missing yaw defaults to source pitch |
+| Acceleration | 250.0 project units/s2 | borrowed engine conversion; Source thrust50.0 times pinned O08 factor5 |
+| Front shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Front recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump range | 7 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump spool | 15 s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Fuel capacity | 70 0.1 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Laser facings | 1 bit mask | source value adopted; Explicit native player forward-only mask1 |
+| Forward laser | Beam Laser | source value adopted; Native Sunray player beam |
+| Missile capacity | 1 pylons | borrowed native default; Missing max_missiles defaults source stock1/3; no capacity versus current-stock conflation |
+| Initial missiles | 1 missiles | source value adopted; Native player stock on first acquisition only |
+| Equipment capacity | 10 project slots | estimated; Common project8+floor(standard hold/5), minimum8; intrinsic operating quarters/dock/drive reserved outside these budgets |
+| Docking computer | Yes | user required; Intrinsic baseline |
+| Hyperspace drive | Yes | user required; Intrinsic baseline |
+| Cargo expansion | 0 t | project fit policy; No source player expansion offer; no guessed extra hold on zero-hold Minnow or Sunray yard without cargo-bay option |
+| Required crew | 1 people | estimated; CREW-ESTIMATE-v1: max(1,1+floor(.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200))); numeric complement absent in selected source |
+| Reserved crew quarters | 1 people | project allocation; Operating quarters outside published usable hold; never subtract again or treat as free passenger berth |
+| First fitted passenger berths | 1 berths | source-standard fitted accommodation adopted; Sunray player yard explicitly supplies one actual5tonne/1equipmentunit owned berth on first acquisition; this is the named source-specific exception to default0 |
+| Player scanner range | 25600 project units | borrowed native player default; Pinned PlayerEntity player setup sets scanner toSCANNER_MAX_RANGE; NPC Minnow/RRS60000 remains native NPC data |
+| Source weapon mount mode | single | borrowed native default; Pinned multiply fires every listed muzzle; one controller per facing remains one owned equipment identity |
+| Source forward emitters | 1 emitters | borrowed native default; One forward source/default emitter |
+| Source first outfit | EQ_HEAT_SHIELD, EQ_FUEL_SCOOPS, EQ_PASSENGER_BERTH, EQ_DOCK_COMP | source reference / not an installed native outfit; Native player yard extras preserved with uniquely owned first-acquisition receipts; required dock/drive added intrinsically, no NPC police/bounty/prisoner/AI authority. Sunray has real source berth; common berth cost5tonnes+1unit. NPC flags do not grant extra unlisted player equipment. Converted Minnow first fit has only required baseline/mining forward laser/one missile. |
+| Source first missile type | Missile | borrowed native player setup; Pinned PlayerEntity player setup initializes standard EQ_MISSILE; NPC Ray/Sunray EQ_HARDENED_MISSILE field is not free hardened player stock |
+| Hold used by cabins | 5 t | standard unladen refit; Retained initial charter berths use 5t each; intrinsic operating quarters are outside cargo. |
+| Usable cargo after fit | 25 t | project gameplay balance; FR036-FR046 usable trader hold25t after retained initial charter berth1 costs5t: project base30t, expansion0 unchanged. Preserve existing cabin/people/crew; supersedes UX unladen25 recommendation using actual retained fit evidence. |
+
+### Source variant: comviper
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | route1patrolAI.plist | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray.png"}}} | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Name | People's Police Ray | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | police(5.0) comfactory_defender interceptor(5.0) wingman(5.0) | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source explicit; Commies2.20 comviper; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: astromine-defender
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | policeInterceptAI.plist | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray.png"}}} | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Astromine Defender Ray | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | astromine-defender | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; Commies2.20 astromine-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: comminer2
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 150 Oolite units | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | None | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 0 missiles | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | comminer2AI.plist | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 250 Oolite units/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_miner.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_miner.png"}}} | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_NEUTRAL | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 1 Oolite units/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 0 | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Minerals | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Convict Miner Ray | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | astromine-scavenger comminer2 scavenger | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 16 t | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | no source predicate | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Scanner range | 60000 Oolite units | source explicit; Commies2.20 comminer2; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 16 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: politicop
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | politicopAI.plist | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_thoughtpol.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_thoughtpol.png"}}} | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Thought Police Ray | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | viper(0.5) politicop comfactory_defender(0.2) | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; Commies2.20 politicop; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: sunray
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 10 | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | pirateAI.plist | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 390 Oolite units/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_sun.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_sun.png"}}} | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_NEUTRAL | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 3.5 Oolite units/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Sunray | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | sunskim-trader | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 10 t | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Auto ai | no | source explicit; Commies2.20 sunray; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 10 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: sunray-player
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 10 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | pirateAI.plist | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 390 Oolite units/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray_sun.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray_sun.png"}}} | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_NEUTRAL | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 3.5 Oolite units/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Sunray | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | player | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 10 t | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Auto ai | no | source inherited; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position starboard | 0 5.0 12.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position aft | 0.0 2.0 -20.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position port | 0 5.0 12.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position forward | 0.0 3.0 15.0 | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Custom views | [{"view_description":"Rear View","view_orientation":"1.0 0.0 0.0 0.0","view_position":"0.0 20.0 -141.42","weapon_facing":"FORWARD"},{"view_description":"Rear Right View","view_orientation":"0.9239 0.0 0.3827 0.0","view_position":"100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Right View","view_orientation":"0.7071 0.0 0.7071 0.0","view_position":"141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Front Right View","view_orientation":"0.3827 0.0 0.9239 0.0","view_position":"100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Front View","view_orientation":"0.0 0.0 1.0 0.0","view_position":"0.0 20.0 141.42","weapon_facing":"FORWARD"},{"view_description":"Front Left View","view_orientation":"0.3827 0.0 -0.9239 0.0","view_position":"-100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Left View","view_orientation":"0.7071 0.0 -0.7071 0.0","view_position":"-141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Rear Left View","view_orientation":"0.9239 0.0 -0.3827 0.0","view_position":"-100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Top View","view_orientation":"-0.7071 0.7071 0.0 0.0","view_position":"0.0 150.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Bottom View","view_orientation":"0.0 0.0 0.7071 0.7071","view_position":"0.0 -150.0 0.0","weapon_facing":"FORWARD"}] | source explicit; Commies2.20 sunray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 10 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: rrs_astroguard_commies
+
+P30; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | 0.0 0.0 23.0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 300 Oolite units | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Bounty | 0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Beam Laser | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 1 missiles | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | planetPatrolAI.plist | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 400 Oolite units/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -2.0 -17.0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comray.png":{"diffuse_map":"comray.png","gloss":"0.8","normal_map":"comray_normal.png","shininess":"10","specular":["1.0","1.0","1.0","0.5"],"specular_map":{"extract_channel":"a","name":"comray.png"}}} | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 4 Oolite units/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Likely cargo | 2 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Thrust | 50 Oolite raw | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo carried | Slaves | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Astromine Defender Ray | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -26 5.0 0.25 0.0"] | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | rrs_astroguard(1000) | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -2.5 20.0 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 4 t | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -5.0 16 | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Missile role | Hardened Missile | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_ray.dat | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo type | CARGO_NOT_CARGO | source inherited; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Is external dependency | 1 | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Accuracy | -5 | source explicit; P30 rrs_astroguard_commies; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 50.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 4 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source player shipyard offer
+
+Historical source offer and first acquisition template only. Native game prices and carried-fit exchanges use [game]; no repeated grant on selection or load.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Techlevel | 7 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Standard equipment | {"extras": ["EQ_HEAT_SHIELD", "EQ_FUEL_SCOOPS", "EQ_PASSENGER_BERTH"], "forward_weapon_type": "EQ_WEAPON_BEAM_LASER", "missiles": "1"} | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Weapon facings | 1 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Optional equipment | ["EQ_ADVANCED_COMPASS", "EQ_ECM", "EQ_ENERGY_UNIT", "EQ_NAVAL_ENERGY_UNIT", "EQ_DOCK_COMP", "EQ_WEAPON_BEAM_LASER", "EQ_WEAPON_MILITARY_LASER", "EQ_FUEL_INJECTION", "EQ_SCANNER_SHOW_MISSILE_TARGET", "EQ_CLOAKING_DEVICE", "EQ_SHIELD_BOOSTER"] | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Price | 300000 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+| Chance | 0.01 | source shipyard value; Commies2.20 Config/shipyard.plist sunray-player |
+
+### Crew and source first-fit accounting
+
+Crew is an estimate including commander, not installed passenger cabins. Source first-fit numbers require a native cabin/outfit adapter; the current carried-fit exchange does not grant them.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Source first fitted berths | 1 berths | source-standard module; CREW07 sunray-player standard EQ_PASSENGER_BERTH |
+| Source first-fit remaining hold | 5 t | reference fit accounting; Standard hold less five tonnes per actually fitted source berth; not native automatic fitting |
+| Reference berth hold cost | 5 t | common project rule; CREW07 source berth conversion; requires native module support |
+| Reference berth equipment cost | 1 unit | common project rule; Common project budget; not a native equipment-unit counter |
+
+### Model attribution and adaptation
+
+Original package notices are embedded verbatim in design.custody. Geometry terms remain separate from the project-authored palette and reference-only textures.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
+
+<a id="sh170"></a>
+
+## SH170 - Military Stingray (Ray Mk II)
+
+**Design:** Commies 2.20 / Dr. Nil and contributors; see attribution profile; CC-BY-NC-SA-3.0.
+
+Source model units, same selected O08-scale envelope; not internal volume or collision/docking proof.
+
+**Appearances:** OOLITE-OXP Commies 2.20; **evidence:** PROJECT-COMMIES-SELECTED-SHIPS-v1; selected source models, native variants and explicitly labelled player adaptation.
+
+Imported numerical geometry and complete custody metadata are embedded in the TOML; original source files/notices remain separately attributable. Six zero-area source triangles across three assemblies are harmless and skipped by back-face projection.
+
+### Common project refit
+
+Reference conversion before fitted equipment. Source outfits, cabins, equipment-unit budgets, crew and multi-emitter behavior are inspectable source facts; these profiles do not install modules or implement those mechanics. Native exchange carries the existing fit without free stock.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Cargo | 15 t | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Speed | 430 project units/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Hull energy | 275 project units | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Energy recharge | 6 project units/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Roll | 2.8 rad/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Pitch | 2.1 rad/s | source value adopted; Commies2.20 commilray-player full raw inheritance before fitted player equipment |
+| Yaw | 2.1 rad/s | borrowed engine default; Pinned O08 missing yaw defaults to source pitch |
+| Acceleration | 75.0 project units/s2 | borrowed engine conversion; Source thrust missing -> native default15 times pinned O08 factor5 |
+| Front shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear shield | 128 project units | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Front recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Rear recharge | 2 project units/s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump range | 7 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Jump spool | 15 s | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Fuel capacity | 70 0.1 LY | borrowed player baseline; Selected default O08 common player baseline, not NPC raw fuel or shields; first acquisition only, no repeated refill |
+| Laser facings | 1 bit mask | source value adopted; Explicit native player forward-only mask1 |
+| Forward laser | Beam Laser | source value adopted; Native player yard beam overrides military NPC weapon |
+| Missile capacity | 3 pylons | borrowed native default; Missing max_missiles defaults source stock1/3; no capacity versus current-stock conflation |
+| Initial missiles | 3 missiles | source value adopted; Native player stock on first acquisition only |
+| Equipment capacity | 11 project slots | estimated; Common project8+floor(standard hold/5), minimum8; intrinsic operating quarters/dock/drive reserved outside these budgets |
+| Docking computer | Yes | user required; Intrinsic baseline |
+| Hyperspace drive | Yes | user required; Intrinsic baseline |
+| Cargo expansion | 15 t | borrowed engine default; Stingray player yard explicitly offers EQ_CARGO_BAY; source missing extra_cargo -> default15 |
+| Required crew | 1 people | estimated; CREW-ESTIMATE-v1: max(1,1+floor(.5*max(0,sqrt(volumeRatio)-1)+max(equipmentCapacity/24,cargoTonnes/200))); numeric complement absent in selected source |
+| Reserved crew quarters | 1 people | project allocation; Operating quarters outside published usable hold; never subtract again or treat as free passenger berth |
+| First fitted passenger berths | 0 berths | project choice; No source-standard passenger module; crew quarters do not create charter places |
+| Player scanner range | 25600 project units | borrowed native player default; Pinned PlayerEntity player setup sets scanner toSCANNER_MAX_RANGE; NPC Minnow/RRS60000 remains native NPC data |
+| Source weapon mount mode | multiply | source value adopted; Pinned multiply fires every listed muzzle; one controller per facing remains one owned equipment identity |
+| Source forward emitters | 2 emitters | source value adopted; Stingray source has two parallel forward positions |
+| Source first outfit | EQ_ECM, EQ_FUEL_SCOOPS, EQ_DOCK_COMP | source reference / not an installed native outfit; Native player yard extras preserved with uniquely owned first-acquisition receipts; required dock/drive added intrinsically, no NPC police/bounty/prisoner/AI authority. Sunray has real source berth; common berth cost5tonnes+1unit. NPC flags do not grant extra unlisted player equipment. Converted Minnow first fit has only required baseline/mining forward laser/one missile. |
+| Source first missile type | Missile | borrowed native player setup; Pinned PlayerEntity player setup initializes standard EQ_MISSILE; NPC Ray/Sunray EQ_HARDENED_MISSILE field is not free hardened player stock |
+| Hold used by cabins | 0 t | standard unladen refit; Retained initial charter berths use 5t each; intrinsic operating quarters are outside cargo. |
+| Usable cargo after fit | 15 t | project gameplay balance; FR036-FR046 project balance: Retain current authoritative hold, raised only to requested primary/eligible-secondary role floor where needed. Original historical source stats unchanged. |
+
+### Source variant: commilray
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | ["7.7 0.05 21.3","-7.7 0.05 21.3"] | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 275 Oolite units | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | commilInterceptAI.plist | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Military Laser | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 3 missiles | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -3.0 -25.0 | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comrayii.png":{"diffuse_map":"comrayii.png","gloss":"0.8","normal_map":"comrayii_normal.png","shininess":"10","specular":["1","1","1","0.5"],"specular_map":{"extract_channel":"a","name":"comrayii.png"}}} | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 430 Oolite units/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Initial NPC fuel | 160 0.1 LY | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 6 Oolite units/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon mount mode | multiply | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Military Stingray | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -36 7.0 0.25 0.0"] | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | comgrc-defender | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -3.0 24.0 | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 15 t | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -3.0 30 | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_rayii.dat | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source explicit; Commies2.20 commilray; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 15.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 160 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 3 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 15 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: commilray-player
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | ["7.7 0.05 21.3","-7.7 0.05 21.3"] | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 275 Oolite units | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | commilInterceptAI.plist | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Military Laser | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 3 missiles | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -3.0 -25.0 | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comrayii.png":{"diffuse_map":"comrayii.png","gloss":"0.8","normal_map":"comrayii_normal.png","shininess":"10","specular":["1","1","1","0.5"],"specular_map":{"extract_channel":"a","name":"comrayii.png"}}} | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 430 Oolite units/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Initial NPC fuel | 160 0.1 LY | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_POLICE | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 6 Oolite units/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon mount mode | multiply | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Military Stingray | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -36 7.0 0.25 0.0"] | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | player | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -3.0 24.0 | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 15 t | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -3.0 30 | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_rayii.dat | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position starboard | 0 5.0 12.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position aft | 0.0 2.0 -20.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position port | 0 5.0 12.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| View position forward | 0.0 3.0 15.0 | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Custom views | [{"view_description":"Rear View","view_orientation":"1.0 0.0 0.0 0.0","view_position":"0.0 20.0 -141.42","weapon_facing":"FORWARD"},{"view_description":"Rear Right View","view_orientation":"0.9239 0.0 0.3827 0.0","view_position":"100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Right View","view_orientation":"0.7071 0.0 0.7071 0.0","view_position":"141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Front Right View","view_orientation":"0.3827 0.0 0.9239 0.0","view_position":"100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Front View","view_orientation":"0.0 0.0 1.0 0.0","view_position":"0.0 20.0 141.42","weapon_facing":"FORWARD"},{"view_description":"Front Left View","view_orientation":"0.3827 0.0 -0.9239 0.0","view_position":"-100.0 20.0 100.0","weapon_facing":"FORWARD"},{"view_description":"Left View","view_orientation":"0.7071 0.0 -0.7071 0.0","view_position":"-141.42 20.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Rear Left View","view_orientation":"0.9239 0.0 -0.3827 0.0","view_position":"-100.0 20.0 -100.0","weapon_facing":"FORWARD"},{"view_description":"Top View","view_orientation":"-0.7071 0.7071 0.0 0.0","view_position":"0.0 150.0 0.0","weapon_facing":"FORWARD"},{"view_description":"Bottom View","view_orientation":"0.0 0.0 0.7071 0.7071","view_position":"0.0 -150.0 0.0","weapon_facing":"FORWARD"}] | source explicit; Commies2.20 commilray-player; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 15.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 160 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 3 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 15 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source variant: slapu-defender
+
+Commies2.20; raw resolved source configuration only, not native AI, legal authority, mission admission or a player outfit.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Weapon position forward | ["7.7 0.05 21.3","-7.7 0.05 21.3"] | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Hull energy | 275 Oolite units | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Ai type | policeInterceptAI.plist | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Forward laser | Military Laser | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Initial missiles | 2 missiles | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Aft eject position | 0.0 -3.0 -25.0 | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Pitch | 2.1 rad/s | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Materials | {"commies_details.png":{"diffuse_map":"commies_details.png","emission_map":{"extract_channel":"b","name":"commies_details_lights.png"},"emission_modulate_color":["1.00","0.83","0.47"],"gloss":"0.9","shininess":"50"},"comrayii.png":{"diffuse_map":"comrayii.png","gloss":"0.8","normal_map":"comrayii_normal.png","shininess":"10","specular":["1","1","1","0.5"],"specular_map":{"extract_channel":"a","name":"comrayii.png"}}} | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Speed | 430 Oolite units/s | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Initial NPC fuel | 160 0.1 LY | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scan class | CLASS_MILITARY | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Energy recharge | 6 Oolite units/s | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Weapon mount mode | multiply | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Name | Military Stingray | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Exhaust | ["0.0 -0.5 -36 7.0 0.25 0.0"] | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roles | slapu_defender | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Fuel scoops | yes source predicate | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Condition script | commies_conditions.js | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Scoop position | 0.0 -3.0 24.0 | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Cargo | 0 t | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Roll | 2.8 rad/s | source explicit; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| ECM capability | yes source predicate | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Missile launch position | 0.0 -3.0 30 | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Model | commies_rayii.dat | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Laser facings | 1 bit mask | source inherited; Commies2.20 slapu-defender; resolved raw dictionary; NPC/player role remains distinct |
+| Resolved native thrust | 15.0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native yaw | 2.1 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native fuel raw initial | 160 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native default ordinary engine fuel capacity | 70 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native hyperspace motor | Yes | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native missile capacity | 2 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+| Resolved native cargo tonnes | 0 | source engine resolution; Selected O08 default/inheritance resolution in PROJECT-COMMIES-SELECTED-SHIPS-v1; not a player grant |
+
+### Source player shipyard offer
+
+Historical source offer and first acquisition template only. Native game prices and carried-fit exchanges use [game]; no repeated grant on selection or load.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Techlevel | 7 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Standard equipment | {"extras": ["EQ_ECM", "EQ_FUEL_SCOOPS"], "forward_weapon_type": "EQ_WEAPON_BEAM_LASER", "missiles": "3"} | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Weapon facings | 1 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Optional equipment | ["EQ_ADVANCED_COMPASS", "EQ_HEAT_SHIELD", "EQ_ENERGY_UNIT", "EQ_NAVAL_ENERGY_UNIT", "EQ_DOCK_COMP", "EQ_WEAPON_PULSE_LASER", "EQ_WEAPON_BEAM_LASER", "EQ_WEAPON_MINING_LASER", "EQ_WEAPON_MILITARY_LASER", "EQ_FUEL_INJECTION", "EQ_SCANNER_SHOW_MISSILE_TARGET", "EQ_MULTI_TARGET", "EQ_GAL_DRIVE", "EQ_CLOAKING_DEVICE", "EQ_SHIELD_BOOSTER", "EQ_CARGO_BAY"] | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Price | 450000 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+| Chance | 0.1 | source shipyard value; Commies2.20 Config/shipyard.plist commilray-player |
+
+### Crew and source first-fit accounting
+
+Crew is an estimate including commander, not installed passenger cabins. Source first-fit numbers require a native cabin/outfit adapter; the current carried-fit exchange does not grant them.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Source first fitted berths | 0 berths | project choice; No source-standard passenger module |
+| Source first-fit remaining hold | 15 t | reference fit accounting; Standard hold less five tonnes per actually fitted source berth; not native automatic fitting |
+| Reference berth hold cost | 5 t | common project rule; CREW07 source berth conversion; requires native module support |
+| Reference berth equipment cost | 1 unit | common project rule; Common project budget; not a native equipment-unit counter |
+
+### Model attribution and adaptation
+
+Original package notices are embedded verbatim in design.custody. Geometry terms remain separate from the project-authored palette and reference-only textures.
+
+| Field | Source value | Status / basis |
+| --- | --- | --- |
+| Original attribution | Commies 2.20 by Amaranth, Dr. Nil, Eric Walch, Norby, phkb and GearsNSuch (manifest). README 2.18 credits GearsNSuch with replacement Ray and derivative graphics; no individual Minnow modeller is established here. | source manifest / README; Commies2.20 manifest.plist and README.txt, pinned in custody |
+| Original model licence | CC BY-NC-SA 3.0 Unported; <https://creativecommons.org/licenses/by-nc-sa/3.0/>. Original README and manifest preserved verbatim in design.custody; imported geometry remains under its original terms. | source notice; Commies2.20 manifest.plist / README2.18 |
+| Native changes | Adapted from the selected DAT: Z reflected into the native camera convention and face/UV winding adjusted by the existing importer. Native opaque livery is project-authored; no source texture pixels bundled. Stored source dimensions are envelopes, not usable interior or physical docking clearance. | project adaptation; Existing verified DAT importer and authored default livery |
 
 <a id="sh171"></a>
 

@@ -5,19 +5,29 @@ import Testing
 
 @Test func fourMountsStartWithOnlyFrontPulseAndPurchasesReplaceOnlyChosenMount() throws {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   #expect(game.commander.laser(on: .front) == .pulse)
   #expect([LaserMount.left, .right, .rear].allSatisfy { game.commander.laser(on: $0) == nil })
   game.screen = .equipment
-  game.commander.system = try #require(game.systems.first { $0.technology >= 10 }?.id)
+  let beam = try #require(Equipment.all.first { $0.name == "Beam Laser" })
+  let mining = try #require(Equipment.all.first { $0.name == "Mining Laser" })
+  let requiredLevel = max(beam.requiredTechnologyLevel, mining.requiredTechnologyLevel)
+  game.commander.system = try #require(
+    game.systems.first { !$0.isPlugh && $0.technology >= requiredLevel }?.id)
   game.commander.credits = 100_000
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Beam Laser" })
   game.key("right")
   #expect(game.equipmentMount == .left)
   game.key("return")
   #expect(game.commander.laser(on: .left) == .beam && game.commander.laser(on: .front) == .pulse)
-  #expect(game.commander.credits == 90_000 && game.message == "BEAM LASER FITTED LEFT")
+  #expect(game.commander.credits == 90_000 && game.message == "EQUIPMENT FITTED")
+  let fitted = game.commander
   game.key("return")
-  #expect(game.commander.credits == 90_000 && game.message.contains("ALREADY FITTED"))
+  #expect(game.commander == fitted && game.message == "ALREADY OWNED")
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Mining Laser" })
   game.key("return")
   #expect(game.commander.laser(on: .left) == .mining && game.commander.credits == 82_000)
@@ -28,16 +38,21 @@ import Testing
   game.equipmentClick(y: 40, x: layout.left + layout.contentWidth * 0.9)
   #expect(game.equipmentMount == .rear)
   game.commander.credits = 0
+  let poor = game.commander
   game.key("return")
-  #expect(game.commander.laser(on: .rear) == nil && game.message == "NOT AVAILABLE")
+  #expect(game.commander.laser(on: .rear) == nil && game.message == "NOT ENOUGH CASH")
+  #expect(game.commander == poor)
 }
 @Test func laserMountDamageRateAndEmptyViewsUseTheirOwnAuthoritativeEquipment() {
   let kinds: [LaserKind?] = [.pulse, .mining, .beam, nil]
   for (index, mount) in LaserMount.allCases.enumerated() {
     var game = Game(executive: false)
+    game.commander.laserMounts = LaserMounts(front: .pulse, left: .mining, right: .beam)
     game.launch()
     game.speed = 0
-    game.commander.laserMounts = LaserMounts(front: .pulse, left: .mining, right: .beam)
+    #expect(game.commander.laser(on: mount) == kinds[index])
+    #expect(
+      game.commander.fittedEquipment(at: .laser(mount))?.node.key == kinds[index]?.equipmentName)
     game.screen = Screen(rawValue: mount.rawValue)!
     let position: Vector3
     switch mount {
@@ -47,11 +62,14 @@ import Testing
     case .rear: position = .init(0, 0, -1000)
     }
     game.bodies = [.init(id: 1, hull: .cobra, position: position)]
-    var controls = Controls()
-    controls.fire = true
+    // Exercise fitted-mount damage/cadence directly. Return routes the selected
+    // flight tool and deliberately excludes a mining mount from combat fire.
+    let controls = Controls()
     game.tick(delta: 0.01, controls: controls)
+    game.fireLaser()
     #expect(game.bodies[0].energy == 100 - (kinds[index]?.damage ?? 0))
     game.tick(delta: 0.1, controls: controls)
+    game.fireLaser()
     let shots = (kinds[index]?.firingInterval ?? 1) <= 0.1 ? 2.0 : 1.0
     #expect(game.bodies[0].energy == 100 - (kinds[index]?.damage ?? 0) * shots)
     #expect((game.laserHeat > 0) == (kinds[index] != nil))
@@ -59,6 +77,27 @@ import Testing
       game.commander.laserDamage(against: .cobra, mount: mount) == (kinds[index]?.damage ?? 0))
   }
 }
+@Test func heldCombatReturnCannotDischargeAFittedSideMiningLaser() {
+  var game = Game(executive: false)
+  game.commander.laserMounts = LaserMounts(front: .pulse, left: .mining, right: .beam)
+  game.launch()
+  game.speed = 0
+  game.screen = .left
+  game.bodies = [.init(id: 1, hull: .cobra, position: .init(-1000, 0, 0))]
+  #expect(game.commander.laser(on: .left) == .mining)
+  #expect(game.commander.fittedEquipment(at: .laser(.left))?.node.key == "Mining Laser")
+  #expect(game.selectedFlightTool == .combatLaser)
+  let energy = game.energy
+  let audio = game.dischargeAudio.events
+  var held = Controls()
+  held.fire = true
+  for delta in [0.01, 0.1] { game.tick(delta: delta, controls: held) }
+  #expect(game.bodies[0].energy == 100)
+  #expect(game.laserHeat == 0 && game.fireCooldown == 0)
+  #expect(game.energy == energy && game.dischargeAudio.events == audio)
+  #expect(game.selectedFlightTool == .combatLaser)
+}
+
 @Test func explicitAndLegacyMountSavesPreserveSingleFrontLaserWithoutInventingSideWeapons()
   async throws
 {
@@ -68,44 +107,81 @@ import Testing
   let decoded = try JSONDecoder().decode(Commander.self, from: data)
   #expect(decoded.laser(on: .front) == .military && decoded.laser(on: .left) == nil)
   var game = Game(executive: false)
-  #expect(game.load(decoded) == true)
-  #expect(game.commander.equipment == legacy.equipment)
-  game.commander.installLaser(.beam, on: .rear)
-  game.commander.installLaser(.mining, on: .front)
-  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-  defer { try? FileManager.default.removeItem(at: url) }
+  let loadedLegacy = game.load(decoded)
+  try #require(loadedLegacy)
+  #expect(
+    game.commander.equipment == ["Military Laser", "Fuel Scoops", HyperspaceDriveTier.basic.label])
+  let drive = try #require(game.commander.fittedEquipment(at: .drive))
+  #expect(drive.node == HyperspaceDriveDefinition.node(for: .basic))
+  #expect(drive.provenance == .standard)
+  #expect(drive.component?.origin == HyperspaceDriveDefinition.template(for: .basic))
+  #expect(
+    game.commander.equipmentInventory?.items.filter { $0.location?.slot == .drive }.count == 1)
+  let migrated = try #require(game.commander.equipmentInventory)
+  let oldPulse = try #require(migrated.items.first { $0.node.key == "Pulse Laser" })
+  #expect(oldPulse.location == nil && oldPulse.provenance == .legacyUnknown)
+  #expect([LaserMount.left, .right, .rear].allSatisfy { game.commander.laser(on: $0) == nil })
+  try game.commander.grantEquipment(
+    "Beam Laser", at: .laser(.rear), provenance: .grant("mount save fixture"))
+  try game.commander.grantEquipment(
+    "Mining Laser", at: .laser(.front), provenance: .grant("mount save fixture"))
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  let url = directory.appendingPathComponent("commander.json")
+  defer { try? FileManager.default.removeItem(at: directory) }
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: url)
+  let saved = await runtime.snapshot()
+  let bytes = try Data(contentsOf: url)
   try await runtime.load(from: url)
-  #expect(await runtime.snapshot().commander.laserMounts == game.commander.laserMounts)
+  let restored = await runtime.snapshot()
+  let reloadedBytes = try Data(contentsOf: url)
+  #expect(restored.commander == saved.commander && reloadedBytes == bytes)
+  #expect(restored.commander.laserMounts == game.commander.laserMounts)
+  #expect(restored.commander.fittedEquipment(at: .drive) == drive)
+  #expect(restored.commander.equipmentInventory == game.commander.equipmentInventory)
+  #expect(restored.commander.equipmentPurchaseHistory == game.commander.equipmentPurchaseHistory)
+  #expect(restored.commander.equipmentInventory?.items.contains(oldPulse) == true)
   #expect(game.commander.laser(on: .rear) == .beam && game.commander.laser(on: .front) == .mining)
   #expect(game.commander.laser(on: .right) == nil)
   legacy.xyzzyActive = true
-  #expect(game.load(legacy) == true)
+  let loadedXYZzy = game.load(legacy)
+  try #require(loadedXYZzy)
   #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
-  var corrupt = try #require(
-    JSONSerialization.jsonObject(with: JSONEncoder().encode(game.commander)) as? [String: Any])
+  let encoded = try JSONEncoder().encode(game.commander)
+  let object = try JSONSerialization.jsonObject(with: encoded)
+  var corrupt = try #require(object as? [String: Any])
   corrupt["mountedLasers"] = ["front": "invalid"]
   #expect(throws: DecodingError.self) {
     try JSONDecoder().decode(Commander.self, from: JSONSerialization.data(withJSONObject: corrupt))
   }
 }
-@Test func statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow() {
+@Test func statusEquipmentAndInventoryShowAllMountsAndCanBrowseEveryEquipmentRow() throws {
   var game = Game(executive: false)
   game.launch()
   for key in "xyzzy" { game.key(String(key)) }
   game.key("return")
   game.dock()
   #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .naval })
-  game.commander.installLaser(.pulse, on: .left)
+  try game.commander.grantEquipment(
+    "Pulse Laser", at: .laser(.left), provenance: .grant("mount display fixture"))
+  for mount in LaserMount.allCases {
+    #expect(game.commander.fittedEquipment(at: .laser(mount)) != nil)
+  }
   for screen in [Screen.status, .inventory] {
     game.screen = screen
-    let rows = game.informationRows.map(\.0)
-    #expect(rows.contains("Lasers"))
-    for text in game.commander.laserMountSummary { #expect(rows.contains("  " + text)) }
+    let initialRows = game.informationRows.map(\.0)
+    #expect(initialRows.contains("Equipment - fitted") == (screen == .inventory))
+    #expect(initialRows.contains("Equipment - held") == (screen == .inventory))
+    for mount in LaserMount.allCases {
+      #expect(
+        initialRows.contains { $0.hasPrefix("Fitted " + mount.label + " combat mount - ") }
+          == (screen == .inventory))
+    }
     for width in [512.0, 768, 3600] {
       game.viewportWidth = width
       game.viewportHeight = 518
+      game.informationScroll = 0
+      let rows = game.informationRows.map(\.0)
       var seen: Set<String> = []
       for _ in 0..<rows.count {
         let frame = Display.information(game, width: width, height: 518)
@@ -129,8 +205,8 @@ import Testing
     #expect(layout.contentWidth <= 680)
     let frame = Display.equipmentScreen(game, width: width, height: 518)
     #expect(
-      frame.labels.contains { $0.text == "Left" }
-        && frame.labels.contains { $0.text == "Pulse Laser" })
+      LaserMount.allCases.allSatisfy { mount in frame.labels.contains { $0.text == mount.label } })
+    #expect(frame.labels.contains { $0.text == "Pulse Laser" })
     for label in frame.labels { #expect(label.bounds.maxX <= width) }
   }
 }
@@ -165,7 +241,8 @@ import Testing
   game.commander.credits = 0
   #expect(game.marketAvailability(0) == "NO CASH")
   game.commander.credits = 10
-  game.commander.cargo[0] = 20
+  game.commander.cargo[0] += game.commander.tradeCargoCapacity - game.commander.cargoTonnes
+  #expect(game.commander.cargoTonnes == game.commander.tradeCargoCapacity)
   #expect(game.marketAvailability(0) == "HOLD FULL")
   game.commander.unlimitedCargo = true
   #expect(game.marketAvailability(0) == "BUY")

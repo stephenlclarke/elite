@@ -1,0 +1,28 @@
+{
+  "base": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+  "patch_sha256": "e7c135fd3d5c8255fa22aa873b77cd3dbf8afde60002451010c63860e5affaff",
+  "files": {
+    "Sources/EliteCore/ScriptMissionState.swift": "21cabc963820b6268b8a43e2b7ee9a20f119d11d14cfe7ee83dc2f2880519427",
+    "Tools/CI/script_instance_equality.py": "9e6ec3f42273628dcf845fa4d37e063e41200ebc884054956e79f10a3710810e",
+    "Tools/CI/test_script_instance_equality.py": "746a0efe3b75ed7f0186b5d40770d03bbd3607995e45ef81b18663a754074b52"
+  },
+  "actual_worktree_hashes_match": {
+    "Sources/EliteCore/ScriptMissionState.swift": true,
+    "Tools/CI/script_instance_equality.py": true,
+    "Tools/CI/test_script_instance_equality.py": true
+  },
+  "result": "CLEAR: narrow attributed initialization repair; no actionable bugs/performance/style findings",
+  "assessment": [
+    "Replaces the exact source-pointer copy in the matched ASAN fault frame with typed initialization of one Optional element directly in its allocated Array storage.",
+    "Array capacity1 guarantees nonnil baseAddress; exactly one element is initialized before initializedCount becomes1. No source heap field or stride-based copy remains.",
+    "No InitialNil allocation remains. Array COW ownership, consuming value initializer, _read/set/_modify remain byte-identical. Noninline constructor bounds caller lifetime.",
+    "All source before and after Field helper is byte-identical; all54field registrations, codec/public APIs/equality/actor ownership retain exact source.",
+    "Source inventory expects bounded typed direct nil; negative controls reject omitted initialization, wrong initializedCount, removed noninline and lost mutable projection. No gate removed."
+  ],
+  "mechanical_checks": {
+    "outside_field_helper_byte_identical": true,
+    "consuming_initializer_and_accessors_byte_identical": true
+  },
+  "attribution_receipt": "/tmp/elite-mba-6552-delayed-asan-crash-verification.json",
+  "limits": "Source review only. Author-reported25 static checks not rerun. Focused normal/ASAN execution required and remains G1-owned; no runtime repair pass or fullquality/release claim."
+}

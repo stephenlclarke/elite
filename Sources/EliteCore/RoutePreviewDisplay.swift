@@ -21,7 +21,8 @@ public struct NavigationPreviewLayout: Sendable {
     let plot = CanvasRect(x: 16, y: 52, width: max(1, width - 32), height: plotHeight)
     chart = ChartLayout(
       width: width, height: height, local: game.navigationReturn == .shortChart,
-      fuel: game.chartScaleFuel, docked: game.docked, plotOverride: plot)
+      fuel: game.chartScaleFuel, docked: game.docked, plotOverride: plot,
+      galaxy: game.commander.galaxy)
     let top = plot.maxY + 22
     candidateRects = (0..<count).map {
       .init(

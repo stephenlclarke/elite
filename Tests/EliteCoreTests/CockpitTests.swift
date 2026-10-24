@@ -4,6 +4,7 @@ import Testing
 
 @Test func cockpitKeepsLabelsReadableWithinWindowAndUsesFullWidth() {
   var game = Game(executive: false)
+  game.commander.shipDisplayStyle = .whiteWireframe
   game.launch()
   game.bodies[1].position = .init(0, 0, 500)
   for width in [512.0, 768, 1024, 1512, 2560] {
@@ -34,24 +35,48 @@ import Testing
   }
 }
 
-@Test func missileIconsExpressZeroFiniteUnlimitedAndArmedWithoutOnlyColour() {
+@Test func missileIconsExpressZeroFiniteUnlimitedAndArmedWithoutOnlyColour() throws {
   var game = Game(executive: false)
+  game.commander.missiles = 0
   game.launch()
   for count in 0...4 {
-    game.commander.missiles = count
+    if count > 0 {
+      try game.commander.grantEquipment(
+        "Missile", at: .missilePylon(count - 1), provenance: .grant("missile icon fixture"))
+      #expect(
+        game.commander.fittedEquipment(at: .missilePylon(count - 1))?.node
+          == EquipmentRuntimeCatalog.standardMissile)
+    }
+    #expect(game.commander.missiles == count)
     #expect(game.missileIconCount == count)
     let frame = Display.cockpit(game, width: 1024, height: 768)
     #expect(frame.labels.contains { $0.text == "Unarmed" })
     #expect(frame.labels.contains { $0.text == "None" } == (count == 0))
     #expect(!frame.labels.contains { $0.text == "~" })
   }
-  game.commander.missiles = 0
+  for pylon in 0..<4 {
+    let round = try #require(game.commander.fittedEquipment(at: .missilePylon(pylon)))
+    let revision = try #require(game.commander.equipmentInventory?.revision)
+    try game.commander.storeEquipment(round, expectedRevision: revision)
+  }
+  #expect(game.commander.missiles == 0)
   game.commander.unlimitedMissiles = true
   game.key("t")
   #expect(game.missileArmed && game.missileIconCount == 1)
   let frame = Display.cockpit(game, width: 512, height: 518)
   #expect(frame.labels.contains { $0.text == "~" } && frame.labels.contains { $0.text == "Armed" })
-  game.fireMissile()
+  game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
+  game.bodies = [.init(id: 70, hull: .cobra, position: .init(0, 0, 1800))]
+  game.ensurePhysicalActors()
+  let target = try #require(game.bodies[0].physical?.identity)
+  let inventory = try #require(game.commander.equipmentInventory)
+  let launched = game.fireMissile()
+  #expect(launched)
+  let origin = try #require(
+    game.bodies.first { $0.physical?.ordnance != nil }?.physical?.attackOrigin)
+  let flight = try #require(game.bodies.first { $0.physical?.ordnance != nil }?.physical?.ordnance)
+  #expect(origin.playerAmmunition == .virtualUnlimited && flight.target == target)
+  #expect(game.commander.equipmentInventory == inventory)
   #expect(!game.missileArmed && game.commander.missiles == 0)
 }
 
@@ -78,46 +103,95 @@ import Testing
   #expect(!game.commander.unlimitedCargo && !game.commander.unlimitedMissiles)
 }
 
-@Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() {
+private func addControlledScoopBody(_ game: inout Game, hull: Hull) -> Int {
+  let id = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(.init(id: id, hull: hull, position: .init(0, -20, 40)))
+  game.ensurePhysicalActors()
+  return id
+}
+
+@Test func xyzzyFuelScoopsAreFittedAndCollectCargoOnlyThroughTheLowerScoop() throws {
   var game = Game(executive: false)
   game.launch()
+  try #require(!game.docked && game.commander.valid)
   game.speed = 0
-  game.bodies = [.init(id: 1, hull: .cargo, position: .init(0, -20, 40))]
+  let stations = Dictionary(
+    uniqueKeysWithValues: game.bodies.compactMap { body -> (Int, ActorIdentity)? in
+      guard body.hull == .station, let actor = body.physical?.identity else { return nil }
+      return (body.id, actor)
+    })
+  try #require(!stations.isEmpty)
+  let cargoID = addControlledScoopBody(&game, hull: .cargo)
+  let cargoActor = try #require(game.bodies.first { $0.id == cargoID }?.physical?.identity)
   game.tick(delta: 0.01)
-  #expect(game.commander.cargo[0] == 0 && game.bodies.count == 1)
+  #expect(game.commander.cargo[0] == 0)
+  #expect(game.bodies.first { $0.id == cargoID }?.physical?.identity == cargoActor)
   for key in "xyzzy" { game.key(String(key)) }
   game.key("return")
   #expect(game.commander.equipment.contains("Fuel Scoops"))
   game.tick(delta: 0.01)
-  #expect(game.commander.cargo[0] == 1 && game.bodies.isEmpty)
+  #expect(game.commander.cargo[0] == 1 && !game.bodies.contains { $0.id == cargoID })
   game.tick(delta: 0.01)
   #expect(game.commander.cargo[0] == 1)
   game.commander.unlimitedCargo = false
-  game.commander.cargo[0] = 35
-  game.bodies = [.init(id: 2, hull: .cargo, position: .init(0, -20, 40))]
+  let bay = try #require(game.commander.fittedEquipment(at: .utility(.cargoExpansion)))
+  try #require(bay.node.key == "Large Cargo Bay")
+  try #require(game.commander.nativePerformance.cargo == 30)
+  try #require(game.commander.nativePerformance.cargoExpansion == 15)
+  try #require(game.commander.cargo.dropFirst().allSatisfy { $0 == 0 })
+  try #require(game.commander.accommodation.fittedBerths.isEmpty)
+  try #require(game.commander.missionPayloadTonnes == 0)
+  try #require(game.commander.nativePeople?.held.isEmpty ?? true)
+  let finiteCapacity = game.commander.standardCargoCapacity
+  try #require(finiteCapacity == 45 && game.commander.capacity == finiteCapacity)
+  game.commander.cargo[0] = finiteCapacity
+  try #require(game.commander.cargoTonnes == finiteCapacity && game.commander.valid)
+  let fullCargo = game.commander.cargo
+  let fullCash = game.commander.credits
+  let fullID = addControlledScoopBody(&game, hull: .cargo)
+  let fullActor = try #require(game.bodies.first { $0.id == fullID }?.physical?.identity)
   game.tick(delta: 0.01)
-  #expect(game.message == "CARGO HOLD FULL" && game.bodies.count == 1)
+  #expect(game.message == "CARGO HOLD FULL")
+  #expect(game.bodies.first { $0.id == fullID }?.physical?.identity == fullActor)
+  #expect(game.commander.cargo == fullCargo && game.commander.credits == fullCash)
+  let remaining = try #require(game.bodies.firstIndex { $0.id == fullID && $0.hull == .cargo })
   game.commander.unlimitedCargo = true
-  game.bodies[0].position.y = 20
+  game.bodies[remaining].position.y = 20
   game.tick(delta: 0.01)
-  #expect(game.bodies.count == 1)
-  game.bodies = [.init(id: 3, hull: .thargon, position: .init(0, -20, 40))]
+  #expect(game.bodies.first { $0.id == fullID }?.physical?.identity == fullActor)
+  #expect(game.commander.cargo == fullCargo && game.commander.credits == fullCash)
+  let alienID = addControlledScoopBody(&game, hull: .thargon)
   game.tick(delta: 0.01)
-  #expect(game.commander.cargo[16] == 1 && game.bodies.isEmpty)
+  var alienCargo = fullCargo
+  alienCargo[16] += 1
+  #expect(game.commander.cargo == alienCargo && !game.bodies.contains { $0.id == alienID })
+  #expect(game.bodies.first { $0.id == fullID }?.physical?.identity == fullActor)
+  for (id, actor) in stations {
+    #expect(game.bodies.first { $0.id == id }?.physical?.identity == actor)
+  }
   for key in "xyzzy" { game.key(String(key)) }
-  game.commander.equipment.remove("Fuel Scoops")
+  let scoops = try #require(game.commander.fittedEquipment(at: .utility(.fuelScoops)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  try game.commander.storeEquipment(scoops, expectedRevision: revision)
+  #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops)) == nil)
+  #expect(!game.commander.equipment.contains("Fuel Scoops"))
+  let cash = game.commander.credits
   game.key("f")
-  #expect(game.commander.equipment.contains("Fuel Scoops"))
+  #expect(game.commander.fittedEquipment(at: .utility(.fuelScoops))?.id == scoops.id)
+  #expect(game.commander.equipment.contains("Fuel Scoops") && game.commander.credits == cash)
+  #expect(game.commander.valid)
 }
 
 @Test func assistanceHUDKeepsTargetAndFlightWarningsVisibleWithinTheViewport() {
   var game = Game(executive: false)
+  game.commander.installTargetingComputer(.military)
   game.launch()
   game.commander.xyzzyActive = true
   game.commander.autoTarget = true
-  game.commander.installTargetingComputer(.military)
+  #expect(game.commander.equipmentInventory != nil && game.commander.targetingTier == .military)
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(0, 0, 1000), hostile: true)]
-  game.key("r")
+  game.key("tab")
   game.key("v")
   game.key("]")
   game.tick(delta: 0.1)

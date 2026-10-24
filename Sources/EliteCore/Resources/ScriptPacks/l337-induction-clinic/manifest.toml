@@ -1,0 +1,23 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.induction-consignment"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2"]
+priority = 614
+source = "Closed native C08 original Renas clinic source/consignment family. Actual original-owner consent and separate batch issue retain six unique1t samples; stock, quotes, pickup and receiving are distinct native operations. No generic acceptance, remote pickup, stock refill or induction cargo reuse."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "clinic"
+title = "Original Renas charter clinic consignments"
+briefing = "Internal owning Exchange clinic family. Renas G01-S185 retains six new unique1t samples for Navidor G01-S164 in this charter epoch. Current reachable quoted routes set the actual service price; only later actual pickup starts each1800-flight-second integrity allowance."
+destination = "Navidor G01-S164 actual original clinic receiver"
+reward = "320+85L CR only on actual qualifying reception; no induction payment or clue."
+milestones = ["Original clinic sample received"]
+
+[[handlers]]
+event = "timer.fired"
+function = "expire"

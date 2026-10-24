@@ -1,0 +1,5 @@
+# Preserve visible geometry, carried fits and native input/audio intent
+
+Full review findings CR-14, CR-15, CR-17 and CR-18 identify four independent presentation boundary errors. Hull rendering drops every face when the hull center crosses z=10, even if transformed geometry is still visible. Native showroom profiles change only the hull ID and retain old hull-bound cargo expansion, disagreeing with actual exchange. Chart search Clear responds to clicks above its popup. Laser audio depends on observing a zero-flash snapshot between shots, so consecutive 0.1-second beam discharges can lose sound.
+
+Use existing geometry clipping and canonical portable-equipment transfer rules, an explicit Clear rectangle, and transient discharge events produced only at successful simulation boundaries. Preserve equipment identities, provenance, purchase history and getter purity; show incompatible carried fits explicitly. Motivation and validation limits are recorded in the [implementation handoff](PR-rendering-ui-review.md).

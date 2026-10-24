@@ -1,0 +1,7 @@
+# Freight trace omits the first fresh docking-course refusal
+
+Actual qualification 713 on canonical d643dc77dab0cb7b1ce4d158444cf454b2dc0236 loses freight row zero during travel-leg-2-dock at physical time 135.2. The bounded trace records an aligned return near staging at 124.9, then defending motion by 125.4. Its angles describe the preceding controller result. It does not retain the actual courseKnown/movingEntryAllowed decision or the source, motion, aperture, structure or corridor predicate that first refused entry. Neither that terminal state nor a pencil ray through the port proves full-hull corridor clearance.
+
+Instrument the already evaluated decision under the existing explicit combat diagnostic opt-in. Retain its first active decision near staging and, independently, its first refusal for the actual station/player visit. Preserve guard order, short circuiting, actors, traffic, gear, geometry, law and finite budgets. These primitive records are observations, never entry or attack authority, and must survive sample intervals and output trimming.
+
+G1 will independently review this observer-only delta and execute one scoped existing freight causal run. The supported existing method may run both argument cases if case-level selection is unavailable. Failure remains an expected observation, not acceptance. The existing explicit Save/reload verification may share that binary; passing courier, Tab and RRS groups need no unchanged repetition. Author the material correction only after the actual first refusal is known.

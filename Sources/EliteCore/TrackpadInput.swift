@@ -41,14 +41,21 @@ public struct TrackpadInput: Sendable, Equatable {
     circle.reset()
   }
 
+  /// A control-mode transition clears outputs synchronously, but cannot re-arm
+  /// contacts remaining from a rejected system gesture. Lifecycle reset is separate.
+  public mutating func setSpinMode(_ enabled: Bool) {
+    guard spinMode != enabled else { return }
+    let requiresLift = waitingForLift
+    reset()
+    spinMode = enabled
+    waitingForLift = requiresLift
+  }
+
   @discardableResult
   public mutating func update(
     positions: [SIMD2<Double>], spinMode: Bool = false
   ) -> SpinDirection? {
-    if self.spinMode != spinMode {
-      reset()
-      self.spinMode = spinMode
-    }
+    setSpinMode(spinMode)
     if positions.isEmpty {
       reset()
       return nil

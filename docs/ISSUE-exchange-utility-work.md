@@ -1,0 +1,5 @@
+# C08.P05.B.work: repair and receive the original Enron handoffs
+
+The existing source authorization/admission preserves three original faulty external modules and one local crew kit each. It cannot repair a control or complete stage10. Add separate explicit arm/Confirm and actual unobstructed front-surface work at50–150m, relative speed<=1m/s and aim<=2deg for20 qualifying positive unpaused native seconds per module. Partial work must survive interruption/save/load; one original kit and its control change must commit together. Final progress requires all three actual repairs plus separate receiving by the living Enron utility crew at the actual main orbital.
+
+No scans, markers, culling, source admission, attacks or board confirmation alone supply work. Preserve original identities, finite kits, native geometry/clearance, local control and station condition. No player cargo/equipment grant, fee, cash, clue or accreditation. Stage11 charter remains separate. Reuse the owning C08 board/save/actor paths; no new generic mission framework.

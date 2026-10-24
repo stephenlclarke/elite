@@ -65,8 +65,8 @@ extension Game {
     switch field {
     case "galaxy": return Double(commander.galaxy)
     case "system": return Double(commander.system)
-    case "x": return Double(currentSystem.x)
-    case "y": return Double(currentSystem.y)
+    case "x": return currentSystem.x
+    case "y": return currentSystem.y
     case "kills": return Double(commander.kills)
     case "credits": return Double(commander.credits)
     case "legal": return Double(commander.legal)
@@ -151,9 +151,12 @@ extension Game {
     else { return false }
     var candidate = commander
     candidate.missionProgress[pack.stateID] = state
+    // Location, current stage and replay checks above authorize this exact bundled handoff.
+    var reservedCargo = PackReservedCargoPermit.blackjackHandoff(
+      commander: candidate, entry: entry, transition: transition, state: state)
     do {
       for action in transition.actions ?? [] {
-        try candidate.apply(action, state: &state)
+        try candidate.apply(action, state: &state, reservedCargo: &reservedCargo)
         candidate.missionProgress[pack.stateID] = state
       }
       state.stage = transition.to
@@ -168,7 +171,32 @@ extension Game {
       notify(error.localizedDescription.uppercased())
       return false
     }
+    // Stage scalar resources after all fallible checks without another whole-Game copy.
+    let oldEnergyCapacity = commander.performance.energy
+    let newEnergyCapacity = candidate.performance.energy
+    let nextEnergy =
+      oldEnergyCapacity == newEnergyCapacity
+      ? energy
+      : Self.equipmentResourceLevel(
+        energy, from: oldEnergyCapacity, to: newEnergyCapacity)
+    let oldFrontCapacity = commander.shieldCapacity
+    let newFrontCapacity = candidate.shieldCapacity
+    let nextFront =
+      oldFrontCapacity == newFrontCapacity
+      ? frontShield
+      : Self.equipmentResourceLevel(
+        frontShield, from: oldFrontCapacity, to: newFrontCapacity)
+    let oldRearCapacity = commander.rearShieldCapacity
+    let newRearCapacity = candidate.rearShieldCapacity
+    let nextRear =
+      oldRearCapacity == newRearCapacity
+      ? rearShield
+      : Self.equipmentResourceLevel(
+        rearShield, from: oldRearCapacity, to: newRearCapacity)
     commander = candidate
+    energy = nextEnergy
+    frontShield = nextFront
+    rearShield = nextRear
     if let text = transition.notification { notify(text) }
     return true
   }

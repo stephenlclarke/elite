@@ -1,0 +1,290 @@
+{
+  "source": "85a69ab6445e0390063638fc26ae2c58a7d7921d",
+  "command": [
+    "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+    "test",
+    "--jobs",
+    "3",
+    "--enable-code-coverage",
+    "--xunit-output",
+    "/tmp/elite-m01-affine-followup.xml",
+    "--filter",
+    "(?:^|[./])(?:nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward|pendingOreRecoveryWaitsExpiresAndQPreservesMomentum|recoveredECMAndScoopsUseTheRealFlightConsumers|actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility)\\(|AsteroidDebrisContactTests/|AsteroidFragmentationTests/"
+  ],
+  "swift": "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0\n",
+  "sdk": "15.5",
+  "exitCode": 0,
+  "wallSeconds": 81.655184917,
+  "buildSeconds": 63.57,
+  "swiftTestingSeconds": 16.846795458,
+  "counts": {
+    "completed": 40,
+    "passed": 40,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "methods": [
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "commodityMassUnitsAndCollectedPoolSurviveFurtherBreakup()",
+      "seconds": 15.088628166,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "rubbleAndCargoUseSeparatePopulationQuotasAndOutstandingOffers()",
+      "seconds": 15.088565084,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
+      "seconds": 16.043986,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "capacityAndInvalidMotionRetainParentWithoutAllocatingOrDepleting()",
+      "seconds": 14.969649666,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "secondNativeFaceTransfersMomentumAfterDeathWithoutASecondSettlement()",
+      "seconds": 16.84592075,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "actualStationImpactRetainsResourcesMomentumAndDerivedCoast(main:)",
+      "seconds": 15.088469292,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "boundAndCollectedUnitsRequireTheirOwnMaterializationMarkers()",
+      "seconds": 15.088469292,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "actualNativeHitKeepsMassMovingSolidAndRebindsAfterAdmissionRefusal()",
+      "seconds": 15.088738459,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "continuationIncidentCapacityRefusalRestoresMotionAndAllHealth()",
+      "seconds": 16.469096875,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "fastCrossingPlayerUsesProvedContactFrontBankRatherThanEndPoseRearBank()",
+      "seconds": 16.540124,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "destroyedRecoverableBecomesNonCollectiblePhysicalCustody()",
+      "seconds": 15.088517333,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "refusedActualAcceleratingRotatingWorkMoveRestoresAllMotionForResume()",
+      "seconds": 15.088565292,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "massMomentumAndStrictYieldUseOriginalBirthMass(units:)",
+      "seconds": 15.088683042,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "nativeMovingDebrisDamagesPlayerAndRetainsEqualOppositeMomentum()",
+      "seconds": 16.150898375,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "actualManualRotationRefusalPreservesWorldMomentum()",
+      "seconds": 15.088645042,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "staleNativeContactFrameCannotRewindAnotherVisitOrForgeAnEffect()",
+      "seconds": 15.088486625,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "movingStationRefusalRetainsCurrentSceneSaveAndSafeResume()",
+      "seconds": 15.088592166,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "anotherNativePairOnTheResponsePathRefusesWithoutPartialDamageOrImpulse()",
+      "seconds": 16.66596375,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "firstRefusedStationStepRecordsNoInventedImpulseOrContact()",
+      "seconds": 15.088600292,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "finitePoolRefusesAtomicallyWhenPendingCapacityCannotHoldItsUnits()",
+      "seconds": 15.088482958,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "collisionDefersOreHullGrowthUntilActualSafeReadmission()",
+      "seconds": 15.088819708,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "recoveredECMAndScoopsUseTheRealFlightConsumers()",
+      "seconds": 14.35930275,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionRuntimeFrameTests",
+      "method": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
+      "seconds": 15.0892955,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "pendingOreRecoveryWaitsExpiresAndQPreservesMomentum()",
+      "seconds": 16.047832209,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "impulseConservesBothMassesAndLinearMomentumWithExplicitDissipation()",
+      "seconds": 11.102542291,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "translatedCoplanarNearMissHasAContinuousCertificateAtTheExistingLeaf()",
+      "seconds": 15.0886385,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "aMaterialCornerResponseSeparatesAllCertifiedFacesWithoutAddingEnergy()",
+      "seconds": 14.969495542,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "tangentSideFacesUseTheActualMaterialEntryFace(commonVelocity:)",
+      "seconds": 14.969738917,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "diagonalTranslationPreservesOneTimeVariableWhenProvingThinClearance(offset:)",
+      "seconds": 14.969564917,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "thinFirstFeatureCannotBeLostBetweenBoundedLeafSamples(commonVelocity:)",
+      "seconds": 14.969688083,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "actualNativeOctahedronTipsHaveASeparateVertexCertificate(axis:commonVelocity:)",
+      "seconds": 15.0889275,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "pointedTargetCanSupplyTheFirstEdgeWitnessInEitherSourceRole(commonVelocity:)",
+      "seconds": 15.088617333,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "fastThinCrossingRequiresARealMeshWitnessDespiteClearEndpoints()",
+      "seconds": 14.96976575,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "closedHullContainmentWithUnresolvedEntryDoesNotInventANormal()",
+      "seconds": 14.969593458,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "nearMissIsContinuouslyClearAndExhaustedWorkNeverMeansContactOrAbsence()",
+      "seconds": 15.088708375,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "freshNativeStartsRetainClosedContainmentAndAmbiguousOpenRefusal(open:)",
+      "seconds": 14.969546334,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "crossedThinBarsHaveAnEdgeContactEvenWhenNoVertexEntersAFace()",
+      "seconds": 14.969702875,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "aContinuedContactInsideTheFirstLeafAdvancesItsCertifiedFrontier()",
+      "seconds": 14.96948225,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "aThreeFaceResponseRetainsAuthoredRestitutionAndMomentum()",
+      "seconds": 15.088738833,
+      "status": "passed"
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidDebrisContactTests",
+      "method": "sealedFrontierRequiresTheExactPairPoseAndOneUse(mismatch:)",
+      "seconds": 15.088672458,
+      "status": "passed"
+    }
+  ],
+  "selection": {
+    "source": "85a69ab6445e0390063638fc26ae2c58a7d7921d",
+    "failed_methods": [
+      "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward",
+      "pendingOreRecoveryWaitsExpiresAndQPreservesMomentum",
+      "recoveredECMAndScoopsUseTheRealFlightConsumers",
+      "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility"
+    ],
+    "directly_affected_unit_suites": [
+      "AsteroidDebrisContactTests",
+      "AsteroidFragmentationTests"
+    ],
+    "filter": "(?:^|[./])(?:nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward|pendingOreRecoveryWaitsExpiresAndQPreservesMomentum|recoveredECMAndScoopsUseTheRealFlightConsumers|actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility)\\(|AsteroidDebrisContactTests/|AsteroidFragmentationTests/"
+  },
+  "artifactSHA256": {
+    ".log": "e564c1358fd4c253bc1979152b77c14857e0d086494dfb1a2e70f654223f2bdc",
+    "-start.json": "7d8f109f8b02124c159f4e7903f528bd757fd929a1486e6f643df198db0703d0",
+    "-result.json": "8e4bc9b2be54afc7ed99057f46da9d2356a9817c3458b3b6eba5862ee8671391",
+    "-swift-testing.xml": "8baba77a9bd13d0f22135435f551ab29939267aff02b4bb603e8401c9db28ea7"
+  },
+  "qualification": "The four prior failed methods and direct contact consumers pass. This is separate from the source6423 135-method failed aggregate; do not sum overlapping counts or relabel it as a fresh 135-method pass. Full required coverage/sanitizer/leak gates and release acceptance remain pending. Issue185 remains unknown cause; no SIGBUS occurred in this focused batch."
+}

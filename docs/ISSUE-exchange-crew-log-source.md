@@ -1,0 +1,5 @@
+# C08.P04.B.source: original Cevilis recorder and crew identities
+
+Stage8 needs the original custody recorder beside the actual disabled service tender. A generic wreck, missing actor, substituted cargo package or anonymous crew count cannot establish that source. The accepted Exchange design places its living crew in a separate marked rescue launch and identifies their Enmadan receiving shelter through the original one-tonne recorder.
+
+Prepare the exact authenticated original SH029 Burro source for two distinct custodian hulls, two distinct original launch occupants and one separate recorder. Preserve authored performance and physical metres; mechanical failure is condition rather than a new hull specification or combat incident. Bind the approved recorder shell and explicit non-spinning Cevilis reference placements. This source prerequisite cannot itself admit actors, transfer people or cargo, award stage8, or supply stage9 receiving. See the [ledger](COMPLETION-LEDGER.md) and [implementation notes](PR-exchange-crew-log-source.md).

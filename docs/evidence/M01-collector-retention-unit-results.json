@@ -1,0 +1,25 @@
+{
+  "head": "5fc8fee38a25fe1eff5e56b3e1d8bfd1339dc96d",
+  "command": [
+    "/opt/homebrew/opt/python@3.12/bin/python3.12",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "Tools/CI",
+    "-p",
+    "test_crash_artifacts.py",
+    "-v"
+  ],
+  "python": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "reviewed_files": {
+    "Tools/CI/crash_artifacts.py": "7d1091c38639daabf8fa3d0270b6aaf50c046840a1f599664b43adec78b6dbce",
+    "Tools/CI/test_crash_artifacts.py": "5ced2a183ba8ee4a5da76b952f6e3ceb44f5aa0905c88fdea9b7437696327e98"
+  },
+  "exit_code": 0,
+  "wall_seconds": 0.22291937517002225,
+  "tests": 59,
+  "unittestSeconds": 0.154,
+  "logSHA256": "e00de10b5a191d2c6175d74d512030454a7f66daa963574b58e8f8e0c26d41ae",
+  "qualification": "Only the existing affected collector unit module ran, using fake LLDB/process boundaries. No app/target/probe ran. This qualifies observer retention code, not the cause or correction of issue185 and not full game quality/release acceptance."
+}

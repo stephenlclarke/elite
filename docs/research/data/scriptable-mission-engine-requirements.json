@@ -1,0 +1,1188 @@
+{
+  "design_id": "ELITE-SCRIPTABLE-MISSION-ENGINE-v1",
+  "updated": "2026-10-14",
+  "design_ready": true,
+  "runtime_ready": false,
+  "delivery": {
+    "status": "sent",
+    "date": "2026-10-14",
+    "recipient_thread": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+    "kind": "architecture handoff; not a mission research packet",
+    "result": "send_message_to_thread accepted before implementation request"
+  },
+  "design_document": "scriptable-mission-engine-design.md",
+  "owner_request": "Create design at natural missionresearch checkpoint, then continue research. Maenespacket40delivered; no goalpause/completion.",
+  "current_playable_bundled_missions": [
+    "Constrictor Hunt",
+    "Thargoid Plans",
+    "Blackjack's Bullion"
+  ],
+  "mission_research_packets_delivered_at_design_checkpoint": 40,
+  "current_local_architecture": {
+    "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+    "files": [
+      {
+        "path": "Package.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "f67e553c721ef5b3ed2eb4e3844136917790bac6b21774ea0b897c1197dd5650",
+        "git_blob": "b674c6bf95b441a13182964ad946054be1f83cc2"
+      },
+      {
+        "path": "Sources/EliteCore/Game.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "0f8693e3f980436eeb42fad2258f6b6773ce833aec2c84f8ee86905bb6cfc12d",
+        "git_blob": "cc3eb3b6e2cc57d6d8b3e16038be3b59ac354de1"
+      },
+      {
+        "path": "Sources/EliteCore/MissionPack.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "75d31b46feb71d82c6b5fdb0b990cbb0d220c8d5373db76780e50c4ab50d734e",
+        "git_blob": "36447e09e86b9a59a8d78f7e7034eb03fd22ab43"
+      },
+      {
+        "path": "Sources/EliteCore/PackRuntime.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "6bd0eab194e3d054c7a12cce5c1314be353c329b72a87634148da0f86a09898d",
+        "git_blob": "edaea68ba9a1013d1c42074a373b4272d1979fd6"
+      },
+      {
+        "path": "Sources/EliteCore/PackTransactions.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "63d187ae6b5f1172d4cbc2311e988b3d336fbd5ead852f977f44042622a647aa",
+        "git_blob": "550215149fa8e841ecfdd817e93fb9a5169f6c79"
+      },
+      {
+        "path": "Sources/EliteCore/PackValidation.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "c3a877c9149e1b416eb4d6cfa57a094eac05d37382ffcef74a8497191bce4179",
+        "git_blob": "0f01aa17527702e77e4e14a077c8befd0f15e4c8"
+      },
+      {
+        "path": "Sources/EliteCore/PackGallery.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "f3f0a8bce124da59134040916a7c466c19b9ef8223024a1ca4908a34e545c38b",
+        "git_blob": "026e83167f4a37bc7b39ce52a727977df8961f07"
+      },
+      {
+        "path": "Sources/EliteCore/MissionGallery.swift",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "640a59ff7e06699ce155dcf1d2967219590d3cb6fceb55f278ce6b769d9b7132",
+        "git_blob": "fdb800e1c700a79b228e0d3d7c477c81ff50617f"
+      },
+      {
+        "path": "docs/MISSION-PACKS.md",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "c4408d073db5b678e0fa27029833a24c2d07f97960ae0cef863e351527ee56d3",
+        "git_blob": "0c53b7f30fcc51931ba8dc51d4593a57d1b395d5"
+      },
+      {
+        "path": "docs/MISSION-IMPLEMENTATION.md",
+        "commit": "0d64f3dd9199eb7b4e60d51411650506d100ec0f",
+        "sha256": "c28318513f31d799deb2353aa732f439bd1504a7db11402dd4a0c551c1f0e927",
+        "git_blob": "d74ddf17b688507eb78ecaaf1a7c0a1417a657a8"
+      }
+    ]
+  },
+  "language_proposal": {
+    "runtime": "Lua5.5.1",
+    "archive_url": "https://www.lua.org/ftp/lua-5.5.1.tar.gz",
+    "archive_sha256": "1c4b4068d67061f2a2231ad2b5422e77acea1487ea9890f6320af614f4373dce",
+    "license": "MIT; originalnotice retained",
+    "status": "design recommendation only; no game dependency installed/engine implementation claimed"
+  },
+  "primary_external_sources": [
+    {
+      "url": "https://www.lua.org/download.html",
+      "supports": "release and archivehash; checked2026-10-14"
+    },
+    {
+      "url": "https://www.lua.org/license.html",
+      "supports": "MIT distributionnotice requirement"
+    },
+    {
+      "url": "https://www.lua.org/manual/5.5/manual.html",
+      "supports": "Lua5.5API allocator/hashseed/hooks/protectedcall/textmode loading"
+    },
+    {
+      "url": "https://www.lua.org/source/5.5/lapi.c.html",
+      "supports": "Cprotectedcall entry/error boundary inspection"
+    },
+    {
+      "url": "https://www.lua.org/source/5.5/ldo.c.html",
+      "supports": "Cerror/protectedexecution machinery"
+    }
+  ],
+  "examples": [
+    "examples/scriptable-maenes.toml",
+    "examples/scriptable-maenes.lua"
+  ],
+  "example_status": "Illustrative futureAPI/syntax only, notcomplete/installedMaenespack or nativebehaviorproof",
+  "provisional_budgets": {
+    "Lua_instructions_per_business_handler": 50000,
+    "hook_instruction_interval": 1000,
+    "VM_heap_bytes": 8388608,
+    "allocation_work_bytes_per_dispatch": 33554432,
+    "explicit_instance_data_bytes": 262144,
+    "commands_per_batch": 256,
+    "status": "profilingtargets, mustmeasurefullsourcecasesbeforefreezing; nevertruncate sourcefleet/objectives tofit"
+  },
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "Compatibility and programmable content",
+      "requirement": "Keep schema1/legacy3 working; schema2manifest plus real Lua procedures/branches/event handlers, no per-mission Swift code.",
+      "acceptance_evidence_required": "Existing three campaigns unchanged and new installed scripted space mission without Swift mission edits.",
+      "source_reference": "../MISSION-PACKS.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R02",
+      "title": "Pack identity and installation",
+      "requirement": "Exact bytes/hash/version/modules/dependencies/assets/capabilities, v1files and immutablev2directories; saved versions retained.",
+      "acceptance_evidence_required": "Changed digest/missing asset/duplicate ID/symlink/path escape rejected or intact suspension; no active reset.",
+      "source_reference": "runtime-pack-handoff-contract.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R03",
+      "title": "Explicit script state",
+      "requirement": "Fresh per-dispatch environment, bounded serializable data, no hidden globals/upvalue/coroutine save state.",
+      "acceptance_evidence_required": "Reload/replay same input yields same validated proposal and no hidden counter drift.",
+      "source_reference": "iron-raven-prelude-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R04",
+      "title": "Swift6 and C boundary",
+      "requirement": "GameRuntime owns mutations; MainActor UI snapshots; C protected error frames/no Lua error across Swift callback.",
+      "acceptance_evidence_required": "Actor isolation build, ASan/TSan/leak/VMerror paths with no pointer in Sendable Game snapshot.",
+      "source_reference": "../../Sources/EliteCore/Game.swift",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R05",
+      "title": "Native physical events and deduplication",
+      "requirement": "Engine envelopes/real admission/destruction/removal/transit/person receipts, stable body IDs and causal order.",
+      "acceptance_evidence_required": "Foreign/duplicate/unload/pod/role events cannot grant death objective; any real attacker still qualifies.",
+      "source_reference": "iron-raven-maenes-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R06",
+      "title": "Atomic economy and ownership",
+      "requirement": "Quotes/debits/refunds/debts/partial quantities and multi-resource Confirm transactions with exact receipts.",
+      "acceptance_evidence_required": "Stale quote, denied capacity, disk failure and replay leave original balance/property; actual new partial lot succeeds.",
+      "source_reference": "iron-raven-finance-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R07",
+      "title": "Whole encounter admission",
+      "requirement": "Durable saved plan/RNG, full real fleet/components/clear placements/resources; actual admission before target ledger.",
+      "acceptance_evidence_required": "Maenes32crewed+surviving50grid/22escorts full or pending, never partialquota/clone/refill.",
+      "source_reference": "iron-raven-maenes-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R08",
+      "title": "Scriptable AI and actual travel",
+      "requirement": "Composable decisions/native steering/formation/dock/scoop/wormhole with distinct request/result and stable people/bodies.",
+      "acceptance_evidence_required": "Same Cherkasova real NPC-first hole/arrival/docking; missed wakes/leader loss without teleport.",
+      "source_reference": "iron-raven-weiss-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R09",
+      "title": "Weapons and combat profiles",
+      "requirement": "NPC/player source separation, exact lasers/facings/controllers/muzzles/turrets/missiles/ECM/stock/physicaldamage.",
+      "acceptance_evidence_required": "Real source beam/pulse/military/turret15/25/cooldowns/ECM/collateral and no visual-only dock capability.",
+      "source_reference": "iron-raven-maenes-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R10",
+      "title": "Clocks and world jobs",
+      "requirement": "Explicit flight/local/calendar/transit domains, source skipped-pulse counters and independently owned grid/care jobs.",
+      "acceptance_evidence_required": "Maenes0first/285/lander120/final10/late/earlyvictory/unload/report cases with true controller receipts.",
+      "source_reference": "iron-raven-maenes-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R11",
+      "title": "Crew/passenger/cargo custody",
+      "requirement": "Shared fit/life-support service; intrinsic crew vs charter,5t+1unit berths, real1toccupiedpods, protected actuallots.",
+      "acceptance_evidence_required": "Passenger acceptance/hull swap blocked if actual capacity insufficient; no people deletion/storage/free cabins.",
+      "source_reference": "crew-and-passenger-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R12",
+      "title": "Shipyard and equipment storage",
+      "requirement": "Unique compatiblegear transfer/surplusstorage/reuse, stock and loan preservation;3Dallplanes/linkedsidebyside orientation.",
+      "acceptance_evidence_required": "Switch4laser/4missile to1/1 and back with same IDs/ammo, actualpayload fit and synchronized preview quaternion.",
+      "source_reference": "player-shipyard-design.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R13",
+      "title": "Contract boards and generated instances",
+      "requirement": "Station/HQ support, saved offers/revisions/seed/quote/deadline, distinct repeatable jobUUIDs, readableblocked offers.",
+      "acceptance_evidence_required": "Stale/refreshed/Back/reload/hull cases never rerollaccepted job or enable unsupported content.",
+      "source_reference": "rrs-contract-board-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R14",
+      "title": "Compound campaigns and services",
+      "requirement": "True childcompletion joins, exclusive choices, shared contacts/dossier/loans/book and mission-instance scoped keys.",
+      "acceptance_evidence_required": "FourP19strands join real receipts; one followup selected once; book read not contact/payment.",
+      "source_reference": "iron-raven-prelude-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R15",
+      "title": "Persistent saves and migrations",
+      "requirement": "v2immutable generations/worldchunks/receipts/RNG/custody/clocks/digests; v1import; atomicpublish/barrier.",
+      "acceptance_evidence_required": "Crash before/after publication, oldsave migration, missingpack/changedversion and lateevents preserve exactstate.",
+      "source_reference": "runtime-pack-handoff-contract.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R16",
+      "title": "Reproducible plans and RNG",
+      "requirement": "Engine-owned versioned streams and stable ordering; commit preparations once, no independent script RNG/time.",
+      "acceptance_evidence_required": "Denied/retried spawn, Gallery/read-only/upgrade/reload never changes existing role/equipment/missile/person draws.",
+      "source_reference": "iron-raven-loa-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R17",
+      "title": "Generic nontechnical UI and journal",
+      "requirement": "Native paragraphs/choices/tables/books/HUD/3Dpanels with declared text/typed substitutions and queued interactions.",
+      "acceptance_evidence_required": "EverypageBack/staleConfirm/reload/scopedoverlay/renderedjournal preserves truthfulstate.",
+      "source_reference": "station-handoff-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R18",
+      "title": "Isolated Mission Gallery",
+      "requirement": "Pack scenarios/checkpoints/seed/actualworld trials and source/estimate/status labels in separate namespaces.",
+      "acceptance_evidence_required": "Complete success/failure native scenes with no effect on livecommander/gear/debt/people/RNG.",
+      "source_reference": "iron-raven-maenes-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R19",
+      "title": "Scope/editions/provenance",
+      "requirement": "Scopev4space/orbital only; groundreference separate; source/borrow/estimate/repair and hull/alien dedup retained.",
+      "acceptance_evidence_required": "All branches/text/dependencies screened, unsupportedground APIs unavailable, no Frontiermission return.",
+      "source_reference": "implementation-scope.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R20",
+      "title": "Execution budgets and recovery",
+      "requirement": "C-only VM quotas/hooks/allocator/host work bounds, restrictedlibs/no scriptcatchbudgetloop; typedexpecteddenials.",
+      "acceptance_evidence_required": "Endlessloop/deeprecursion/largealloc/heavyhelper/statecycle/error cannot partialcommit or starve game.",
+      "source_reference": "scriptable-mission-engine-design.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R21",
+      "title": "Author tools and diagnostics",
+      "requirement": "Manifest/syntax/capability report/scenario/replay/migrationdryrun/isolatedhotreload and per-case traces/timings.",
+      "acceptance_evidence_required": "Author fixes missing capability or failed native receipt from readabletrace; parser green not acceptance.",
+      "source_reference": "scriptable-mission-engine-design.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R22",
+      "title": "Readiness and enablement gates",
+      "requirement": "Real capability registry/version/assets/acceptance distinctfromsourcecomplete/delivered; preserve queued fullmission.",
+      "acceptance_evidence_required": "Unavailable jobs remain reference/blocked, no courier/contact rewrite or fake implemented label.",
+      "source_reference": "coverage.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R23",
+      "title": "Terminal outcomes and living care",
+      "requirement": "Complete/failed terminals no restart; source latefailed payment and independent returncare/worldjobs preserved.",
+      "acceptance_evidence_required": "RRS pilot latefullpay/failed once, rescuedpeoplecare retained, no reward revival/second payout.",
+      "source_reference": "rescue-personnel-mission-specifications.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    },
+    {
+      "id": "R24",
+      "title": "Implementation validation and native evidence",
+      "requirement": "Coherentvertical phases, full source/adaptation acceptance, meaningful saves/VM/world tests and nativeCI/sanitizer/leak/render gates.",
+      "acceptance_evidence_required": "Actual Maenes/finance/RRS examples playablewithisolatedGallery and no bespokeSwiftmissionbranch; makeci and exact-mainSonar rules.",
+      "source_reference": "scriptable-mission-engine-design.md",
+      "implementation_status": "proposed; current engine foundation does not establish this full requirement",
+      "implementation_evidence": null
+    }
+  ],
+  "research_continuation": [
+    "P19common epilogue/awards andalternate sources/fullparent",
+    "P07/P15/P29/P45campaigns",
+    "expansionwholeplayerhull/refit/crew/dedup",
+    "finalretainedsource/scope/readiness/deliveryaudit"
+  ],
+  "limits": "Design completeness/validexamples doesnotimplementengine, register proposedcapabilities, change3playablebundledmissions or addmissionresearchdeliverycount. Originalphysics/sourceparity stillrequires directnativeevidence.",
+  "design_validation": {
+    "official_Lua_archive_sha256_verified": "1c4b4068d67061f2a2231ad2b5422e77acea1487ea9890f6320af614f4373dce",
+    "private_Lua_compiler_version": "Lua 5.5.1  Copyright (C) 1994-2026 Lua.org, PUC-Rio",
+    "example_Lua_syntax": "passedluac-p",
+    "example_TOML_syntax": "passedPythonstdlibtomllib",
+    "requirement_count": 24,
+    "current_local_files_checked": 10,
+    "example_hashes": [
+      {
+        "path": "examples/scriptable-maenes.lua",
+        "sha256": "ad7e80a95e163ca322e9ede73e44ac96641e1ccb0a1b9ace0bf57894340dbfa2"
+      },
+      {
+        "path": "examples/scriptable-maenes.toml",
+        "sha256": "b013b6a9414bb1e9a2985c453d8b0d768da2e5d04d1f35e24cb85fc98a6a648b"
+      }
+    ],
+    "limits": "Syntax/requirement/local-source provenance validation only; proposedhostfunctions notimplemented or executed, no gameLua dependency installed, no nativeCI/Sonar or playableengineclaim."
+  },
+  "implementation_work": {
+    "status": "in progress; validated engine foundations and basic Gallery; full design incomplete",
+    "branch": "feature/scriptable-mission-engine",
+    "worktree": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite",
+    "requested_by_owner": "Implement engine on new branch and coordinate coder1/coder2",
+    "coordinated_threads": [
+      "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+      "01a139b4-fcdd-76d1-b0dd-4e4a91c1a3a1",
+      "01a134a1-be40-77d0-9e11-64a775729232",
+      "01a14024-0284-7b43-8d7f-e07a9208b253"
+    ],
+    "latest_commit": "97e2ff4cfb3a2209e0a50b38195a61e1d302bd23",
+    "prior_commit": "a7e5939e94576c28bf0929923ba63f2d3af56623",
+    "validation": "G02 canonical4fcd9c9 full makeci exit0 in884.110815s:657methods/751cases eachcoverage/TSan/serialASan,95.224678%overall96.804124%local added-executablecoverage,0leaks. Owner verified935immutableGit+462evidenceinputs,479archivemembers,correctedfullpatch/supplement; localmerged12311d preservesall935finalfiles withnoruntime/test/build/pack/mediachange. Subsequentownacceptance/statusdocs-only. Centralcomposition/formalPR separate.",
+    "supported_capabilities": [
+      "cargo-v2",
+      "charter-passengers-v2",
+      "classic-encounters-v2",
+      "contracts-basic-v2",
+      "durable-commands-v2",
+      "economy-v2",
+      "gallery-basic-v2",
+      "local-flight-clocks-v2",
+      "owned-equipment-v2",
+      "pack-modules-v2",
+      "profiled-encounters-v2",
+      "script-lua-v1",
+      "story-v2",
+      "calendar-clocks-v2",
+      "pulse-counters-v2",
+      "world-resource-jobs-v2",
+      "event-history-v2",
+      "deterministic-plans-v2",
+      "typed-save-values-v2",
+      "commander-queries-v2",
+      "completion-receipts-v2",
+      "exclusive-choices-v2",
+      "dialogue-choices-v2",
+      "compound-receipts-v2",
+      "library-books-basic-v2",
+      "partial-collections-v2",
+      "scoped-campaigns-basic-v2",
+      "station-pledges-basic-v2"
+    ],
+    "limits": "Native pinned measured NPC/components, explicit source-zero fits, bounded steering/lasers/plasma/swept collision and saved projectiles implemented. Full source AI/law/missiles/transit, RRS stations/services/custody, full source station/grid/care jobs/campaigns, complete controllers/migrations and rich historical Gallery remain incomplete; three bundled campaigns unchanged, 18 optional schema2 examples including accepted G21 and G02. Commander calendar/native pulse counters now implemented with native travel provenance and physical-time separation. Generic independently resource-owned station/ship jobs now implemented with native condition/tombstones, restricted maintenance/deployment rights, saved pending pulses, terminal-parent Gallery retry and actual station-service example. Bounded native event history/frozen contexts, deterministic new root/component plans and progress-independent contract resource quotes now implemented. Exact integer/float generic-value storage and bounded saved JSON decoding are implemented. Native commander queries, immutable terminal receipts and exact-content child joins are implemented. Native exclusive station choices and matching child filters are implemented; full campaign/service/source acceptance remains incomplete. Repeatable native questions/answer gates, explicit compound terminal-outcome sets, four-real-child mixed join and pinned displayed dialogue confirmations are implemented. Immutable text books/native library with retained ownership/provenance and saved reading cursors implemented. Rich book assets/dossiers/loans and complete source acceptance remain incomplete. Native fixed commodity collections/frozen quotes/real partial lot receipts implemented; full typed world cargo/pod provenance and common mass fitting remain incomplete. Native queued key/click confirmations now require the actual last painted page and current commander epoch; unseen replacement pages and malformed packets cannot dispatch mission actions. Bounded native campaign parent/child ownership, per-parent receipt joins, terminal suspend/preserve and separate Gallery child entries implemented. Shared finance and full historical source acceptance remain incomplete. Owned-campaign Gallery navigation/root-routed trials now locally integrated, including saved contract root refusal and separate supported provider trials. Central/main integration and historical acceptance remain incomplete.",
+    "latest_checkpoint": "d12311d8fca20277aefc150f487acafb7377b0e4",
+    "merged_main": "1ef005e0c73971a360a0e3bb52792a9286a761d3",
+    "full_engine_ready": false,
+    "tests_per_ci_lane": 657,
+    "maintained_coverage_percent": 95.22467816371145,
+    "leaks": 0,
+    "latest_capability": "courier-contracts-basic-v2 + mission-calendar-v2",
+    "solar_save_format": 21,
+    "next": "Canonical equipment composition exact identity/loan/round/migration/epoch API contracts through Orchestrator exclusively to Mission Coder1; C07 remains future design requiring native missile/entry binding/reachability policy. Central/main integration and full historical rollout pending.",
+    "coordination_policy": "Researcher-origin implementation assignments go through Orchestrator01a134a1-be40-77d0-9e11-64a775729232 exclusively to Mission Coder1 01a14024-0284-7b43-8d7f-e07a9208b253. Researcher retains research/native engine prerequisites; general coder messages only necessary compatibility/resource coordination.",
+    "navigation_coordination": "Coder2 is implementing alternative chart routes in a separate worktree from main1ef005e. Preview/Back preserve admission; successful explicit Set route cancels countdown after revalidation and must call cancelCalendarJourney at integration. Failed/stale commits preserve admission. No GUI lease held by engine; coder2 owns route QA lease.",
+    "general_coordination": "G1 contract gaps reviewed with coder1 and addressed at4dd215 (not merged): plasma/component outcome+parts, opaque mission payload UUIDs, spawn producers; dynamic1024 whole-cohort reservations and original attribution documented. GUI released to coder1 final signed1.4 QA then coder2 after-fix sample.",
+    "gallery_implementation_assignment": {
+      "status": "Source-owner approved and integrated locally on feature/scriptable-mission-engine; central/main integration and formal PR review/checks pending",
+      "engine_base": "81814a69f26deb7ef8f5d4b4534b1537feac4e79",
+      "packet_commit": "401626e884654b65e674236daf275764fa09ad8d",
+      "packet": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/docs/MISSION-CODER-GALLERY-HANDOFF.md",
+      "scope": "Actual campaign assignment navigation, immediate owner and root-routed isolated trial; finance remains engine-owned and unimplemented",
+      "reserved_paths": [
+        "Sources/EliteCore/MissionGallery.swift",
+        "Sources/EliteCore/ScriptGalleryTrial.swift",
+        "Sources/EliteCore/ScriptCampaignGallery.swift",
+        "Tests/EliteCoreTests/ScriptCampaignGalleryTests.swift",
+        "Tests/EliteCoreTests/NativeCampaignGalleryTests.swift"
+      ],
+      "integration_hooks_approved": {
+        "reviewed_checkpoint": "8036f5ccb30347997be680cdcc48ec2421e2c95f",
+        "route": "Orchestrator only",
+        "regions": [
+          "Game.swift GameRuntime.galleryClick one-line forwarding",
+          "ScriptPageInput.swift Gallery identity/projection and page-scoped validation/dispatch",
+          "EliteMac/EliteApp.swift existing post-paint cache/key/click/menu wrapping and bounded decoder integration"
+        ],
+        "contract": "Preserve offer/question/schema1/absence/epoch proofs and all four existing native regressions; actual painted Gallery instance/preview/owner/alias/root/target/layout identity; same-visible-review focus allowed; stale/malformed/oversize refuse; no raw native fallback; no schema/persistence/finance/renderer change",
+        "status": "Reviewed and integrated; temporary hook reservation returned to engine owner. Future Gallery tasks route through Orchestrator."
+      },
+      "final_coder_commit": "644fb9c2de2fc1667268f17e96bb69fd5c8296aa",
+      "validated_source_media_commit": "c73ca75a071648e5fe192650370c901b25b61988",
+      "local_merge_commit": "1e4e622da7313b4b55a47637f234d334fabbe535",
+      "review": {
+        "findings": [],
+        "kind": "engine owner source-only review, not formal PR approval",
+        "tested_inputs_verified": 770,
+        "raw_gate_log_and_leaks_verified": true,
+        "original_image_hashes_verified": 13,
+        "durable_images_inspected": 6,
+        "source_code_resolution_changes": false,
+        "record": "/tmp/elite-gallery-owner-integration.json"
+      }
+    },
+    "validation_worktree": {
+      "path": "/Users/sclarke/.codex/worktrees/mission-engine-validation/elite",
+      "commit": "401626e884654b65e674236daf275764fa09ad8d",
+      "status": "Idle at401626e during G1 quiet CPU/GUI lease; local isolated Gallery merge1e4e622 verified source-only in separate managed integration checkout. No Researcher build/native/test job."
+    },
+    "next_mission_readiness": {
+      "engine_code_base": "1e4e622da7313b4b55a47637f234d334fabbe535",
+      "assessment_commit": "d9ed41ad08ef3bd499525d09511924050ebb27e7",
+      "document": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/docs/MISSION-CODER-NEXT-BLOCKERS.md",
+      "status": "Assessed next candidates require identified native prerequisites; no unsupported pack assigned as playable",
+      "candidates": [
+        "P30 documents2: RRS issuing facility/reputation/counters/digital custody",
+        "P19 GSE loan: independent native obligation/opportunity/settlement controller",
+        "C07: per-instance encounter destination/entry-relative plan and full fit/escape semantics",
+        "G21: atomic pledge/issuer-reputation/accepting-station scope",
+        "G02: actual profile generator and digital custody",
+        "C01/C02 schema2: native source scheduler/naval/removal/wrapped reward/migration bridge"
+      ],
+      "source_work_only": true
+    },
+    "g21_implementation_packet": {
+      "status": "Orchestrator confirmed ACTIVATE NOW dispatched exclusively to Mission Coder1 on exact ea87bc5 isolated base; implementation/validation pending",
+      "packet_commit": "ea87bc57083926349a45f5a22694b25250705fac",
+      "base": "d9ed41ad08ef3bd499525d09511924050ebb27e7",
+      "engine_code_base": "1e4e622da7313b4b55a47637f234d334fabbe535",
+      "path": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/docs/MISSION-CODER-G21-HANDOFF.md",
+      "authority": "PROJECT-SPACE-G21-1; amounts/gain explicitly project estimates",
+      "policies": "Orchestrator approved Station Aid provider/local actual accepting-station standing and3600 local-second host board cadence; no inferred faction/privileges",
+      "scope": "Typed full pledge/issuer-reputation prerequisite plus all3 difficulties x2 credit/Food variants; existing board and transaction/save/Gallery/input systems",
+      "proposed_capability": "station-pledges-basic-v2 (not implemented/advertised)",
+      "proposed_save_extension": 20,
+      "researcher_work": "Design/authority snapshot/static source/hash/lint/link/arithmetic checks only; no source changes or test/native execution",
+      "routing": "Orchestrator exclusively to Mission Coder1",
+      "ownership": "Mission Coder1 owns new modules/tests/pack/docs and exactly reserved shared hook regions in packet until immutable owner-review handback. Researcher retains design/owner review and separate finance scope; avoids reserved regions. All coder communication through Orchestrator.",
+      "other_packets": "Historical dependencies remain open; no substituted courier/patrol/donation historical claim",
+      "resource_policy": "Source-only during current G1 quiet CPU/GUI lease; no Researcher tests/native work.",
+      "native_food_boundary_clarification": {
+        "commit": "2a50f25a50064c59d86ca7bc76d7b22745bf8fb0",
+        "kind": "docs-only verified native API correction",
+        "fact": "sellableCargo excludes markedFirearms only; ordinary Food raw/sellable coincide. Protected schema1/schema2 payloads and fitted berths are separate hold usage. No Food reservation API exists.",
+        "acceptance": "Use native getter at quote/commit; genuine protected custody/hold preservation, rawFood shortage/assist refusal. No invented reservedFood fixture/subsystem or Blackjack edits. Future real reservations honoured through same getter.",
+        "implementation_base_unchanged": true,
+        "source_or_test_changes": false
+      },
+      "receipt_link_clarification": {
+        "commit": "4ba8fba002c45f0988549d9aafb50e67379276d7",
+        "owner_approval": "Native optional ScriptInstance.pledgeReceiptID only, assigned in actual pledge.commit, plus exact bidirectional validation/migration/tests",
+        "scope": "Marker iff matching same-instance retained receipt and completed settled native contract; active/failed/abandoned/missing/foreign/duplicate links rejected; format<20 actual decodedledger OR marker rejected",
+        "boundary": "Internal consistency only; no authenticity claim for coordinated rewrite/removal of all unauthenticated save evidence",
+        "other_approved_fixture": "Only nativeContractBoardUsesExplicitActionsAndSavesThePrecedingAcceptance replaces rawcoordinate packet with actualpaint+realNSEvent; all assertions retained",
+        "source_changes_by_researcher": false
+      },
+      "preflight_review": {
+        "candidate": "5870151883289b1bda079ad53b5840e114cc904f",
+        "runtime_test_candidate": "1353a6b07e70ac60aeef87c9ede0c933194890df",
+        "review_record_commit": "6accc9025aaac5c6fb96b3b0d0f89a95a2ed7119",
+        "record": "/Users/sclarke/.codex/worktrees/scriptable-mission-engine/elite/docs/G21-PREFLIGHT-OWNER-REVIEW.md",
+        "findings": [
+          "P2: credit receipts use internal decicredits/UUID/provider key in normal gameplay; display ordinary CR/human issuer, retain native provenance",
+          "P2 inherited acceptance defect: completion message overlaps Gallery docked-status y62 band; approve single-label header-only fix"
+        ],
+        "pending_approved_correction": "GameRuntime.load raw legacy branch refuses decoded new pledge ledger OR instance marker before any migrations; unchanged genuine old/raw and validformat20 paths",
+        "verified_inputs": 779,
+        "inspected_durable_images": 8,
+        "canonical_passed": false,
+        "final_owner_approval": false,
+        "researcher_execution": "Source/hash/image/docs review only; no code/build/test/native execution",
+        "routing": "All corrections and handoff through Orchestrator exclusively to Mission Coder1"
+      },
+      "follow_up_review": {
+        "candidate": "8eda441b6def0e846c5240f0d6002871d02772aa",
+        "record_commit": "4b115b34cc38589ead63742c036863aac374d242",
+        "original_corrections": "Rawloader9b and human receipt/one-header source corrections reviewed as correct within scope; presentation tests/images remain pending",
+        "blocking_finding": "P1 generator calls unavailable Lua string.format; actual protected host opens only base/math. All donation offers/trial unavailable until authored Lua uses supported concatenation. Do not expand sandbox for display.",
+        "routing": "Sent exclusively through Orchestrator to MissionCoder1",
+        "source_closure": false,
+        "final_owner_approval": false,
+        "canonical_passed": false,
+        "execution": "Researcher source/docs review only, no builds/tests/native or runtime source edits"
+      },
+      "source_preflight_closure": {
+        "candidate": "09bcf7b60ee98b2e3355a46bce5621f3af0e21e9",
+        "status": "All preflight source findings resolved and closure sent through Orchestrator",
+        "fix": "Only supported authoredLua integer concatenation; six genuine native board offer titles asserted; sandbox/amount/seed unchanged",
+        "source_review_only": true,
+        "reported_core": "7methods/30cases on actual09candidate",
+        "pending": "Freshnative/images/media/refreeze/canonical gates and final immutable owner acceptance/integration",
+        "canonical_passed": false,
+        "final_visual_approval": false,
+        "final_owner_approval": false,
+        "record_commit": "75f2355309792a016b83f059926a93252f0e8e1e"
+      },
+      "visual_preflight_closure": {
+        "runtime_candidate": "09bcf7b60ee98b2e3355a46bce5621f3af0e21e9",
+        "docs_images_candidate": "3a8d2142412e56b9b28804a5eaef995f9cd0a3b1",
+        "record_commit": "c94e378619fa10f71e971eba5d2dfe63e742c3fa",
+        "status": "Source and visual preflight closed; media/refreeze/canonical may proceed under Orchestrator lease",
+        "verified_original_images": 14,
+        "byte_identical_durable_copies": 10,
+        "inspected_views": 14,
+        "input_scope": "779of787 prioracceptance inputs match3a;8oldPNG replacements +2newdurableimages expectedmedia delta, allruntime/tests/packcodeunchanged;refreezefinalinputsrequired",
+        "canonical_passed": false,
+        "final_owner_acceptance": false,
+        "researcher_execution": "Source/hash/image/docs review only; no build/test/native process"
+      },
+      "final_acceptance": {
+        "status": "Locally integrated and source-owner accepted; formal PR and central/main integration separate",
+        "source_final": "09e47580fe20a8be6ed5c4eb7cbe1390131175f9",
+        "canonical": "51cb55617a2e8dd21fddde6e67b425ee978a7bdd",
+        "integration": "848d7b7e8359f921aab395a6204405df47806542",
+        "accepted_input_count": 789,
+        "accepted_input_changes": [],
+        "canonical_passed": true,
+        "failures_retained": 5,
+        "researcher_execution": "Source/hash/archive/image review and local Git integration only; coder ran actual tests/renderer/CI under Orchestrator lease"
+      }
+    },
+    "legacy_equipment_bridge_coordination": {
+      "owner": "G1 directly authorized hardware integration, routed through Orchestrator",
+      "scope": "Only PackTransactions equipmentAdd/equipmentRemove mutation hunks in separate equipment-runtime branch; no Researcher/G21/finance overlap",
+      "requirements": "Actual mission grant provenance/ownedinventory, idempotent source rewards, preserve fitted-loan refusal and storedspares, distinguish absentremove from failedconsumption, wholetransaction/filesystemrollback, no paid history fabrication",
+      "status": "Narrow owner approval sent; concrete API is currently uncompiled/new and exact final combined diff/validation remain pending",
+      "engine_branch_changed": false
+    },
+    "g02_next_design_packet": {
+      "commit": "880d3a65478ed9304cc926fc21fbf3db9bf6d140",
+      "brief": "docs/MISSION-CODER-G02-DESIGN-BRIEF.md",
+      "authority": "docs/mission-specifications/g02-research-authority.json",
+      "status": "Owner accepted and locally integrated; central equipment composition/integration and formalPR remain separate",
+      "scope": "Both data and1t physical courier variants/all3 difficulties; xorshift shortest-hop generator,typed native custody,inclusive calendar deadline,atomic station handoff and real Gallery trials",
+      "implementation_requires_owner_source_review": false,
+      "approved_design": "004f74947635536ec3227358eb8d80589bf8bc59",
+      "owner_review_commit": "66c1490f50dd72c4868552c621bcc66802560498",
+      "owner_review": "docs/G02-DESIGN-OWNER-REVIEW.md",
+      "final_implementation_requires_owner_acceptance": true,
+      "preflight": {
+        "candidate": "8fc1632c33da3e21e6347e4b4e40f5048f692747",
+        "owner_record": "a65623138a38f6e6d2099c59be204f8939a4bd94",
+        "record": "docs/G02-PREFLIGHT-OWNER-REVIEW.md",
+        "verified_inputs": 917,
+        "native_methods": 5,
+        "core_methods": 33,
+        "core_cases": 49,
+        "actual_physical_docking_variants": 2,
+        "original_images_verified": 54,
+        "representative_images_inspected": 8,
+        "canonical_passed": false,
+        "final_owner_acceptance": false,
+        "integrated": false,
+        "source_ready": true,
+        "full_engine_ready": false
+      },
+      "canonical_review": {
+        "failed_candidate": "52686c0298e63ab4e0350d3f036be59350fc803f",
+        "owner_record": "ada9283e1ee0d9ccdaf316c68238bb86ac20a888",
+        "record": "docs/G02-CANONICAL-OWNER-REVIEW.md",
+        "tracked_inputs_unchanged": 934,
+        "evidence_inputs_unchanged": 228,
+        "reached": "coverage tests only; no coverage export/TSan/ASan/leaks",
+        "canonical_passed": false,
+        "correction_patch_sha256": "e72cc1be315edd8b4d9bd54c16a05d6596b3b1cce8d78d53686d3264c370bf1d",
+        "correction_executed": false,
+        "accessor_correction": {
+          "owner_record": "dc58a178ec22c8fb2dbdff5ee765a2eb1aa1b442",
+          "patch_sha256": "91390701a30047b183d56827b09dd391e7a1dc88a86178ecdf6cf004d1b6a999",
+          "status": "approved/unverified",
+          "prior_targeted_ordering_correction_passed": false,
+          "prior_crash_sha256": "a385746e8431d1385ec570339e49c7571d76f4ba67cab3e4c10d871b6220f760"
+        },
+        "default_guard": {
+          "owner_record": "41032e998aa524ae0792d7977473dc3f3dabb2fe",
+          "patch_sha256": "7e5b16054ba12b4fcb12b849fa3efc8edf7a4e6618bc53704e3f44e473bf458b",
+          "status": "verified coveragepass atdf87b0618d3dd1bfee0b7092590425c49304b7d6",
+          "accessor_semantic_methods": 3,
+          "accessor_semantic_cases": 4,
+          "nested_coverage_passed": true,
+          "structural_phase_fallback": "proposed/unapplied"
+        },
+        "root_phase": {
+          "owner_record": "a7e5939e94576c28bf0929923ba63f2d3af56623",
+          "patch_sha256": "fbc733c1080e9898caa5d44230bdd2bc599c7d06f4f1a3779bcd26cddc86d73e",
+          "status": "verified focused coverage/ASanpass atedde5f52d14ccf4955134709be9d27f15e19224b",
+          "new_native_asan_passed": true,
+          "crash_sha256": "6e52d7a79ecf01ca24fd9e6b59d086a8e833570d88a78da35c4d11f97c030cc3",
+          "verified_inputs": 935,
+          "complete_canonical_passed": false
+        },
+        "latest_full_run": {
+          "candidate": "becc7a682965e5f79ecb16fd7a424c7092e635d2",
+          "owner_record": "db424ceea5e6ba8258415029c2c69e5306d032ce",
+          "coverage_methods": 656,
+          "coverage_overall_percent": 95.232,
+          "tsan_methods": 656,
+          "serial_asan_passed": false,
+          "leaks_reached": false,
+          "canonical_passed": false,
+          "failed_method": "nativeCampaignGalleryRejectsUnseenPagesAndConfirmsOnePaintedReview",
+          "crash_sha256": "5870ab14b53d2bdc805a96080cebc1195e8024d7713d8c3b1f22653f3197cda0",
+          "correction_patch_sha256": "004b306d657991d87549e000835429bc8bcb063d0ffcdb402c33a148d1945f3a",
+          "correction_status": "Exact standalone-trial private phase helper plus rollback regression approved/unverified; dispatched exclusively through Orchestrator to Mission Coder1",
+          "researcher_execution": "Source/docs review only; no build/test/native execution",
+          "full_engine_ready": false
+        },
+        "standalone_phase": {
+          "candidate": "42ceeef6e0052cd42ec0f7df000c9f3c0513eb2e",
+          "owner_record": "a31d16302e12590e3effa77b5aa5765e0ba45886",
+          "status": "Three bounded lanes independently verified passed; fresh full canonical authorized, not yet passed",
+          "verified_inputs": 935,
+          "exact_failed_native_asan_methods": 1,
+          "related_asan_methods": 30,
+          "related_asan_cases": 32,
+          "affected_coverage_methods": 149,
+          "affected_coverage_cases": 239,
+          "actual_native_methods": 25,
+          "complete_canonical_passed": false,
+          "researcher_execution": "Source/hash/docs review only; no build/test/native execution"
+        }
+      },
+      "final_acceptance": {
+        "final_coder": "d2ec62aa759f68f211e253557f45e910907259c8",
+        "canonical": "4fcd9c9c757a6404c70eb83a2057c689e8606b61",
+        "integration": "d12311d8fca20277aefc150f487acafb7377b0e4",
+        "owner_record": "d1a450444f9743766505194a6b0bd36d47c299d5",
+        "record": "docs/G02-FINAL-OWNER-ACCEPTANCE.md",
+        "canonical_passed": true,
+        "owner_accepted": true,
+        "integrated": true,
+        "accepted_inputs": 935,
+        "accepted_input_changes": [],
+        "verified_archive_members": 479,
+        "corrected_handoff_sha256": "db61cdb6e0c87334e84cff3e0a73176975b3e1ece9f0bdb3c047d92ff0f26aee",
+        "full_engine_ready": false
+      }
+    },
+    "c07_next_research_audit": {
+      "commit": "cc04ee7d7c72f44511a9865fb9494c7a1e12eb33",
+      "record": "docs/mission-specifications/c07-research-readiness.md",
+      "status": "Futuredesigncandidate only, notassigned/implemented",
+      "fresh_sources": "S08/S09 reread plus1998alt.fan.elite corroboration on16October2026; original mission screenshot unreadable, exact binary rules notclaimed",
+      "remaining": "Instancebound entry location, actual finite guided NPC missile launch/consumption (profile stock alone not support), explicit durability, retained-state departure/escape policy, nonplayerkill terminal/onceonly adaptation and deterministic destination reachability audit; all unrecovered values labelled project estimates",
+      "additional_firsthand_source": "https://groups.google.com/g/alt.fan.elite/c/NByAWyDtm_U (11April2008 firsthand play update; disputes universal64jump/pergalaxy schedule, no executable thresholds established)",
+      "reachability_audit": "docs/mission-specifications/c07-route-reachability-audit.json",
+      "unreachable_plus17_pairs_standard_7ly": 70,
+      "route_audit_scope": "Source-transcribed static arithmetic for2048pairs/8ordinarycharts/fulltank7ly/refuelledlegs;notcompilednativeparity/livefuelquote/historicalselectorproof"
+    },
+    "canonical_equipment_v2_review": {
+      "commit": "4dc97466ee5ba6d283c8332db487cad829590028",
+      "record": "docs/CANONICAL-EQUIPMENT-V2-MISSION-REVIEW.md",
+      "status": "Compatibility findings ratified and implementation routed toMC1 inisolatedcomposition; pinnedsource/fixtures review pending",
+      "provider_contract_sha256": "3768053f8d4ffc1376f33bd3d0620eb8aa86c45db758af33c692e6413b9b49ea",
+      "consumer_map_sha256": "819244f15cf8cd4ddab5030610193bbc2a81f64e68f739a1574624ea854503dc",
+      "central_inspected": "2b3857c7339280ed47469a16e46a41360b975925",
+      "source_fingerprints_verified": 9,
+      "routing": "Orchestrator exclusively toMissionCoder1",
+      "findings": [
+        "G02nativegradedrange/fuel snapshot needsexplicitnewreachrevision/currentactualfulltank getter; preserveallv1frozenproofs",
+        "Preserve historicallyabsentnonloanoriginals withoutfabrication and returnableheldnonpristineloans",
+        "IncludePassengerCustody commonbudget/oldbagpredicate consumers and exactdisplacedBasicrestoration fixtures"
+      ],
+      "runtime_or_test_changes": false,
+      "researcher_execution": "Source/hash/docs reviewonly; no build/test/native/savepreferences mutation",
+      "full_engine_ready": false,
+      "ratification_commit": "812ec438b24dc6a02570384759c6af4c5ecfbddd",
+      "ratified_courier_reach": "elite-canonical-native-reach-v2; optionaljumpFuelMultiplier/fullTankReach requiredv2,absentv1; exactv1math/replay,generation1,format21 unchanged",
+      "ratified_historical_missing": "legacyMissingItems:Set<UUID>? migration-onlyvalidatedv1nonloanoriginals; subsetoriginals/disjointconsumed+survivors; newissuesneverpopulate; missingreturnstillrefuses",
+      "zero_cost_precision_commit": "5af6c1dbe1108d6f4b4bcf7a816ad5a2e403b639",
+      "zero_cost_precision": "Frozenv2multiplierfinite>=0;zero usesactualnativejumpCapbranch withoutdivision. SafeMilitary0/native-invalidBasicguard needpinnedsourcefixtures; nohonestnative-admittedstateunsaveable, noinvalidfitbypass.",
+      "reach_adapter_review": {
+        "candidate": "ff5598550e962c62e1666c35c1bbfd4590558fd6",
+        "owner_record": "1724d1d40c62be831497092d5184c5ec3aca342f",
+        "record": "docs/CANONICAL-COURIER-REACH-OWNER-REVIEW.md",
+        "production_source_blockers": [],
+        "finding": "P2: current v1boardtest derivesoldproof fromnewv2generation; needsindependentpinnedv1board+acceptedjob/custody/deadline/receiptfixture",
+        "executed": false,
+        "verified_file_hashes": 5,
+        "patch_sha256": "cbeb375e0d28bed5aac37354076ecfafbb5c9c3bbc866f16a452327c7576b6d8",
+        "native_zero_guard_verified": "c6ea36cacada8ab1fd74ef494821108953b0d85d",
+        "native_zero_guard_sha256": "57752c4a761ed30c39f3c3cdea119306c705af2016df57cc2bd8160147c851b3",
+        "routing": "Orchestrator exclusively toMissionCoder1",
+        "full_engine_ready": false,
+        "historical_fixture_review": {
+          "candidate": "63be4e17cc430786a3f4d7a49f6f99e185944935",
+          "owner_record": "3153624a3faff4367b05c6ffca8208562bd90bda",
+          "original_anchor_gap": "Addressed byindependentv1goldenvector/acceptedpackagejob andactualcanonical load-refit-format21reload testsource",
+          "remaining_finding": "P2 row0goldencalendarcost237960.00000000003 mustbehistoricalleft-associated237960.0; updatehashrefs withouttolerance/productionchange",
+          "old_source_blob_pins_verified": 7,
+          "native_anchor_rows_verified": [
+            1,
+            2,
+            4
+          ],
+          "independent_arithmetic": "19paths/6draws/indices/6offerIDs/destinations/rewards/durations/job-item-proof-custody-deadline joins",
+          "production_changes": false,
+          "executed": false,
+          "routing": "Accepted byOrchestrator/routedexclusivelyMC1; finalsourceclosureawaitscorrectedpin"
+        },
+        "final_source_closure": {
+          "candidate": "3ff13af5ee1350cba85af542023b1ac5f78fa1d6",
+          "owner_record": "58d707ad7f15a2bd270d854a9d4babdcf67a4628",
+          "record": "docs/CANONICAL-COURIER-REACH-OWNER-REVIEW.md",
+          "open_source_findings": [],
+          "historical_fixture_sha256": "c43c49e178ee1c58493f36ceb66a839ae6f222ddb04bb397b03895ca9c12c88e",
+          "exact_delta": "row0cost237960.0 andhashreferencesonly; oldinvalid63beevidencepreserved",
+          "verified_file_hashes": 7,
+          "production_delta": false,
+          "executed": false,
+          "runtime_acceptance": false,
+          "routing": "Closure sentexclusivelythroughOrchestrator toMissionCoder1; existingassignedseamscontinue"
+        }
+      }
+    }
+  },
+  "current_implementation_assessment": {
+    "assessment_id": "ELITE-MISSION-ENGINE-IMPLEMENTATION-2026-10-17",
+    "as_of": "2026-10-17",
+    "source_commit": "4bf934cee1b42aadf08f7bf8312fa1db2bce3ca9",
+    "report": "../../MISSION-ENGINE-COMPLETION.md",
+    "basis": "Source inventory reconciled after financial, native-people, EMP, drive and ring composition. Qualified focused results are separate from matching-head full CI/native/release acceptance. Original design checkpoint and provenance remain unchanged.",
+    "status_meanings": {
+      "implemented": "Reusable capability present in source with existing regressions; not final acceptance of every referenced mission or this composed head.",
+      "partial": "Named foundations exist, but explicit required reusable seams remain missing.",
+      "absent": "No implementation provider found for the named capability; used in missing_capabilities, not for a composite requirement that has foundations.",
+      "unverified": "Implementation/evidence scaffolding exists, but the required matching-head validation has not passed."
+    },
+    "counts": {
+      "implemented": 9,
+      "partial": 13,
+      "absent": 0,
+      "unverified": 2
+    },
+    "full_engine_ready": false,
+    "matching_head_full_ci_passed": false,
+    "validation_note": "Existing test definitions are coverage references, not claims of new execution. WHOLE-APP-REMEDIATION records historical focused passes, failed full sanitizer runs, app compilation and renderer/media evidence with distinct scopes.",
+    "requirements": {
+      "R01": {
+        "status": "implemented",
+        "present": "Schema 1 campaigns and schema 2 Lua folders coexist; dispatch runs pack code without mission-specific Swift.",
+        "remaining": "Individual retained campaigns remain content work.",
+        "source": [
+          "Sources/EliteCore/PackRuntime.swift",
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/ScriptDirector.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptMissionTests.swift",
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift"
+        ]
+      },
+      "R02": {
+        "status": "implemented",
+        "present": "Immutable folder content identities, modules, assets, exact dependencies and saved-version suspension are implemented.",
+        "remaining": "Folder installation is separate from the legacy picker; author tooling is R21.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/ScriptModules.swift",
+          "Sources/EliteCore/ScriptLibrary.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptModuleTests.swift",
+          "Tests/EliteCoreTests/BundledScriptPackTests.swift"
+        ]
+      },
+      "R03": {
+        "status": "implemented",
+        "present": "Fresh bounded Lua evaluation and explicit typed serializable state are implemented.",
+        "remaining": "Matching composed-head validation is pending.",
+        "source": [
+          "Sources/EliteCore/ScriptEvaluator.swift",
+          "Sources/EliteCore/ScriptValueStorage.swift",
+          "Sources/MissionScript/MissionScript.c"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift",
+          "Tests/EliteCoreTests/ScriptValueStorageTests.swift"
+        ]
+      },
+      "R04": {
+        "status": "unverified",
+        "present": "GameRuntime actor ownership, MainActor app presentation and protected C interpreter frames are present.",
+        "remaining": "No completed matching-head combined coverage/TSan/ASan/leak/native acceptance is recorded.",
+        "source": [
+          "Sources/EliteCore/Game.swift",
+          "Sources/EliteMac/EliteApp.swift",
+          "Sources/MissionScript/MissionScript.c"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/NativeMissionRuntimeFrameTests.swift",
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift"
+        ]
+      },
+      "R05": {
+        "status": "partial",
+        "present": "Native actor admission, impacts, causal event envelopes, deduplication and completion receipts are implemented.",
+        "remaining": "General authored mission rescue-transfer receipts and NPC wormhole result/event bridges remain unfinished; native custody has its separate retained identities and receipts.",
+        "source": [
+          "Sources/EliteCore/ScriptEventContext.swift",
+          "Sources/EliteCore/NativeMissionActorAdmission.swift",
+          "Sources/EliteCore/ScriptCompletion.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEventHistoryTests.swift",
+          "Tests/EliteCoreTests/NativeMissionImpactTests.swift"
+        ]
+      },
+      "R06": {
+        "status": "partial",
+        "present": "Shared fixed-principal finance, creditor/borrower identities, exact offer/Confirm and partial repayment receipts are integrated alongside existing credit/resource/equipment-loan services.",
+        "remaining": "Interest, instalments, escrow, financial collection NPCs and complete retained P04/P19 adaptations remain unfinished.",
+        "source": [
+          "Sources/EliteCore/ScriptCommands.swift",
+          "Sources/EliteCore/ScriptCollections.swift",
+          "Sources/EliteCore/ScriptTransactions.swift",
+          "Sources/EliteCore/ScriptFinanceState.swift",
+          "Sources/EliteCore/ScriptFinance.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptTransactionTests.swift",
+          "Tests/EliteCoreTests/ScriptCollectionTests.swift",
+          "Tests/EliteCoreTests/ScriptFinanceTests.swift",
+          "Tests/EliteCoreTests/ScriptFinancePersistenceTests.swift"
+        ]
+      },
+      "R07": {
+        "status": "implemented",
+        "present": "Saved deterministic cohorts, measured components, whole native admission and pending refusal are implemented.",
+        "remaining": "The 82-root regression is not a completed Maenes mission or crew/care implementation.",
+        "source": [
+          "Sources/EliteCore/ScriptEncounters.swift",
+          "Sources/EliteCore/NativeMissionActorAdmission.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEncounterTests.swift",
+          "Tests/EliteCoreTests/ScriptActorAdmissionSourceTests.swift"
+        ]
+      },
+      "R08": {
+        "status": "partial",
+        "present": "Authored hold/approach/follow/attack/flee steering with request/result and target-loss handling exists.",
+        "remaining": "No authored NPC docking/scoop/transit action and physical result bridge; formation orchestration remains limited to local follow offsets.",
+        "source": [
+          "Sources/EliteCore/ScriptNPCProfile.swift",
+          "Sources/EliteCore/ScriptNPCFlight.swift",
+          "Sources/EliteCore/TrafficIntent.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptNPCTests.swift"
+        ]
+      },
+      "R09": {
+        "status": "partial",
+        "present": "Measured authored hull/component guns, plasma, native finite ordnance and ECM boundaries exist.",
+        "remaining": "Authored missile controllers/target-selection commands and complete retained source combat-profile acceptance are not established.",
+        "source": [
+          "Sources/EliteCore/ScriptNPCWeapons.swift",
+          "Sources/EliteCore/NativeMissionEmission.swift",
+          "Sources/EliteCore/GameplayOrdnanceRuntime.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/NativeMissionEmissionTests.swift",
+          "Tests/EliteCoreTests/ScriptNPCTests.swift"
+        ]
+      },
+      "R10": {
+        "status": "partial",
+        "present": "Flight/local/calendar/mission-calendar clocks, native travel adjustments and independent resource-owned pulse jobs exist.",
+        "remaining": "Transit seconds have no native advancement producer; living-person care jobs and full source-specific schedules remain absent.",
+        "source": [
+          "Sources/EliteCore/ScriptDirector.swift",
+          "Sources/EliteCore/ScriptMissionCalendar.swift",
+          "Sources/EliteCore/ScriptWorldJobs.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptCalendarTests.swift",
+          "Tests/EliteCoreTests/ScriptWorldJobTests.swift"
+        ]
+      },
+      "R11": {
+        "status": "partial",
+        "present": "Charter identities, fitted berth/life-support and common fitting coexist with integrated native original crew censuses, protected occupied pods, cutter capture, captives and timed electrical recovery.",
+        "remaining": "General medical/living care and authored rescue-transfer services remain unfinished; complete native people acceptance is pending.",
+        "source": [
+          "Sources/EliteCore/PassengerCustody.swift",
+          "Sources/EliteCore/ShipAccommodation.swift",
+          "Sources/EliteCore/PassengerFitting.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/PassengerCustodyTests.swift",
+          "Tests/EliteCoreTests/NativePassengerCabinViewTests.swift"
+        ]
+      },
+      "R12": {
+        "status": "implemented",
+        "present": "Canonical equipment identities, finite ammunition, held storage, loan obligations, hull transfer and linked showroom orientation exist.",
+        "remaining": "Matching whole-app/native visual acceptance remains separate.",
+        "source": [
+          "Sources/EliteCore/OwnedEquipmentInventory.swift",
+          "Sources/EliteCore/EquipmentIssueTransactions.swift",
+          "Sources/EliteCore/ShipTrade.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/OwnedEquipmentTests.swift",
+          "Tests/EliteCoreTests/ShipTradeTests.swift",
+          "Tests/EliteCoreTests/ShowroomUXTests.swift"
+        ]
+      },
+      "R13": {
+        "status": "partial",
+        "present": "Saved seeded generic main-station boards and generated courier jobs exist; typed RRS waystation/HQ scenario 2 is composed.",
+        "remaining": "Generic Lua boards remain main-station-only; RRS is a closed native consumer. Remaining RRS providers and composed RRS runtime acceptance are pending.",
+        "source": [
+          "Sources/EliteCore/ScriptContractCore.swift",
+          "Sources/EliteCore/ContractBoard.swift",
+          "Sources/EliteCore/RRSCourier.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptContractTests.swift",
+          "Tests/EliteCoreTests/RRSCourierTests.swift"
+        ]
+      },
+      "R14": {
+        "status": "partial",
+        "present": "Child completion joins, exclusive/repeatable choices, scoped campaigns, books and equipment obligations exist.",
+        "remaining": "Shared financial loans, rich dossiers and all retained shared-contact/service compositions remain incomplete.",
+        "source": [
+          "Sources/EliteCore/ScriptCampaignCommands.swift",
+          "Sources/EliteCore/ScriptChoices.swift",
+          "Sources/EliteCore/ScriptBooks.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptCampaignTests.swift",
+          "Tests/EliteCoreTests/ScriptCompletionTests.swift",
+          "Tests/EliteCoreTests/ScriptBookTests.swift"
+        ]
+      },
+      "R15": {
+        "status": "implemented",
+        "present": "Hashed immutable save generations, typed chunks, exact content suspension and bounded legacy migrations are implemented.",
+        "remaining": "Current composed-head gates remain pending; historical passes do not validate new source.",
+        "source": [
+          "Sources/EliteCore/ScriptPersistence.swift",
+          "Sources/EliteCore/ScriptSaveJSONPreflight.swift",
+          "Sources/EliteCore/ScriptTransactions.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptIdentityTests.swift",
+          "Tests/EliteCoreTests/ScriptDurabilityTests.swift",
+          "Tests/EliteCoreTests/ScriptSolarSaveTests.swift"
+        ]
+      },
+      "R16": {
+        "status": "implemented",
+        "present": "Versioned seeds, stable ordering, derived new identities and preserved legacy identity provenance exist.",
+        "remaining": "Crew/person and transit draws cannot be certified before those providers exist.",
+        "source": [
+          "Sources/EliteCore/ScriptIdentity.swift",
+          "Sources/EliteCore/ScriptCourierGeneration.swift",
+          "Sources/EliteCore/ScriptSimulationSave.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptIdentityTests.swift",
+          "Tests/EliteCoreTests/ScriptCourierGenerationTests.swift",
+          "Tests/EliteCoreTests/ScriptEventHistoryTests.swift"
+        ]
+      },
+      "R17": {
+        "status": "partial",
+        "present": "Native dialogue, choices, journals, contract pages, text books and painted-page input proofs exist.",
+        "remaining": "No general authored rich-table/3D-panel/dossier presentation schema.",
+        "source": [
+          "Sources/EliteCore/ScriptConversations.swift",
+          "Sources/EliteCore/ScriptPageInput.swift",
+          "Sources/EliteCore/ScriptLibraryDisplay.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptPageInputTests.swift",
+          "Tests/EliteCoreTests/ScriptConversationTests.swift",
+          "Tests/EliteCoreTests/ScriptBookTests.swift"
+        ]
+      },
+      "R18": {
+        "status": "partial",
+        "present": "Seeded isolated pack/provider trials, restart/return, separate writers and read-only RRS Gallery entries exist.",
+        "remaining": "Arbitrary declared checkpoints, complete financial campaigns and general care/transit scenarios remain unfinished; read-only RRS projection is not a playable trial.",
+        "source": [
+          "Sources/EliteCore/ScriptGalleryTrial.swift",
+          "Sources/EliteCore/ScriptCampaignGallery.swift",
+          "Sources/EliteCore/RRSCourierGallery.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift",
+          "Tests/EliteCoreTests/RRSCourierGalleryTests.swift"
+        ]
+      },
+      "R19": {
+        "status": "implemented",
+        "present": "Space/orbital environment restrictions, content hashes/licenses and labelled source/adaptation status exist.",
+        "remaining": "Every retained content adaptation still needs its own source/provenance acceptance.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/MissionGallery.swift",
+          "docs/research/implementation-scope.md"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptMissionTests.swift",
+          "Tests/EliteCoreTests/ScriptModuleTests.swift"
+        ]
+      },
+      "R20": {
+        "status": "implemented",
+        "present": "Protected C instruction/heap/allocation/output budgets, restricted libraries and explicit recovery are implemented.",
+        "remaining": "Current combined sanitizer/leak evidence remains R04/R24 work.",
+        "source": [
+          "Sources/MissionScript/MissionScript.c",
+          "Sources/EliteCore/ScriptEvaluator.swift",
+          "Sources/EliteCore/ScriptValueStorage.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptEvaluatorTests.swift",
+          "Tests/EliteCoreTests/ScriptValueStorageTests.swift"
+        ]
+      },
+      "R21": {
+        "status": "partial",
+        "present": "Manifest/module/resource validation, folder discovery, isolated trials and the schema 2 guide exist.",
+        "remaining": "The native picker/CLI validate legacy packs only; no schema 2 CLI, migration dry-run, isolated hot reload or general scenario/replay tooling.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteMac/EliteApp.swift",
+          "docs/SCRIPT-MISSION-PACKS.md"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptModuleTests.swift",
+          "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift"
+        ]
+      },
+      "R22": {
+        "status": "partial",
+        "present": "Implemented-capability registry, unsupported-content gating and truthful Gallery/source status exist.",
+        "remaining": "Capability registration alone is not a completed per-profile acceptance gate; the old design ledger requires this separate current assessment.",
+        "source": [
+          "Sources/EliteCore/ScriptPack.swift",
+          "Sources/EliteCore/ScriptDirector.swift",
+          "Sources/EliteCore/MissionGallery.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptMissionTests.swift",
+          "Tests/EliteCoreTests/ScriptGalleryTrialTests.swift"
+        ]
+      },
+      "R23": {
+        "status": "partial",
+        "present": "Terminal anti-revival guards, once-only credits, courier/RRS outcomes and independent station jobs exist.",
+        "remaining": "Living rescue/medical care and the source-specific late full-pay failed personnel variants are not implemented.",
+        "source": [
+          "Sources/EliteCore/ScriptCommands.swift",
+          "Sources/EliteCore/ScriptCourier.swift",
+          "Sources/EliteCore/ScriptWorldJobs.swift"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/ScriptCompletionTests.swift",
+          "Tests/EliteCoreTests/ScriptCourierTests.swift",
+          "Tests/EliteCoreTests/ScriptWorldJobTests.swift"
+        ]
+      },
+      "R24": {
+        "status": "unverified",
+        "present": "Broad VM/save/native/transaction regressions and maintained CI workflows exist.",
+        "remaining": "No completed matching-head full gates or playable Maenes/finance/all-RRS acceptance; exact-main Sonar and release remain integrator-owned.",
+        "source": [
+          "Makefile",
+          "docs/WHOLE-APP-REMEDIATION.md",
+          "docs/MISSION-IMPLEMENTATION.md"
+        ],
+        "tests": [
+          "Tests/EliteCoreTests/NativeMissionRuntimeFrameTests.swift",
+          "Tests/EliteCoreTests/RRSCourierTests.swift"
+        ]
+      }
+    },
+    "missing_capabilities": [
+      {
+        "status": "absent",
+        "capability": "finance interest, instalments, escrow, collection NPCs and complete retained financial campaigns"
+      },
+      {
+        "status": "absent",
+        "capability": "authored NPC wormhole transit and transit-clock receipts"
+      },
+      {
+        "status": "absent",
+        "capability": "general authored rescue-transfer, medical and living-care custody beyond the integrated native people/pod service"
+      },
+      {
+        "status": "absent",
+        "capability": "generic schema 2 RRS board/service origin adapter"
+      },
+      {
+        "status": "absent",
+        "capability": "schema 2 CLI/migration dry-run/isolated hot reload"
+      }
+    ],
+    "historical_source_commit": "7666e892b42ecf42b34c3b590db8f48bd0f9d302",
+    "historical_proposed_finance_slice": {
+      "status": "proposal_only; await Orchestrator file ownership and authorization before core edits",
+      "requirement": "R06",
+      "capability": "finance-obligations-basic-v2 (not registered)",
+      "content_blocked": [
+        "P19 shared GSE financial loan",
+        "P04 Bank of the Black Monks financial liability foundation"
+      ],
+      "scope": "Fixed principal loan and partial repayment with stable creditor/borrower identities, Confirm-bound native quotes, once-only receipts, and obligations surviving mission terminal state. Reuse current transaction/dialogue/save/Gallery services. Interest, collection AI, rich finance content and full source-profile acceptance remain later slices.",
+      "proposal_document": "../../MISSION-ENGINE-COMPLETION.md"
+    },
+    "integrated_finance_slice": {
+      "status": "integrated source with prior focused finance passes; matching-head full acceptance pending",
+      "requirement": "R06",
+      "scope": "Fixed-principal liabilities and exact partial repayment receipts at the original main-station contact. Interest, escrow, collection AI and complete retained financial campaigns remain unfinished.",
+      "report": "../../MISSION-ENGINE-COMPLETION.md"
+    }
+  }
+}

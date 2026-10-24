@@ -132,7 +132,7 @@ private func planetPreviews(_ frame: Frame) -> [PlanetPreview] {
 @Test func celestialAndShipPainterOrderLetsThePlanetOccludeOnlyTheFartherShip() throws {
   var game = Game(executive: false)
   game.screen = .front
-  game.commander.shipDisplayStyle = .whiteWireframe
+  game.commander.shipDisplayStyle = .shadedPanels
   game.celestials = [.init(kind: .planet, position: .init(0, 0, 1000), radius: 200)]
   let far = SpaceBody(id: 1, hull: .cobra, position: .init(0, 0, 2000))
   let near = SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 500))

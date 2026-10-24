@@ -14,6 +14,16 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+COPIED_RESOURCE_DIRECTORIES = (
+    "Ships",
+    "MissionPacks",
+    "ScriptPacks",
+    "ShipTextures",
+    "OriginalWorlds",
+    "OriginalShipTextures",
+    "OriginalFleetShowroomModels",
+    "OriginalMarkets",
+)
 
 
 def run(*arguments, capture=False, check=True):
@@ -28,12 +38,12 @@ def run(*arguments, capture=False, check=True):
     return result
 
 
-def source_checkpoint():
+def source_checkpoint(action="packaging"):
     """Refuse to label modified/untracked maintained source as a committed build."""
     if run(
         "git", "status", "--porcelain", "--untracked-files=no", capture=True
     ).stdout.strip():
-        raise RuntimeError("Commit tracked changes before packaging.")
+        raise RuntimeError(f"Commit tracked changes before {action}.")
     untracked = run(
         "git",
         "ls-files",
@@ -51,7 +61,7 @@ def source_checkpoint():
         capture=True,
     ).stdout
     if untracked.strip():
-        raise RuntimeError("Commit maintained source files before packaging.")
+        raise RuntimeError(f"Commit maintained source files before {action}.")
     return run("git", "rev-parse", "HEAD", capture=True).stdout.strip()
 
 
@@ -94,7 +104,7 @@ def create_bundle(directory, binary_directory, version, revision):
 
 
 def verify_resources(app):
-    """Verify every maintained ship, mission and legal resource survived packaging."""
+    """Verify maintained resources using SwiftPM's copied/processed layouts."""
     bundle = app / "Contents/Resources/Elite_EliteCore.bundle"
     if (bundle / "Contents/Resources").is_dir():
         bundle = bundle / "Contents/Resources"
@@ -104,7 +114,7 @@ def verify_resources(app):
         relative = source.relative_to(ROOT / "Sources/EliteCore/Resources")
         target = (
             bundle / relative
-            if relative.parts[0] in ["Ships", "MissionPacks"]
+            if relative.parts[0] in COPIED_RESOURCE_DIRECTORIES
             else bundle / source.name
         )
         if not target.is_file() or source.read_bytes() != target.read_bytes():

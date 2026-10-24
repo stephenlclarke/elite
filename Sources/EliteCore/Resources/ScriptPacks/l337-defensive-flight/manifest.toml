@@ -1,0 +1,23 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.training"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "exclusive-choices-v2"]
+priority = 589
+source = "Original L337 T03 non-firing manual defensive-flight exercise. Exact native before/after source-bound acquisition, ordered signed-motion gates and measured safe withdrawal; no attacker or simulated damage."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "defensive-flight"
+title = "Defensive flight practice"
+briefing = "Review and Confirm at actual Avenor, then launch in your actual owned craft. The native provider admits three original inert uncrewed6m beacons only if the complete course is clear and your measured hull fits unchanged. Manually sight the original centre beacon within5degrees and an unobstructed centre-directed ray for2continuous active seconds, from x/y within50m, z350-500m behind centre, range350-500m and speed at most5m/s. No targeting hardware is required or granted. Fly through the ordered40m centre gates A(+180,0,-450) then B(-180,0,-450), dwelling0.5s each at5-30m/s with lateral velocity at least3m/s right then left, nose within30degrees of velocity and an actual intervening x=0 crossing. Withdraw through the cleared corridor x within250m, y within150m, z450-1450m behind centre. Beyond1100m, separate at least5m/s at5-30m/s, with nose at least150degrees away, for3continuous active seconds. Native hull/beacon clearance remains above32m; no craft or range is resized. Any actual discharge, ordinary harm/collision or unsafe near-pass fails the attempt with normal consequences. Traffic intrusion resets the unfinished window without deleting traffic. Pause/help/offline time earns nothing. Escape leaves only this exercise. Measured break-off retires the provider and ends its non-firing scope. Return through actual later Avenor docking and separately Confirm reception. Zero fee, deposit and cash reward. Existing defensive-flight family trace once; T02 completion is not required."
+destination = "Actual Avenor main orbital reception, galaxy1 system7"
+reward = "No cash. Existing defensive-flight family trace once after verified reception."
+milestones = ["Confirm defensive-flight consent", "Admit the original native course", "Acquire the manual centre reference", "Pass gate A", "Reverse through gate B", "Seal safe break-off", "Confirm actual Avenor reception"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"

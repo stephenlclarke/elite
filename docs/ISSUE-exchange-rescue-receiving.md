@@ -1,0 +1,5 @@
+# C08.P05.A.receiving: original people, recorder and unused funds
+
+Travel and paid native service do not complete the authored `return-survivors` stage. The actual Enmadan receiver must receive the same two original living people from their identified actually berthed launch and the original one-tonne custody recorder from the current actual docked player carrier. Every owned native hop must have arrived. A route quote, missing/empty/dead launch, generic matching hull, cull or stale board quote cannot substitute.
+
+Publish one matching parent/source receiving record with original people and recorder, stage9, removal of only the recorder reservation, and once-only return of unused rescue fuel escrow to the original Cevilis custodian. Preserve original pickup/current-hull custody, paid station depletion and the same launch in facility custody. No player payment, replacement people/recorder, clue or accreditation. Retain closed earlier flight/service forms without inventing receiving. The approved finite surviving-person recovery branch remains separate.

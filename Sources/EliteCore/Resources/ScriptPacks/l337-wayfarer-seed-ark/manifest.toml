@@ -1,0 +1,89 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.wayfarer-seed-ark"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2", "mission-calendar-v2", "profiled-encounters-v2", "npc-wormhole-transit-v2"]
+priority = 611
+source = "Closed native C08 registered seed-ark service. Exact original SH061 source, explicit 20m calibration, 40t custodian stores and six crew. Native registration/stock owns admission and transit; no Lua arrival or reward shortcut."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "registered-ark"
+title = "Registered Wayfarer seed ark"
+briefing = "Internal native provider for the owning Exchange induction. The real original ark must depart through its own wake, use actual reachable hops and paid refuelling, then reach the actual receiving cradle. This provider alone grants no stage, money or accreditation."
+destination = "Actual Enlirin-to-Lareria route"
+reward = "No player payment or clue."
+milestones = ["Actual original ark receiving recorded"]
+
+[[models]]
+id = "induction-original-haflinger"
+path = "models/haflinger.json"
+sha256 = "51861a1df520adb42e23df112c910cd2660eff9500b501e6b14368b135b80a04"
+source = "Original project-authored hull; no imported mesh, coordinates or bitmap inputs"
+license = "MIT"
+
+[[npcs]]
+id = "induction-original-seed-ark"
+name = "Registered Enlirin seed ark / Haflinger"
+source = "Original SH061 specifications 71000f32ab2cc28cacc3406e49bee33550fb339f89d43a64e04dad3a15ca46db"
+basis = "Explicit project calibration approved 21 October 2026: 20 metres per SH061 source unit. Source coordinates did not declare SI units. Existing native flight conversion: speed/acceleration x18; fuel x0.1 LY. One finite internal fitted drive uses the original hull energy ceiling. Finite 40t custodian seed stores and six crew are separate from the player key and cabins."
+model = "asset:induction-original-haflinger"
+scale = 20
+energy = 270
+recharge = 3.2
+speed = 612
+acceleration = 165.6
+pitch = 0.76
+yaw = 0.71
+roll = 0.86
+missiles = 5
+fuel = 13
+ecm = false
+bounty = 0
+lasers = []
+
+[npcs.drive]
+activationSeconds = 12
+component = "drive"
+fuelUnit = "native-light-years"
+massLockScale = 1
+rangeLightYears = 9
+
+[[npcs.components]]
+id = "drive"
+model = "asset:induction-original-haflinger"
+scale = 0.05
+energy = 270
+solid = false
+weapons = []
+position = {x = 0, y = 0, z = -1.8}
+orientation = {x = {x = 1, y = 0, z = 0}, y = {x = 0, y = 1, z = 0}, z = {x = 0, y = 0, z = 1}}
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+
+[[handlers]]
+event = "timer.fired"
+function = "launch"
+
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+
+[[encounters]]
+id = "registered-ark"
+galaxy = 0
+system = 162
+profile = "profiled-local-freeze-v1"
+
+[[encounters.actors]]
+id = "ark"
+npc = "induction-original-seed-ark"
+x = 10000.0
+y = 10000.0
+z = 3000.0
+hostile = false

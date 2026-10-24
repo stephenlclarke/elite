@@ -3,7 +3,33 @@ import Testing
 
 @testable import EliteCore
 
-@Test func galleryMapsEverySavedTPStageToChronologicalMilestones() {
+@Test func galleryMapsEverySavedTPStageToChronologicalMilestones() throws {
+  let packIDs = [
+    "xyzzy.constrictor/constrictor", "xyzzy.plans/plans", "xyzzy.blackjack/blackjack",
+  ]
+  let names = [
+    "Constrictor Hunt", "Thargoid Plans", "Blackjack's Bullion",
+    "Native crew capture and escape-pod rescue",
+  ]
+  let milestones = [
+    ["Receive naval assignment", "Remove the Constrictor", "Dock for debriefing and reward"],
+    [
+      "Receive orders to report to Nerith", "Dock at Nerith and collect plans",
+      "Dock at Veyara for delivery and reward",
+    ],
+    [
+      "Receive Blackjack's contact", "Destroy Bolts; earn 20 kg gold",
+      "Report at a G2 main station", "Collect the marked firearm",
+      "Confirm Darvan dockside handoff", "Destroy the unique witness",
+      "Confirm Dradar report and final reward",
+    ],
+    [
+      "Actually disable an admitted ordinary crewed craft",
+      "Track and collect a real occupied capsule",
+      "Capture original crew still aboard before recovery",
+      "Confirm care or an original-person sale",
+    ],
+  ]
   let expected: [(NavalMissionStage, Int, Int)] = [
     (.notStarted, 0, 0), (.huntingConstrictor, 1, 0), (.constrictorDestroyed, 2, 0),
     (.constrictorComplete, 3, 0), (.reportToCeerdi, 3, 1), (.carryingPlans, 3, 2),
@@ -13,15 +39,35 @@ import Testing
     var game = Game(executive: false)
     game.commander.missionStage = stage
     let catalogue = game.missionCatalogue
-    #expect(catalogue.count == 3)
+    try #require(game.missionPacks.entries.map { $0.pack.stateID } == packIDs)
+    try #require(catalogue.count == names.count && catalogue.map(\.name) == names)
     #expect(catalogue[0].completed == hunt && catalogue[1].completed == plans)
-    for mission in catalogue {
+    let statuses: [GalleryStatus] = [
+      hunt == 3 ? .complete : hunt > 0 ? .active : .locked,
+      plans == 3 ? .complete : plans > 0 ? .active : .locked, .locked, .available,
+    ]
+    #expect(catalogue.map(\.status) == statuses)
+    #expect(catalogue[2].completed == 0 && catalogue[3].completed == 0)
+    for (index, mission) in catalogue.enumerated() {
+      #expect(mission.milestones.map(\.title) == milestones[index])
       #expect(mission.milestones.filter { $0.state == "Complete" }.count == mission.completed)
-      if mission.status == .complete { #expect(mission.completed == 3) }
+      if mission.status == .complete {
+        #expect(mission.completed == mission.milestones.count)
+        if index < 2 { #expect(mission.completed == 3) }
+      }
+      if index < packIDs.count {
+        #expect(mission.trialDigest == nil && mission.savedInstance == nil)
+      } else {
+        #expect(mission.trialDigest == NativePeopleGallery.digest && mission.savedInstance == nil)
+        #expect(mission.milestones.map(\.state) == Array(repeating: "Trial", count: 4))
+      }
     }
   }
   var game = Game(executive: false)
-  #expect(game.missionCatalogue.allSatisfy { $0.status == .locked })
+  try #require(game.missionPacks.entries.map { $0.pack.stateID } == packIDs)
+  let initial = game.missionCatalogue
+  #expect(initial.map(\.name) == names)
+  #expect(initial.map(\.status) == [.locked, .locked, .locked, .available])
   game.commander.kills = 256
   #expect(game.missionCatalogue[0].status == .available)
   game.commander.missionStage = .constrictorComplete
@@ -37,15 +83,16 @@ import Testing
   game.commander.autoTarget = true
   game.key("v")
   game.key("]")
-  game.key("r")
+  game.key("tab")
   game.tick(delta: 0.1)
-  let spin = game.spin
-  let targetID = game.autoPilot.targetID
-  let time = game.time
-  let bodies = game.bodies
-  let speed = game.speed
-  let commander = game.commander
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  let spin = ready.spin
+  let targetID = ready.autoPilot.targetID
+  let time = ready.time
+  let bodies = ready.bodies
+  let speed = ready.speed
+  let commander = ready.commander
   var controls = Controls()
   controls.fire = true
   controls.throttle = 1
