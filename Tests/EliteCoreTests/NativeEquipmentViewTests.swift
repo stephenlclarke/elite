@@ -647,6 +647,19 @@ extension NativeViewTests {
     await fixture.delegate.processPendingCommands(in: fixture.view)
     #expect(fixture.view.game.commander == before)
     _ = try fixture.capture("inventory-after-focus", scale: 1)
+    // Fitted Store controls can sit between the held Fit actions. Navigate each
+    // real painted focus rather than treating the next control as a Fit command.
+    for _ in 0..<painted.controls.count {
+      if let primary = fixture.view.paintedInventoryInteraction?.primary,
+        case .fit = primary.action, primary != oldPrimary
+      {
+        break
+      }
+      try fixture.queueInventoryKey(48, text: "\t")
+      await fixture.delegate.processPendingCommands(in: fixture.view)
+      #expect(fixture.view.game.commander == before)
+      _ = try fixture.capture("inventory-next-fit-focus", scale: 1)
+    }
     let chosen = try #require(fixture.view.paintedInventoryInteraction?.primary)
     #expect(chosen != oldPrimary)
     let beforeBytes = try nativeEquipmentBytes(before)

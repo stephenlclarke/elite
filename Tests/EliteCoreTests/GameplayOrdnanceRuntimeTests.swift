@@ -56,7 +56,17 @@ struct GameplayOrdnanceRuntimeTests {
     let launched = game.fireMissile()
     #expect(launched)
     let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
-    game.tick(delta: 0.02)
+    let before = try #require(game.bodies.first { $0.id == 70 })
+    let resources = try #require(before.physical?.npc?.resources)
+    let delta = 0.02
+    let recharged =
+      resources.profile == .nativeHull
+      ? min(resources.energyCapacity, before.energy + delta * resources.energyRecharge)
+      : before.energy
+    let expectedHeat = min(
+      resources.heatCapacity, max(0, resources.laserHeat - delta * resources.heatCooling) + 10)
+    game.gameplayCombatTrace = .init()
+    game.tick(delta: delta)
     if game.bodies.contains(where: { $0.id == missile.id }),
       let victim = game.bodies.first(where: { $0.id == 70 })
     {
@@ -69,7 +79,17 @@ struct GameplayOrdnanceRuntimeTests {
             .utf8))
     }
     #expect(!game.bodies.contains { $0.id == missile.id })
-    #expect(game.bodies.first { $0.id == 70 }?.energy == 100)
+    let emitter = try #require(game.bodies.first { $0.id == 70 })
+    #expect(emitter.energy == recharged - 1)
+    #expect(emitter.physical?.laserCooldown == LaserKind.pulse.firingInterval)
+    #expect(emitter.physical?.npc?.resources?.laserHeat == expectedHeat)
+    let interceptions = try #require(game.gameplayCombatTrace).incidents.filter {
+      $0.outcome == .ordnanceInterception
+    }
+    try #require(interceptions.count == 1)
+    #expect(interceptions[0].origin.owner == before.physical?.identity)
+    #expect(interceptions[0].victim == missile.physical?.identity)
+    #expect(interceptions[0].kind == .laser && interceptions[0].laser == .pulse)
     #expect(game.commander.kills == 0 && game.commander.legal == 8)
     #expect(game.commander.missiles == 2)
   }

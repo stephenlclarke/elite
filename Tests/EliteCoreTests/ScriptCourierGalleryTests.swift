@@ -543,7 +543,21 @@ extension NativeViewTests {
         && trial.contractBoard.rows.count == 6)
     try captureCourierView(trial, name: "trial-review")
     #expect(trial.contractBoard.quote?.resources == trial.commander.contractQuoteResources)
+    #expect(trial.contractBoard.selected?.offer?.courier?.row == 0)
+    #expect(trial.contractBoard.quote?.allowed == false)
+    #expect(
+      trial.contractBoard.quote?.issues.contains(
+        "Frozen itinerary has no deadline headroom. This listing cannot be accepted.") == true)
+    // The authored first listing has no deadline headroom in this original world.
+    // Select the independently frozen, feasible row through the real board controls.
+    let pinned = CourierNativeFixture.rows[5]
+    try await harness.review(row: pinned.row)
     try await harness.paint()
+    let usable = await harness.delegate.runtime.snapshot()
+    let quote = try #require(usable.contractBoard.quote)
+    let offer = try #require(usable.contractBoard.selected?.offer)
+    try pinned.verify(try #require(usable.commander.contracts.boards[quote.board]), offer)
+    try #require(quote.allowed)
     try harness.press("right")
     await harness.drain()
     try #require(await harness.delegate.runtime.snapshot().contractBoard.action == .accept)
@@ -618,7 +632,7 @@ extension NativeViewTests {
 extension NativeViewTests {
   @MainActor @Test func nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem() async throws
   {
-    let harness = try await CourierInputHarness()
+    let harness = try await CourierInputHarness(origin: CourierNativeFixture.rows[1].origin)
     defer { harness.clean() }
     await harness.delegate.runtime.nativeCommand { @Sendable game in game.commander.cargo[0] = 2 }
     try await harness.review(row: 1)

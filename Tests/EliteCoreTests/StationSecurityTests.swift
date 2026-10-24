@@ -307,7 +307,7 @@ extension StationSecurityTests {
     game.speed = 0
     let station = try #require(game.commander.flightSimulation.anchors?.station)
     NativePagedSalvageFixture.moveObserver(
-      &game, to: .init(position: station.position + .init(0, 0, -1000)))
+      &game, to: .init(position: station.position + .init(300, 0, -1000)))
     let id = game.nextBodyID
     game.nextBodyID += 1
     game.bodies.append(.init(id: id, hull: .cobra, position: .init(100, 0, -500), hostile: true))

@@ -327,8 +327,19 @@ extension Game {
       : bodies.first(where: { $0.physical?.identity == identity }).map {
         hit.target == .body($0.id)
       } == true
+    // An incoming missile can physically intercept a beam aimed at its actual launcher.
+    // Other actors remain obstructions and cannot redirect this emission.
+    let incoming = contact.selectedTargetBody
+    let interceptsIncomingMissile =
+      !mining && incoming?.hull == .missile
+      && incoming?.physical?.identity.system == context.system
+      && incoming?.physical?.identity.visit == context.visit
+      && incoming?.physical?.ordnance?.termination == nil
+      && incoming?.physical?.ordnance?.target == actor.identity
+      && incoming?.physical?.ordnance?.origin.owner == identity
+      && incoming?.physical?.ordnance?.origin.ordnance == incoming?.physical?.identity
     let flightBeforeEmission = commander.flightSimulation
-    guard intended else { return nil }
+    guard intended || interceptsIncomingMissile else { return nil }
     let laser: LaserKind = mining ? .mining : .pulse
     if contact.selectedTargetBody?.scriptNPC != nil {
       do {

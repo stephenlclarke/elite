@@ -1,3 +1,4 @@
+import CoreFoundation
 import Foundation
 import Testing
 
@@ -242,7 +243,7 @@ private func measuredReadRehash(
 ) throws -> Commander {
   var root = object
   let hadGeometry = root.removeValue(forKey: "savedGeometry") != nil
-  var bytes = try JSONSerialization.data(withJSONObject: root)
+  var bytes = try measuredJSON(root)
   if hadGeometry {
     try #require(bytes.last == 125 && !root.isEmpty)
     bytes.removeLast()
@@ -402,4 +403,38 @@ private func measuredRawDifference(_ raw: Any, _ canonical: Any, path: String = 
   if NSDictionary(dictionary: ["value": raw]).isEqual(["value": canonical]) { return nil }
   return path + ":" + String(String(describing: raw).prefix(80))
     + "/" + String(String(describing: canonical).prefix(80))
+}
+
+// JSONSerialization may spell a floating NSNumber differently from JSONEncoder.
+// Preserve its exact Double, along with every forged field and all integer/bool scalars.
+private func measuredJSON(_ value: Any) throws -> Data {
+  if let object = value as? [String: Any] {
+    let fields = try object.keys.sorted().map { key in
+      var field = try JSONEncoder().encode(key)
+      field.append(58)
+      field.append(try measuredJSON(object[key]!))
+      return field
+    }
+    return Data([123])
+      + fields.enumerated().reduce(into: Data()) { result, entry in
+        if entry.offset > 0 { result.append(44) }
+        result.append(entry.element)
+      } + Data([125])
+  }
+  if let array = value as? [Any] {
+    let fields = try array.map(measuredJSON)
+    return Data([91])
+      + fields.enumerated().reduce(into: Data()) { result, entry in
+        if entry.offset > 0 { result.append(44) }
+        result.append(entry.element)
+      } + Data([93])
+  }
+  if let number = value as? NSNumber,
+    CFGetTypeID(number) != CFBooleanGetTypeID(),
+    ["d", "f"].contains(String(cString: number.objCType))
+  {
+    guard number.doubleValue.isFinite else { throw SaveError.invalidCommander }
+    return try JSONEncoder().encode(number.doubleValue)
+  }
+  return try JSONSerialization.data(withJSONObject: value, options: [.fragmentsAllowed])
 }
