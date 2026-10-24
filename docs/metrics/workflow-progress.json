@@ -12659,6 +12659,25 @@
       "next_packet": "M02.P05; then P01 only if P05 already satisfied",
       "new_test_execution": false,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-parallel-standing-queues",
+      "timestamp": "2026-10-24T13:15:37.203203+00:00",
+      "g4_queue": [
+        "M02.P05",
+        "M02.P01",
+        "M02.P02"
+      ],
+      "g3_queue": [
+        "NativeMultiBatchRuntimeTests test-only overhead",
+        "NativeSalvageOfferTests test-only overhead",
+        "NativeMeasuredExtractionJourneyTests test-only overhead"
+      ],
+      "one_packet_per_owner": true,
+      "m01_priority": true,
+      "runtime_execution_pending": true,
+      "unrelated_529_passes_qualify_runtime_change": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
