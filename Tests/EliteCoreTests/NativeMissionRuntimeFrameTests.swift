@@ -114,6 +114,9 @@ struct NativeMissionRuntimeFrameTests {
     // The fixed-forward centre-ray oracle requires the authored closed Cobra fixture.
     game.commander.shipID = "SH023"
     game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
     game.screen = .status
     try game.commander.prepareEquipment(legacy: false)
     game.scriptPacks = [pack]

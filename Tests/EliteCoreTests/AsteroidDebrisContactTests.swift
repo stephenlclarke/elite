@@ -542,3 +542,35 @@ extension AsteroidDebrisContactTests {
     #expect(abs(contact.point.x) < 0.21 && abs(contact.point.y) < 0.21)
   }
 }
+
+extension AsteroidDebrisContactTests {
+  @Test(arguments: [Vector3(0, 0, 0), .init(100000, -200000, 300000)])
+  func diagonalTranslationPreservesOneTimeVariableWhenProvingThinClearance(offset: Vector3) throws {
+    let box = contactBox(0.5, 0.5, 0.5)
+    let diagonal = sqrt(0.5)
+    let hull = try PreparedHull(
+      mesh: .init(
+        vertices: box.vertices.map {
+          .init(($0.x - $0.y) * diagonal, ($0.x + $0.y) * diagonal, $0.z)
+        }, faces: box.faces, preserveWinding: true))
+    let normal = Vector3(diagonal, diagonal, 0)
+    let tangent = Vector3(-diagonal, diagonal, 0)
+    // The actual normal gap stays positive during the entire diagonal translation.
+    // Enclosing X/Y time independently loses their cancellation and cannot prove it.
+    let gap = 0.00001
+    let from = offset + normal * (1 + gap) - tangent * 1000
+    let to = offset + normal * (1 + gap) + tangent * 1000
+    let moving = contactMotion(from, to, radius: hull.radius)
+    let stationary = contactMotion(offset, offset, radius: hull.radius)
+    for reversed in [false, true] {
+      let result = HullSweepSafety.firstNativeContact(
+        source: reversed ? stationary : moving, hull: hull,
+        target: reversed ? moving : stationary, targetHull: hull)
+      guard case .clear = result else {
+        Issue.record(
+          "The positive diagonal native gap was not certified: \(String(describing: result))")
+        continue
+      }
+    }
+  }
+}

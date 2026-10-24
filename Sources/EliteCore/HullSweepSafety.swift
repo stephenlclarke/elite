@@ -1976,10 +1976,11 @@ extension HullSweepSafety {
     else { return false }
     try work.query()
     let time = SweepInterval(lower: start, upper: end)
-    let relative =
+    let relativePosition =
       SweepIntervalVector(target.start.position) - SweepIntervalVector(source.start.position)
-      + (SweepIntervalVector(target.initialVelocity) - SweepIntervalVector(source.initialVelocity))
-      * time
+    let relativeVelocity =
+      SweepIntervalVector(target.initialVelocity) - SweepIntervalVector(source.initialVelocity)
+    let relative = relativePosition + relativeVelocity * time
     let middle = (start + end) * 0.5
     let numerical =
       64 * Double.ulpOfOne
@@ -2037,7 +2038,7 @@ extension HullSweepSafety {
             guard !a.unresolvedSupport, !b.unresolvedSupport else { return false }
             let av = (0..<3).map { point(a.vertex(at: $0), orientation: source.start.orientation) }
             let bv = (0..<3).map {
-              point(b.vertex(at: $0), orientation: target.start.orientation) + relative
+              point(b.vertex(at: $0), orientation: target.start.orientation)
             }
             let ae = (0..<3).map {
               source.start.orientation.apply(a.edge(at: $0).1 - a.edge(at: $0).0)
@@ -2056,7 +2057,10 @@ extension HullSweepSafety {
               guard candidate.finite, length.isFinite, length > 0 else { continue }
               let axis = SweepIntervalVector(candidate * (1 / length))
               let ap = av.map { $0.dot(axis) }
-              let bp = bv.map { $0.dot(axis) }
+              // One time variable drives all three coordinates. Project its affine
+              // translation first so opposite terms cancel inside outward intervals.
+              let translation = relativePosition.dot(axis) + relativeVelocity.dot(axis) * time
+              let bp = bv.map { $0.dot(axis) + translation }
               let aLow = ap.map(\.lower).min() ?? -.infinity
               let aHigh = ap.map(\.upper).max() ?? .infinity
               let bLow = bp.map(\.lower).min() ?? -.infinity

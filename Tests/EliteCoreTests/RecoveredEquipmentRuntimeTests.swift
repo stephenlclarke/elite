@@ -35,6 +35,9 @@ func recoveredEquipmentGame(_ definition: String) throws -> Game {
   var game = Game(executive: false)
   game.commander.shipID = "SH023"
   game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.screen = .inventory
   try game.commander.prepareEquipment(legacy: false)
   game.commander.salvageLedger = try recoveredEquipmentLedger(definition)

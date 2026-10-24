@@ -1,0 +1,1076 @@
+{
+  "source": "6423e889ab76109f04821e4159fb110be0f9b779",
+  "command": [
+    "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+    "test",
+    "--jobs",
+    "3",
+    "--enable-code-coverage",
+    "--xunit-output",
+    "/tmp/elite-m01-authored-fixtures.xml",
+    "--filter",
+    "(?:^|[./])(?:acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates|acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness|actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter|actualApertureOverspeedRefusesCollectionAndKeepsTheTarget|actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity|actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility|actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene|actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased|actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit|actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain|actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift|actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState|actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable|actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock|actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick|anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote|anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned|authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage|authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool|canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex|catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct|changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent|collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates|defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial|defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly|defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent|emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry|explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling|failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths|filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault|fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit|fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade|helpUsesTheUnderlyingInformationScreenAndExchangeContext|hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins|hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically|identicalInstalledCopyDeduplicatesWithoutRewritingUserContent|installedDistinctContentKeepsItsIdentityAndExternalOrdering|knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices|lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused|liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage|malformedInstalledContentReportsItsErrorAlongsideBundledCourier|markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold|marketTransactionsRespectCashCapacityAndStock|maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity|nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory|nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward|normalizedComparisonsSortAndTOMLLoaderAreConsistent|optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth|otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys|outlookNativeRepliesWithdrawWhenActualCabinFitChanges|plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity|plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield|realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild|realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity|realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary|recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers|retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources|routePreviewSequentialExportsRetainEveryCandidateAndMetricRow|showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults|sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels|transporterCargoCorrectionDrivesActualHoldAndCurrentReference|zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation)\\(|RecoveredEquipmentRuntimeTests/|NativeShipShieldComparisonTests/|RecoveredFeatureRuntimeTests/|NavigationCustodyTests/|WantedBoardTests/|NPCSceneRestorationTests/|FlightWorkGuidanceRuntimeTests/|NativeMissionWeaponGeometryTests/|InventoryCommandTests/|ScriptCourierCanonicalReachTests/|MissionResourceFractionTests/"
+  ],
+  "swift": "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0\n",
+  "sdk": "15.5",
+  "exitCode": 1,
+  "wallSeconds": 326.039040208,
+  "buildSeconds": 284.84,
+  "swiftTestingSeconds": 39.895,
+  "methods": [
+    {
+      "suite": "EliteCoreTests",
+      "method": "helpUsesTheUnderlyingInformationScreenAndExchangeContext()",
+      "seconds": 26.497828625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionActorAdmissionComponentTests",
+      "method": "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()",
+      "seconds": 27.248094875,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "maximumValidOrdinaryTonnageKeepsTradeScoringFinite()",
+      "seconds": 27.387473792,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()",
+      "seconds": 27.786724916,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "purchasedCabinsFillActualHoldAndLeaveNoTonneTradeOrPurchaseRoom()",
+      "seconds": 27.319186792,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()",
+      "seconds": 27.785354,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "purchasedCabinReservesRealHoldEvenWithUnlimitedCargo(unlimited:)",
+      "seconds": 27.785434,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "nonTonneTradeStillLoadsWithAnOccupiedHold()",
+      "seconds": 27.319171417,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "mixedPersonalAndMarkedCargoValuesOnlyTheItemsThatCanActuallyBeSold()",
+      "seconds": 30.996187333,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "markedOnlyFirearmsProduceNoSaleValueOrCargoDetour()",
+      "seconds": 27.787002208,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()",
+      "seconds": 27.785256625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()",
+      "seconds": 27.785277917,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NavigationCustodyTests",
+      "method": "acceptedMaximumSaleQuantityIsFiniteWithoutIntegerMultiplication()",
+      "seconds": 27.785413459,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionImpactTests",
+      "method": "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)",
+      "seconds": 27.785375459,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionImpactTests",
+      "method": "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()",
+      "seconds": 27.785360084,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.AsteroidFragmentationTests",
+      "method": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
+      "seconds": 33.96183575,
+      "status": "failed",
+      "failures": [
+        "Issue recorded: Actual native moving debris did not admit the NPC impact: .refused(REMAINING SWEEP UNPROVEN: Continuous hull clearance not proven)"
+      ]
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()",
+      "seconds": 24.862153375,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()",
+      "seconds": 24.862241458,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MarketCargoBoundsTests",
+      "method": "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)",
+      "seconds": 24.861829834,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MarketCargoBoundsTests",
+      "method": "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)",
+      "seconds": 25.127486542,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.SalvageWorldRuntimeTests",
+      "method": "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()",
+      "seconds": 25.12765125,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.SalvageWorldRuntimeTests",
+      "method": "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()",
+      "seconds": 25.127634709,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.SalvageWorldRuntimeTests",
+      "method": "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)",
+      "seconds": 25.127588375,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeCrimboActorMotionTests",
+      "method": "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()",
+      "seconds": 27.785433209,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionWeaponGeometryTests",
+      "method": "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()",
+      "seconds": 27.785389417,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionWeaponGeometryTests",
+      "method": "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()",
+      "seconds": 27.78529425,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionWeaponGeometryTests",
+      "method": "realNativeMissileHitsAnOffAxisComponentOnceAndRetriesEventPressureWithoutMotion(pressure:)",
+      "seconds": 27.78534525,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeOrbitalOutlookJourneyTests",
+      "method": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
+      "seconds": 25.127812625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "anEnergyUpgradeQuotedBeforeARealFlightTickStillFitsItsUnchangedPhysicalComponent()",
+      "seconds": 25.127736666,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "anActualShieldPurchaseReplacesTheQuotedInstanceWithoutConsumingItsRecoveredSource()",
+      "seconds": 25.127717958,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "actualAdditionalRecoveryInvalidatesTheSourceRevisionWithoutConsumingEitherLot()",
+      "seconds": 25.127646417,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)",
+      "seconds": 25.127681125,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)",
+      "seconds": 25.127636125,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "realNavigationFuelEfficiencyControlsRingsRoutesJumpSpoolAndActualFuelDebit()",
+      "seconds": 27.789057541,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "aLaterFailedExplicitSaveDoesNotUndoOrRepeatAnAlreadyCommittedFit()",
+      "seconds": 25.127662167,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "actualShieldUpgradeConsumesItsSourceOnceAndPreservesBothChargeFractions(axis:)",
+      "seconds": 25.127644083,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredEquipmentRuntimeTests",
+      "method": "changedPhysicalCustodyCannotConsumeTheOriginalUpgradeForAnotherComponent()",
+      "seconds": 25.127420167,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "marketTransactionsRespectCashCapacityAndStock()",
+      "seconds": 24.86212725,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()",
+      "seconds": 10.6870055,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()",
+      "seconds": 10.443190292,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "compactLongWorkStatusAndHintRemainInsideTheActualTargetPanel()",
+      "seconds": 10.83815225,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "currentBoundCustomScaledCargoCannotBorrowTheNativeCanisterException()",
+      "seconds": 10.443150292,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "collectionOfAMissingOrDifferentPhysicalParentCannotTakeWorkAuthority(otherActor:)",
+      "seconds": 9.499503625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "actualOversizedSalvageCannotBorrowOrdinaryCanisterCaptureRules()",
+      "seconds": 11.038763958,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "manualAndDamageInterruptionsPreserveActualMomentumAndSuppressHeldTool()",
+      "seconds": 10.780200875,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "actualWorkCameraMovesStarsDuringApprovedMotionAndUnpoweredCoast(blocked:)",
+      "seconds": 10.397426459,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()",
+      "seconds": 11.03766175,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "otherPodStillBlocksPostCaptureBrakingAndReceivesNoThrust()",
+      "seconds": 10.037004625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "displayIDReuseNeverFollowsANewPhysicalActor()",
+      "seconds": 10.761893209,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()",
+      "seconds": 22.942752834,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "legacyDirectScoopDoesNotCreateWorkBrakingOrClearAnotherTrackingTarget()",
+      "seconds": 10.443186375,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "unknownNativeCanisterCannotBorrowTheBoundOrdinaryPayloadException()",
+      "seconds": 10.479074708,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "pendingOreRecoveryWaitsExpiresAndQPreservesMomentum()",
+      "seconds": 12.999190209,
+      "status": "failed",
+      "failures": [
+        "Expectation failed: (game.workRecoveryRock == nil \u2192 false) && (game.workRecoveryAdmissionDeadline == nil \u2192 <not evaluated>)",
+        "Expectation failed: (game.commander.flightSimulation.physicalTime \u2192 32.800000000000196) >= (deadline \u2192 61.5)",
+        "Expectation failed: (game.message \u2192 \"GAME OVER\") == \"ORE RECOVERY BLOCKED - SAFE ADMISSION UNAVAILABLE\""
+      ]
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "boundButIneligibleOreRecoveryReportsBlocked()",
+      "seconds": 11.037630084,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "nativeOreAdmissionAndSelectionPreserveRequestedPhysicalSpin(omega:)",
+      "seconds": 8.696245459,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "nativeProtectedParentPermitsHoldButEveryCutterGuardRemains(ownership:)",
+      "seconds": 10.838146333,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "genuineDestroyedNPCDebrisUsesNativeCanisterGeometryAndCollectsOnlyOnce()",
+      "seconds": 10.443176458,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()",
+      "seconds": 10.453042334,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()",
+      "seconds": 10.443491333,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()",
+      "seconds": 11.088086334,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "genuinelyGeneratedRockHandsItsAcknowledgedOreToAutomaticRecovery()",
+      "seconds": 19.982934208,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()",
+      "seconds": 10.762045125,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()",
+      "seconds": 10.839014542,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()",
+      "seconds": 10.037011,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "approvedActualMeshEndpointIsAppliedOnceWithoutEndVelocityEuler()",
+      "seconds": 10.443304083,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "freshTwentyPodOutputUsesNativeSafeAdmission()",
+      "seconds": 11.038733042,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()",
+      "seconds": 10.443206209,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "pendingOreRecoveryResumesAndFinishesOnlyWithoutPending()",
+      "seconds": 10.397378042,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.FlightWorkGuidanceRuntimeTests",
+      "method": "miningAndSalvageNeverInheritEachOthersFittedModule()",
+      "seconds": 9.867008417,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeStationPersistenceTests",
+      "method": "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()",
+      "seconds": 12.877430458,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionNativeBridgeTests",
+      "method": "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()",
+      "seconds": 27.785325167,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionNativeBridgeTests",
+      "method": "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()",
+      "seconds": 27.785300625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionNativeBridgeTests",
+      "method": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
+      "seconds": 27.785306333,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()",
+      "seconds": 25.127783666,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()",
+      "seconds": 31.468620334,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()",
+      "seconds": 24.861854584,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "normalizedComparisonsSortAndTOMLLoaderAreConsistent()",
+      "seconds": 25.128780167,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.CommanderEquipmentMigrationTests",
+      "method": "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()",
+      "seconds": 25.507101417,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()",
+      "seconds": 25.128472333,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()",
+      "seconds": 25.128211917,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.CommiesShipCatalogueTests",
+      "method": "transporterCargoCorrectionDrivesActualHoldAndCurrentReference()",
+      "seconds": 25.127504709,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()",
+      "seconds": 26.4672255,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "missingPermanentEvidenceRefusesLoadWithoutPublishingOrChangingInteraction()",
+      "seconds": 26.782145375,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "occupiedAndUnsupportedSlotsRefuseWithoutConsumingTheRecoveredDevice()",
+      "seconds": 26.494989375,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)",
+      "seconds": 26.494946125,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "alteredDisplayedDefinitionOrFullLotCannotInstallADifferentDevice()",
+      "seconds": 25.507203292,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "actualFittedCoreIsRequiredAndNeitherSpecialtyConfersTheOther(id:)",
+      "seconds": 26.31559925,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "changedOwnedAndSourceRevisionsRefuseAQuotedInstallWithoutLosingCustody()",
+      "seconds": 26.467312167,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "recoveredECMAndScoopsUseTheRealFlightConsumers()",
+      "seconds": 26.495053166,
+      "status": "failed",
+      "failures": [
+        "Expectation failed: (ecm.ecmFrames == 32 \u2192 true) && (ecm.energy == energy - 10 \u2192 false)"
+      ]
+    },
+    {
+      "suite": "EliteCoreTests.RecoveredFeatureRuntimeTests",
+      "method": "sourceReceiptSurvivesStoreRefitRoundTripAndACompatibleNewHull()",
+      "seconds": 26.495095542,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionLedgerImpactTests",
+      "method": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
+      "seconds": 27.010800875,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionLedgerImpactTests",
+      "method": "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()",
+      "seconds": 27.01067975,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "emptyReportsAndTiesDoNotInventTargetsOrCloseOnReturn()",
+      "seconds": 25.507177083,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "gossipKeyboardPointerDossierAndStalePlotAreReadOnlyAcrossWindowSizes()",
+      "seconds": 25.289458,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "tiedCareersKeepIdentityAcrossCullRebindAndCrossSystemParking()",
+      "seconds": 25.508650708,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "nativeDeathPaysDisplayedBountyOnceAndPromotesEleventhWithoutABoardBonus()",
+      "seconds": 25.127703334,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "careerStateRoundTripsAndOldCommanderStartsWithUnknownLiteralHistory()",
+      "seconds": 25.508722416,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "onlyAcceptedShipDeathsCountNeverSelfProjectilesOrDuplicateSettlements()",
+      "seconds": 25.127694209,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "nativeCapacityRefusedKillerCannotCreateAParkedCareerOrRevisitAdmission()",
+      "seconds": 25.127749583,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "purpleWorldScannerAndPanelWorkInAllViewsAndPlanetOcclusionStillWins()",
+      "seconds": 27.175713917,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
+      "seconds": 25.2184915,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "explicitHistoricalPlotUsesExistingPreviewWithoutCommittingARoute()",
+      "seconds": 27.787108667,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "nativeWantedBoardPointerDetailsBackAndHistoricalRouteUsePrivatePreferences()",
+      "seconds": 39.108959792,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.WantedBoardTests",
+      "method": "cuesRequireCurrentListedCraftAndRetainHostileDangerAndMissileRed()",
+      "seconds": 25.50862425,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeShipShieldComparisonTests",
+      "method": "nativeShieldComparisonsDistinguishCompatibleAndUnavailableCarriedFits()",
+      "seconds": 27.785704,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeShipShieldComparisonTests",
+      "method": "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()",
+      "seconds": 26.566579833,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.BundledScriptPackTests",
+      "method": "installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)",
+      "seconds": 25.127854458,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.BundledScriptPackTests",
+      "method": "malformedInstalledContentReportsItsErrorAlongsideBundledCourier()",
+      "seconds": 25.127584291,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.BundledScriptPackTests",
+      "method": "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()",
+      "seconds": 25.509371541,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.BundledScriptPackTests",
+      "method": "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()",
+      "seconds": 25.1275675,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.BundledScriptPackTests",
+      "method": "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()",
+      "seconds": 25.1276645,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.BundledScriptPackTests",
+      "method": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
+      "seconds": 25.509190875,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.InventoryCommandTests",
+      "method": "backendAlsoRefusesARequiredSystemRemovalFromAMalformedControl()",
+      "seconds": 25.127716875,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.InventoryCommandTests",
+      "method": "loadAndScreenReturnRejectOldCommandsEvenWhenPersistentIdentitiesAndRevisionsMatch()",
+      "seconds": 25.127660333,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.InventoryCommandTests",
+      "method": "recoveredActionUsesItsDisplayedStatisticsAndConsumesTheExactSource()",
+      "seconds": 25.127624666,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.InventoryCommandTests",
+      "method": "aDifferentActorCannotUseTheSameCommandersOldInteractionContext()",
+      "seconds": 25.127680041,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.InventoryCommandTests",
+      "method": "actualTypedRowsRemainPureAndNeverOfferRemovingRequiredShipSystems()",
+      "seconds": 25.127897209,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.InventoryCommandTests",
+      "method": "anActualHeldDeviceCanFitAndStoreOnceWithoutCreatingPaidHistoryOrNewIdentities()",
+      "seconds": 25.127660583,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionResourceFractionTests",
+      "method": "upgradedOutgoingEnergyUnitPreservesPartialAndEmptyCharge(fraction:)",
+      "seconds": 26.494884167,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionResourceFractionTests",
+      "method": "actualDockAndPlansRewardRefillOnlyToTheNewEnergyCapacity()",
+      "seconds": 26.494860666,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.MissionResourceFractionTests",
+      "method": "refusedPlansEquipmentTransactionKeepsAllLiveResourcesAndOriginalOwnership()",
+      "seconds": 26.494994083,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()",
+      "seconds": 25.127662917,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NPCSceneRestorationTests",
+      "method": "absentLegacyLedgerDoesNotInventBindingsOrAlterTheWorld()",
+      "seconds": 27.785287625,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NPCSceneRestorationTests",
+      "method": "actualPersistenceReentryAndLegacyNilSourcesRejoinWithoutSpawning()",
+      "seconds": 27.785306083,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NPCSceneRestorationTests",
+      "method": "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()",
+      "seconds": 27.785875708,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NPCSceneRestorationTests",
+      "method": "forgedOrAmbiguousSavedJoinsRefuseTheWholeLedger(forgery:)",
+      "seconds": 27.785406958,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NPCSceneRestorationTests",
+      "method": "anActualOutOfSceneRecordStaysUnboundWithoutAllocation()",
+      "seconds": 27.785280417,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NPCSceneRestorationTests",
+      "method": "invalidSavedSceneFailsLoadWithoutChangingLiveStateOrSaveBytes(forgery:)",
+      "seconds": 27.785292792,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.ScriptCourierCanonicalReachTests",
+      "method": "newProofFreezesActualPaidAndRecoveredNativeFacts(axis:)",
+      "seconds": 27.78531525,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.ScriptCourierCanonicalReachTests",
+      "method": "efficientFirstAndLaterLegsUseNativeReachAndRefittingRefusesTheFrozenRoute(laterLeg:)",
+      "seconds": 27.785308291,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.ScriptCourierCanonicalReachTests",
+      "method": "reachVersionsRefuseMissingMixedUnknownAndIncoherentFacts()",
+      "seconds": 27.785292667,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.ScriptCourierCanonicalReachTests",
+      "method": "v1BBCWorldGoldenCannotRebindCurrentOriginalWorlds()",
+      "seconds": 27.785296125,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.ScriptCourierCanonicalReachTests",
+      "method": "admittedGrandfatheredMilitaryZeroCostUsesNativeCapEvenWithNoFuel()",
+      "seconds": 27.78533875,
+      "status": "passed",
+      "failures": []
+    },
+    {
+      "suite": "EliteCoreTests.NativeMissionRuntimeFrameTests",
+      "method": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
+      "seconds": 25.127625125,
+      "status": "failed",
+      "failures": [
+        "Expectation failed: hostile ? frame.frontShield < shield : frame.frontShield == shield"
+      ]
+    },
+    {
+      "suite": "EliteCoreTests",
+      "method": "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()",
+      "seconds": 24.862011083,
+      "status": "passed",
+      "failures": []
+    }
+  ],
+  "counts": {
+    "completed": 135,
+    "passed": 131,
+    "failed": 4,
+    "failureElements": 6,
+    "errors": 0,
+    "skipped": 0,
+    "originalFailureMethodsPresent": 62,
+    "originalFailureMethodsPassed": 60
+  },
+  "selection": {
+    "source": "6423e889ab76109f04821e4159fb110be0f9b779",
+    "terminal_methods": [
+      "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates",
+      "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness",
+      "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter",
+      "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget",
+      "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity",
+      "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility",
+      "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene",
+      "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased",
+      "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit",
+      "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain",
+      "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift",
+      "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState",
+      "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable",
+      "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock",
+      "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick",
+      "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote",
+      "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned",
+      "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage",
+      "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool",
+      "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex",
+      "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct",
+      "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent",
+      "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates",
+      "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial",
+      "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly",
+      "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent",
+      "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry",
+      "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling",
+      "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths",
+      "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault",
+      "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit",
+      "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade",
+      "helpUsesTheUnderlyingInformationScreenAndExchangeContext",
+      "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins",
+      "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically",
+      "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent",
+      "installedDistinctContentKeepsItsIdentityAndExternalOrdering",
+      "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices",
+      "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused",
+      "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage",
+      "malformedInstalledContentReportsItsErrorAlongsideBundledCourier",
+      "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold",
+      "marketTransactionsRespectCashCapacityAndStock",
+      "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity",
+      "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory",
+      "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward",
+      "normalizedComparisonsSortAndTOMLLoaderAreConsistent",
+      "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth",
+      "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys",
+      "outlookNativeRepliesWithdrawWhenActualCabinFitChanges",
+      "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity",
+      "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield",
+      "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild",
+      "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity",
+      "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary",
+      "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers",
+      "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources",
+      "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow",
+      "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults",
+      "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels",
+      "transporterCargoCorrectionDrivesActualHoldAndCurrentReference",
+      "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation"
+    ],
+    "directly_affected_unit_suites": [
+      "RecoveredEquipmentRuntimeTests",
+      "NativeShipShieldComparisonTests",
+      "RecoveredFeatureRuntimeTests",
+      "NavigationCustodyTests",
+      "WantedBoardTests",
+      "NPCSceneRestorationTests",
+      "FlightWorkGuidanceRuntimeTests",
+      "NativeMissionWeaponGeometryTests",
+      "InventoryCommandTests",
+      "ScriptCourierCanonicalReachTests",
+      "MissionResourceFractionTests"
+    ],
+    "filter": "(?:^|[./])(?:acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates|acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness|actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter|actualApertureOverspeedRefusesCollectionAndKeepsTheTarget|actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity|actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility|actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene|actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased|actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit|actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain|actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift|actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState|actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable|actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock|actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick|anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote|anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned|authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage|authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool|canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex|catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct|changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent|collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates|defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial|defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly|defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent|emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry|explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling|failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths|filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault|fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit|fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade|helpUsesTheUnderlyingInformationScreenAndExchangeContext|hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins|hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically|identicalInstalledCopyDeduplicatesWithoutRewritingUserContent|installedDistinctContentKeepsItsIdentityAndExternalOrdering|knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices|lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused|liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage|malformedInstalledContentReportsItsErrorAlongsideBundledCourier|markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold|marketTransactionsRespectCashCapacityAndStock|maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity|nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory|nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward|normalizedComparisonsSortAndTOMLLoaderAreConsistent|optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth|otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys|outlookNativeRepliesWithdrawWhenActualCabinFitChanges|plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity|plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield|realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild|realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity|realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary|recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers|retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources|routePreviewSequentialExportsRetainEveryCandidateAndMetricRow|showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults|sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels|transporterCargoCorrectionDrivesActualHoldAndCurrentReference|zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation)\\(|RecoveredEquipmentRuntimeTests/|NativeShipShieldComparisonTests/|RecoveredFeatureRuntimeTests/|NavigationCustodyTests/|WantedBoardTests/|NPCSceneRestorationTests/|FlightWorkGuidanceRuntimeTests/|NativeMissionWeaponGeometryTests/|InventoryCommandTests/|ScriptCourierCanonicalReachTests/|MissionResourceFractionTests/",
+    "excluded_campaigns": "No broader native UI/journey/performance campaign; no extra full quality run."
+  },
+  "artifactSHA256": {
+    ".log": "85bdab73aff7a6fad2be5cd29872b916efbf5e699116369ea706993a693d5f91",
+    "-start.json": "c71ffadcfba8c8897994bc2e4d98f3c896b406c2ac7bd0b8bf1dad2ff30e195a",
+    "-result.json": "3fdea9f578a54787a20e9256ea654d880f7cbd4069db0fbf424ff5af2e00c4d6",
+    "-swift-testing.xml": "42c766f9a3a13912fc9322c0cb7b7fb891e5ab89f167e814a523651804239e4b"
+  },
+  "qualification": "Normal affected batch completed with assertion failures. No SIGBUS occurred. The remaining four methods are not qualified. This is not full coverage, sanitizer, leak, native journey or release acceptance. Issue185 remains unknown cause."
+}

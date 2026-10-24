@@ -1299,6 +1299,25 @@ extension FlightWorkGuidanceRuntimeTests {
     game.workRecoveryRock = rock.identity  // Initial recovery phase, not a cargo or motion grant.
     game.selectNextMinedOre()
     let deadline = try #require(game.workRecoveryAdmissionDeadline)
+    // Isolate this bounded admission timeout from new ambient traffic. Retain the
+    // real scene, clock, random stream and all pending cargo; only defer its next decision.
+    try #require(game.bodies.allSatisfy { $0.physical?.npc == nil })
+    let director = try #require(game.commander.encounterDirector)
+    try #require(director.system == game.systemIdentity)
+    try #require(director.visit == game.commander.flightSimulation.visit)
+    try #require(director.pendingRequests.isEmpty)
+    var directorFields = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(director)) as? [String: Any])
+    let originalDecision = try #require(directorFields["nextDecisionTime"])
+    directorFields["nextDecisionTime"] = deadline + 1
+    let deferredDirector = try JSONDecoder().decode(
+      EncounterDirector.self, from: JSONSerialization.data(withJSONObject: directorFields))
+    directorFields["nextDecisionTime"] = originalDecision
+    let restoredDirector = try JSONDecoder().decode(
+      EncounterDirector.self, from: JSONSerialization.data(withJSONObject: directorFields))
+    try #require(
+      restoredDirector == director && deferredDirector.nextDecisionTime > deadline + 0.11)
+    game.commander.encounterDirector = deferredDirector
     #expect(game.workRecoveryRock == rock.identity)
     #expect(game.message == "ORE RECOVERY WAITING FOR SAFE ADMISSION")
     var cancelled = game
