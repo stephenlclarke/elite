@@ -1,5 +1,7 @@
 # Equipment modules and accumulated upgrades
 
+Price authority: the shield-price cells below preserve a source snapshot. The finished-game rule is 25 percent less than the matching laser, calculated in internal tenths as `laserPrice * 3 / 4` with integer truncation. With the original L337 laser prices, Basic II/Intermediate/Intermediate II/Advanced cost 1,087.5/2,475/3,525/12,300 CR. See [the controlling equipment rules](../GAMEPLAY.md). These cells do not establish independent fixed prices.
+
 ## Stock grades
 
 | Navigation | Stock jump reach | Search scope | Acquisition |
