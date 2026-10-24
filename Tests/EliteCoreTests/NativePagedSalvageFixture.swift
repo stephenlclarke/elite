@@ -264,7 +264,17 @@ enum NativePagedSalvageFixture {
   /// This sends input only; there are no setup ticks or forced controller transitions.
   static func advanceHeldWork(_ runtime: GameRuntime, delta: Double) async -> Game {
     let before = await runtime.snapshot()
-    if before.workGuidance?.holding == true && before.workFireSuspended {
+    return await advanceHeldWork(
+      runtime, delta: delta,
+      requiresFreshPress: before.workGuidance?.holding == true && before.workFireSuspended)
+  }
+
+  /// A single-owner loop can reuse its last published frame instead of publishing it again.
+  /// The caller must not change runtime input or state after observing this decision.
+  static func advanceHeldWork(
+    _ runtime: GameRuntime, delta: Double, requiresFreshPress: Bool
+  ) async -> Game {
+    if requiresFreshPress {
       await runtime.setControls(.init())
       await runtime.key("return")
       await runtime.setControls(firingControls)
