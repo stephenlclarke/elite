@@ -11889,6 +11889,22 @@
       "next_stage": "G1_coherent_publication_final_head_gates",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T09:15:06.890629+00:00",
+      "checkpoint_key": "20261024-m01-d009-coherent-publication-final-gates",
+      "event": "Qualified coherent source published toPR25;final-head review/checks and physicalrunner active",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "published_head": "d0099a77199bf5586062f0a22a7ef44439e3d8de",
+      "canonical_docs_commit": "80ba3a2c238e6dbef79bfe49d3fe8246c5e4cd31",
+      "review_comment": 6382404811,
+      "initial_quality_run": 40081071122,
+      "initial_quality_outcome": "authorization_guard_failed_before_checkout_hosted_runner",
+      "actual_game_tests_in_initial_quality": 0,
+      "native_registration": "in_progress_reported_by_owner",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
