@@ -11077,6 +11077,21 @@
       "m01_complete": false,
       "usable_delivery": false,
       "independent_verification": "complete"
+    },
+    {
+      "at": "2026-10-24T04:22:01.387443+00:00",
+      "checkpoint_key": "20261024-m01-a890-qualified-followup-published",
+      "event": "Coherent qualified M01 follow-up published to PR25; final gates next",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "published_head": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+      "qualified_source": "c708eeab9cab632242b321e2699af914542f4996",
+      "canonical_root_snapshot": "4af19d63ccabd867f4fe071b8500a3cd467b7079",
+      "independent_composition_verification": "pending",
+      "issue185_status": "open_pending_required_quality",
+      "issue187_192_dispositions": "pending_composition_verification",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
