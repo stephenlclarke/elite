@@ -10450,6 +10450,33 @@
       "remaining_failure_inventory_retained": true,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T01:39:27.043750+00:00",
+      "checkpoint_key": "20261024-m01-terminal-quality-artifact-sigbus62",
+      "event": "Terminal quality artifact establishes coverage-test SIGBUS, incomplete suite and 62 assertion-bearing methods",
+      "pr_head": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
+      "synthetic_checkout_prefix": "2ed76d96",
+      "source_input_equivalence": "pending",
+      "run": 40043514103,
+      "make_ci_exit_code": 2,
+      "make_ci_wall_seconds": 4856.494,
+      "test_signal": 10,
+      "complete_test_xml": false,
+      "terminal_test_summary": false,
+      "method_start_records": 3295,
+      "individual_pass_records": 532,
+      "assertion_records": 107,
+      "assertion_method_names": 62,
+      "completed_contract_reopen_individual_passes": [
+        "courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact",
+        "freightRealPartialChoiceAndFailedFinalWriterPreserveUnitsAndPayOnce"
+      ],
+      "sanitizer_and_leak_qualification": false,
+      "reviewer": "MBA",
+      "repair_owner": "G1",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
