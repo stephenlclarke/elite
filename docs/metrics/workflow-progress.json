@@ -11627,6 +11627,18 @@
         208,
         213
       ]
+    },
+    {
+      "at": "2026-10-24T08:26:39.072265+00:00",
+      "checkpoint_key": "20261024-m01-213-fuel-hypothesis-rejected-205-assigned",
+      "event": "Mission-trial fuel hypothesis disproved; same-packet raw canonical field source attribution assigned",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue_213_product_fuel_change": "not_authorized_source_already_full_70",
+      "mba_active_assignment": "205_exact_raw_canonical_field_or_minimal_failure_fact",
+      "new_execution": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
