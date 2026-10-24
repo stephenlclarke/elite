@@ -10904,6 +10904,22 @@
       "issue191_cause": "unproven",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T03:46:45.088725+00:00",
+      "checkpoint_key": "20261024-m01-fe6755a-affected26-started",
+      "event": "Reviewed follow-up frozen and one affected batch started",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "head": "fe6755a7241e5583d0a6f6d5fdf4f89e08437862",
+      "reviewed_file_hashes_verified": 11,
+      "all_eight_failures_selected": true,
+      "owning_crash_method_selected": true,
+      "expected_unique_methods": 26,
+      "owner_session_id": 44100,
+      "status": "running",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
