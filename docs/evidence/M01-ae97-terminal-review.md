@@ -8,111 +8,109 @@ Both completed save/reopen oracles individually passed: courierEveryDifficultyAn
 
 All62 assertion-bearing method names and107 assertion records are mapped below. All were unexpected run failures; no deliberate expected failure was identified. Grouped findings are known now, not expected failures. Counts are method names, not parameter rows. Corrections remain unverified until the author completes the appropriate checks.
 
-## #171
+## Issue #171
 
-- `normalizedComparisonsSortAndTOMLLoaderAreConsistent()` — ShipTradeTests.swift:174 (1 records).
-- `showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()` — ShowroomTests.swift:100, ShowroomTests.swift:97 (2 records).
-- `catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()` — ShowroomTests.swift:346 (1 records).
+- `normalizedComparisonsSortAndTOMLLoaderAreConsistent()`: source-backed correction identified. physical profiles, broad catalogue search and provenance expectations; ShipTradeTests.swift:174; 1 assertion record(s).
+- `showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()`: source-backed correction identified. physical profiles, broad catalogue search and provenance expectations; ShowroomTests.swift:100, ShowroomTests.swift:97; 2 assertion record(s).
+- `catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()`: source-backed correction identified. physical profiles, broad catalogue search and provenance expectations; ShowroomTests.swift:346; 1 assertion record(s).
 
-## #172
+## Issue #172
 
-- `helpUsesTheUnderlyingInformationScreenAndExchangeContext()` — ScreenNavigationTests.swift:204 (1 records).
-- `emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()` — DisplayOptionsTests.swift:338 (1 records).
+- `helpUsesTheUnderlyingInformationScreenAndExchangeContext()`: source-backed correction identified. help pagination and repeated controls footer; ScreenNavigationTests.swift:204; 1 assertion record(s).
+- `emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()`: source-backed correction identified. help pagination and repeated controls footer; DisplayOptionsTests.swift:338; 1 assertion record(s).
 
-## #173
+## Issue #173
 
-- `sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()` — ShipAppearanceTests.swift:23 (1 records).
+- `sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()`: source-backed correction identified. archival/original texture dialect fixture mixing; ShipAppearanceTests.swift:23; 1 assertion record(s).
 
-## #174
+## Issue #174
 
-- `marketTransactionsRespectCashCapacityAndStock()` — EliteTests.swift:164 (1 records).
+- `marketTransactionsRespectCashCapacityAndStock()`: source-backed correction identified. authored commodity display order; EliteTests.swift:164; 1 assertion record(s).
 
-## #175
+## Issue #175
 
-- `hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()` — OwnedEquipmentHullTests.swift:217, OwnedEquipmentHullTests.swift:220 (2 records).
-- `hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()` — PassengerCabinGradesTests.swift:299, PassengerCabinGradesTests.swift:303 (2 records).
-- `anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()` — OwnedEquipmentTests.swift:56 (1 records).
-- `zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()` — ShipAccommodationTests.swift:94 (1 records).
+- `hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()`: source-backed correction identified. stale zero-hold/incompatible hull premise; OwnedEquipmentHullTests.swift:217, OwnedEquipmentHullTests.swift:220; 2 assertion record(s).
+- `hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()`: source-backed correction identified. stale zero-hold/incompatible hull premise; PassengerCabinGradesTests.swift:299, PassengerCabinGradesTests.swift:303; 2 assertion record(s).
+- `anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()`: source-backed correction identified. stale zero-hold/incompatible hull premise; OwnedEquipmentTests.swift:56; 1 assertion record(s).
+- `zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()`: source-backed correction identified. stale zero-hold/incompatible hull premise; ShipAccommodationTests.swift:94; 1 assertion record(s).
 
-## #176
+## Issue #176
 
-- `outlookNativeRepliesWithdrawWhenActualCabinFitChanges()` — NativeOrbitalOutlookJourneyTests.swift:187 (1 records).
+- `outlookNativeRepliesWithdrawWhenActualCabinFitChanges()`: source-backed correction identified. berth ID passed where owned cabin module ID required; NativeOrbitalOutlookJourneyTests.swift:187; 1 assertion record(s).
 
-## #177
+## Issue #177
 
-- `knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()` — CommanderEquipmentMigrationTests.swift:37 (1 records).
-- `markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()` — NavigationCustodyTests.swift:134 (1 records).
-- `collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()` — NavigationCustodyTests.swift:225 (1 records).
-- `acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()` — NavigationCustodyTests.swift:154 (1 records).
-- `fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()` — NavigationCustodyTests.swift:167 (1 records).
-- `lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)` — MarketCargoBoundsTests.swift:127, MarketCargoBoundsTests.swift:43 (6 records).
-- `maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)` — MarketCargoBoundsTests.swift:16 (3 records).
-- `routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()` — RoutePreviewRenderingTests.swift:7 (1 records).
-- `transporterCargoCorrectionDrivesActualHoldAndCurrentReference()` — CommiesShipCatalogueTests.swift:128 (1 records).
+- `knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; CommanderEquipmentMigrationTests.swift:37; 1 assertion record(s).
+- `markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; NavigationCustodyTests.swift:134; 1 assertion record(s).
+- `collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; NavigationCustodyTests.swift:225; 1 assertion record(s).
+- `acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; NavigationCustodyTests.swift:154; 1 assertion record(s).
+- `fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; NavigationCustodyTests.swift:167; 1 assertion record(s).
+- `lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; MarketCargoBoundsTests.swift:127, MarketCargoBoundsTests.swift:43; 6 assertion record(s).
+- `maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; MarketCargoBoundsTests.swift:16; 3 assertion record(s).
+- `routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; RoutePreviewRenderingTests.swift:7; 1 assertion record(s).
+- `transporterCargoCorrectionDrivesActualHoldAndCurrentReference()`: source-backed correction identified. hull fuel capacity, authenticated prices or market stock fixture; CommiesShipCatalogueTests.swift:128; 1 assertion record(s).
 
-## #179
+## Issue #178
 
-- `actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()` — NPCSceneRestorationTests.swift:220, NPCSceneRestorationTests.swift:226, NPCSceneRestorationTests.swift:227, NPCSceneRestorationTests.swift:236, NPCSceneRestorationTests.swift:237 (7 records).
-- `retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()` — NativeStationPersistenceTests.swift:135 (1 records).
+- `actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()`: source-backed correction identified. authored supported slots, carried hull compatibility or native jump floor; NativeShipShieldComparisonTests.swift:45; 1 assertion record(s).
+- `otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)`: source-backed correction identified. authored supported slots, carried hull compatibility or native jump floor; RecoveredEquipmentRuntimeTests.swift:157; 1 assertion record(s).
+- `anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)`: source-backed correction identified. authored supported slots, carried hull compatibility or native jump floor; RecoveredEquipmentRuntimeTests.swift:197; 1 assertion record(s).
+- `nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()`: source-backed correction identified. authored supported slots, carried hull compatibility or native jump floor; WantedBoardTests.swift:87; 1 assertion record(s).
+- `actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)`: closed-hull must-hit fixture correction reviewed; validation pending. ExplicitSH023 selected for the fixedforward centre-ray musthit premise; physical query/hostility guards unchanged; NativeMissionRuntimeFrameTests.swift:158, NativeMissionRuntimeFrameTests.swift:159; 2 assertion record(s).
+- `actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)`: fixture premise identified; correction not yet verified. camera-origin aim fixture must intersect actual selected player mesh; NativeMissionImpactTests.swift:204; 1 assertion record(s).
+- `explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)`: source-backed correction identified. authored supported slots, carried hull compatibility or native jump floor; RecoveredFeatureRuntimeTests.swift:50; 1 assertion record(s).
+- `recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()`: source-backed correction identified. authored supported slots, carried hull compatibility or native jump floor; RecoveredFeatureRuntimeTests.swift:29; 1 assertion record(s).
+- `actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()`: fixture premise identified; correction not yet verified. camera-origin aim fixture must intersect actual selected player mesh; MissionNativeBridgeTests.swift:762, MissionNativeBridgeTests.swift:773; 2 assertion record(s).
 
-## #178
+## Issue #179
 
-- `actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()` — NativeShipShieldComparisonTests.swift:45 (1 records).
-- `otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)` — RecoveredEquipmentRuntimeTests.swift:157 (1 records).
-- `anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)` — RecoveredEquipmentRuntimeTests.swift:197 (1 records).
-- `nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()` — WantedBoardTests.swift:87 (1 records).
-- `actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)` — NativeMissionImpactTests.swift:204 (1 records).
-- `explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)` — RecoveredFeatureRuntimeTests.swift:50 (1 records).
-- `recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()` — RecoveredFeatureRuntimeTests.swift:29 (1 records).
-- `actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()` — MissionNativeBridgeTests.swift:762, MissionNativeBridgeTests.swift:773 (2 records).
+- `actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()`: source-backed correction identified. WantedCareer disk binding projection and explicit station restoration scene; NPCSceneRestorationTests.swift:220, NPCSceneRestorationTests.swift:226, NPCSceneRestorationTests.swift:227, NPCSceneRestorationTests.swift:236, NPCSceneRestorationTests.swift:237; 7 assertion record(s).
+- `retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()`: source-backed correction identified. WantedCareer disk binding projection and explicit station restoration scene; NativeStationPersistenceTests.swift:135; 1 assertion record(s).
 
-## #180
+## Issue #180
 
-- `actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()` — NativeMissionActorAdmissionComponentTests.swift:116, NativeMissionActorAdmissionComponentTests.swift:121, NativeMissionActorAdmissionComponentTests.swift:64, NativeMissionActorAdmissionComponentTests.swift:65, NativeMissionActorAdmissionComponentTests.swift:79, NativeMissionActorAdmissionComponentTests.swift:96, NativeMissionActorAdmissionComponentTests.swift:97 (7 records).
-- `fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()` — NativeMissionImpactTests.swift:169 (1 records).
-- `realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()` — MissionNativeBridgeTests.swift:898 (1 records).
+- `actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()`: source-backed correction identified. extra legitimate station actor and hardcoded scene baseline; NativeMissionActorAdmissionComponentTests.swift:116, NativeMissionActorAdmissionComponentTests.swift:121, NativeMissionActorAdmissionComponentTests.swift:64, NativeMissionActorAdmissionComponentTests.swift:65, NativeMissionActorAdmissionComponentTests.swift:79, NativeMissionActorAdmissionComponentTests.swift:96, NativeMissionActorAdmissionComponentTests.swift:97; 7 assertion record(s).
+- `actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()`: fixture correction reviewed; validation pending. independently parsed OriginalWorlds/catalogue.json G08-S008 Crimbo Anarchy governmentID0; NativeStationSource.hasWaystation only permits7/6/5 and HQg7system7; original7/8RRS premise false. Revised authenticRRS fixture uses genuine foreignworldowner prior fact/sample, requiresbothpresent, retains original entry/refusal/clock/clearing checks; NativeCrimboActorMotionTests.swift:197; 1 assertion record(s).
+- `fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()`: source-backed correction identified. extra legitimate station actor and hardcoded scene baseline; NativeMissionImpactTests.swift:169; 1 assertion record(s).
+- `realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()`: source-backed correction identified. extra legitimate station actor and hardcoded scene baseline; MissionNativeBridgeTests.swift:898; 1 assertion record(s).
+- `actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()`: isolated no-contact expiry fixture correction reviewed; validation pending. Only genuine shot retained for no-contact expiry; actual specific former occluder not established; age/movement/incident/cleanup checks unchanged; MissionNativeBridgeTests.swift:335, MissionNativeBridgeTests.swift:337; 2 assertion record(s).
+
+## Issue #181
+
+- `plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()`: source-backed correction identified. persistent plasma breakup motion and return-value contract; MissionLedgerImpactTests.swift:396, MissionLedgerImpactTests.swift:401, MissionLedgerImpactTests.swift:403; 3 assertion record(s).
+- `plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()`: source-backed correction identified. persistent plasma breakup motion and return-value contract; MissionLedgerImpactTests.swift:324, MissionLedgerImpactTests.swift:329, MissionLedgerImpactTests.swift:330; 3 assertion record(s).
+
+## Issue #182
+
+- `realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:319, FlightWorkGuidanceRuntimeTests.swift:320, FlightWorkGuidanceRuntimeTests.swift:321, FlightWorkGuidanceRuntimeTests.swift:322, FlightWorkGuidanceRuntimeTests.swift:323, FlightWorkGuidanceRuntimeTests.swift:326; 6 assertion record(s).
+- `realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:445; 1 assertion record(s).
+- `acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:1006; 1 assertion record(s).
+- `actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:483; 1 assertion record(s).
+- `changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:471; 1 assertion record(s).
+- `canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:714, FlightWorkGuidanceRuntimeTests.swift:715, FlightWorkGuidanceRuntimeTests.swift:716; 3 assertion record(s).
+- `actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:419, FlightWorkGuidanceRuntimeTests.swift:423; 2 assertion record(s).
+- `filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:242; 1 assertion record(s).
+- `actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:369; 1 assertion record(s).
+- `actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:1032; 1 assertion record(s).
+- `authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; NativeMissionWeaponGeometryTests.swift:76; 1 assertion record(s).
+- `authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; NativeMissionWeaponGeometryTests.swift:109; 1 assertion record(s).
+- `liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()`: source-backed correction identified. stable actor joins, authored work slots, scoop geometry and explicit scene; FlightWorkGuidanceRuntimeTests.swift:1084, FlightWorkGuidanceRuntimeTests.swift:1085; 2 assertion record(s).
+
+## Issue #183
+
+- `optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()`: source-backed correction identified. legacy ledger assertions accidentally select native-backed wreck; SalvageWorldRuntimeTests.swift:385; 1 assertion record(s).
+- `failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()`: source-backed correction identified. legacy ledger assertions accidentally select native-backed wreck; SalvageWorldRuntimeTests.swift:279, SalvageWorldRuntimeTests.swift:283, SalvageWorldRuntimeTests.swift:285, SalvageWorldRuntimeTests.swift:287, SalvageWorldRuntimeTests.swift:294; 5 assertion record(s).
+- `actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)`: source-backed correction identified. legacy ledger assertions accidentally select native-backed wreck; SalvageWorldRuntimeTests.swift:344; 2 assertion record(s).
+
+## Issue #184
+
+- `identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()`: source-backed correction identified. expected registry19 versus actual31 bundled packs and board rows; BundledScriptPackTests.swift:183; 1 assertion record(s).
+- `defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()`: source-backed correction identified. expected registry19 versus actual31 bundled packs and board rows; BundledScriptPackTests.swift:385; 1 assertion record(s).
+- `installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)`: source-backed correction identified. expected registry19 versus actual31 bundled packs and board rows; BundledScriptPackTests.swift:208; 2 assertion record(s).
+- `defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()`: source-backed correction identified. expected registry19 versus actual31 bundled packs and board rows; BundledScriptPackTests.swift:151; 1 assertion record(s).
+- `malformedInstalledContentReportsItsErrorAlongsideBundledCourier()`: source-backed correction identified. expected registry19 versus actual31 bundled packs and board rows; BundledScriptPackTests.swift:237; 1 assertion record(s).
+- `defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()`: source-backed correction identified. expected registry19 versus actual31 bundled packs and board rows; BundledScriptPackTests.swift:263, BundledScriptPackTests.swift:314; 2 assertion record(s).
 
 ## Diagnosis pending
 
-- `actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()` — NativeCrimboActorMotionTests.swift:197 (1 records). expected waystation absent after tick in galaxy7 system8; binding/admission cause unresolved
-- `actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)` — NativeMissionRuntimeFrameTests.swift:158, NativeMissionRuntimeFrameTests.swift:159 (2 records). hostile classic actor has no emission/shield hit; intent, preflight or physical query cause unresolved
-- `nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)` — AsteroidFragmentationTests.swift:591 (1 records). remaining native hull sweep returns conservative unproven for velocity-3000; physical cause unresolved
-- `actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()` — MissionNativeBridgeTests.swift:335, MissionNativeBridgeTests.swift:337 (2 records). no-hit expiry fixture instead records contact; actual occluder/fixture isolation not yet established
-
-## #181
-
-- `plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()` — MissionLedgerImpactTests.swift:396, MissionLedgerImpactTests.swift:401, MissionLedgerImpactTests.swift:403 (3 records).
-- `plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()` — MissionLedgerImpactTests.swift:324, MissionLedgerImpactTests.swift:329, MissionLedgerImpactTests.swift:330 (3 records).
-
-## #182
-
-- `realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()` — FlightWorkGuidanceRuntimeTests.swift:319, FlightWorkGuidanceRuntimeTests.swift:320, FlightWorkGuidanceRuntimeTests.swift:321, FlightWorkGuidanceRuntimeTests.swift:322, FlightWorkGuidanceRuntimeTests.swift:323, FlightWorkGuidanceRuntimeTests.swift:326 (6 records).
-- `realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()` — FlightWorkGuidanceRuntimeTests.swift:445 (1 records).
-- `acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()` — FlightWorkGuidanceRuntimeTests.swift:1006 (1 records).
-- `actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()` — FlightWorkGuidanceRuntimeTests.swift:483 (1 records).
-- `changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()` — FlightWorkGuidanceRuntimeTests.swift:471 (1 records).
-- `canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()` — FlightWorkGuidanceRuntimeTests.swift:714, FlightWorkGuidanceRuntimeTests.swift:715, FlightWorkGuidanceRuntimeTests.swift:716 (3 records).
-- `actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()` — FlightWorkGuidanceRuntimeTests.swift:419, FlightWorkGuidanceRuntimeTests.swift:423 (2 records).
-- `filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()` — FlightWorkGuidanceRuntimeTests.swift:242 (1 records).
-- `actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()` — FlightWorkGuidanceRuntimeTests.swift:369 (1 records).
-- `actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()` — FlightWorkGuidanceRuntimeTests.swift:1032 (1 records).
-- `authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()` — NativeMissionWeaponGeometryTests.swift:76 (1 records).
-- `authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()` — NativeMissionWeaponGeometryTests.swift:109 (1 records).
-- `liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()` — FlightWorkGuidanceRuntimeTests.swift:1084, FlightWorkGuidanceRuntimeTests.swift:1085 (2 records).
-
-## #183
-
-- `optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()` — SalvageWorldRuntimeTests.swift:385 (1 records).
-- `failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()` — SalvageWorldRuntimeTests.swift:279, SalvageWorldRuntimeTests.swift:283, SalvageWorldRuntimeTests.swift:285, SalvageWorldRuntimeTests.swift:287, SalvageWorldRuntimeTests.swift:294 (5 records).
-- `actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)` — SalvageWorldRuntimeTests.swift:344 (2 records).
-
-## #184
-
-- `identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()` — BundledScriptPackTests.swift:183 (1 records).
-- `defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()` — BundledScriptPackTests.swift:385 (1 records).
-- `installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)` — BundledScriptPackTests.swift:208 (2 records).
-- `defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()` — BundledScriptPackTests.swift:151 (1 records).
-- `malformedInstalledContentReportsItsErrorAlongsideBundledCourier()` — BundledScriptPackTests.swift:237 (1 records).
-- `defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()` — BundledScriptPackTests.swift:263, BundledScriptPackTests.swift:314 (2 records).
-
-No new execution, artifact fetch, integration testing or source edits were performed by the reviewer. Full compact machine-readable review retained locally at /tmp/elite-mba-ae97-terminal-review.json.
+- `nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)`: diagnosis pending. remaining native hull sweep returns conservative unproven for velocity-3000; physical cause unresolved; AsteroidFragmentationTests.swift:591; 1 assertion record(s).

@@ -331,9 +331,9 @@
         "NativeCrimboActorMotionTests.swift:197"
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
-      "issue": null,
-      "status": "diagnosis pending",
-      "cause": "expected waystation absent after tick in galaxy7 system8; binding/admission cause unresolved"
+      "issue": 180,
+      "status": "fixture correction reviewed; validation pending",
+      "cause": "independently parsed OriginalWorlds/catalogue.json G08-S008 Crimbo Anarchy governmentID0; NativeStationSource.hasWaystation only permits7/6/5 and HQg7system7; original7/8RRS premise false. Revised authenticRRS fixture uses genuine foreignworldowner prior fact/sample, requiresbothpresent, retains original entry/refusal/clock/clearing checks"
     },
     {
       "method": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
@@ -343,9 +343,9 @@
         "NativeMissionRuntimeFrameTests.swift:159"
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
-      "issue": null,
-      "status": "diagnosis pending",
-      "cause": "hostile classic actor has no emission/shield hit; intent, preflight or physical query cause unresolved"
+      "issue": 178,
+      "status": "closed-hull must-hit fixture correction reviewed; validation pending",
+      "cause": "ExplicitSH023 selected for the fixedforward centre-ray musthit premise; physical query/hostility guards unchanged"
     },
     {
       "method": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
@@ -458,9 +458,9 @@
         "MissionNativeBridgeTests.swift:337"
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
-      "issue": null,
-      "status": "diagnosis pending",
-      "cause": "no-hit expiry fixture instead records contact; actual occluder/fixture isolation not yet established"
+      "issue": 180,
+      "status": "isolated no-contact expiry fixture correction reviewed; validation pending",
+      "cause": "Only genuine shot retained for no-contact expiry; actual specific former occluder not established; age/movement/incident/cleanup checks unchanged"
     },
     {
       "method": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
