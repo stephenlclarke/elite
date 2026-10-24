@@ -10684,13 +10684,16 @@
       "reviewer": "MBA",
       "candidate": "project relative position/velocity before the shared time interval to preserve correlation",
       "axes_bvh_budgets_guards_surfaces_preserved": true,
-      "source_hunk_review": "pending",
+      "source_hunk_review": "clear_final_five_code_files",
       "engine_qualification": "pending",
       "supersedes": "phase-only diagnostic prerequisite; do not run both variants",
       "focused_validation": "four failed methods plus directly affected collision/fragmentation/new regression units",
       "crash185_open": true,
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "reviewed_patch_sha256": "8e3efbaa1dc961f27ca0a1fff33ef21b5cb3c3eeb6c97736b063b5d25b4bba40",
+      "issue": 186,
+      "regression_fixture_budget_finding": "corrected_path_span_preserving_gap_and_default_limits"
     }
   ],
   "two_developer_phase": {
