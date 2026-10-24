@@ -1,0 +1,7 @@
+# M02.P05: showroom help advertises unavailable profile controls
+
+PlayerHelp.context for the showroom always advertises Prev/Next profile controls. In the primary carried-fit view, ShowroomDisplay labels both buttons Single profile and disables them; the same help also advertises cycling when a filter leaves no selected profile. This is a concrete disagreement between station-screen help and the existing action projection.
+
+Use the actual showroomProfiles count for the context guide. A single profile must state that cycling is unavailable; no profile must state that specifications are unavailable; multiple source profiles must retain the actual comma/period and Prev/Next controls. Preserve all other showroom help, the common flight-key footer and compact help pagination. No exchange, fit, catalogue, geometry, numerical, simulation, identity or save behavior changes.
+
+The existing carried-fit comparison, Better/Worse/Same labels, shared pitch/roll/yaw previews, portable-overflow transfer, station-service/status/inventory work and six central flight bindings are credited and retained. This correction is one P05/F43 acceptance gap, not completion of M02 or new physical-usability evidence. Source/unit/review/merge/usable delivery remain distinct. Local compiler/native/GUI work is excluded while M01 holds the main CPU; the supported hosted push-unit fallback supplies execution evidence.
