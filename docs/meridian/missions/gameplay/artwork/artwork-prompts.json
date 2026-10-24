@@ -1,0 +1,27 @@
+{
+  "method": "built-in image_gen",
+  "assets": [
+    {
+      "id": "revision/continuity-orbital-desk",
+      "file": "revisions/continuity-orbital-desk.png",
+      "title": "A new inquiry, not an erased failure",
+      "use": "Continuity inquiry request and independent receiving narrative illustration",
+      "prompt": "Use case: illustration-story. Asset type: orbital mission briefing illustration. Cinematic hard science fiction illustration for the original Meridian/L337 game, matching existing mission briefing artwork: realistic worn charcoal metal, restrained cyan/teal instrument lights, warm brass/amber practical lights, dark orbital interiors or deep space, thoughtful investigative mood. Wide landscape composition. No franchise logos, no Elite/Star Wars designs, no readable text, no watermark, no HUD, no named character portrait, no combat or ground operations. This is concept/briefing art, not a screenshot or a ship design reference. Scene: a quiet evidence-service desk inside an orbital station with a blue planet visible beyond a large window. Foreground: three physically distinct sealed data-record housings in separate archive slots, unconnected and carefully preserved, beside a compact calibration instrument and a blank case folder. In the middle distance, an empty private consultation booth. A damaged old recorder in a sealed evidence drawer remains visibly damaged; a new empty inspection cradle is separate. Convey a legitimate fresh investigation that preserves loss. No automatic success symbols, no magical repair, no cash, no free cargo or equipment gifts. No figures walking outside or planet surface."
+    },
+    {
+      "id": "revision/continuity-reference-field",
+      "file": "revisions/continuity-reference-field.png",
+      "title": "Independent reference measurements",
+      "use": "Continuity inquiry measurement and model-test narrative illustration",
+      "prompt": "Use case: illustration-story. Asset type: space mission briefing illustration. Cinematic hard science fiction illustration for the original Meridian/L337 game, matching existing mission briefing artwork: realistic worn charcoal metal, restrained cyan/teal instrument lights, warm brass/amber practical lights, dark orbital interiors or deep space, thoughtful investigative mood. Wide landscape composition. No franchise logos, no Elite/Star Wars designs, no readable text, no watermark, no HUD, no named character portrait, no combat or ground operations. This is concept/briefing art, not a screenshot or a ship design reference. Scene entirely in orbital space. Three distinct small non-consumable calibration beacons, precision instrument assemblies with dark rectangular frames, brass fittings and restrained cyan optical pulse emitters, spaced along a broad safe inspection corridor, with an orbital station far behind and a blue planet limb. A short maintenance rail connects internal test channels on the nearest beacon; it is a measurement instrument, not a weapon. Clear count of exactly three beacons. Camera near the first instrument looking toward the second and third. No spacecraft foreground, no battle, no cargo convoy, no tunnel through a planet. The image should visually support visiting and measuring three real reference targets. Light beams are subtle technical alignment aids, not explosions or magical energy."
+    },
+    {
+      "id": "revision/meridian-original-recorder-archive",
+      "file": "revisions/meridian-original-recorder-archive.png",
+      "title": "The original recorder reaches its archive",
+      "use": "Glass Meridian final recorder receiving narrative illustration",
+      "prompt": "Use case: illustration-story. Asset type: space-station mission conclusion illustration. Cinematic hard science fiction illustration for the original Meridian/L337 game, matching existing mission briefing artwork: realistic worn charcoal metal, restrained cyan/teal instrument lights, warm brass/amber practical lights, dark orbital interiors or deep space, thoughtful investigative mood. Wide landscape composition. No franchise logos, no Elite/Star Wars designs, no readable text, no watermark, no HUD, no named character portrait, no combat or ground operations. This is concept/briefing art, not a screenshot or a ship design reference. Scene: close view of one compact rugged flight recorder, roughly the size of a small eight-kilogram equipment case, lying intact in a receiving cradle on an orbital evidence-archive desk. One original object, dark scratched metal with a small amber status strip and a physical tamper seal, not a clock, not a timing ring and not a huge cargo crate. Beside it is an empty transport recess, clearly empty, and an archive drawer prepared to receive this same recorder. One discreet monitor shows only an abstract custody path, no text or checkmark. Orbital station window with distant starfield. Convey a real physical handoff after an investigation, without duplicating the recorder, displaying money, spoiling the hidden clue pattern, or implying the original was consumed at an earlier audit."
+    }
+  ],
+  "assetFileBase": "docs/meridian/assets/missions/"
+}

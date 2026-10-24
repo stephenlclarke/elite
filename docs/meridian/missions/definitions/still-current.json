@@ -91,7 +91,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "still-current",
       "file": "../../assets/missions/illustrations/still-current.png",

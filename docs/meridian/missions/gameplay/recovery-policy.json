@@ -6035,27 +6035,87 @@
       {
         "id": "request-case",
         "objective": "At the orbital desk, open a new source-linked inquiry and obtain a zero-mass signed survey mandate and three archive measurement challenges.",
-        "gate": "No fee, cargo, cabin, source-stock, faction or historical-success requirement. Do not grant clue."
+        "gate": "No fee, cargo, cabin, source-stock, faction or historical-success requirement. Do not grant clue.",
+        "artwork": {
+          "id": "revision/continuity-request-case",
+          "file": "../../assets/missions/revisions/continuity-request-case.png",
+          "sha256": "d7b0119dcbf4974ea83350051ed4a298ce747468674813d5c5682929ead0aabe",
+          "visibility": "Only the current accepted inquiry stage and completed history; no other source unlock"
+        },
+        "illustration": {
+          "id": "revision/continuity-orbital-desk",
+          "file": "../../assets/missions/revisions/continuity-orbital-desk.png",
+          "sha256": "3eea0c7e0d813265a3010f28f2fef603b7a61a65792945b09184b01be0f03b58",
+          "visibility": "Current accepted inquiry stage/history only"
+        }
       },
       {
         "id": "measure-source-trace",
         "objective": "Fly to three registered non-consumable external reference beacons in the current ordinary system; perform source-specific measurements and reconcile them with the independent archived observations.",
-        "gate": "Use baseline flight controls and ship instruments; no specialist purchased fitting, cargo or person required. The service installs/maintains the actual beacons from its existing station apparatus. Each carries a new case-specific challenge, so an old scan receipt cannot qualify."
+        "gate": "Use baseline flight controls and ship instruments; no specialist purchased fitting, cargo or person required. The service installs/maintains the actual beacons from its existing station apparatus. Each carries a new case-specific challenge, so an old scan receipt cannot qualify.",
+        "artwork": {
+          "id": "revision/continuity-measure-source-trace",
+          "file": "../../assets/missions/revisions/continuity-measure-source-trace.png",
+          "sha256": "e462c891a9972cfb5ad173cd5f88983fb7981eefc20073f6845564c6414c6a52",
+          "visibility": "Only the current accepted inquiry stage and completed history; no other source unlock"
+        },
+        "illustration": {
+          "id": "revision/continuity-reference-field",
+          "file": "../../assets/missions/revisions/continuity-reference-field.png",
+          "sha256": "c4b7e57b9a81ca9233998204aa828725bdeff86bd69c0f9c219123396eeb1d18",
+          "visibility": "Current accepted inquiry stage/history only"
+        }
       },
       {
         "id": "test-corrective-model",
         "objective": "Operate a source-specific physical test arrangement on those beacons and pass its measurable consistency/safety test.",
-        "gate": "Purely non-consumable calibration apparatus; restart a failed trial locally. It cannot create people, repair the original disaster, award a combat kill or claim original mission success."
+        "gate": "Purely non-consumable calibration apparatus; restart a failed trial locally. It cannot create people, repair the original disaster, award a combat kill or claim original mission success.",
+        "artwork": {
+          "id": "revision/continuity-test-corrective-model",
+          "file": "../../assets/missions/revisions/continuity-test-corrective-model.png",
+          "sha256": "8711fa37b269057ed277a6c5eb381fa43dbd2e3045586da189d4221205bb6220",
+          "visibility": "Only the current accepted inquiry stage and completed history; no other source unlock"
+        },
+        "illustration": {
+          "id": "revision/continuity-reference-field",
+          "file": "../../assets/missions/revisions/continuity-reference-field.png",
+          "sha256": "c4b7e57b9a81ca9233998204aa828725bdeff86bd69c0f9c219123396eeb1d18",
+          "visibility": "Current accepted inquiry stage/history only"
+        }
       },
       {
         "id": "independent-audit",
         "objective": "Bring the signed measured results to a different authorised desk operator. Reconcile at least two independently corroborated records and explicitly record the original loss/outcome.",
-        "gate": "Correct source, actual case, three new measurements, passing functional test and real orbital receiving. Records alone, payment or failure are insufficient."
+        "gate": "Correct source, actual case, three new measurements, passing functional test and real orbital receiving. Records alone, payment or failure are insufficient.",
+        "artwork": {
+          "id": "revision/continuity-independent-audit",
+          "file": "../../assets/missions/revisions/continuity-independent-audit.png",
+          "sha256": "22451611389cc5e83c69dc0d90d6091710d5acf81ad20a75aeb0e12f53ce136b",
+          "visibility": "Only the current accepted inquiry stage and completed history; no other source unlock"
+        },
+        "illustration": {
+          "id": "revision/continuity-orbital-desk",
+          "file": "../../assets/missions/revisions/continuity-orbital-desk.png",
+          "sha256": "3eea0c7e0d813265a3010f28f2fef603b7a61a65792945b09184b01be0f03b58",
+          "visibility": "Current accepted inquiry stage/history only"
+        }
       },
       {
         "id": "close-inquiry",
         "objective": "Commit the new verified inquiry outcome and the same source clue receipt once.",
-        "gate": "No original fee, bounty, rank, faction reward, accreditation or equipment. This is an alternative way to learn the underlying trace, not another success of the failed combat/rescue/donation mission."
+        "gate": "No original fee, bounty, rank, faction reward, accreditation or equipment. This is an alternative way to learn the underlying trace, not another success of the failed combat/rescue/donation mission.",
+        "artwork": {
+          "id": "revision/continuity-close-inquiry",
+          "file": "../../assets/missions/revisions/continuity-close-inquiry.png",
+          "sha256": "566289596d8abaa7286f94d0227a49ba2810db42869f6cdf7b4f3f3ecaa40d08",
+          "visibility": "Only the current accepted inquiry stage and completed history; no other source unlock"
+        },
+        "illustration": {
+          "id": "revision/continuity-orbital-desk",
+          "file": "../../assets/missions/revisions/continuity-orbital-desk.png",
+          "sha256": "3eea0c7e0d813265a3010f28f2fef603b7a61a65792945b09184b01be0f03b58",
+          "visibility": "Current accepted inquiry stage/history only"
+        }
       }
     ],
     "costPolicy": "Zero credits, deposit, cargo or passenger places for the commander. The charter service performs the investigation as its standing public duty; only instrument use and data receiving are provided. It never issues saleable replacement kits, hulls or money. The finite-stock paid replacement option remains separate. No unfunded clone or recycled failed lifetime source pair is created.",
@@ -6095,5 +6155,6 @@
       "independent audit and final clue receipts"
     ],
     "nativeAcceptance": "For each64source, test original failure/depletion/issuer loss/hostility/zero funds and non-consumable retry through ordinary UI, then save/reload before and after final commit. Assert reachable inquiry, no original success/fee/reward, correct one clue, no duplicate, and no script-forged receipt."
-  }
+  },
+  "artworkPolicy": "Use each current inquiry stages exact artwork/illustration references. Shared art is one asset reused across64source profiles, not64new clues or duplicated files. No diagram, example target trace, archive prop or generated illustration grants evidence or reveals future finale steps."
 }

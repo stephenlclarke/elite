@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "warrant-ledger",
       "file": "../../assets/missions/illustrations/warrant-ledger.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/warrant-ledger-operation",
+        "sha256": "21324c4867840eeeb1a055cf2bd780f9fc584ed178a85ba25f318869c9b5b703",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/warrant-ledger-operation.png",
+        "description": "Conflicting-evidence adjudication Trace the three signed issuer records, present the two independent victim challenges and reject reused evidence before revocation/reissue.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "warrant-ledger/field-work",
         "file": "../../assets/missions/stages/warrant-ledger/field-work.png",
         "sha256": "a6693f668a42801110f1fd0d24a3c4753af073c34d260de7d36547e4d152d358",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

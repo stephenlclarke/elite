@@ -9,175 +9,191 @@
   "definitionFiles": [
     {
       "file": "missions/definitions/assembly-of-orbits.json",
-      "sha256": "16cab56b9c799b70f27d393ffdca67cbe755c849ab997b0b1535c9f8403be45f"
+      "sha256": "061373ab8d16c44149a0646564c14475ade838c905a6e20d93344e669157e333"
     },
     {
       "file": "missions/definitions/blue-reservoir.json",
-      "sha256": "fd2536ce19d7c1db5019fb809c07e57559fa4016eae1f7b1095c7427d1af2c95"
+      "sha256": "dab734b73d81179fafc37bee010bf2dccdbcc9372db14832e462d81831bd6c1f"
     },
     {
       "file": "missions/definitions/borrowed-dawn.json",
-      "sha256": "579aefdcf89fe82167b336b45ecfa1c4897889a70b1054126a16d624aa13f787"
+      "sha256": "b57fddb89fe06190e6c5b9c44b7106361402f89eff220aa9b11c821868c4151e"
     },
     {
       "file": "missions/definitions/borrowed-voice.json",
-      "sha256": "ac32637095e747fb6e1161110b7824212b3a43fd11caec57aa5052becaee33b4"
+      "sha256": "35f11a0adac8049f0e2df3d0001e0ccdb0519eeda721b05c7825789be515c2fb"
     },
     {
       "file": "missions/definitions/cold-reserve.json",
-      "sha256": "bbcec8c67d53fb1b507cc19739143ec726b3c49488dfedd4aa3c1fb7fd4c6441"
+      "sha256": "028beaf1c585bf651215462b62da6fa17fa9adecd3d24ba6f1249491f9a16f8a"
     },
     {
       "file": "missions/definitions/courier.json",
-      "sha256": "8d4363644e5b1f26561e68a23a30df421cce38173eea28e7d3cde560d75605f6"
+      "sha256": "57eb605a70d57773522b9799cf26e7a18f0f9621eaf3c53d884084486860c9dc"
     },
     {
       "file": "missions/definitions/false-colours.json",
-      "sha256": "969daa4fa8d32c016b395440ab5a75b1f27c9d0dcf5fd27a70266788a938abec"
+      "sha256": "a11bfdad2fb90269cae18fbba8d63e7a0b6d4e532de272edb3ca0f44627626cb"
     },
     {
       "file": "missions/definitions/fleet-of-neighbours.json",
-      "sha256": "3d320a12de9686d1ea2173ed9f09e777e0e300815754883a27cd0f88e82b6f3e"
+      "sha256": "6b2c378135887ec2a238b2d877cf2cbbca8e13fa2700ac6f2409263c4126f3ea"
     },
     {
       "file": "missions/definitions/garden-in-transit.json",
-      "sha256": "aec6ce5025f22b79081fed93e247a89f61537382bb4e1e507816589034643d2c"
+      "sha256": "a69866d896cbea4c8fe22dc64f2b768760b02a500ad46cae8c116097b07477f3"
     },
     {
       "file": "missions/definitions/glass-meridian.json",
-      "sha256": "b52bb155353db9b8232565bf281cf7d533b763a90aa531fba77e197999ca4885"
+      "sha256": "772b8f64879d1d9c8b85f902f752055b4cd662dc54fc27d357563a3ac2446e1e"
     },
     {
       "file": "missions/definitions/guiding-light.json",
-      "sha256": "e42e871bd5916cd22b673d8423d21bd584556d95cdfcfd8ff5b161d951a11187"
+      "sha256": "04e1eb42d30e6c13f269b2a31de7817aede3feef706f66a5f2f196f6471bf7e3"
     },
     {
       "file": "missions/definitions/harbour-without-orders.json",
-      "sha256": "51c63fc3968b18129181deb092d98cca66e1926f8435435b9362a5068df910e5"
+      "sha256": "1976d5606446cc30091cb5f2d18fad258a89b0beb93401fb2fe2169db693c516"
     },
     {
       "file": "missions/definitions/hollow-manifest.json",
-      "sha256": "b7a0801b93b926843c14c486e7ac4646c0f5a0a29971b6b35390abf0240520d2"
+      "sha256": "ed5f5d943223d3863555cd3beda7e6f1b807d1c7bcf4cc9ca3847be225d59377"
     },
     {
       "file": "missions/definitions/honest-circuit.json",
-      "sha256": "c6dceee908098a84d8ff13bb08a63c2ac1a459e1c7c0e9f9446f6352b62c707a"
+      "sha256": "3eb17b7552133761d246b0f356de4b1e95bfe34733b6ec8a06cfed6016b7d77b"
     },
     {
       "file": "missions/definitions/kind-distance.json",
-      "sha256": "ac04f4bcdc4bb5ac3a39f0437a104e6cffb84c0ad3f669f32940edbd9dc654ed"
+      "sha256": "0de3327df183b07cb9920a83a64800ab3ddec7bbb31cabf4d31c93bb9be38dc9"
     },
     {
       "file": "missions/definitions/listening-frontier.json",
-      "sha256": "038bb32b17ca4ac8fe9b6a80be2219fa96588acbeac92b58d53a3fff6ee68208"
+      "sha256": "7c29db6366748fbd49cb3b0d610bd35a8d26b51e9d74a41f69f34dcf04a64244"
     },
     {
       "file": "missions/definitions/long-return.json",
-      "sha256": "bd5df1a851c8c21a5c6569d50fe3ccb9ede91a18307dc80f9a49ce48d4681ca7"
+      "sha256": "633789a005bc76549bda15a631e01fc6dfef80a706cb58e6b5ac097c065bd5df"
     },
     {
       "file": "missions/definitions/magnetic-orchard.json",
-      "sha256": "8979fd4455efac0a35040e6b7aaf567d7e191c33d2941a3ce13509151cc1db2a"
+      "sha256": "ebd2a10ff205a1d7e4dde5b9633044fd679ea8924eda7f4c1dafef7c6ac141f6"
     },
     {
       "file": "missions/definitions/measure-of-care.json",
-      "sha256": "956fc79bbd823ee06fc3505dc25d79099b399f14d38c8d6d46784a4abc0f9db2"
+      "sha256": "f581af22076707fbfe8375b78c02fb636495f1dfccf71911773469f44086c802"
     },
     {
       "file": "missions/definitions/memory-atlas.json",
-      "sha256": "c27119d67870fc50fe5d1d49a935960d5451d61dde9c0e4385bec804967c0762"
+      "sha256": "797f2f8fc9ce918dc4dc6b1075dba2683f47d7328a67ccb6491bb0c0dd7aa981"
     },
     {
       "file": "missions/definitions/mutual-shelter.json",
-      "sha256": "e1d8f0df1bf8154b713b56159d36dd3c419ef3a25a378ce4faaefeefc9e67ccc"
+      "sha256": "33c1172e5115e4036c92aceb662b2f9be1ce0115aae746892602d9a051ec31da"
     },
     {
       "file": "missions/definitions/open-measure.json",
-      "sha256": "81812feeb354708b65d6e6aa2102272a2dabfc3adbf0089872d02bb8fc4ad6f3"
+      "sha256": "3dfcc5f09afaff329d138c45af6f82e8e715d60efe366a6f28094331f09a5341"
     },
     {
       "file": "missions/definitions/open-shadow.json",
-      "sha256": "f0ae454280998987f3c841fdc15a14b4d5ee4d66b1580cd1b29f0eb23d47e558"
+      "sha256": "75017071ed9162b21d8c9d9a31da005f19b726a16c13e71f061bc6c63145ba81"
     },
     {
       "file": "missions/definitions/original-families.json",
-      "sha256": "269bf145ea67f3dce44f32b68f015e1690df8ee8157dc10c9ddc87013801ea23"
+      "sha256": "75d1739bc3efefbafb9594a37bf3d87b17759bb6d520299c6972d3c47b4d3aa6"
     },
     {
       "file": "missions/definitions/passengers-horizon.json",
-      "sha256": "2c3b79aefb3907040e30a7527b9257c728a7a3776ed69e8699c39194ae49a102"
+      "sha256": "8d20ac369947c112b8fe63b8213ff787f665a1d5824aba3974177cc3a8d20fb3"
     },
     {
       "file": "missions/definitions/public-record.json",
-      "sha256": "10b0b61af36433c5a2fc9149ed92e9f2dfc7f6c96aad84b71ae727070c0241fb"
+      "sha256": "febdd71e8f285224a58010090b47f8da669cf735af1b71563cbe566334826850"
     },
     {
       "file": "missions/definitions/quiet-choir.json",
-      "sha256": "b2c9b8ac388cbd251d29d27675c1863fef0aeacc864d4dd368c1ff14376ec461"
+      "sha256": "e0fe67e80d83d591b40c8882bf4cfc8a5339f1785aac6ad1fe4bd3c99c1d9a80"
     },
     {
       "file": "missions/definitions/quiet-nursery.json",
-      "sha256": "a79531d2acbc8d0aa5e0e5732c8e634eb3cfdc9f9bae77d0caf129b6c0914a7d"
+      "sha256": "9480a17adb8fa10e8e14dcd0afac037a02026b202f08b772bc09b4d20e12931e"
     },
     {
       "file": "missions/definitions/rubble-covenant.json",
-      "sha256": "aafe7728b95ae5f461a3fe2a4d8d71d7a997c6dfc5500d17418deea0b9a2de7d"
+      "sha256": "8a88ef5721bcd4214586e1684b344dd17e8a5d2c57fe53e4c1a27c3a743e0e30"
     },
     {
       "file": "missions/definitions/shared-pulse.json",
-      "sha256": "2778d23266cafdf6190ef3760298cd64cfa31a43d2e9c1fe7918212ed3f3bb58"
+      "sha256": "96fe6e8d6200c15f45a7b58ec867f7ca4bb5bfd563c85221c8dea106c36789c4"
     },
     {
       "file": "missions/definitions/shattered-wake.json",
-      "sha256": "7d9119802cc2d93e2c0486bfebd37e742dcccb7a9563ef6a43bb2cf8c10562d4"
+      "sha256": "963c480c8805f7ed7590e3864e386f455d6cd146913732b285689be36af0794b"
     },
     {
       "file": "missions/definitions/small-lights.json",
-      "sha256": "dfee93680dc7158b2f8fad86d2cee8dd34edac62ea5909e386fe9e4b7281a1f3"
+      "sha256": "87e9a160fb64d478174975e54e4daae4976b27887d6ef0754fe90c410b08c258"
     },
     {
       "file": "missions/definitions/still-current.json",
-      "sha256": "62f58dbb951f302e980559716c4ab1f8acbe3450fb21d81a71069ca9d0786fe9"
+      "sha256": "59416c79540d860818161d67646de7952b58847f95ac2523f7737bff88bc981d"
     },
     {
       "file": "missions/definitions/tithe-of-worlds.json",
-      "sha256": "1bd52c46100fed0f8dab338bbe45170b1c09728fdce2f8446f45f5c6073093f1"
+      "sha256": "cfe53fa76402e36ce89e3c3616973001fd8c27af2728e66610c1728f6c3ac089"
     },
     {
       "file": "missions/definitions/uncounted-names.json",
-      "sha256": "2e0292a6ae3ca08f67f70f0fbfc9a37ab7241221039c92cbb783c5692b39c382"
+      "sha256": "dc30ac6c5ea799c93c3906d2b4e35cf8b2d262409cd106a5c45d30f59b5f0124"
     },
     {
       "file": "missions/definitions/under-tow.json",
-      "sha256": "f8703e17fda29b01b1b26e6bbeb432c3caccb8750f789a5782574a30b2c58910"
+      "sha256": "e3a9c49e170cd56b0b1fde38620f1650983fe5b4869db6d7872be33e8db913d0"
     },
     {
       "file": "missions/definitions/unfinished-map.json",
-      "sha256": "db0e27e3441177d5c4f056e2bee629ef096919f61126f48c7d7bcfa03b453ad3"
+      "sha256": "e5d819d117e4cea91c24980315e1f1734ffa427aff349606db33cf84cf245139"
     },
     {
       "file": "missions/definitions/unwritten-route.json",
-      "sha256": "f017067af8438da9893237995eea83c169814a68bae6a90d7ec1df71d83c38c1"
+      "sha256": "ecb0732291f2dd20c65cd83681543cda218a920b95bdfef24e4b9611bedc319b"
     },
     {
       "file": "missions/definitions/warrant-ledger.json",
-      "sha256": "8af2a5c4b14476a4ee1a2d2646beea7128b69be9b0aa4ac6104f6c2804fa19f3"
+      "sha256": "3879594c708fa144c006391acbfe633c4e5646e1abc0efb430e393eab1e21dc5"
     },
     {
       "file": "missions/definitions/wayfarer-exchange.json",
-      "sha256": "69aea9bf209dc97e269c1bd8a88466add0ff740f8e4b4d0c97bebabe2308175b"
+      "sha256": "5bae06ce6a73ca325f129de826011f28687510d5c7f450c9d1014cfa8821ce28"
     },
     {
       "file": "missions/definitions/wayfarer-services.json",
-      "sha256": "ba8d408deb52ede7f2ef8014226c17ea75bd6671e8d7a4b695258dac27842cb6"
+      "sha256": "bfe89f6103409bafff892feed35096474269186562593f4d959f7b5fec0d79d8"
     },
     {
       "file": "missions/definitions/witness-window.json",
-      "sha256": "07e180d89936720093b53f3a2294daefc3a4ac2bd60df4b5f5c2618773397f17"
+      "sha256": "44361fbfb45306c381ea2548dae6ee07f764a730d1910d98b9c86c3857e68008"
+    },
+    {
+      "file": "missions/gameplay/artwork/ARTWORK-VALIDATION.json",
+      "sha256": "35e4faf5ece2d9c8b3ac25e1a0bbd26923f2adfcf0916378e69afffa5adb4960"
+    },
+    {
+      "file": "missions/gameplay/artwork/artwork-prompts.json",
+      "sha256": "1b18afae7f5d9f5d1a021eddb6d9c56ca2cb08c37f02d42790bc4b92538619c1"
+    },
+    {
+      "file": "missions/gameplay/artwork/artwork-revision-index.json",
+      "sha256": "b3d3819806f4158d4f53d69cf31e4941720869384028fc1a068db422d68e01b0"
+    },
+    {
+      "file": "missions/gameplay/artwork/operation-diagrams.json",
+      "sha256": "1ffe519a55e051dbf0ae505bac5b9696b93e7184627790f2044f70a4a6eb2d5b"
     },
     {
       "file": "missions/gameplay/campaign-profiles.json",
-      "sha256": "4a836d97c48cedfe29aee986bb9a2650b2fce8daab19ad9aa701acda14d5e32d"
+      "sha256": "37fe5011de7bcc5874f6e6eef42151a712be4f69a3b9b23cd18cf660bd0dff0a"
     },
     {
       "file": "missions/gameplay/models/SH001.json",
@@ -869,7 +885,7 @@
     },
     {
       "file": "missions/gameplay/recovery-policy.json",
-      "sha256": "92b2020dd04fe4143daa512c8a00f56ad5d7c7e1ea1f9335e813fed19e97f783"
+      "sha256": "d04b0b15b2ff5b0e8a51dd939ea60ab4bdad309c6dccf6bf116ae9c266bb4802"
     },
     {
       "file": "missions/gameplay/references/fresh-start.json",

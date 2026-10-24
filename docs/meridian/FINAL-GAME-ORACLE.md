@@ -433,9 +433,11 @@ Profiles with measured-operation-and-functional-test use their actual flight, ar
 
 The docked mission board previews eligibility and actual unavailable dependencies before acceptance. The journal shows the current objective, known contact/route, protected cargo, actual cargo/cabin reservation, deadline domain and remaining budget, selected branch, measured progress and failure/recovery options. Each panel uses the normal shared navigation, Confirm and Escape. Dialogue cancellation never selects an answer or arms a clock.
 
-The gallery opens from the docked mission interface and supports campaigns, contracts/services, lessons and earned clues. Every visible card links the stable source ID, title and its actual saved progress. Locked sources show only a non-spoiling silhouette/title where discovery permits. Current accepted stage artwork appears with its briefing; completed stages and the actual selected outcome remain browsable. The 758-asset manifest is the authoritative join; a matching filename alone cannot unlock another stage or source. Unknown clues, future stages, unchosen outcomes and the Medusa trail stay hidden until their authorised receipts. Debug/XYZZY previews stay visibly separate and cannot mutate ordinary progress.
+The gallery opens from the docked mission interface and supports campaigns, contracts/services, lessons and earned clues. Every visible card links the stable source ID, title and its actual saved progress. Locked sources show only a non-spoiling silhouette/title where discovery permits. Current accepted stage artwork appears with its briefing; completed stages and the actual selected outcome remain browsable. The 798-asset manifest (758 originals plus 40 revised-operation additions) is the authoritative join; a matching filename alone cannot unlock another stage or source. Unknown clues, future stages, unchosen outcomes and the Medusa trail stay hidden until their authorised receipts. Debug/XYZZY previews stay visibly separate and cannot mutate ordinary progress.
 
 Use cinematic images for briefings/story history; realistic portraits for contacts; simpler object renders for targets, inventory and evidence; technical three-view diagrams for catalogue reference. Ship diagrams are not flight screenshots. An expanded image has its caption and accessible description and returns to the same selected gallery entry. Save/load, ship exchange and repeated gallery visits neither earn clues nor repay missions.
+
+[The revised-mission art gallery](missions/gameplay/REVISED-MISSION-ARTWORK.md) contains every new operation diagram and continuity/archive illustration. Use the canonical stages exact artwork references; older object-only stage pictures are retained references. The prompt set and per-asset hashes are bundled alongside the gameplay specification.
 
 ### Ship catalogue, fitting and mission readiness
 
@@ -698,8 +700,17 @@ VENN: There is one detail the inquiry could not explain: a curved trace in the t
 - **Item effects 1 / Mass tonnes:** 0.008
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
 - **Archive receipt:** l337.glass-meridian/original-recorder-archived
+- **Reference artwork / Id:** glass-meridian/close-case
+- **Reference artwork / File:** ../../assets/missions/stages/glass-meridian/close-case.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Superseded generic original stage reference
+- **Supplementary artwork 1 / Id:** revision/meridian-recorder-custody
+- **Supplementary artwork 1 / File:** ../../assets/missions/revisions/meridian-recorder-custody.png
+- **Supplementary artwork 1 / Visibility:** Final receiving briefing/history
 
-![The Glass Meridian: close-case](assets/missions/stages/glass-meridian/close-case.png)
+![The Glass Meridian: close-case](assets/missions/revisions/meridian-original-recorder-archive.png)
+
+![The Glass Meridian: close-case custody schematic](assets/missions/revisions/meridian-recorder-custody.png)
 
 **Permanent clue:** The missing instant (`meridian-offset`). The recovered timing standard contains an interval that none of the lane clocks measured. Inside that interval, a curved trace repeats eight times.
 
@@ -2764,7 +2775,7 @@ Mission-specific rules and resources:
 - **Repeatable services / Generator:** authoring-source:original-missions/generate-services.py
 - **Repeatable services / Generator sha256:** 06bd83a41d8feb519806df6bab144f421531a9e9131d77bcabaea0afddb7b37b
 - **Repeatable services / Artwork manifest:** ../../assets/missions/manifest.json
-- **Repeatable services / Artwork sha256:** e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068
+- **Repeatable services / Artwork sha256:** 5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a
 - **Repeatable services / Source packages included:** no
 - **Oracle native integrity / Allowance seconds:** 1800
 - **Oracle native integrity / Clock:** armed-flight time after confirmed actual pickup
@@ -3212,6 +3223,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/quiet-nursery-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/quiet-nursery-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -3295,8 +3308,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.quiet-nursery/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** quiet-nursery/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/quiet-nursery/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Quiet Nursery: field-work](assets/missions/stages/quiet-nursery/field-work.png)
+![The Quiet Nursery: field-work](assets/missions/revisions/quiet-nursery-operation.png)
 
 #### C09.05 - independent-witness
 
@@ -3529,6 +3546,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/borrowed-dawn-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/borrowed-dawn-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -3612,8 +3631,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.borrowed-dawn/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** borrowed-dawn/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/borrowed-dawn/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Borrowed Dawn: field-work](assets/missions/stages/borrowed-dawn/field-work.png)
+![Borrowed Dawn: field-work](assets/missions/revisions/borrowed-dawn-operation.png)
 
 #### C10.05 - independent-witness
 
@@ -3846,6 +3869,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/open-shadow-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/open-shadow-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -3929,8 +3954,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.open-shadow/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** open-shadow/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/open-shadow/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Open Shadow: field-work](assets/missions/stages/open-shadow/field-work.png)
+![The Open Shadow: field-work](assets/missions/revisions/open-shadow-operation.png)
 
 #### C11.05 - independent-witness
 
@@ -4163,6 +4192,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/harbour-without-orders-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/harbour-without-orders-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -4246,8 +4277,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.harbour-without-orders/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** harbour-without-orders/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/harbour-without-orders/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Harbour Without Orders: field-work](assets/missions/stages/harbour-without-orders/field-work.png)
+![Harbour Without Orders: field-work](assets/missions/revisions/harbour-without-orders-operation.png)
 
 #### C12.05 - independent-witness
 
@@ -4479,6 +4514,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/false-colours-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/false-colours-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -4562,8 +4599,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.false-colours/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** false-colours/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/false-colours/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![False Colours: field-work](assets/missions/stages/false-colours/field-work.png)
+![False Colours: field-work](assets/missions/revisions/false-colours-operation.png)
 
 #### C13.05 - independent-witness
 
@@ -4796,6 +4837,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/rubble-covenant-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/rubble-covenant-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -4879,8 +4922,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.rubble-covenant/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** rubble-covenant/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/rubble-covenant/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Rubble Covenant: field-work](assets/missions/stages/rubble-covenant/field-work.png)
+![The Rubble Covenant: field-work](assets/missions/revisions/rubble-covenant-operation.png)
 
 #### C14.05 - independent-witness
 
@@ -5114,6 +5161,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/garden-in-transit-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/garden-in-transit-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -5197,8 +5246,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.garden-in-transit/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** garden-in-transit/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/garden-in-transit/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![A Garden in Transit: field-work](assets/missions/stages/garden-in-transit/field-work.png)
+![A Garden in Transit: field-work](assets/missions/revisions/garden-in-transit-operation.png)
 
 #### C15.05 - independent-witness
 
@@ -5430,6 +5483,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/warrant-ledger-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/warrant-ledger-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -5513,8 +5568,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.warrant-ledger/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** warrant-ledger/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/warrant-ledger/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Warrant Ledger: field-work](assets/missions/stages/warrant-ledger/field-work.png)
+![The Warrant Ledger: field-work](assets/missions/revisions/warrant-ledger-operation.png)
 
 #### C16.05 - independent-witness
 
@@ -5747,6 +5806,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/measure-of-care-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/measure-of-care-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -5830,8 +5891,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.measure-of-care/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** measure-of-care/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/measure-of-care/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Measure of Care: field-work](assets/missions/stages/measure-of-care/field-work.png)
+![The Measure of Care: field-work](assets/missions/revisions/measure-of-care-operation.png)
 
 #### C17.05 - independent-witness
 
@@ -6064,6 +6129,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/long-return-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/long-return-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -6147,8 +6214,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.long-return/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** long-return/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/long-return/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Long Return: field-work](assets/missions/stages/long-return/field-work.png)
+![The Long Return: field-work](assets/missions/revisions/long-return-operation.png)
 
 #### C18.05 - independent-witness
 
@@ -6381,6 +6452,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/unfinished-map-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/unfinished-map-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -6464,8 +6537,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.unfinished-map/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** unfinished-map/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/unfinished-map/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Unfinished Map: field-work](assets/missions/stages/unfinished-map/field-work.png)
+![The Unfinished Map: field-work](assets/missions/revisions/unfinished-map-operation.png)
 
 #### C19.05 - independent-witness
 
@@ -6698,6 +6775,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/blue-reservoir-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/blue-reservoir-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -6781,8 +6860,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.blue-reservoir/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** blue-reservoir/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/blue-reservoir/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Blue Reservoir: field-work](assets/missions/stages/blue-reservoir/field-work.png)
+![The Blue Reservoir: field-work](assets/missions/revisions/blue-reservoir-operation.png)
 
 #### C20.05 - independent-witness
 
@@ -7014,6 +7097,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/mutual-shelter-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/mutual-shelter-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -7097,8 +7182,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.mutual-shelter/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** mutual-shelter/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/mutual-shelter/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Mutual Shelter: field-work](assets/missions/stages/mutual-shelter/field-work.png)
+![Mutual Shelter: field-work](assets/missions/revisions/mutual-shelter-operation.png)
 
 #### C21.05 - independent-witness
 
@@ -7332,6 +7421,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/listening-frontier-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/listening-frontier-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -7415,8 +7506,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.listening-frontier/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** listening-frontier/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/listening-frontier/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Listening Frontier: field-work](assets/missions/stages/listening-frontier/field-work.png)
+![The Listening Frontier: field-work](assets/missions/revisions/listening-frontier-operation.png)
 
 #### C22.05 - independent-witness
 
@@ -7649,6 +7744,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/assembly-of-orbits-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/assembly-of-orbits-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -7732,8 +7829,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.assembly-of-orbits/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** assembly-of-orbits/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/assembly-of-orbits/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![An Assembly of Orbits: field-work](assets/missions/stages/assembly-of-orbits/field-work.png)
+![An Assembly of Orbits: field-work](assets/missions/revisions/assembly-of-orbits-operation.png)
 
 #### C23.05 - independent-witness
 
@@ -7966,6 +8067,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/under-tow-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/under-tow-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -8049,8 +8152,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.under-tow/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** under-tow/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/under-tow/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Under Tow: field-work](assets/missions/stages/under-tow/field-work.png)
+![Under Tow: field-work](assets/missions/revisions/under-tow-operation.png)
 
 #### C24.05 - independent-witness
 
@@ -8283,6 +8390,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/memory-atlas-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/memory-atlas-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -8366,8 +8475,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.memory-atlas/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** memory-atlas/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/memory-atlas/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Memory Atlas: field-work](assets/missions/stages/memory-atlas/field-work.png)
+![The Memory Atlas: field-work](assets/missions/revisions/memory-atlas-operation.png)
 
 #### C25.05 - independent-witness
 
@@ -8600,6 +8713,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/fleet-of-neighbours-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/fleet-of-neighbours-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -8683,8 +8798,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.fleet-of-neighbours/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** fleet-of-neighbours/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/fleet-of-neighbours/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![A Fleet of Neighbours: field-work](assets/missions/stages/fleet-of-neighbours/field-work.png)
+![A Fleet of Neighbours: field-work](assets/missions/revisions/fleet-of-neighbours-operation.png)
 
 #### C26.05 - independent-witness
 
@@ -8916,6 +9035,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/uncounted-names-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/uncounted-names-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -8999,8 +9120,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.uncounted-names/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** uncounted-names/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/uncounted-names/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Uncounted Names: field-work](assets/missions/stages/uncounted-names/field-work.png)
+![Uncounted Names: field-work](assets/missions/revisions/uncounted-names-operation.png)
 
 #### C27.05 - independent-witness
 
@@ -9234,6 +9359,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/honest-circuit-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/honest-circuit-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -9317,8 +9444,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.honest-circuit/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** honest-circuit/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/honest-circuit/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Honest Circuit: field-work](assets/missions/stages/honest-circuit/field-work.png)
+![The Honest Circuit: field-work](assets/missions/revisions/honest-circuit-operation.png)
 
 #### C28.05 - independent-witness
 
@@ -9552,6 +9683,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/small-lights-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/small-lights-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -9635,8 +9768,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.small-lights/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** small-lights/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/small-lights/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Small Lights: field-work](assets/missions/stages/small-lights/field-work.png)
+![Small Lights: field-work](assets/missions/revisions/small-lights-operation.png)
 
 #### C29.05 - independent-witness
 
@@ -9869,6 +10006,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/passengers-horizon-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/passengers-horizon-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -9952,8 +10091,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.passengers-horizon/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** passengers-horizon/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/passengers-horizon/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Passenger's Horizon: field-work](assets/missions/stages/passengers-horizon/field-work.png)
+![The Passenger's Horizon: field-work](assets/missions/revisions/passengers-horizon-operation.png)
 
 #### C30.05 - independent-witness
 
@@ -10186,6 +10329,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/kind-distance-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/kind-distance-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -10269,8 +10414,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.kind-distance/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** kind-distance/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/kind-distance/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Kind Distance: field-work](assets/missions/stages/kind-distance/field-work.png)
+![The Kind Distance: field-work](assets/missions/revisions/kind-distance-operation.png)
 
 #### C31.05 - independent-witness
 
@@ -10502,6 +10651,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/cold-reserve-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/cold-reserve-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -10585,8 +10736,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.cold-reserve/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** cold-reserve/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/cold-reserve/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Cold Reserve: field-work](assets/missions/stages/cold-reserve/field-work.png)
+![Cold Reserve: field-work](assets/missions/revisions/cold-reserve-operation.png)
 
 #### C32.05 - independent-witness
 
@@ -10819,6 +10974,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/magnetic-orchard-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/magnetic-orchard-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -10902,8 +11059,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.magnetic-orchard/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** magnetic-orchard/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/magnetic-orchard/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Magnetic Orchard: field-work](assets/missions/stages/magnetic-orchard/field-work.png)
+![The Magnetic Orchard: field-work](assets/missions/revisions/magnetic-orchard-operation.png)
 
 #### C33.05 - independent-witness
 
@@ -11135,6 +11296,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/open-measure-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/open-measure-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -11218,8 +11381,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.open-measure/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** open-measure/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/open-measure/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Open Measure: field-work](assets/missions/stages/open-measure/field-work.png)
+![Open Measure: field-work](assets/missions/revisions/open-measure-operation.png)
 
 #### C34.05 - independent-witness
 
@@ -11452,6 +11619,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/shared-pulse-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/shared-pulse-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -11535,8 +11704,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.shared-pulse/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** shared-pulse/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/shared-pulse/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Shared Pulse: field-work](assets/missions/stages/shared-pulse/field-work.png)
+![The Shared Pulse: field-work](assets/missions/revisions/shared-pulse-operation.png)
 
 #### C35.05 - independent-witness
 
@@ -11773,6 +11946,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/witness-window-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/witness-window-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -11856,8 +12031,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.witness-window/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** witness-window/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/witness-window/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Witness Window: field-work](assets/missions/stages/witness-window/field-work.png)
+![The Witness Window: field-work](assets/missions/revisions/witness-window-operation.png)
 
 #### C36.05 - independent-witness
 
@@ -12090,6 +12269,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/public-record-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/public-record-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -12173,8 +12354,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.public-record/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** public-record/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/public-record/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Public Record: field-work](assets/missions/stages/public-record/field-work.png)
+![Public Record: field-work](assets/missions/revisions/public-record-operation.png)
 
 #### C37.05 - independent-witness
 
@@ -12407,6 +12592,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/courier-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/courier-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -12490,8 +12677,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.courier/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** courier/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/courier/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![Signed Passage: field-work](assets/missions/stages/courier/field-work.png)
+![Signed Passage: field-work](assets/missions/revisions/courier-operation.png)
 
 #### C38.05 - independent-witness
 
@@ -12724,6 +12915,8 @@ Mission-specific rules and resources:
 - **Presentation policy:** Nine persistent internal stages are not nine compulsory repeated dialogue screens. Group them into these mission-specific journal phases; combine already co-located briefing/loan and audit/payment transactions in one reviewable panel without bypassing their atomic receipts. Measurements and tool settings use the profile controls in space. Narration, consequence and named contacts remain mission-specific.
 - **Acceptance tests / Positive:** Reach both real work targets with the advertised actual fitting, perform playerAction, pass the profile functional test and both selected branch proofs, receive actual witness and return original loan; only then settle once.
 - **Acceptance tests / Negative:** wrong-world/target identity never qualifies; time near fixture without the named operation never qualifies; partial or cross-branch proof never completes; reference loan and external stock never duplicate; unsafe threshold/expired authority/occlusion refuses with reason; load repeats neither completed functional test nor cargo spend; failed witness/case preserves loss and exposes continuity inquiry
+- **Operation artwork ref:** ../../assets/missions/revisions/guiding-light-operation.png
+- **Editable operation artwork ref:** ../../assets/missions/revisions/guiding-light-operation.svg
 
 [Controlling physical operations and recovery rules](missions/gameplay/GAMEPLAY-SPECIFICATION.md).
 
@@ -12807,8 +13000,12 @@ Mission-specific rules and resources:
 - **Decline policy:** Offer remains available until accepted. Preparation has no deadline. Any explicitly armed incident follows its advertised simulation clock; normal game pause and current-format save/load remain available.
 - **Receipt:** l337.guiding-light/field-work
 - **Item transaction:** Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.
+- **Reference artwork / Id:** guiding-light/field-work
+- **Reference artwork / File:** ../../assets/missions/stages/guiding-light/field-work.png
+- **Reference artwork / Visibility:** Mission stage briefing and completed history
+- **Reference artwork / Role:** Original tool/object reference; does not illustrate the complete revised operation
 
-![The Guiding Light: field-work](assets/missions/stages/guiding-light/field-work.png)
+![The Guiding Light: field-work](assets/missions/revisions/guiding-light-operation.png)
 
 #### C39.05 - independent-witness
 
@@ -14944,6 +15141,340 @@ The final mystery connects the whole career. All 39 campaigns, 15 general contra
 All 758 defined mission graphics are included, byte-for-byte, under `assets/missions/`: briefing illustrations, every stage and contract card, outcomes, contact portraits, props, hull illustrations, clue glyphs, faction symbols and permanent-commission marking. Mission sections show their corresponding primary graphics. [Complete visual catalogue](MISSION-ARTWORK.md) displays every unique manifest asset, including alternatives and references that are not repeated above. [Asset provenance](ASSET-PROVENANCE.json) records exact source/output hashes and construction methods.
 
 This oracle and its artwork catalogue intentionally contain every spoiler. In the game, only current briefings, legitimate discovered ships, received clues, unlocked trail steps and completed history are visible. Future artwork must not reveal the Medusa or a hidden ending through the gallery, search, preload thumbnails or filenames presented to the player. The Hearth Compact decal is explicitly previewed before accepting its permanent commander entitlement and follows the commander onto replacement hulls.
+
+<!-- revised-mission-artwork:start -->
+
+### Graphics for revised missions
+
+The revised original missions retain all 758 original graphics. This update adds 40 assets: 31 C09-C39 operation diagrams, one original-recorder custody diagram, five shared continuity-inquiry stage diagrams and three cinematic narrative illustrations. Total mission-art inventory:798. These are briefing/reference assets, not game captures or evidence that the mechanics are implemented.
+
+[Full artwork manifest](assets/missions/manifest.json), [exact revision index and hashes](missions/gameplay/artwork/artwork-revision-index.json), [final image-generation prompts](missions/gameplay/artwork/artwork-prompts.json).
+
+#### Coverage and selection
+
+Every C09-C39 field-work stage now points to its own operation diagram, with limits sourced from its current physical profile. Prior simple object renders remain object references. C01 final receiving points to the new single-recorder archive scene plus exact custody diagram. C36's diagram explains the pre-offer preservation hold. All 64 continuity sources reuse the same five stage diagrams and two narrative illustrations, gated by actual accepted case/stage; they do not acquire extra clues. No other existing briefing, portrait, clue or ship reference needed replacement.
+
+Diagrams show design targets and example traces, not completed objectives. Captions and accessible SVG titles/descriptions explain their purpose. They use editable source and restrained mint/cyan/amber colours consistent with the existing clue graphics. Cinematic images use the existing dark orbital interiors, worn metal and warm/cool lighting. No reference ship geometry was replaced or invented.
+
+#### New narrative illustrations
+
+##### A new inquiry, not an erased failure
+
+Continuity inquiry request and independent receiving narrative illustration.
+
+![A new inquiry, not an erased failure](assets/missions/revisions/continuity-orbital-desk.png)
+
+##### Independent reference measurements
+
+Continuity inquiry measurement and model-test narrative illustration.
+
+![Independent reference measurements](assets/missions/revisions/continuity-reference-field.png)
+
+##### The original recorder reaches its archive
+
+Glass Meridian final recorder receiving narrative illustration.
+
+![The original recorder reaches its archive](assets/missions/revisions/meridian-original-recorder-archive.png)
+
+#### Distinct operation and custody diagrams
+
+##### The Quiet Nursery - quiet-nursery-operation
+
+Pressure-waveform comparison Select and latch each of two real pulse dampers after comparing cycle minima; confirm a three-cycle live pressure trace.
+
+![The Quiet Nursery: quiet-nursery-operation](assets/missions/revisions/quiet-nursery-operation.png)
+
+[Editable SVG source](assets/missions/revisions/quiet-nursery-operation.svg)
+
+##### Borrowed Dawn - borrowed-dawn-operation
+
+Reflector stop and thermal cutoff Steer the two source-owned reflectors with directional controls; release controls at the actual illumination stop and test the thermal trip.
+
+![Borrowed Dawn: borrowed-dawn-operation](assets/missions/revisions/borrowed-dawn-operation.png)
+
+[Editable SVG source](assets/missions/revisions/borrowed-dawn-operation.svg)
+
+##### The Open Shadow - open-shadow-operation
+
+Privacy and collision-channel separation Fly the volunteer crossing through three actual approach lanes while measuring collision warning and identity disclosure separately.
+
+![The Open Shadow: open-shadow-operation](assets/missions/revisions/open-shadow-operation.png)
+
+[Editable SVG source](assets/missions/revisions/open-shadow-operation.svg)
+
+##### Harbour Without Orders - harbour-without-orders-operation
+
+Simultaneous berth-allocation exclusion Submit two simultaneous real berth claims to one allocator; revoke the losing lease and physically prove mutual exclusion.
+
+![Harbour Without Orders: harbour-without-orders-operation](assets/missions/revisions/harbour-without-orders-operation.png)
+
+[Editable SVG source](assets/missions/revisions/harbour-without-orders-operation.svg)
+
+##### False Colours - false-colours-operation
+
+Identity-key revocation and reissue Challenge each actual transmitter with new nonces, revoke the retired key and replay its signed old packet to prove rejection.
+
+![False Colours: false-colours-operation](assets/missions/revisions/false-colours-operation.png)
+
+[Editable SVG source](assets/missions/revisions/false-colours-operation.svg)
+
+##### The Rubble Covenant - rubble-covenant-operation
+
+Mass and drift-vector clearance Assign actual source-owned tug thrust to three registered fragments; measure their drift and clear the shared corridor while conserving mass and momentum.
+
+![The Rubble Covenant: rubble-covenant-operation](assets/missions/revisions/rubble-covenant-operation.png)
+
+[Editable SVG source](assets/missions/revisions/rubble-covenant-operation.svg)
+
+##### A Garden in Transit - garden-in-transit-operation
+
+Quarantine and climate compatibility Adjust two actual sealed cradle climate controls; route the live tender only after both receiving environments pass the stability window.
+
+![A Garden in Transit: garden-in-transit-operation](assets/missions/revisions/garden-in-transit-operation.png)
+
+[Editable SVG source](assets/missions/revisions/garden-in-transit-operation.svg)
+
+##### The Warrant Ledger - warrant-ledger-operation
+
+Conflicting-evidence adjudication Trace the three signed issuer records, present the two independent victim challenges and reject reused evidence before revocation/reissue.
+
+![The Warrant Ledger: warrant-ledger-operation](assets/missions/revisions/warrant-ledger-operation.png)
+
+[Editable SVG source](assets/missions/revisions/warrant-ledger-operation.svg)
+
+##### The Measure of Care - measure-of-care-operation
+
+Cold-chain calibration against references Set the actual reference controller and sample three independent sealed thermometer channels within the published tolerance.
+
+![The Measure of Care: measure-of-care-operation](assets/missions/revisions/measure-of-care-operation.png)
+
+[Editable SVG source](assets/missions/revisions/measure-of-care-operation.svg)
+
+##### The Long Return - long-return-operation
+
+Live multi-carrier handoff Fly between the three real carriers and perform two atomic source/receiver transfers while validating continuing consent.
+
+![The Long Return: long-return-operation](assets/missions/revisions/long-return-operation.png)
+
+[Editable SVG source](assets/missions/revisions/long-return-operation.svg)
+
+##### The Unfinished Map - unfinished-map-operation
+
+Uncertainty envelope surveying Take two separated measurement baselines at three actual landmarks and compare the resulting uncertainty envelope.
+
+![The Unfinished Map: unfinished-map-operation](assets/missions/revisions/unfinished-map-operation.png)
+
+[Editable SVG source](assets/missions/revisions/unfinished-map-operation.svg)
+
+##### The Blue Reservoir - blue-reservoir-operation
+
+Closed fluid-flow balancing Open/close the two source-owned sealed bypass valves; preserve total water while reaching oxygen and minimum-flow targets.
+
+![The Blue Reservoir: blue-reservoir-operation](assets/missions/revisions/blue-reservoir-operation.png)
+
+[Editable SVG source](assets/missions/revisions/blue-reservoir-operation.svg)
+
+##### Mutual Shelter - mutual-shelter-operation
+
+Finite emergency-capacity stress test Reserve two real shelter berths, present the third competing claim, verify its honest refusal and then release a real reservation.
+
+![Mutual Shelter: mutual-shelter-operation](assets/missions/revisions/mutual-shelter-operation.png)
+
+[Editable SVG source](assets/missions/revisions/mutual-shelter-operation.svg)
+
+##### The Listening Frontier - listening-frontier-operation
+
+Reciprocal quiet-window timing Tune and leave the channel silent through human/Larvaal/quiet windows, then send only in the actual allocated reply window.
+
+![The Listening Frontier: listening-frontier-operation](assets/missions/revisions/listening-frontier-operation.png)
+
+[Editable SVG source](assets/missions/revisions/listening-frontier-operation.svg)
+
+##### An Assembly of Orbits - assembly-of-orbits-operation
+
+Corridor-capacity and stop-authority allocation Allocate five real requests across four physical corridor slots while preserving one protected free slot and crew consent.
+
+![An Assembly of Orbits: assembly-of-orbits-operation](assets/missions/revisions/assembly-of-orbits-operation.png)
+
+[Editable SVG source](assets/missions/revisions/assembly-of-orbits-operation.svg)
+
+##### Under Tow - under-tow-operation
+
+Coupler geometry and load testing Direct two real source-owned couplers/tugs into engagement; apply measured test load, verify release above the limit, and conduct actual tow reception.
+
+![Under Tow: under-tow-operation](assets/missions/revisions/under-tow-operation.png)
+
+[Editable SVG source](assets/missions/revisions/under-tow-operation.svg)
+
+##### The Memory Atlas - memory-atlas-operation
+
+Measurement and testimony separation Fly separated baselines and reconcile physical landmarks against measured error; private diary text cannot count as coordinates.
+
+![The Memory Atlas: memory-atlas-operation](assets/missions/revisions/memory-atlas-operation.png)
+
+[Editable SVG source](assets/missions/revisions/memory-atlas-operation.svg)
+
+##### A Fleet of Neighbours - fleet-of-neighbours-operation
+
+Finite arrived-fleet scheduling Choose real available response hulls, keep one local reserve and watch actual finite-fuel departure, route and callout receiving.
+
+![A Fleet of Neighbours: fleet-of-neighbours-operation](assets/missions/revisions/fleet-of-neighbours-operation.png)
+
+[Editable SVG source](assets/missions/revisions/fleet-of-neighbours-operation.svg)
+
+##### Uncounted Names - uncounted-names-operation
+
+Personhood and receiving-permission correction Obtain three actual peoples separate permissions and apply only their chosen access grants; test denial without exporting their identities.
+
+![Uncounted Names: uncounted-names-operation](assets/missions/revisions/uncounted-names-operation.png)
+
+[Editable SVG source](assets/missions/revisions/uncounted-names-operation.svg)
+
+##### The Honest Circuit - honest-circuit-operation
+
+Fuel-accounted flight certification Fly both ordered physical gates at5-30m/s with real traffic separation; an unsafe approach aborts the trial without refunding spent fuel.
+
+![The Honest Circuit: honest-circuit-operation](assets/missions/revisions/honest-circuit-operation.png)
+
+[Editable SVG source](assets/missions/revisions/honest-circuit-operation.svg)
+
+##### Small Lights - small-lights-operation
+
+Dependency fault isolation and response Isolate the actual dependency fault, fit exactly two real repair kits, then run either the timed callout or separately stocked reserve drill.
+
+![Small Lights: small-lights-operation](assets/missions/revisions/small-lights-operation.png)
+
+[Editable SVG source](assets/missions/revisions/small-lights-operation.svg)
+
+##### The Passenger's Horizon - passengers-horizon-operation
+
+Accessible boarding and viewing clearance Adjust the two real boarding interfaces with directional controls while consenting volunteers test sightline, clearance and independent stop controls.
+
+![The Passenger's Horizon: passengers-horizon-operation](assets/missions/revisions/passengers-horizon-operation.png)
+
+[Editable SVG source](assets/missions/revisions/passengers-horizon-operation.svg)
+
+##### The Kind Distance - kind-distance-operation
+
+Revocable anonymous reply protocol Relay two independently consented invitations; revoke a live reply lease and prove neither private address nor forced meeting is exposed.
+
+![The Kind Distance: kind-distance-operation](assets/missions/revisions/kind-distance-operation.png)
+
+[Editable SVG source](assets/missions/revisions/kind-distance-operation.svg)
+
+##### Cold Reserve - cold-reserve-operation
+
+Autonomous dispatch isolation and stock custody Challenge the two expired dispatch orders against the real12-unit reserve; prove refusal before physically authorising conversion or dismantling.
+
+![Cold Reserve: cold-reserve-operation](assets/missions/revisions/cold-reserve-operation.png)
+
+[Editable SVG source](assets/missions/revisions/cold-reserve-operation.svg)
+
+##### The Magnetic Orchard - magnetic-orchard-operation
+
+Non-destructive field-boundary release Fly the low-field approach and direct the two human tether releases only inside the measured safe field window.
+
+![The Magnetic Orchard: magnetic-orchard-operation](assets/missions/revisions/magnetic-orchard-operation.png)
+
+[Editable SVG source](assets/missions/revisions/magnetic-orchard-operation.svg)
+
+##### Open Measure - open-measure-operation
+
+Independent tolerance and fit verification Apply the known reference load to both actual component mounts; compare fit and tolerance before publishing their calibrated specification.
+
+![Open Measure: open-measure-operation](assets/missions/revisions/open-measure-operation.png)
+
+[Editable SVG source](assets/missions/revisions/open-measure-operation.svg)
+
+##### The Shared Pulse - shared-pulse-operation
+
+Bounded acknowledgement and feedback cutoff Set the two real reply cutoffs and follow three live cycles with exactly one reply each and the full quiet window.
+
+![The Shared Pulse: shared-pulse-operation](assets/missions/revisions/shared-pulse-operation.png)
+
+[Editable SVG source](assets/missions/revisions/shared-pulse-operation.svg)
+
+##### The Witness Window - witness-window-operation
+
+Evidence escrow and privacy-preserving release Compare the three consented archive copies, challenge the two independent keys and verify the sealed or anonymised receiving outcome.
+
+![The Witness Window: witness-window-operation](assets/missions/revisions/witness-window-operation.png)
+
+[Editable SVG source](assets/missions/revisions/witness-window-operation.svg)
+
+##### Public Record - public-record-operation
+
+Right-of-reply without evidence mutation Test three genuine publication routes and two independent challenges; explicitly arm a right-of-reply trial without modifying the preserved evidence.
+
+![Public Record: public-record-operation](assets/missions/revisions/public-record-operation.png)
+
+[Editable SVG source](assets/missions/revisions/public-record-operation.svg)
+
+##### Signed Passage - courier-operation
+
+Physical release-before-receive interlock Meet two real carriers, prepare exact crate receiving capacity and atomically commit each actual handoff in order.
+
+![Signed Passage: courier-operation](assets/missions/revisions/courier-operation.png)
+
+[Editable SVG source](assets/missions/revisions/courier-operation.svg)
+
+##### The Guiding Light - guiding-light-operation
+
+Shadow sight-line and overlapping beacon coverage Fly the three lantern sightlines, align two winter relays and verify a lit safe receiving path through the current actual shadow geometry.
+
+![The Guiding Light: guiding-light-operation](assets/missions/revisions/guiding-light-operation.png)
+
+[Editable SVG source](assets/missions/revisions/guiding-light-operation.svg)
+
+##### The Glass Meridian - meridian-recorder-custody
+
+Retain through the audit; archive the original at the final receiving. Keep the original recorder through the booking audit and later stages. At final receiving, transfer that same serial into Venns archive and release0.008t exactly once.
+
+![The Glass Meridian: meridian-recorder-custody](assets/missions/revisions/meridian-recorder-custody.png)
+
+[Editable SVG source](assets/missions/revisions/meridian-recorder-custody.svg)
+
+##### Continuity inquiry - continuity-request-case
+
+Request case At the orbital desk, open a new source-linked inquiry and obtain a zero-mass signed survey mandate and three archive measurement challenges.
+
+![Continuity inquiry: continuity-request-case](assets/missions/revisions/continuity-request-case.png)
+
+[Editable SVG source](assets/missions/revisions/continuity-request-case.svg)
+
+##### Continuity inquiry - continuity-measure-source-trace
+
+Measure source trace Fly to three registered non-consumable external reference beacons in the current ordinary system; perform source-specific measurements and reconcile them with the independent archived observations.
+
+![Continuity inquiry: continuity-measure-source-trace](assets/missions/revisions/continuity-measure-source-trace.png)
+
+[Editable SVG source](assets/missions/revisions/continuity-measure-source-trace.svg)
+
+##### Continuity inquiry - continuity-test-corrective-model
+
+Test corrective model Operate a source-specific physical test arrangement on those beacons and pass its measurable consistency/safety test.
+
+![Continuity inquiry: continuity-test-corrective-model](assets/missions/revisions/continuity-test-corrective-model.png)
+
+[Editable SVG source](assets/missions/revisions/continuity-test-corrective-model.svg)
+
+##### Continuity inquiry - continuity-independent-audit
+
+Independent audit Bring the signed measured results to a different authorised desk operator. Reconcile at least two independently corroborated records and explicitly record the original loss/outcome.
+
+![Continuity inquiry: continuity-independent-audit](assets/missions/revisions/continuity-independent-audit.png)
+
+[Editable SVG source](assets/missions/revisions/continuity-independent-audit.svg)
+
+##### Continuity inquiry - continuity-close-inquiry
+
+Close inquiry Commit the new verified inquiry outcome and the same source clue receipt once.
+
+![Continuity inquiry: continuity-close-inquiry](assets/missions/revisions/continuity-close-inquiry.png)
+
+[Editable SVG source](assets/missions/revisions/continuity-close-inquiry.svg)
+
+<!-- revised-mission-artwork:end -->
 
 ## New L337 ship definitions and images - final reference
 

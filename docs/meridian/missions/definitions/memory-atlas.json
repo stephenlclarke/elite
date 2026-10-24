@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "memory-atlas",
       "file": "../../assets/missions/illustrations/memory-atlas.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/memory-atlas-operation",
+        "sha256": "18e5e3b48a14b685ad42be5691fb8c7b7eafde0ae4b0c9c9c9e61ea127d0996c",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/memory-atlas-operation.png",
+        "description": "Measurement and testimony separation Fly separated baselines and reconcile physical landmarks against measured error; private diary text cannot count as coordinates.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "memory-atlas/field-work",
         "file": "../../assets/missions/stages/memory-atlas/field-work.png",
         "sha256": "e2aea70371407da3b88f04551eded3d21091816af67cce3a439aa130fa847b77",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

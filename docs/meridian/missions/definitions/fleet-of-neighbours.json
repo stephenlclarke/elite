@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "fleet-of-neighbours",
       "file": "../../assets/missions/illustrations/fleet-of-neighbours.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/fleet-of-neighbours-operation",
+        "sha256": "068165e02e8342dbc762c0f2ec144e23da002d620b4357f07a8baa57ce9b2702",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/fleet-of-neighbours-operation.png",
+        "description": "Finite arrived-fleet scheduling Choose real available response hulls, keep one local reserve and watch actual finite-fuel departure, route and callout receiving.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "fleet-of-neighbours/field-work",
         "file": "../../assets/missions/stages/fleet-of-neighbours/field-work.png",
         "sha256": "4551b037b6c01945409dd4f159bf79340fdd5d84d0be94724b95480c16dc4863",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

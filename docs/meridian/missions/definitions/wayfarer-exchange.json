@@ -94,12 +94,12 @@
     "generator": "authoring-source:original-missions/generate-services.py",
     "generatorSHA256": "06bd83a41d8feb519806df6bab144f421531a9e9131d77bcabaea0afddb7b37b",
     "artworkManifest": "../../assets/missions/manifest.json",
-    "artworkSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "artworkSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "sourcePackagesIncluded": false
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "wayfarer-exchange",
       "file": "../../assets/missions/illustrations/wayfarer-exchange.png",

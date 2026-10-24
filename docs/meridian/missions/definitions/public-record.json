@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "public-record",
       "file": "../../assets/missions/illustrations/public-record.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/public-record-operation",
+        "sha256": "8ed32faff074c43ec2c6d726c6856692e8895df11cc12c854e61d9795beb71db",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/public-record-operation.png",
+        "description": "Right-of-reply without evidence mutation Test three genuine publication routes and two independent challenges; explicitly arm a right-of-reply trial without modifying the preserved evidence.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "public-record/field-work",
         "file": "../../assets/missions/stages/public-record/field-work.png",
         "sha256": "32d64e896b2ad031d431634041fca525c81e4fe50045e3c00e9e85f2e75e8fff",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

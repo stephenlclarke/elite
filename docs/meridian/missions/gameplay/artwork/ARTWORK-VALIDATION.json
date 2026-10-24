@@ -1,0 +1,19 @@
+{
+  "validatedAtUTC": "2026-10-24T16:26:24.466484+00:00",
+  "originalAssetsUnchanged": 758,
+  "newSVGDiagrams": 37,
+  "newBuiltInImagegenIllustrations": 3,
+  "totalMissionAssets": 798,
+  "physicalMissionGraphicFiles": 835,
+  "editableSVGDiagramsWithPNGExports": 37,
+  "newAssetHashesAndDimensionsPass": true,
+  "all37SVGsRenderedForQA": true,
+  "visualInspection": "All31 operation layouts reviewed in a contact sheet; selected operation diagrams reviewed at full resolution; three generated illustrations reviewed directly. Remaining custody/inquiry diagrams rendered and visually reviewed separately.",
+  "allTextFitsDeclaredCanvas": true,
+  "all31CurrentStageBindingsAndFiveInquiryStagesResolve": true,
+  "originalsRetainedAsReferences": true,
+  "newArtGrantsNoProgress": true,
+  "runtimeOrGameRendererExecuted": false,
+  "generationPrompts": "missions/gameplay/artwork/artwork-prompts.json",
+  "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a"
+}

@@ -107,7 +107,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/quiet-nursery-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/quiet-nursery-operation.svg"
     },
     "borrowed-dawn": {
       "id": "l337.design/borrowed-dawn/physical-v2",
@@ -214,7 +216,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/borrowed-dawn-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/borrowed-dawn-operation.svg"
     },
     "open-shadow": {
       "id": "l337.design/open-shadow/physical-v2",
@@ -321,7 +325,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/open-shadow-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/open-shadow-operation.svg"
     },
     "harbour-without-orders": {
       "id": "l337.design/harbour-without-orders/physical-v2",
@@ -428,7 +434,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/harbour-without-orders-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/harbour-without-orders-operation.svg"
     },
     "false-colours": {
       "id": "l337.design/false-colours/physical-v2",
@@ -534,7 +542,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/false-colours-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/false-colours-operation.svg"
     },
     "rubble-covenant": {
       "id": "l337.design/rubble-covenant/physical-v2",
@@ -645,7 +655,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/rubble-covenant-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/rubble-covenant-operation.svg"
     },
     "garden-in-transit": {
       "id": "l337.design/garden-in-transit/physical-v2",
@@ -753,7 +765,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/garden-in-transit-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/garden-in-transit-operation.svg"
     },
     "warrant-ledger": {
       "id": "l337.design/warrant-ledger/physical-v2",
@@ -859,7 +873,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/warrant-ledger-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/warrant-ledger-operation.svg"
     },
     "measure-of-care": {
       "id": "l337.design/measure-of-care/physical-v2",
@@ -966,7 +982,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/measure-of-care-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/measure-of-care-operation.svg"
     },
     "long-return": {
       "id": "l337.design/long-return/physical-v2",
@@ -1073,7 +1091,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/long-return-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/long-return-operation.svg"
     },
     "unfinished-map": {
       "id": "l337.design/unfinished-map/physical-v2",
@@ -1180,7 +1200,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/unfinished-map-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/unfinished-map-operation.svg"
     },
     "blue-reservoir": {
       "id": "l337.design/blue-reservoir/physical-v2",
@@ -1287,7 +1309,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/blue-reservoir-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/blue-reservoir-operation.svg"
     },
     "mutual-shelter": {
       "id": "l337.design/mutual-shelter/physical-v2",
@@ -1393,7 +1417,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/mutual-shelter-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/mutual-shelter-operation.svg"
     },
     "listening-frontier": {
       "id": "l337.design/listening-frontier/physical-v2",
@@ -1501,7 +1527,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/listening-frontier-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/listening-frontier-operation.svg"
     },
     "assembly-of-orbits": {
       "id": "l337.design/assembly-of-orbits/physical-v2",
@@ -1608,7 +1636,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/assembly-of-orbits-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/assembly-of-orbits-operation.svg"
     },
     "under-tow": {
       "id": "l337.design/under-tow/physical-v2",
@@ -1718,7 +1748,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/under-tow-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/under-tow-operation.svg"
     },
     "memory-atlas": {
       "id": "l337.design/memory-atlas/physical-v2",
@@ -1825,7 +1857,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/memory-atlas-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/memory-atlas-operation.svg"
     },
     "fleet-of-neighbours": {
       "id": "l337.design/fleet-of-neighbours/physical-v2",
@@ -1932,7 +1966,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/fleet-of-neighbours-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/fleet-of-neighbours-operation.svg"
     },
     "uncounted-names": {
       "id": "l337.design/uncounted-names/physical-v2",
@@ -2038,7 +2074,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/uncounted-names-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/uncounted-names-operation.svg"
     },
     "honest-circuit": {
       "id": "l337.design/honest-circuit/physical-v2",
@@ -2145,7 +2183,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/honest-circuit-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/honest-circuit-operation.svg"
     },
     "small-lights": {
       "id": "l337.design/small-lights/physical-v2",
@@ -2253,7 +2293,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/small-lights-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/small-lights-operation.svg"
     },
     "passengers-horizon": {
       "id": "l337.design/passengers-horizon/physical-v2",
@@ -2360,7 +2402,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/passengers-horizon-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/passengers-horizon-operation.svg"
     },
     "kind-distance": {
       "id": "l337.design/kind-distance/physical-v2",
@@ -2467,7 +2511,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/kind-distance-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/kind-distance-operation.svg"
     },
     "cold-reserve": {
       "id": "l337.design/cold-reserve/physical-v2",
@@ -2573,7 +2619,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/cold-reserve-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/cold-reserve-operation.svg"
     },
     "magnetic-orchard": {
       "id": "l337.design/magnetic-orchard/physical-v2",
@@ -2680,7 +2728,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/magnetic-orchard-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/magnetic-orchard-operation.svg"
     },
     "open-measure": {
       "id": "l337.design/open-measure/physical-v2",
@@ -2786,7 +2836,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/open-measure-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/open-measure-operation.svg"
     },
     "shared-pulse": {
       "id": "l337.design/shared-pulse/physical-v2",
@@ -2893,7 +2945,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/shared-pulse-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/shared-pulse-operation.svg"
     },
     "witness-window": {
       "id": "l337.design/witness-window/physical-v2",
@@ -3000,7 +3054,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/witness-window-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/witness-window-operation.svg"
     },
     "public-record": {
       "id": "l337.design/public-record/physical-v2",
@@ -3107,7 +3163,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/public-record-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/public-record-operation.svg"
     },
     "courier": {
       "id": "l337.design/courier/physical-v2",
@@ -3214,7 +3272,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/courier-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/courier-operation.svg"
     },
     "guiding-light": {
       "id": "l337.design/guiding-light/physical-v2",
@@ -3322,7 +3382,9 @@
           "load repeats neither completed functional test nor cargo spend",
           "failed witness/case preserves loss and exposes continuity inquiry"
         ]
-      }
+      },
+      "operationArtworkRef": "../../assets/missions/revisions/guiding-light-operation.png",
+      "editableOperationArtworkRef": "../../assets/missions/revisions/guiding-light-operation.svg"
     }
   }
 }

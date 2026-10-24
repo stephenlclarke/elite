@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "quiet-nursery",
       "file": "../../assets/missions/illustrations/quiet-nursery.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/quiet-nursery-operation",
+        "sha256": "5d3a2f418749f23e3b133b14abe0cd3d58b99cb8699e2983e072a606ed33dafd",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/quiet-nursery-operation.png",
+        "description": "Pressure-waveform comparison Select and latch each of two real pulse dampers after comparing cycle minima; confirm a three-cycle live pressure trace.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "quiet-nursery/field-work",
         "file": "../../assets/missions/stages/quiet-nursery/field-work.png",
         "sha256": "9f6152b6816940323e7e81d50ff2ff5a8ad684c185c5e9f52bb42e1bee825021",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

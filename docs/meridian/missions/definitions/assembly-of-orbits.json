@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "assembly-of-orbits",
       "file": "../../assets/missions/illustrations/assembly-of-orbits.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/assembly-of-orbits-operation",
+        "sha256": "141928f0f21e08d62329122d0780369739ef03fa656f538b190f00f4d93f6feb",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/assembly-of-orbits-operation.png",
+        "description": "Corridor-capacity and stop-authority allocation Allocate five real requests across four physical corridor slots while preserving one protected free slot and crew consent.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "assembly-of-orbits/field-work",
         "file": "../../assets/missions/stages/assembly-of-orbits/field-work.png",
         "sha256": "62919f326fbe958b950c734c15c1fbada7b6a9e420173dd6d472ddb047fc8a40",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

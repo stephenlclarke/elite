@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "mutual-shelter",
       "file": "../../assets/missions/illustrations/mutual-shelter.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/mutual-shelter-operation",
+        "sha256": "ab9ef29c0d2c64133ae23a9be908f7c7660ed3edf524d1c2a68a333879aca635",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/mutual-shelter-operation.png",
+        "description": "Finite emergency-capacity stress test Reserve two real shelter berths, present the third competing claim, verify its honest refusal and then release a real reservation.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "mutual-shelter/field-work",
         "file": "../../assets/missions/stages/mutual-shelter/field-work.png",
         "sha256": "c3d2798061e87418171758456f10916c856072f590b688becf953ef9765b6144",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

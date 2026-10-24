@@ -24,7 +24,7 @@ Latest scope remains research/design/documentation here. The human's M01 boundar
 
 ## Reading map and coverage
 
-The bundle contains 39 campaigns/368 stages, 25 families/75 stages, 64 distinct required clue sources, seven finale steps and 171 new fleet records. The original objective matrix has 450 rows and 78 explicit branch variants. The recovery policy defines two five-step alternatives per source: funded renewal/remedy and guaranteed continuity inquiry, 640 additional design objective rows. Their specification does not enlarge existing native coverage. The manifest keeps all 758 mission graphics and 171 geometry reference images under the same root.
+The bundle contains 39 campaigns/368 stages, 25 families/75 stages, 64 distinct required clue sources, seven finale steps and 171 new fleet records. The original objective matrix has 450 rows and 78 explicit branch variants. The recovery policy defines two five-step alternatives per source: funded renewal/remedy and guaranteed continuity inquiry, 640 additional design objective rows. Their specification does not enlarge existing native coverage. The manifest keeps all 798 mission graphics (758 originals plus 40 additions) and 171 geometry reference images under the same root.
 
 All current canonical mission data and gameplay specifications live below `docs/meridian/missions/`. Root Markdown files provide the full reading oracle, artwork/ship appendices and audits. Update the canonical data, affected reading views and validation/provenance together. Do not substitute historical research, old main ship images or a prior implementation backlog for the final-game target.
 

@@ -8,13 +8,17 @@
   "finaleSteps": 7,
   "shipDefinitions": 171,
   "flyableDefinitions": 162,
-  "missionGraphics": 758,
+  "missionGraphics": 798,
   "newShipReferenceImages": 171,
-  "oracleBytes": 1842355,
+  "oracleBytes": 1877655,
   "distinctPhysicalProfiles": 31,
   "guaranteedClueContinuityProfiles": 64,
   "recoveryAlternativesPerSource": 2,
   "additionalRecoveryDesignObjectives": 640,
   "canonicalMissionAndGameplayRoot": "missions/",
-  "ledgerSnapshotReceipt": "implementation/LEDGER-SNAPSHOT.json"
+  "ledgerSnapshotReceipt": "implementation/LEDGER-SNAPSHOT.json",
+  "originalMissionGraphics": 758,
+  "supplementalMissionGraphics": 40,
+  "missionGraphicFiles": 835,
+  "supplementalEditableSVGFiles": 37
 }

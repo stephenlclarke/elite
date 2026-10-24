@@ -53,7 +53,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "glass-meridian",
       "file": "../../assets/missions/illustrations/glass-meridian.png",
@@ -415,12 +415,28 @@
       ],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/meridian-original-recorder-archive",
+        "file": "../../assets/missions/revisions/meridian-original-recorder-archive.png",
+        "sha256": "6749bb21e75fe5a80c148016bc8702b392f643658aaeaf1f8439b70db687a46a",
+        "visibility": "Only final archive receiving or completed case history",
+        "description": "One original8kg recorder in an archive receiving cradle; no duplicate, payment or clue symbol."
+      },
+      "archiveReceipt": "l337.glass-meridian/original-recorder-archived",
+      "referenceArtwork": {
         "id": "glass-meridian/close-case",
         "file": "../../assets/missions/stages/glass-meridian/close-case.png",
         "sha256": "07d673b2b91c50b7a8d89a2b2d0881216fd23bae898ac4a88639f99902618795",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Superseded generic original stage reference"
       },
-      "archiveReceipt": "l337.glass-meridian/original-recorder-archived"
+      "supplementaryArtwork": [
+        {
+          "id": "revision/meridian-recorder-custody",
+          "file": "../../assets/missions/revisions/meridian-recorder-custody.png",
+          "sha256": "53b96686a4d250f238c4cea4538413b4b58e4a98f19922d3a6e7090aa400b080",
+          "visibility": "Final receiving briefing/history"
+        }
+      ]
     }
   ],
   "custodyRevision": {

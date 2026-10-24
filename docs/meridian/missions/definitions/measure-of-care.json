@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "measure-of-care",
       "file": "../../assets/missions/illustrations/measure-of-care.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/measure-of-care-operation",
+        "sha256": "7af4e0201c619ab7b981b6a551aff5d879be7bb6f61a6984b78717a1c3ffa3f7",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/measure-of-care-operation.png",
+        "description": "Cold-chain calibration against references Set the actual reference controller and sample three independent sealed thermometer channels within the published tolerance.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "measure-of-care/field-work",
         "file": "../../assets/missions/stages/measure-of-care/field-work.png",
         "sha256": "8a7f9949806f154e50de641c7ee6ce698c6f5f99d5c324c26575f363ff32118a",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

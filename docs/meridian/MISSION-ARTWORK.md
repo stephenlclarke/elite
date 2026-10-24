@@ -1,6 +1,6 @@
 # L337 mission artwork - complete visual reference
 
-Spoiler-complete companion to [the finished-game oracle](FINAL-GAME-ORACLE.md). All 758 original assets are present with their original bytes. Source hashes, dimensions and methods are in [the provenance manifest](ASSET-PROVENANCE.json).
+Spoiler-complete companion to [the finished-game oracle](FINAL-GAME-ORACLE.md). All758 original assets remain present with their original bytes. The [revised-mission artwork](missions/gameplay/REVISED-MISSION-ARTWORK.md) adds 40 operation and narrative graphics, bringing the current inventory to 798. Source hashes, dimensions and methods are in [the provenance manifest](ASSET-PROVENANCE.json).
 
 ## Clue
 
@@ -4571,3 +4571,7 @@ Wayfarer Union.
 PLUGH AI.
 
 ![PLUGH AI](assets/missions/symbols/plugh-ai.svg)
+
+## Revised mission graphics
+
+See [the complete 40-asset revision gallery](missions/gameplay/REVISED-MISSION-ARTWORK.md) for all distinct C09-C39 operation diagrams, recorder custody/final receiving, and the shared continuity-inquiry stages. Canonical stage bindings control the current primary image; earlier generic object renders remain references.

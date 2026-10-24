@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "open-measure",
       "file": "../../assets/missions/illustrations/open-measure.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/open-measure-operation",
+        "sha256": "cf1f506e8f86f91bf2c13e66add556a8e4483d1011c2951a4cb2e44629606d76",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/open-measure-operation.png",
+        "description": "Independent tolerance and fit verification Apply the known reference load to both actual component mounts; compare fit and tolerance before publishing their calibrated specification.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "open-measure/field-work",
         "file": "../../assets/missions/stages/open-measure/field-work.png",
         "sha256": "760e27440f38ff9a57e3e884e5ba9b6cf8984ea097786e0f82917bcc19aaed73",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {

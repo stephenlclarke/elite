@@ -1,8 +1,8 @@
 {
-  "validatedAtUTC": "2026-10-24T16:05:14.416092+00:00",
+  "validatedAtUTC": "2026-10-24T16:26:25.521783+00:00",
   "scope": "Static documentation/data checks only; no native implementation, game execution, renderer, CI or balance certification.",
-  "jsonFilesParsed": 456,
-  "markdownFilesChecked": 134,
+  "jsonFilesParsed": 460,
+  "markdownFilesChecked": 135,
   "allLocalMarkdownLinksAndAnchorsResolve": true,
   "ledgerException": "Exact-byte ledger snapshot preserves historical links/format; excluded from rewritten-link/lint scope and verified against immutable published git object.",
   "ledgerSnapshotCommit": "e6c95b40a5ca7e5e33c7689b041c8ef3b72e2a29",
@@ -26,13 +26,17 @@
     "F06",
     "F07"
   ],
-  "portableArtworkReferencesResolved": 867,
-  "unchangedArtworkValidation": "Prior qualified758 mission/171 ship asset receipts reused; no image bytes regenerated or decoded for this docs-only revision.",
+  "portableArtworkReferencesResolved": 900,
+  "unchangedArtworkValidation": "Original758 mission/171 ship asset receipts reused and original bytes retained.40 new mission assets separately hash/parse/render/visually checked; see missions/gameplay/artwork/ARTWORK-VALIDATION.json.",
   "shipsAtEnd": true,
   "runtimeCoverageClaimed": false,
   "remainingAcceptance": "Native bindings, source-specific boundary/failure tests, actual UI/flight playthrough and balance.",
   "tomlAuthoringFilesParsed": 42,
-  "markdownLintFilesPassed": 134,
+  "markdownLintFilesPassed": 135,
   "markdownLintErrors": 0,
+  "newMissionArtworkAssets": 40,
+  "totalMissionArtworkLogicalAssets": 798,
+  "totalMissionGraphicFiles": 835,
+  "newArtworkValidation": "missions/gameplay/artwork/ARTWORK-VALIDATION.json",
   "all171MovedModelsRetainPriorExactBytesAndHashes": true
 }

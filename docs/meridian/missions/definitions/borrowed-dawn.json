@@ -69,7 +69,7 @@
   },
   "artwork": {
     "manifest": "../../assets/missions/manifest.json",
-    "manifestSHA256": "e9f85bd69c5252f233c7b71a5295727c887bf2e8b79094b74127e551fc02c068",
+    "manifestSHA256": "5bc371aac71397439a2ee29be264eb111949cf297a95ccdf1d40e9b8bb8a729a",
     "briefing": {
       "id": "borrowed-dawn",
       "file": "../../assets/missions/illustrations/borrowed-dawn.png",
@@ -266,10 +266,19 @@
       "itemEffects": [],
       "itemTransaction": "Preview and commit the whole itemEffects batch atomically; capacity is evaluated after removals and additions together. Refusal or cancellation changes neither stage nor custody.",
       "artwork": {
+        "id": "revision/borrowed-dawn-operation",
+        "sha256": "448c9718b97dd6a6867c10d0e7558976d95637214065cc43c91b8e3959840685",
+        "visibility": "Only the corresponding current mission briefing/stage or completed history; no clue award or automatic completion",
+        "file": "../../assets/missions/revisions/borrowed-dawn-operation.png",
+        "description": "Reflector stop and thermal cutoff Steer the two source-owned reflectors with directional controls; release controls at the actual illumination stop and test the thermal trip.",
+        "role": "primary revised-operation schematic, not a screenshot"
+      },
+      "referenceArtwork": {
         "id": "borrowed-dawn/field-work",
         "file": "../../assets/missions/stages/borrowed-dawn/field-work.png",
         "sha256": "13b31dad9414144e2d34fb0f20bc89f815fba834cda1bb72020525c8b4496f17",
-        "visibility": "Mission stage briefing and completed history"
+        "visibility": "Mission stage briefing and completed history",
+        "role": "Original tool/object reference; does not illustrate the complete revised operation"
       }
     },
     {
