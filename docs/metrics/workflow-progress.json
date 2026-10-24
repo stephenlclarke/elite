@@ -10655,6 +10655,22 @@
         "pendingOreRecoveryWaitsExpiresAndQPreservesMomentum"
       ],
       "reviewed_code_file_hashes_matched": 32
+    },
+    {
+      "at": "2026-10-24T02:07:17.632653+00:00",
+      "checkpoint_key": "20261024-m01-fourmethod-followup-threefixtures-authored",
+      "event": "Three fixture corrections authored; bounded collision-phase evidence gap assessed before one focused normal follow-up",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "fixture_corrections_authored": 3,
+      "unit_result": "not_run",
+      "followup_failed_methods": 4,
+      "collision_source_cause_proven": false,
+      "conditional_debug_log": "only existing local failure-phase scalars if direct static evidence insufficient; no solver behavior change",
+      "unaffected_131_passes_retained": true,
+      "crash185_open": true,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
