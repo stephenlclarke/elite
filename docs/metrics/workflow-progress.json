@@ -10729,6 +10729,41 @@
       "source_owner_qualification": "complete_for_scoped_corrections",
       "canonical_publication": "pending",
       "crash185_source_cause_proven": false
+    },
+    {
+      "at": "2026-10-24T02:18:00.943612+00:00",
+      "checkpoint_key": "20261024-m01-fifteen-repair-groups-owner-qualified",
+      "event": "Fifteen scoped repair groups independently owner-qualified; exact coherent publication and final gates remain pending",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "owner_qualified_issues": [
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        186
+      ],
+      "original_assertion_methods_with_individual_pass": 62,
+      "accepted_source_heads": [
+        "6423e889ab76109f04821e4159fb110be0f9b779",
+        "85a69ab6445e0390063638fc26ae2c58a7d7921d"
+      ],
+      "fresh_synthetic_135_pass_claim": false,
+      "publication": "pending",
+      "issue_dispositions": "prepared_not_posted_or_closed",
+      "crash185_cause_proven": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {

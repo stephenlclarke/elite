@@ -21,8 +21,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 171,
-      "status": "source-backed correction identified",
-      "cause": "physical profiles, broad catalogue search and provenance expectations"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "physical profiles, broad catalogue search and provenance expectations",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "normalizedComparisonsSortAndTOMLLoaderAreConsistent()",
+          "status": "passed",
+          "seconds": 25.128780167
+        }
+      }
     },
     {
       "method": "helpUsesTheUnderlyingInformationScreenAndExchangeContext()",
@@ -32,8 +41,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 172,
-      "status": "source-backed correction identified",
-      "cause": "help pagination and repeated controls footer"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "help pagination and repeated controls footer",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "helpUsesTheUnderlyingInformationScreenAndExchangeContext()",
+          "status": "passed",
+          "seconds": 26.497828625
+        }
+      }
     },
     {
       "method": "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()",
@@ -43,8 +61,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 173,
-      "status": "source-backed correction identified",
-      "cause": "archival/original texture dialect fixture mixing"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "archival/original texture dialect fixture mixing",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()",
+          "status": "passed",
+          "seconds": 24.862153375
+        }
+      }
     },
     {
       "method": "marketTransactionsRespectCashCapacityAndStock()",
@@ -54,8 +81,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 174,
-      "status": "source-backed correction identified",
-      "cause": "authored commodity display order"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored commodity display order",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "marketTransactionsRespectCashCapacityAndStock()",
+          "status": "passed",
+          "seconds": 24.86212725
+        }
+      }
     },
     {
       "method": "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()",
@@ -66,8 +102,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 175,
-      "status": "source-backed correction identified",
-      "cause": "stale zero-hold/incompatible hull premise"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()",
+          "status": "passed",
+          "seconds": 24.862011083
+        }
+      }
     },
     {
       "method": "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()",
@@ -77,8 +122,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 172,
-      "status": "source-backed correction identified",
-      "cause": "help pagination and repeated controls footer"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "help pagination and repeated controls footer",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()",
+          "status": "passed",
+          "seconds": 25.128211917
+        }
+      }
     },
     {
       "method": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
@@ -88,8 +142,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 176,
-      "status": "source-backed correction identified",
-      "cause": "berth ID passed where owned cabin module ID required"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "berth ID passed where owned cabin module ID required",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
+          "status": "passed",
+          "seconds": 25.127812625
+        }
+      }
     },
     {
       "method": "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()",
@@ -100,8 +163,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 171,
-      "status": "source-backed correction identified",
-      "cause": "physical profiles, broad catalogue search and provenance expectations"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "physical profiles, broad catalogue search and provenance expectations",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()",
+          "status": "passed",
+          "seconds": 25.128472333
+        }
+      }
     },
     {
       "method": "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()",
@@ -111,8 +183,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 171,
-      "status": "source-backed correction identified",
-      "cause": "physical profiles, broad catalogue search and provenance expectations"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "physical profiles, broad catalogue search and provenance expectations",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()",
+          "status": "passed",
+          "seconds": 25.127662917
+        }
+      }
     },
     {
       "method": "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()",
@@ -123,8 +204,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 175,
-      "status": "source-backed correction identified",
-      "cause": "stale zero-hold/incompatible hull premise"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()",
+          "status": "passed",
+          "seconds": 24.862241458
+        }
+      }
     },
     {
       "method": "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()",
@@ -134,8 +224,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 175,
-      "status": "source-backed correction identified",
-      "cause": "stale zero-hold/incompatible hull premise"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()",
+          "status": "passed",
+          "seconds": 25.127783666
+        }
+      }
     },
     {
       "method": "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()",
@@ -145,8 +244,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()",
+          "status": "passed",
+          "seconds": 25.507101417
+        }
+      }
     },
     {
       "method": "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()",
@@ -156,8 +264,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 175,
-      "status": "source-backed correction identified",
-      "cause": "stale zero-hold/incompatible hull premise"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()",
+          "status": "passed",
+          "seconds": 24.861854584
+        }
+      }
     },
     {
       "method": "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()",
@@ -171,8 +288,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 179,
-      "status": "source-backed correction identified",
-      "cause": "WantedCareer disk binding projection and explicit station restoration scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "WantedCareer disk binding projection and explicit station restoration scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()",
+          "status": "passed",
+          "seconds": 27.785875708
+        }
+      }
     },
     {
       "method": "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()",
@@ -182,8 +308,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "source-backed correction identified",
-      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()",
+          "status": "passed",
+          "seconds": 26.566579833
+        }
+      }
     },
     {
       "method": "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()",
@@ -193,8 +328,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()",
+          "status": "passed",
+          "seconds": 27.786724916
+        }
+      }
     },
     {
       "method": "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()",
@@ -204,8 +348,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()",
+          "status": "passed",
+          "seconds": 27.785277917
+        }
+      }
     },
     {
       "method": "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()",
@@ -215,8 +368,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()",
+          "status": "passed",
+          "seconds": 27.785354
+        }
+      }
     },
     {
       "method": "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()",
@@ -226,8 +388,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()",
+          "status": "passed",
+          "seconds": 27.785256625
+        }
+      }
     },
     {
       "method": "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)",
@@ -237,8 +408,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "source-backed correction identified",
-      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)",
+          "status": "passed",
+          "seconds": 25.127681125
+        }
+      }
     },
     {
       "method": "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)",
@@ -248,8 +428,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "source-backed correction identified",
-      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)",
+          "status": "passed",
+          "seconds": 25.127636125
+        }
+      }
     },
     {
       "method": "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()",
@@ -265,8 +454,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 180,
-      "status": "source-backed correction identified",
-      "cause": "extra legitimate station actor and hardcoded scene baseline"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "extra legitimate station actor and hardcoded scene baseline",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()",
+          "status": "passed",
+          "seconds": 27.248094875
+        }
+      }
     },
     {
       "method": "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
@@ -276,8 +474,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "source-backed correction identified",
-      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
+          "status": "passed",
+          "seconds": 25.2184915
+        }
+      }
     },
     {
       "method": "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)",
@@ -288,8 +495,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)",
+          "status": "passed",
+          "seconds": 25.127486542
+        }
+      }
     },
     {
       "method": "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)",
@@ -299,8 +515,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)",
+          "status": "passed",
+          "seconds": 24.861829834
+        }
+      }
     },
     {
       "method": "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()",
@@ -310,8 +535,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 179,
-      "status": "source-backed correction identified",
-      "cause": "WantedCareer disk binding projection and explicit station restoration scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "WantedCareer disk binding projection and explicit station restoration scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()",
+          "status": "passed",
+          "seconds": 12.877430458
+        }
+      }
     },
     {
       "method": "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()",
@@ -321,8 +555,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()",
+          "status": "passed",
+          "seconds": 31.468620334
+        }
+      }
     },
     {
       "method": "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()",
@@ -332,8 +575,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 180,
-      "status": "fixture correction reviewed; validation pending",
-      "cause": "independently parsed OriginalWorlds/catalogue.json G08-S008 Crimbo Anarchy governmentID0; NativeStationSource.hasWaystation only permits7/6/5 and HQg7system7; original7/8RRS premise false. Revised authenticRRS fixture uses genuine foreignworldowner prior fact/sample, requiresbothpresent, retains original entry/refusal/clock/clearing checks"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "independently parsed OriginalWorlds/catalogue.json G08-S008 Crimbo Anarchy governmentID0; NativeStationSource.hasWaystation only permits7/6/5 and HQg7system7; original7/8RRS premise false. Revised authenticRRS fixture uses genuine foreignworldowner prior fact/sample, requiresbothpresent, retains original entry/refusal/clock/clearing checks",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()",
+          "status": "passed",
+          "seconds": 27.785433209
+        }
+      }
     },
     {
       "method": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
@@ -344,8 +596,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "closed-hull must-hit fixture correction reviewed; validation pending",
-      "cause": "ExplicitSH023 selected for the fixedforward centre-ray musthit premise; physical query/hostility guards unchanged"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "ExplicitSH023 selected for the fixedforward centre-ray musthit premise; physical query/hostility guards unchanged",
+      "acceptedEvidence": {
+        "run": "85a focused40",
+        "head": "85a69ab6445e0390063638fc26ae2c58a7d7921d",
+        "method": {
+          "name": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
+          "status": "passed",
+          "seconds": 15.0892955
+        }
+      }
     },
     {
       "method": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
@@ -357,8 +618,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 181,
-      "status": "source-backed correction identified",
-      "cause": "persistent plasma breakup motion and return-value contract"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "persistent plasma breakup motion and return-value contract",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
+          "status": "passed",
+          "seconds": 27.010800875
+        }
+      }
     },
     {
       "method": "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()",
@@ -370,8 +640,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 181,
-      "status": "source-backed correction identified",
-      "cause": "persistent plasma breakup motion and return-value contract"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "persistent plasma breakup motion and return-value contract",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()",
+          "status": "passed",
+          "seconds": 27.01067975
+        }
+      }
     },
     {
       "method": "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)",
@@ -381,8 +660,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "fixture premise identified; correction not yet verified",
-      "cause": "camera-origin aim fixture must intersect actual selected player mesh"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "camera-origin aim fixture must intersect actual selected player mesh",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)",
+          "status": "passed",
+          "seconds": 27.785375459
+        }
+      }
     },
     {
       "method": "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()",
@@ -392,8 +680,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 180,
-      "status": "source-backed correction identified",
-      "cause": "extra legitimate station actor and hardcoded scene baseline"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "extra legitimate station actor and hardcoded scene baseline",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()",
+          "status": "passed",
+          "seconds": 27.785360084
+        }
+      }
     },
     {
       "method": "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)",
@@ -403,8 +700,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "source-backed correction identified",
-      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)",
+          "status": "passed",
+          "seconds": 26.494946125
+        }
+      }
     },
     {
       "method": "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()",
@@ -414,8 +720,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "source-backed correction identified",
-      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()",
+          "status": "passed",
+          "seconds": 26.4672255
+        }
+      }
     },
     {
       "method": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
@@ -424,9 +739,18 @@
         "AsteroidFragmentationTests.swift:591"
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
-      "issue": null,
-      "status": "diagnosis pending",
-      "cause": "remaining native hull sweep returns conservative unproven for velocity-3000; physical cause unresolved"
+      "issue": 186,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "remaining native hull sweep returns conservative unproven for velocity-3000; physical cause unresolved",
+      "acceptedEvidence": {
+        "run": "85a focused40",
+        "head": "85a69ab6445e0390063638fc26ae2c58a7d7921d",
+        "method": {
+          "name": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
+          "status": "passed",
+          "seconds": 16.043986
+        }
+      }
     },
     {
       "method": "transporterCargoCorrectionDrivesActualHoldAndCurrentReference()",
@@ -436,8 +760,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 177,
-      "status": "source-backed correction identified",
-      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "transporterCargoCorrectionDrivesActualHoldAndCurrentReference()",
+          "status": "passed",
+          "seconds": 25.127504709
+        }
+      }
     },
     {
       "method": "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()",
@@ -447,8 +780,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 180,
-      "status": "source-backed correction identified",
-      "cause": "extra legitimate station actor and hardcoded scene baseline"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "extra legitimate station actor and hardcoded scene baseline",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()",
+          "status": "passed",
+          "seconds": 27.785325167
+        }
+      }
     },
     {
       "method": "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()",
@@ -459,8 +801,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 180,
-      "status": "isolated no-contact expiry fixture correction reviewed; validation pending",
-      "cause": "Only genuine shot retained for no-contact expiry; actual specific former occluder not established; age/movement/incident/cleanup checks unchanged"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "Only genuine shot retained for no-contact expiry; actual specific former occluder not established; age/movement/incident/cleanup checks unchanged",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()",
+          "status": "passed",
+          "seconds": 27.785300625
+        }
+      }
     },
     {
       "method": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
@@ -471,8 +822,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 178,
-      "status": "fixture premise identified; correction not yet verified",
-      "cause": "camera-origin aim fixture must intersect actual selected player mesh"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "camera-origin aim fixture must intersect actual selected player mesh",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
+          "status": "passed",
+          "seconds": 27.785306333
+        }
+      }
     },
     {
       "method": "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()",
@@ -487,8 +847,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()",
+          "status": "passed",
+          "seconds": 10.037011
+        }
+      }
     },
     {
       "method": "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()",
@@ -498,8 +867,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()",
+          "status": "passed",
+          "seconds": 10.839014542
+        }
+      }
     },
     {
       "method": "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()",
@@ -509,8 +887,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()",
+          "status": "passed",
+          "seconds": 10.443491333
+        }
+      }
     },
     {
       "method": "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()",
@@ -520,8 +907,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()",
+          "status": "passed",
+          "seconds": 11.03766175
+        }
+      }
     },
     {
       "method": "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()",
@@ -531,8 +927,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()",
+          "status": "passed",
+          "seconds": 10.762045125
+        }
+      }
     },
     {
       "method": "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()",
@@ -544,8 +949,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()",
+          "status": "passed",
+          "seconds": 10.443190292
+        }
+      }
     },
     {
       "method": "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()",
@@ -556,8 +970,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()",
+          "status": "passed",
+          "seconds": 10.6870055
+        }
+      }
     },
     {
       "method": "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()",
@@ -567,8 +990,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()",
+          "status": "passed",
+          "seconds": 11.088086334
+        }
+      }
     },
     {
       "method": "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()",
@@ -578,8 +1010,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()",
+          "status": "passed",
+          "seconds": 10.443206209
+        }
+      }
     },
     {
       "method": "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()",
@@ -589,8 +1030,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()",
+          "status": "passed",
+          "seconds": 10.453042334
+        }
+      }
     },
     {
       "method": "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()",
@@ -600,8 +1050,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()",
+          "status": "passed",
+          "seconds": 27.785389417
+        }
+      }
     },
     {
       "method": "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()",
@@ -611,8 +1070,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()",
+          "status": "passed",
+          "seconds": 27.78529425
+        }
+      }
     },
     {
       "method": "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()",
@@ -623,8 +1091,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 182,
-      "status": "source-backed correction identified",
-      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()",
+          "status": "passed",
+          "seconds": 22.942752834
+        }
+      }
     },
     {
       "method": "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()",
@@ -634,8 +1111,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 183,
-      "status": "source-backed correction identified",
-      "cause": "legacy ledger assertions accidentally select native-backed wreck"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()",
+          "status": "passed",
+          "seconds": 25.127634709
+        }
+      }
     },
     {
       "method": "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()",
@@ -649,8 +1135,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 183,
-      "status": "source-backed correction identified",
-      "cause": "legacy ledger assertions accidentally select native-backed wreck"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()",
+          "status": "passed",
+          "seconds": 25.12765125
+        }
+      }
     },
     {
       "method": "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)",
@@ -660,8 +1155,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 183,
-      "status": "source-backed correction identified",
-      "cause": "legacy ledger assertions accidentally select native-backed wreck"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)",
+          "status": "passed",
+          "seconds": 25.127588375
+        }
+      }
     },
     {
       "method": "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()",
@@ -671,8 +1175,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 184,
-      "status": "source-backed correction identified",
-      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()",
+          "status": "passed",
+          "seconds": 25.1275675
+        }
+      }
     },
     {
       "method": "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()",
@@ -682,8 +1195,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 184,
-      "status": "source-backed correction identified",
-      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()",
+          "status": "passed",
+          "seconds": 25.509371541
+        }
+      }
     },
     {
       "method": "installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)",
@@ -693,8 +1215,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 184,
-      "status": "source-backed correction identified",
-      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)",
+          "status": "passed",
+          "seconds": 25.127854458
+        }
+      }
     },
     {
       "method": "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()",
@@ -704,8 +1235,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 184,
-      "status": "source-backed correction identified",
-      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()",
+          "status": "passed",
+          "seconds": 25.1276645
+        }
+      }
     },
     {
       "method": "malformedInstalledContentReportsItsErrorAlongsideBundledCourier()",
@@ -715,8 +1255,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 184,
-      "status": "source-backed correction identified",
-      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "malformedInstalledContentReportsItsErrorAlongsideBundledCourier()",
+          "status": "passed",
+          "seconds": 25.127584291
+        }
+      }
     },
     {
       "method": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
@@ -727,8 +1276,17 @@
       ],
       "expectation": "unexpected failure; no deliberate expected failure identified",
       "issue": 184,
-      "status": "source-backed correction identified",
-      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
+          "status": "passed",
+          "seconds": 25.509190875
+        }
+      }
     }
   ],
   "saveReopenPasses": [
