@@ -37,6 +37,8 @@ struct NativeMissionThreatIsolationTests {
       bodyID: sourceID, weaponID: "plasma", componentID: component.identity)
     let emitted = try #require(historical.bodies.first { $0.scriptShot != nil })
     let shotID = try #require(emitted.scriptShot?.identity)
+    // Archive a genuinely emitted shot in clear flight, before introducing the current threat.
+    historical.bodies = historical.bodies.filter { $0.id == emitted.id }
     _ = try historical.stepMissionNativeProjectile(projectileID: shotID, delta: 1)
     historical.persistScriptActors()
     var retained = try #require(historical.commander.scriptState.projectiles[shotID])

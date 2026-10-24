@@ -24,9 +24,21 @@ extension Game {
     ScriptPackLibrary.hash(Data(fields.map { "\($0.utf8.count):\($0)" }.joined().utf8))
   }
   var scriptContractPageIdentity: ScriptContractPageIdentity {
-    let layout = ContractBoardLayout(width: viewportWidth, height: viewportHeight)
-    let first = max(0, contractBoard.selection - layout.listCount + 1)
-    let selected = contractBoard.selected
+    var fields = contractPageResourceFacts()
+    fields += rrsCourierPageFacts
+    fields += financePageFacts
+    fields += nativePeoplePageFacts
+    fields += providerContractPageFacts
+    fields += freightPageFacts
+    fields += wayfarerColdChainPageFacts
+    fields += wayfarerRepairLoopPageFacts
+    fields += fieldReliefPageFacts
+    return contractPageIdentity(fields: fields)
+  }
+
+  // Keep resource and visible-row temporaries out of nested person/cargo validation.
+  @inline(never)
+  private func contractPageResourceFacts() -> [String] {
     var fields = [
       screen.rawValue, String(docked), String(dockedAtMainStation), String(paused),
       contractStation.key, String(commander.credits),
@@ -41,14 +53,15 @@ extension Game {
     }.map(
       \.digest
     ).sorted()
-    fields += rrsCourierPageFacts
-    fields += financePageFacts
-    fields += nativePeoplePageFacts
-    fields += providerContractPageFacts
-    fields += freightPageFacts
-    fields += wayfarerColdChainPageFacts
-    fields += wayfarerRepairLoopPageFacts
-    fields += fieldReliefPageFacts
+    return fields
+  }
+
+  @inline(never)
+  private func contractPageIdentity(fields initialFields: [String]) -> ScriptContractPageIdentity {
+    let layout = ContractBoardLayout(width: viewportWidth, height: viewportHeight)
+    let first = max(0, contractBoard.selection - layout.listCount + 1)
+    let selected = contractBoard.selected
+    var fields = initialFields
     let visible =
       contractBoard.detail
       ? selected.map { [$0] } ?? []

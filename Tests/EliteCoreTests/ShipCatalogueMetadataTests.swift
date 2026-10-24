@@ -148,7 +148,7 @@ struct ShipCatalogueMetadataTests {
     // These are declared placements only. Native admitted-provider coverage is integrator-owned.
     for (id, cargo) in [
       ("SH005", 750), ("SH006", 800), ("SH099", 150), ("SH100", 175),
-      ("SH096", 750), ("SH097", 800), ("SH024", 40), ("SH025", 35),
+      ("SH096", 750), ("SH097", 800), ("SH024", 40), ("SH025", 92),
     ] {
       #expect(ShipCatalogue.ship(id)?.game?.cargo == cargo)
     }

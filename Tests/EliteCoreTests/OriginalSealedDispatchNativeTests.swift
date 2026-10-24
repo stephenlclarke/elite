@@ -32,6 +32,23 @@ struct OriginalSealedDispatchFixture {
   }
   // Near-door framing supplies no station/journey receipt. Real swept entry mints the dock proof.
   func dock(_ runtime: GameRuntime) async throws {
+    // End the preceding work approach through its real release and braking controls.
+    // Near-door framing must not leave a different controller driving the attained sweep.
+    let arriving = await runtime.snapshot()
+    if arriving.workGuidance != nil || arriving.workBraking != nil {
+      await runtime.key("q")
+    }
+    var braking = Controls()
+    braking.throttle = -1
+    await runtime.setControls(braking)
+    for _ in 0..<100 {
+      if await runtime.snapshot().flightWorldVelocity == Vector3(0, 0, 0) { break }
+      _ = await runtime.advance(delta: 0.05)
+    }
+    await runtime.setControls(Controls())
+    let stopped = await runtime.snapshot()
+    try #require(stopped.workGuidance == nil && stopped.workBraking == nil)
+    try #require(stopped.flightWorldVelocity == Vector3(0, 0, 0))
     await runtime.nativeCommand { game in
       guard let station = game.bodies.first(where: { $0.id == 0 && $0.hull == .station }) else {
         return

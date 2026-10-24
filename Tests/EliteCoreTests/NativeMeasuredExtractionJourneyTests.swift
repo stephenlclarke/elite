@@ -300,7 +300,20 @@ struct NativeMeasuredExtractionFixture {
       }
       _ = await runtime.advance(delta: 0.01)
     }
-    try #require(try await state(runtime).captures.count >= count)
+    let current = await runtime.snapshot()
+    let captures = try #require(current.measuredExtractionState).captures.count
+    if captures < count {
+      let remaining = current.bodies.filter { body in
+        body.physical?.payload.map { current.measuredPayloadIsAllocated($0) } ?? false
+      }
+      let details = remaining.prefix(3).map { body in
+        "id=\(body.id),position=\(body.position),velocity=\(String(describing: body.physical?.velocity)),spin=\(String(describing: body.physical?.angularVelocity))"
+      }.joined(separator: "; ")
+      try #require(
+        captures >= count,
+        "Manual capture \(captures)/\(count); remaining=\(remaining.count); screen=\(current.screen); energy=\(current.energy); velocity=\(current.flightWorldVelocity); cargo=\(current.commander.cargoTonnes)/\(current.commander.standardCargoCapacity); guidance=\(String(describing: current.workGuidance?.mode)); pending=\(current.nativeMeasuredExtractionPending?.intakes.count ?? 0); message=\(String(current.message.prefix(128))); \(details)"
+      )
+    }
   }
   func renas(_ runtime: GameRuntime) async throws {
     try await flight.dock(runtime)

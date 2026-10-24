@@ -533,6 +533,12 @@ extension Game {
   mutating func contractBoardKey(_ key: String) {
     let previous = scriptContractPageIdentity
     defer { finishContractNavigation(from: previous) }
+    applyContractBoardKey(key)
+  }
+
+  // Action-local quotes must not remain on the stack while page identity validates custody.
+  @inline(never)
+  private mutating func applyContractBoardKey(_ key: String) {
     if key == "escape" {
       if contractBoard.detail {
         contractBoard.detail = false

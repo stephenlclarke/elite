@@ -20,7 +20,8 @@ private func workToolGame() throws -> Game {
   game.rearShield = game.commander.rearShieldCapacity
   game.launch()
   game.speed = 0
-  game.bodies = []
+  // Keep the authentic main/RRS station cohort before taking atomic refusal baselines.
+  game.bodies = game.bodies.filter { $0.hull == .station }
   game.celestials = []
   try verifyWorkToolFixtureHardware(&game)
   return game
@@ -49,7 +50,8 @@ private func verifyWorkToolFixtureHardware(_ game: inout Game) throws {
   var body = SpaceBody(id: 80, hull: .asteroid, position: .init(0, 0, 500))
   body.energy = rock.energy
   body.physical = .init(identity: actor, population: .asteroid, rock: rock.identity)
-  game.bodies.append(body)
+  game.bodies.insert(body, at: 0)
+  game.nextBodyID = max(game.nextBodyID, body.id + 1)
   return body.id
 }
 
@@ -287,7 +289,9 @@ struct MiningWorkToolTests {
       let didFire7 = game.fireMiningWorkTool()
       #expect(!didFire7)
       #expect(game.bodies[0].energy == rockEnergy && game.energy == energy)
-      #expect(game.bodies.last?.energy == (obstacle == 2 ? rockEnergy : 100))
+      if obstacle != 2 {
+        #expect(game.bodies.first { $0.id == 90 }?.energy == 100)
+      }
       #expect(game.commander.legal == 0 && game.commander.kills == 0 && game.laserHeat == 0)
     }
   }
@@ -386,8 +390,8 @@ extension MiningWorkToolTests {
       rock: rock, incident: incident, damage: rock.energy - 5)
     try #require(partial == .damaged(5))
     body.energy = 5
-    game.bodies = [body]
-    game.nextBodyID = max(game.nextBodyID, 80)
+    game.bodies = [body] + game.bodies.filter { $0.hull == .station }
+    game.nextBodyID = max(game.nextBodyID, body.id + 1)
     game.ensurePhysicalActors()
     try #require(game.commander.miningLedger.pendingPayloads.count == 250)
     let before = game.commander

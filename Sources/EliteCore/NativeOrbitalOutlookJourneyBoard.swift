@@ -60,6 +60,16 @@ extension Game {
     }
     if !scriptDurabilityAvailable { issues.append("Choose a writable commander save.") }
     if !commander.valid { issues.append("Current person or accommodation custody is invalid.") }
+    return finishOrbitalOutlookQuote(action, context: context, issues: issues)
+  }
+
+  // Build the retained quote only after full Commander validation has returned.
+  @inline(never)
+  private func finishOrbitalOutlookQuote(
+    _ action: NativeOrbitalOutlookJourneyAction,
+    context: NativeMainStationArrivalContext?, issues initialIssues: [String]
+  ) -> NativePeopleStationQuote {
+    var issues = initialIssues
     if orbitalOutlookPack == nil {
       issues.append("The original orbital-outlook content is unavailable.")
     }
