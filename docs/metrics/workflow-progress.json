@@ -10670,6 +10670,26 @@
       "unaffected_131_passes_retained": true,
       "crash185_open": true,
       "m01_complete": false,
+      "usable_delivery": false,
+      "fixture_incremental_source_review": "clear_all_three_hunks_25lines",
+      "collision_static_candidate": "independently converged tighter outward scalar-affine translation enclosure; candidate authorized for review and actual test, unqualified",
+      "missing_collision_phase": "initial guard vs prefix vs depth12 no-witness/proof gate",
+      "conditional_phase_hunk_review": "superseded_by_source_backed_affine_candidate"
+    },
+    {
+      "at": "2026-10-24T02:09:36.735357+00:00",
+      "checkpoint_key": "20261024-m01-affine-enclosure-candidate-scope",
+      "event": "New independent interval-source evidence authorizes one surgical enclosure repair candidate and regression instead of a separate phase-only validation round",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "candidate": "project relative position/velocity before the shared time interval to preserve correlation",
+      "axes_bvh_budgets_guards_surfaces_preserved": true,
+      "source_hunk_review": "pending",
+      "engine_qualification": "pending",
+      "supersedes": "phase-only diagnostic prerequisite; do not run both variants",
+      "focused_validation": "four failed methods plus directly affected collision/fragmentation/new regression units",
+      "crash185_open": true,
+      "m01_complete": false,
       "usable_delivery": false
     }
   ],
