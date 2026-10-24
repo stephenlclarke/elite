@@ -15,3 +15,7 @@ Evidence: `docs/evidence/M01-authored-fixture-unit-results.json`; local normal l
 ## Compatibility and remaining risks
 
 No contact is admitted from the static calculations. The candidate must pass normal engine execution; otherwise the actual refusal remains. The separate issue185 fault is not resolved by scoped test completion.
+
+## Focused normal follow-up passes
+
+Source `85a69ab6445e0390063638fc26ae2c58a7d7921d` compiled in63.57seconds and passed all40 selected methods in16.846795458seconds (81.655184917seconds overall), with zero failures, errors or skips. This includes both actual debris target-velocity rows, both classic hostility rows, ECM consumption, the real ore-admission timeout, the diagonal regression at zero/large offsets with reversed pairs, and the directly affected contact/fragmentation consumers. The [exact per-method receipt](evidence/M01-affine-followup-unit-results.json) preserves selection and timings. Independent source/result verification is clear. This qualifies the focused correction, not the remaining full quality or release gates. No decoder fault occurred; issue185 remains independent and open.

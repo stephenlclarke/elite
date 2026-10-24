@@ -275,8 +275,34 @@ class OwnedFaultStackTests(unittest.TestCase):
                 self.state = 3 if mode == 'exit' else 1
                 if mode != 'stale-attach-stop': self.stop_id += 1
                 return Error()
+            def SetSelectedThread(self, thread):
+                calls.append(('select-thread', thread.GetThreadID()))
+                return mode != 'selection-refused'
+            def GetMemoryRegionInfo(self, address, region):
+                calls.append(('region', address))
+                region.base, region.end, region.mapped = (
+                    (0xa000, 0xb000, False) if address < 0xb000
+                    else (0xb000, 0xd000, True) if address < 0xd000
+                    else (0xd000, 0xe000, False))
+                return Error()
             def __iter__(self):
-                return iter([SimpleNamespace(GetStopReason=lambda: 9)])
+                frame = SimpleNamespace(IsValid=lambda: True, GetSP=lambda: 0xb100,
+                                        GetPC=lambda: 0xc000, GetFP=lambda: 0xb180)
+                thread = SimpleNamespace(
+                    GetStopReason=lambda: 10 if mode == 'signal-no-address' else 9,
+                    GetIndexID=lambda: 3, GetThreadID=lambda: 71,
+                    GetStopDescription=lambda limit: ('signal SIGBUS' if mode == 'signal-no-address'
+                        else 'EXC_BAD_ACCESS (code=1, address=0xafff)' + (
+                            '\u754c' * 3000 if mode == 'many-long-faults' else '')),
+                    GetStopReasonDataCount=lambda: 1 if mode == 'signal-no-address' else 3,
+                    GetStopReasonDataAtIndex=lambda index: (
+                        [10] if mode == 'signal-no-address' else [1, 1, 0xafff])[index],
+                    GetFrameAtIndex=lambda index: frame)
+                if mode == 'many-long-faults':
+                    return iter([SimpleNamespace(**dict(vars(thread), GetIndexID=lambda i=i: i + 3,
+                                                       GetThreadID=lambda i=i: i + 71))
+                                 for i in range(32)])
+                return iter([thread])
             def Detach(self, keep_stopped):
                 calls.append(('detach', keep_stopped))
                 error = Error()
@@ -291,7 +317,18 @@ class OwnedFaultStackTests(unittest.TestCase):
             calls.append(('attach', pid))
             error.failed = mode == 'denied'
             return process
+        class Region:
+            def GetRegionBase(self): return self.base
+            def GetRegionEnd(self): return self.end
+            def IsMapped(self): return self.mapped
+            def IsReadable(self): return self.mapped
+            def IsWritable(self): return self.mapped
+            def IsExecutable(self): return False
+            def GetName(self):
+                if mode == 'many-long-faults': return '\u754c' * 10000
+                return 'Stack' if self.mapped else 'STACK GUARD'
         fake = SimpleNamespace(
+            SBMemoryRegionInfo=Region, LLDB_INVALID_ADDRESS=(1 << 64) - 1,
             SBError=Error, eStateExited=3, eStateDetached=4, eStateStopped=1,
             eStateCrashed=2, eStopReasonException=9, eStopReasonSignal=10,
             SBCommandReturnObject=lambda: SimpleNamespace(GetOutput=lambda: 'fixture stack',
@@ -320,8 +357,60 @@ class OwnedFaultStackTests(unittest.TestCase):
         self.assertEqual(result['status'], 'fault-captured')
         self.assertTrue(result['handedBack'])
         self.assertIn(('detach', False), calls)
-        self.assertIn('thread backtrace all -c 64', calls)
+        self.assertIn('thread backtrace all -c 160', calls)
+        self.assertIn('register read far esr', calls)
+        self.assertEqual(result['faultThreads'][0]['sp'], '0xb100')
+        self.assertEqual(result['faultThreads'][0]['fp'], '0xb180')
+        self.assertEqual(result['faultThreads'][0]['reportedFaultAddress'], '0xafff')
+        self.assertEqual(result['faultThreads'][0]['faultRegion']['name'], 'STACK GUARD')
+        self.assertEqual(result['faultThreads'][0]['stackRegion']['base'], '0xb000')
+        self.assertEqual(result['faultThreads'][0]['regionBelowStack']['end'], '0xb000')
+        self.assertFalse(result['faultThreads'][0]['regionBelowStack']['mapped'])
+        self.assertTrue(result['registerThreadSelected'])
         self.assertTrue(all(not (isinstance(c, str) and 'expression' in c) for c in calls))
+
+    def test_signal_without_a_reported_fault_address_retains_raw_facts_without_inference(self):
+        result, calls = self.run_session('signal-no-address')
+        self.assertEqual(result['status'], 'fault-captured')
+        self.assertTrue(result['handedBack'])
+        facts = result['faultThreads'][0]
+        self.assertEqual(facts['stopReasonData'], ['0xa'])
+        self.assertEqual(facts['faultAddressStatus'], 'not-reported-in-stop-description')
+        self.assertNotIn('reportedFaultAddress', facts)
+        self.assertNotIn('faultRegion', facts)
+        self.assertEqual(facts['sp'], '0xb100')
+        self.assertIn('thread backtrace all -c 160', calls)
+
+    def test_multiple_long_fault_metadata_stays_inside_the_existing_session_reader_limit(self):
+        result, calls = self.run_session('many-long-faults')
+        self.assertLessEqual(self.hook.session.stat().st_size, 8192)
+        self.assertEqual(len(result['faultThreads']), 1)
+        self.assertEqual(len(result['otherFaultThreads']), 15)
+        self.assertTrue(result['faultThreadsTruncated'])
+        self.assertTrue(result['otherFaultThreadsTruncated'])
+        primary = result['faultThreads'][0]
+        self.assertEqual(primary['reportedFaultAddress'], '0xafff')
+        self.assertEqual(primary['sp'], '0xb100')
+        self.assertTrue(primary['stopDescriptionTruncated'])
+        self.assertTrue(primary['faultRegion']['nameTruncated'])
+        self.session = result
+        self.start()
+        accepted = self.hook.finish()
+        self.assertEqual(accepted['status'], 'fault-captured')
+        self.assertFalse(accepted['diagnosticallyInterrupted'])
+        self.assertEqual(self.cleaned, [])
+
+    def test_failed_thread_selection_never_reads_registers_from_another_thread(self):
+        result, calls = self.run_session('selection-refused')
+        self.assertEqual(result['status'], 'fault-captured')
+        self.assertTrue(result['handedBack'])
+        self.assertFalse(result['registerThreadSelected'])
+        self.assertIn('selection failed', result['registersStatus'])
+        self.assertNotIn('register read', calls)
+        self.assertNotIn('register read far esr', calls)
+        self.assertIn('thread backtrace all -c 160', calls)
+        self.assertIn('image list -o -u -f', calls)
+        self.assertEqual(result['faultThreads'][0]['sp'], '0xb100')
 
     def test_session_denial_never_continues_or_detaches_invalid_process(self):
         result, calls = self.run_session('denied')
@@ -356,7 +445,7 @@ class OwnedFaultStackTests(unittest.TestCase):
         result, calls = self.run_session('stale-attach-stop')
         self.assertEqual(result['status'], 'fault-captured')
         self.assertIn('advance-stop-id', calls)
-        self.assertLess(calls.index('advance-stop-id'), calls.index('thread backtrace all -c 64'))
+        self.assertLess(calls.index('advance-stop-id'), calls.index('thread backtrace all -c 160'))
 
     def test_live_observer_exec_transition_retains_current_cleanup_identity(self):
         self.observer_code = None
@@ -392,7 +481,7 @@ class OwnedFaultStackTests(unittest.TestCase):
             variables = set(re.findall(r'\$\{([^}]+)\}', command))
             self.assertEqual(variables, expected[name])
             self.assertLess(calls.index(command), calls.index(('attach', 21)))
-            self.assertLess(calls.index(command), calls.index('thread backtrace all -c 64'))
+            self.assertLess(calls.index(command), calls.index('thread backtrace all -c 160'))
         self.assertTrue(result['handedBack'])
         self.assertIn('register read', calls)
         self.assertIn('image list -o -u -f', calls)
@@ -402,7 +491,7 @@ class OwnedFaultStackTests(unittest.TestCase):
         self.assertEqual(result['status'], 'observer-error')
         self.assertNotIn(('attach', 21), calls)
         self.assertNotIn('continue', calls)
-        self.assertNotIn('thread backtrace all -c 64', calls)
+        self.assertNotIn('thread backtrace all -c 160', calls)
 
     def test_session_failed_detach_is_never_claimed_handed_back(self):
         result, calls = self.run_session('detach-failure')

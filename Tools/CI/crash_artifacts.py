@@ -256,6 +256,74 @@ class OwnedFaultStack:
         return self.result
 
 
+def fault_text(value, limit):
+    """Bound JSON-encoded diagnostic text within the existing session byte limit."""
+    if value is None:
+        return None
+    text = str(value)
+    while len(json.dumps(text).encode('utf-8')) > limit:
+        text = text[:len(text) // 2]
+    return text
+
+
+def fault_memory_region(process, lldb, address):
+    """Read VM bounds and permissions only, never target memory or expressions."""
+    try:
+        region = lldb.SBMemoryRegionInfo()
+        error = process.GetMemoryRegionInfo(address, region)
+        if error.Fail():
+            return {'address': hex(address), 'status': 'unavailable', 'error': fault_text(error, 128)}
+        return {'address': hex(address), 'status': 'available',
+                'base': hex(region.GetRegionBase()), 'end': hex(region.GetRegionEnd()),
+                'mapped': region.IsMapped(), 'readable': region.IsReadable(),
+                'writable': region.IsWritable(), 'executable': region.IsExecutable(),
+                'name': fault_text(region.GetName(), 128),
+                'nameTruncated': fault_text(region.GetName(), 128) != region.GetName()}
+    except Exception as error:
+        return {'address': hex(address), 'status': 'unavailable', 'error': fault_text(error, 128)}
+
+
+def fault_thread_details(thread, process, lldb):
+    """Retain primitive fault facts separately from a bounded textual backtrace."""
+    details = {}
+    try:
+        details.update(thread=thread.GetIndexID(), tid=thread.GetThreadID())
+        description = thread.GetStopDescription(2048) or ''
+        count = thread.GetStopReasonDataCount()
+        details.update(stopReason=thread.GetStopReason(),
+                       stopDescription=fault_text(description, 512),
+                       stopDescriptionTruncated=fault_text(description, 512) != description,
+                       stopReasonData=[hex(thread.GetStopReasonDataAtIndex(i))
+                                       for i in range(min(count, 16))],
+                       stopReasonDataTruncated=count > 16)
+        frame = thread.GetFrameAtIndex(0)
+        if not frame.IsValid():
+            details['frameStatus'] = 'unavailable'
+            return details
+        sp = frame.GetSP()
+        details.update(pc=hex(frame.GetPC()), sp=hex(sp), fp=hex(frame.GetFP()))
+        if sp != lldb.LLDB_INVALID_ADDRESS:
+            region = fault_memory_region(process, lldb, sp)
+            details['stackRegion'] = region
+            if region['status'] == 'available':
+                base, end = int(region['base'], 16), int(region['end'], 16)
+                if base > 0:
+                    details['regionBelowStack'] = fault_memory_region(process, lldb, base - 1)
+                if end < lldb.LLDB_INVALID_ADDRESS:
+                    details['regionAboveStack'] = fault_memory_region(process, lldb, end)
+        # Only a reported address is labelled as the fault address. Raw exception
+        # words remain unclassified; an instruction-derived address is not substituted.
+        address = re.search(r'\b(?:address|addr)\s*[=:]\s*(0x[0-9a-f]+)', description, re.I)
+        if address:
+            details['reportedFaultAddress'] = address.group(1)
+            details['faultRegion'] = fault_memory_region(process, lldb, int(address.group(1), 16))
+        else:
+            details['faultAddressStatus'] = 'not-reported-in-stop-description'
+    except Exception as error:
+        details.update(metadataStatus='unavailable', metadataError=fault_text(error, 128))
+    return details
+
+
 def run_owned_fault_session(debugger, identity_path, session_path, cancel_path):
     """Runs inside LLDB only. No test launch, expression, core dump, kill or retry."""
     import lldb
@@ -312,14 +380,28 @@ def run_owned_fault_session(debugger, identity_path, session_path, cancel_path):
                 return
             if (state in (lldb.eStateStopped, lldb.eStateCrashed)
                     and process.GetStopID() != attached_stop):
-                fatal = any(
-                    thread.GetStopReason() == lldb.eStopReasonException
-                    or (thread.GetStopReason() == lldb.eStopReasonSignal
-                        and thread.GetStopReasonDataAtIndex(0) in (4, 6, 10, 11))
-                    for thread in process)
+                fault_threads = [thread for thread in process
+                                 if thread.GetStopReason() == lldb.eStopReasonException
+                                 or (thread.GetStopReason() == lldb.eStopReasonSignal
+                                     and thread.GetStopReasonDataAtIndex(0) in (4, 6, 10, 11))]
+                fatal = bool(fault_threads)
                 result['status'] = 'fault-captured' if fatal else 'unexpected-stop'
                 if fatal:
-                    for command in ('thread backtrace all -c 64', 'register read', 'image list -o -u -f'):
+                    # Full primary facts plus bounded thread IDs fit the unchanged8KiB session.
+                    result['faultThreads'] = [fault_thread_details(fault_threads[0], process, lldb)]
+                    result['faultThreadsTruncated'] = len(fault_threads) > 1
+                    result['otherFaultThreads'] = [
+                        {'thread': thread.GetIndexID(), 'tid': thread.GetThreadID()}
+                        for thread in fault_threads[1:16]]
+                    result['otherFaultThreadsTruncated'] = len(fault_threads) > 16
+                    result['registerThreadSelected'] = process.SetSelectedThread(fault_threads[0])
+                    print('fault-thread-facts ' + json.dumps(result['faultThreads']), flush=True)
+                    commands = ('thread backtrace all -c 160', 'image list -o -u -f')
+                    if result['registerThreadSelected']:
+                        commands = ('register read', 'register read far esr') + commands
+                    else:
+                        result['registersStatus'] = 'unavailable: fault thread selection failed'
+                    for command in commands:
                         output = lldb.SBCommandReturnObject()
                         debugger.GetCommandInterpreter().HandleCommand(command, output)
                         print(command, flush=True)
