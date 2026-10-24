@@ -12471,6 +12471,14 @@
       "build_seconds": 768.74,
       "selected_runtime_seconds": 176.938,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T10:30:27.713235+00:00",
+      "checkpoint_key": "20261024-current-ledger-summary-parallel-assignments-reconciled",
+      "change": "Reconcile top current scope with explicit G3 M03/G4 M02 assignments and approved L337 work; remove stale blanket prohibition",
+      "m01_priority": 1,
+      "mba_priority": "M01 first",
+      "new_implementation_assigned": false
     }
   ],
   "two_developer_phase": {
