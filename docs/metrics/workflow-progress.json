@@ -10372,7 +10372,11 @@
         40043511050
       ],
       "optional_pr_duplicate_cancelled": 40043514113,
-      "review_request_comment": 6377295280
+      "review_request_comment": 6377295280,
+      "automated_review_result": "generic_service_error",
+      "automated_review_error_comment": 6377310480,
+      "independent_review_disposition_comment": 6377354503,
+      "human_authorized_independent_review_fallback": true
     }
   ],
   "two_developer_phase": {
