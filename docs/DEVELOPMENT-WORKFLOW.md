@@ -2,7 +2,7 @@
 
 ## Hygiene is part of every work packet
 
-This is a required packet step, not a separate daily cleanup task. It does not add another review, test run or Orchestrator approval.
+This is a required packet step, not a separate daily cleanup task. It does not add another review, test run or Orchestrator approval. Link an existing defect issue when applicable; a ledger item and its PR are sufficient for feature work. Do not create another issue solely to mirror a PR or satisfy this checklist.
 
 | Owner | Required action | Finish condition |
 | --- | --- | --- |
