@@ -10327,7 +10327,22 @@
       "xml_methods": 19,
       "xml_failures": 0,
       "xml_errors": 0,
-      "xml_skips": 0
+      "xml_skips": 0,
+      "issues_closed_after_acceptance_review": [
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170
+      ],
+      "issue_closures_verified_by_root": true
     }
   ],
   "two_developer_phase": {
