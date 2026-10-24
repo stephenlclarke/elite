@@ -308,6 +308,39 @@ private func measuredPositiveFailure(_ bytes: Data, pointer: ScriptSavePointer, 
         }
       }
     }
+    let prior = original.scriptState.instances.values.compactMap(\.savedMeasuredExtraction).first
+    func sameHash<T: Encodable>(_ left: T, _ right: T) -> Bool {
+      (try? NativeMeasuredExtraction.hash(left)) == (try? NativeMeasuredExtraction.hash(right))
+    }
+    func difference<T: Encodable>(_ left: T, _ right: T) -> String {
+      guard let a = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(left)),
+        let b = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(right))
+      else { return "encoding-failed" }
+      return measuredRawDifference(a, b) ?? "none"
+    }
+    if let before = prior?.extraction, let after = leaf?.extraction {
+      facts +=
+        " witnessValueEqual=\(before == after) witnessDifference=\(difference(before, after))"
+      let components = [
+        ("incident", sameHash(before.incident, after.incident)),
+        ("body", sameHash(before.body, after.body)),
+        ("emitted", sameHash(before.emitted, after.emitted)),
+        ("equipment", sameHash(before.equipment, after.equipment)),
+      ]
+      facts += " witnessFirstHashDifference=\(components.first { !$0.1 }?.0 ?? "none")"
+    }
+    if let before = prior?.captures.first, let after = leaf?.captures.first {
+      facts += " intakeValueEqual=\(before == after) intakeDifference=\(difference(before, after))"
+      let components = [
+        ("payload", sameHash(before.payload, after.payload)),
+        ("body", sameHash(before.body, after.body)),
+        ("player", sameHash(before.player, after.player)),
+        ("scoops", sameHash(before.scoops, after.scoops)),
+        ("relativeSpeed", sameHash(before.relativeSpeed, after.relativeSpeed)),
+        ("physicalTime", sameHash(before.physicalTime, after.physicalTime)),
+      ]
+      facts += " intakeFirstHashDifference=\(components.first { !$0.1 }?.0 ?? "none")"
+    }
     var candidate = original
     candidate.scriptState = decoded
     facts +=
@@ -401,8 +434,14 @@ private func measuredRawDifference(_ raw: Any, _ canonical: Any, path: String = 
     return nil
   }
   if NSDictionary(dictionary: ["value": raw]).isEqual(["value": canonical]) { return nil }
-  return path + ":" + String(String(describing: raw).prefix(80))
-    + "/" + String(String(describing: canonical).prefix(80))
+  func scalar(_ value: Any) -> String {
+    if let number = value as? NSNumber {
+      return "NSNumber(" + String(cString: number.objCType) + "):" + number.stringValue
+        + ":bits=" + String(number.doubleValue.bitPattern, radix: 16)
+    }
+    return String(reflecting: type(of: value)) + ":" + String(String(describing: value).prefix(80))
+  }
+  return path + ":" + scalar(raw) + "/" + scalar(canonical)
 }
 
 // JSONSerialization may spell a floating NSNumber differently from JSONEncoder.
@@ -433,6 +472,13 @@ private func measuredJSON(_ value: Any) throws -> Data {
     CFGetTypeID(number) != CFBooleanGetTypeID(),
     ["d", "f"].contains(String(cString: number.objCType))
   {
+    var decimal = number.decimalValue
+    var integral = Decimal()
+    NSDecimalRound(&integral, &decimal, 0, .plain)
+    if integral == decimal {
+      // Integral NSDecimalNumber values can exceed Double's exact integer range.
+      return try JSONSerialization.data(withJSONObject: number, options: [.fragmentsAllowed])
+    }
     guard number.doubleValue.isFinite else { throw SaveError.invalidCommander }
     return try JSONEncoder().encode(number.doubleValue)
   }

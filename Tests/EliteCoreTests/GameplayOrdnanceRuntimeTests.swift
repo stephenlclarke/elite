@@ -49,14 +49,41 @@ struct GameplayOrdnanceRuntimeTests {
 
   @Test func actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam() throws {
     var game = missileRuntimeGame(distance: 1000)
-    // This victim fires its front-mounted beam back toward the incoming missile.
-    let victimIndex = try #require(game.bodies.firstIndex { $0.id == 70 })
-    game.bodies[victimIndex].orientation.x = .init(-1, 0, 0)
-    game.bodies[victimIndex].orientation.z = .init(0, 0, -1)
+    // Admit the defender through the native spawn path. A bare legacy body uses
+    // the separate legacy beam and cannot exercise the native front-mounted ray.
+    game.bodies.removeAll { $0.id == 70 }
+    game.commander.cargo[CommodityIdentity.food.rawValue] = 1
+    let sequence = try #require(game.commander.flightSimulation.allocateSpawn())
+    let context = try #require(game.gameplayContext())
+    var orientation = Basis3()
+    orientation.x = .init(-1, 0, 0)
+    orientation.z = .init(0, 0, -1)
+    let request = SpawnRequest(
+      identity: .init(
+        system: context.system, visit: context.visit, sequence: sequence, member: 0),
+      population: .pirate, hull: .cobra,
+      position: context.player.position + .init(0, 0, 1000), orientation: orientation,
+      velocity: .init(0, 0, 0),
+      npc: .init(role: .pirate, origin: context.system, destination: context.system),
+      rock: nil, payload: nil, priority: .ordinary)
+    let receipts = game.admitEncounterPlan(
+      .init(
+        system: context.system, visit: context.visit, revision: context.revision,
+        batches: [.init(requests: [request], atomic: true)], intents: []))
+    let defender = try #require(receipts.first?.actor)
+    try #require(receipts.count == 1 && receipts[0].refusal == nil)
+    let victim = try #require(game.bodies.first { $0.physical?.identity == defender })
+    try #require(victim.physical?.spawnIdentity == request.identity)
+    game.weaponsTargetID = victim.id
     let launched = game.fireMissile()
     #expect(launched)
     let missile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
-    let before = try #require(game.bodies.first { $0.id == 70 })
+    let before = try #require(game.bodies.first { $0.physical?.identity == defender })
+    let firingContext = try #require(game.gameplayContext())
+    try #require(
+      TrafficIntent.intents(context: firingContext).contains {
+        $0.actor == defender && $0.action == .engage(firingContext.player.identity)
+      })
     let resources = try #require(before.physical?.npc?.resources)
     let delta = 0.02
     let recharged =
@@ -68,7 +95,7 @@ struct GameplayOrdnanceRuntimeTests {
     game.gameplayCombatTrace = .init()
     game.tick(delta: delta)
     if game.bodies.contains(where: { $0.id == missile.id }),
-      let victim = game.bodies.first(where: { $0.id == 70 })
+      let victim = game.bodies.first(where: { $0.physical?.identity == defender })
     {
       let contact = try? game.nearestMissionCollision(
         from: victim.position, direction: victim.orientation.z.unit, range: 1500,
@@ -79,7 +106,7 @@ struct GameplayOrdnanceRuntimeTests {
             .utf8))
     }
     #expect(!game.bodies.contains { $0.id == missile.id })
-    let emitter = try #require(game.bodies.first { $0.id == 70 })
+    let emitter = try #require(game.bodies.first { $0.physical?.identity == defender })
     #expect(emitter.energy == recharged - 1)
     #expect(emitter.physical?.laserCooldown == LaserKind.pulse.firingInterval)
     #expect(emitter.physical?.npc?.resources?.laserHeat == expectedHeat)
