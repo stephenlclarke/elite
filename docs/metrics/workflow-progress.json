@@ -12876,6 +12876,18 @@
       "m03_actual_last_sync": "2026-10-24T13:21:48Z",
       "extra_sync_started": false,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-parallel-sync-noop-1348-1351",
+      "timestamp": "2026-10-24T13:53:09.580277+00:00",
+      "m02_sync": "2026-10-24T13:48:56Z",
+      "m03_sync": "2026-10-24T13:51:55Z",
+      "upstream": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+      "upstream_changed": false,
+      "rebases": 0,
+      "new_commits": 0,
+      "tests_rerun": 0,
+      "merge_hold": true
     }
   ],
   "two_developer_phase": {
