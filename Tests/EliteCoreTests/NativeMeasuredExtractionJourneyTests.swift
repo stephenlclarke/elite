@@ -289,16 +289,22 @@ struct NativeMeasuredExtractionFixture {
     try #require(await runtime.snapshot().bodies.contains { $0.physical?.payload == payload })
   }
   func collect(_ runtime: GameRuntime, count: Int = 12) async throws {
-    for _ in 0..<100 {
+    let deadline = await runtime.snapshot().commander.flightSimulation.physicalTime + 60
+    for _ in 0..<1000 {
       let game = await runtime.snapshot()
       if game.measuredExtractionState?.captures.count ?? 0 >= count { break }
+      if game.commander.flightSimulation.physicalTime >= deadline { break }
       if let body = game.bodies.first(where: { body in
         guard let payload = body.physical?.payload else { return false }
         return game.measuredPayloadIsAllocated(payload)
       }), let payload = body.physical?.payload {
         try await framePayload(runtime, payload: payload)
+        _ = await runtime.advance(delta: 0.01)
+      } else {
+        // Unbound originals retain their real birth positions and velocities. Allow normal
+        // elapsed motion to clear native admission; this creates no body or capture receipt.
+        _ = await runtime.advance(delta: 0.1)
       }
-      _ = await runtime.advance(delta: 0.01)
     }
     let current = await runtime.snapshot()
     let captures = try #require(current.measuredExtractionState).captures.count
