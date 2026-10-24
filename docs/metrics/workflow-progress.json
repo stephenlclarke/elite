@@ -11905,6 +11905,23 @@
       "native_registration": "in_progress_reported_by_owner",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T09:16:47.136038+00:00",
+      "checkpoint_key": "20261024-m01-d009-native-hook-path-blocker",
+      "event": "Published composition verified;physical runner hook spaced-path failure assigned bounded tooling correction",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "published_head": "d0099a77199bf5586062f0a22a7ef44439e3d8de",
+      "composition_receipt": "/tmp/elite-mba-d009-publication-composition-verification.json",
+      "quality_run": 40081071122,
+      "retry_job": 120835012587,
+      "failure_stage": "administrator_hook_before_checkout",
+      "cause": "unquoted_Application_Support_path",
+      "game_tests_executed_in_retry": 0,
+      "new_game_source_changes_assigned": false,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
