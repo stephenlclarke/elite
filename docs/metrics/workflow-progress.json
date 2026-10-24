@@ -12266,6 +12266,27 @@
       "hosted_artifact_owner": "MBA sole downloader",
       "m01_complete": false,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T10:01:54.172456+00:00",
+      "checkpoint_key": "20261024-m01-7b51-focused-terminal-sigbus",
+      "commit": "7b51ccd21c09cec2aa5f8ccf214ec55a536670e7",
+      "selected_methods": 6,
+      "method_starts": 6,
+      "parameter_case_start_records": 17,
+      "method_outcomes": 0,
+      "build_seconds": 243.6,
+      "wall_seconds": 257.19489691685885,
+      "exit_code": 1,
+      "failure": "UnexpectedSIGBUS; new matchedreport attributes next GlassMeridian optionalcopy through same commonvalidator",
+      "actual_xml": "52-byte truncated sidecar; not complete result",
+      "review_receipt": "/tmp/elite-mba-7b51-declaration-terminal-verification.json",
+      "next_scope": "One common ScriptPackLibrary.validate frame-partition packet preserving all predicates/callorder, not serial helper fixes",
+      "m02_rename_files_authorized": 20,
+      "m01_complete": false,
+      "usable_build_delivered": false,
+      "new_report_directory": "/tmp/elite-m01-7b51-crash",
+      "new_image_uuid": "3784B026-06B9-3ECF-846F-0BEA63675892"
     }
   ],
   "two_developer_phase": {
