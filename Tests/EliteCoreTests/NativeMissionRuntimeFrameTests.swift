@@ -111,6 +111,9 @@ struct NativeMissionRuntimeFrameTests {
     }
     let pack = try ScriptPackLibrary.read(directory)
     var game = Game(executive: false)
+    // The fixed-forward centre-ray oracle requires the authored closed Cobra fixture.
+    game.commander.shipID = "SH023"
+    game.commander.fuel = game.commander.fuelCapacity
     game.screen = .status
     try game.commander.prepareEquipment(legacy: false)
     game.scriptPacks = [pack]

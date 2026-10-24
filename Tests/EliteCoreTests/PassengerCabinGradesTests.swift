@@ -297,7 +297,7 @@ func doubleStateroomBoardsTwoDistinctPeopleInTheirAgreedMode(mode: PassengerTran
   #expect(game.commander.accommodation == original.accommodation && game.commander.valid)
   let before = game.commander
   #expect(throws: (any Error).self) {
-    try game.commander.transferEquipment(to: "SH033", hullID: UUID())
+    try game.commander.transferEquipment(to: "SH040", hullID: UUID())
   }
   let commanderPreserved8 = game.commander == before
   #expect(commanderPreserved8)

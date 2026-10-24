@@ -313,6 +313,10 @@ struct MissionLedgerImpactTests {
     let remaining = fixture.game.commander.miningLedger.remainingEnergy(for: rock)
     try #require(remaining > 0 && remaining <= fixture.proof.damage && fixture.proof.damage == 15)
     try #require(fixture.proof.targetBody?.energy == remaining)
+    let actor = try #require(fixture.context.actors.first { $0.rock == rock.identity })
+    let motion = AsteroidMotion(
+      position: actor.position, velocity: actor.velocity, physicalTime: fixture.context.physicalTime
+    )
     var ordinary = fixture.game.commander.miningLedger
     var scoped = ordinary
     let incident = CombatIncident(
@@ -320,8 +324,9 @@ struct MissionLedgerImpactTests {
       victim: fixture.proof.currentVictim, kind: .plasma, outcome: .destruction,
       position: fixture.context.player.position, victimLegalBeforeAttack: nil,
       firstAggressor: nil, victimRole: nil, victimIsStation: false)
-    let expected = ordinary.hit(rock: rock, incident: incident, damage: fixture.proof.damage)
-    #expect(expected == .destroyed)
+    let expected = ordinary.hit(
+      rock: rock, incident: incident, damage: fixture.proof.damage, motion: motion)
+    #expect(expected == .damaged(rock.energy))
     let evaluatedResult14 =
       scoped.hit(
         rock: rock, proof: fixture.proof, eventID: fixture.eventID,
@@ -329,6 +334,8 @@ struct MissionLedgerImpactTests {
     #expect(evaluatedResult14)
     #expect(
       scoped == ordinary && scoped.isDepleted(rock.identity) && scoped.pendingPayloads.isEmpty)
+    #expect(scoped.breakups[rock.identity]?.motion == motion)
+    #expect(scoped.breakups[rock.identity]?.issuedUnits == 0)
     #expect(scoped.valid)
     let destroyed = scoped
     let replay = scoped.hit(
@@ -386,20 +393,27 @@ struct MissionLedgerImpactTests {
     let evaluatedResult16 = fixture.game.commander.flightSimulation.allocateIncident()
     let event = try #require(evaluatedResult16)
     try #require(event > lastQueueEvent)
+    let actor = try #require(fixture.context.actors.first { $0.rock == rock.identity })
+    let motion = AsteroidMotion(
+      position: actor.position, velocity: actor.velocity, physicalTime: fixture.context.physicalTime
+    )
     var ordinary = ledger
     let incident = CombatIncident(
       id: event, physicalTime: fixture.context.physicalTime, origin: fixture.origin,
       victim: fixture.proof.currentVictim, kind: .plasma, outcome: .destruction,
       position: fixture.context.player.position, victimLegalBeforeAttack: nil,
       firstAggressor: nil, victimRole: nil, victimIsStation: false)
-    let expected = ordinary.hit(rock: rock, incident: incident, damage: fixture.proof.damage)
-    #expect(expected == .destroyed)
+    let expected = ordinary.hit(
+      rock: rock, incident: incident, damage: fixture.proof.damage, motion: motion)
+    #expect(expected == .damaged(rock.energy))
     let evaluatedResult17 =
       ledger.hit(
         rock: rock, proof: fixture.proof, eventID: event,
-        context: fixture.context) == .destroyed
+        context: fixture.context) == expected
     #expect(evaluatedResult17)
     #expect(ledger.pendingPayloads == custody && ledger.isDepleted(rock.identity) && ledger.valid)
+    #expect(ledger.breakups[rock.identity]?.motion == motion)
+    #expect(ledger.breakups[rock.identity]?.issuedUnits == 0)
     #expect(ledger == ordinary)
     let destroyed = ledger
     let replay = ledger.hit(

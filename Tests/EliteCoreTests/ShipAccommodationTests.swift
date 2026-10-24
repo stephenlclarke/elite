@@ -85,7 +85,7 @@ private func cobraAccommodation() throws -> ShipAccommodationProfile {
   #expect(!badLife.allowed)
 }
 @Test func zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation() throws {
-  let ship = try #require(ShipCatalogue.ship("SH033"))
+  let ship = try #require(ShipCatalogue.ship("SH040"))
   let cabin = PassengerBerth(cabinID: UUID())
   let profile = try ShipAccommodationProfile(ship: ship)
   let zero = testAccommodationFit(

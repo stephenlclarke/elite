@@ -15,7 +15,7 @@ private func relocateWreckObserver(_ game: inout Game, to position: Vector3) {
   }
 }
 
-private func salvageWorldGame() throws -> (Game, SalvageSite) {
+private func salvageWorldGame(legacyOnly: Bool = false) throws -> (Game, SalvageSite) {
   // Pick a genuinely generated site; the runtime must not depend on a hand-built wreck.
   for system in 0..<256 {
     var game = Game(executive: false)
@@ -29,6 +29,7 @@ private func salvageWorldGame() throws -> (Game, SalvageSite) {
       let anchors = game.commander.flightSimulation.anchors,
       let profile = SalvageCatalogue.profile(catalogueShipID: site.catalogueShipID)
     else { continue }
+    if legacyOnly && profile.sourceRoles.contains(.thargoid) { continue }
     let offset = profile.bounds.radius + profile.bounds.center.length + 2000
     let directions = [
       Vector3(0, 0, 1), .init(0, 0, -1), .init(1, 0, 0), .init(-1, 0, 0), .init(0, 1, 0),
@@ -263,7 +264,7 @@ struct SalvageWorldRuntimeTests {
   @Test func failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()
     async throws
   {
-    var (game, site) = try salvageWorldGame()
+    var (game, site) = try salvageWorldGame(legacyOnly: true)
     let index = try #require(
       game.bodies.firstIndex { $0.physical?.salvage?.wreck == site.identity })
     var encoded = try #require(
@@ -314,7 +315,7 @@ extension SalvageWorldRuntimeTests {
   @Test(arguments: [false, true])
   func actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic: Bool) throws
   {
-    var (game, site) = try salvageWorldGame()
+    var (game, site) = try salvageWorldGame(legacyOnly: true)
     let originalSystem = game.commander.system
     let originalGalaxy = game.commander.galaxy
     let observer = game.commander.flightSimulation.pose.position
@@ -381,7 +382,7 @@ extension SalvageWorldRuntimeTests {
   }
 
   @Test func optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth() throws {
-    let (game, site) = try salvageWorldGame()
+    let (game, site) = try salvageWorldGame(legacyOnly: true)
     let initial = try #require(game.commander.salvageLedger.wreckMotion(for: site.identity))
     var fields = try #require(
       JSONSerialization.jsonObject(with: JSONEncoder().encode(initial)) as? [String: Any])

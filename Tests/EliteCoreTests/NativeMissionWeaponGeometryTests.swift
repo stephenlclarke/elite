@@ -5,6 +5,9 @@ import Testing
 
 private func actualComponentOccluder(distance: Double) throws -> (Game, UUID, Int) {
   var (game, instance, index) = try actualMissionBridgeGame()
+  // Explicit compatible work-tool hull; the default player hull need not support these slots.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = min(game.commander.fuel, game.commander.fuelCapacity)
   game.ensurePhysicalActors()
   let id = game.bodies[index].id
   game.bodies[index].position = .init(0, -25, distance)

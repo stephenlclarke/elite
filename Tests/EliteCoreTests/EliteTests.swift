@@ -161,7 +161,9 @@ import Testing
   game.key("return")
   #expect(game.commander.cargo[1] == hold - 1)
   game.key("down")
-  #expect(game.selection == 2)
+  #expect(
+    game.selection
+      == MarketDisplayOrder.commodityIDs[MarketDisplayOrder.commodityIDs.firstIndex(of: 1)! + 1])
   game.key("up")
   #expect(game.selection == 1)
   game.key("right")

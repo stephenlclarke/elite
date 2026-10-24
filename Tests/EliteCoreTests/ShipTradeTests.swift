@@ -173,7 +173,7 @@ import Testing
   game.key("v")
   #expect(
     game.showroom.sourceProfiles && !game.showroom.compare
-      && game.showroomProfiles.count == game.showroomShip?.profiles.count)
+      && game.showroomProfiles.count == game.showroomShip?.sourceProfilesIncludingPhysical.count)
   for width in [512.0, 1512] {
     game.viewportWidth = width
     game.viewportHeight = 518

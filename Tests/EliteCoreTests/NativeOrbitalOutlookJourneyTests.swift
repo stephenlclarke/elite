@@ -191,7 +191,7 @@ struct NativeOrbitalOutlookJourneyTests {
     try await f.confirm(runtime, .request)
     let source = try await f.source(runtime)
     let offer = try #require(source.latestOffer)
-    let cabin = try #require(offer.berths.first?.id)
+    let cabin = try #require(offer.berths.first?.cabinID)
     try await runtime.setPassengerBerthFitted(cabin, fitted: false)
     let changed = await runtime.snapshot()
     let reply = try NativeOrbitalOutlookJourney.replyToPassageOffer(

@@ -53,9 +53,9 @@ import Testing
     }
   }
   let retained = portable
-  try #require(ShipCatalogue.ship("SH033")?.game?.cargo == 0)
+  try #require(ShipCatalogue.ship("SH040")?.game?.cargo == 0)
   #expect(throws: EquipmentRuntimeError.incompatibleFit) {
-    try portable.projectedEquipmentTransfer(to: "SH033")
+    try portable.projectedEquipmentTransfer(to: "SH040")
   }
   #expect(portable == retained)
   #expect(portable.accommodation == before.accommodation && trial.commander == before)

@@ -41,6 +41,15 @@ private let bundledCorridorDefenceDigest =
 private let bundledVerifiedWarrantDigest =
   "f125be8200d0dd3ae834f2dc4cd52da46f7c571de7e67cbec61f76c7beab9911"
 
+/// Preserve the original 23 provider/people rows while accounting for later authored services.
+private func originalBundledBoardRows(_ rows: [ContractBoardRow]) -> [ContractBoardRow] {
+  rows.filter { row in
+    row.wayfarerInduction == nil && row.glassMeridian == nil && row.flightReception == nil
+      && row.safeGunnery == nil && row.defensiveFlight == nil && row.utility == nil
+      && !row.board.hasPrefix(WayfarerFieldRelief.digest + "/")
+  }
+}
+
 private struct BundledScriptFixture {
   let root: URL
   var library: URL { root.appendingPathComponent("installed") }
@@ -157,7 +166,13 @@ struct BundledScriptPackTests {
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
           NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
-          WayfarerRecordRecovery.digest, NativeMeasuredExtraction.digest,
+          WayfarerRecordRecovery.digest, WayfarerFieldRelief.digest,
+          NativeMeasuredExtraction.digest,
+          NativeDefensiveFlight.digest, NativeSafeGunnery.digest, NativeFlightReception.digest,
+          NativeWayfarerInduction.digest, NativeInductionArkPack.digest,
+          NativeInductionCrewLogPack.digest, NativeInductionUtilityPack.digest,
+          NativeGlassMeridian.digest, NativeInductionClinicPack.digest,
+          NativeInductionWorkshopPack.digest, NativeInductionSeedPack.digest,
         ])
     #expect(discovered.commander == before.commander && discovered.bodies == before.bodies)
     #expect(discovered.commander.scriptState.instances.isEmpty)
@@ -189,7 +204,13 @@ struct BundledScriptPackTests {
           bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
           bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
           NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest,
-          WayfarerRecordRecovery.digest, NativeMeasuredExtraction.digest,
+          WayfarerRecordRecovery.digest, WayfarerFieldRelief.digest,
+          NativeMeasuredExtraction.digest,
+          NativeDefensiveFlight.digest, NativeSafeGunnery.digest, NativeFlightReception.digest,
+          NativeWayfarerInduction.digest, NativeInductionArkPack.digest,
+          NativeInductionCrewLogPack.digest, NativeInductionUtilityPack.digest,
+          NativeGlassMeridian.digest, NativeInductionClinicPack.digest,
+          NativeInductionWorkshopPack.digest, NativeInductionSeedPack.digest,
         ])
     #expect(try Data(contentsOf: manifest) == beforeManifest)
     #expect(try Data(contentsOf: module) == beforeModule)
@@ -213,7 +234,12 @@ struct BundledScriptPackTests {
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
         NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
-        NativeMeasuredExtraction.digest,
+        WayfarerFieldRelief.digest, NativeMeasuredExtraction.digest,
+        NativeDefensiveFlight.digest, NativeSafeGunnery.digest, NativeFlightReception.digest,
+        NativeWayfarerInduction.digest, NativeInductionArkPack.digest,
+        NativeInductionCrewLogPack.digest, NativeInductionUtilityPack.digest,
+        NativeGlassMeridian.digest, NativeInductionClinicPack.digest,
+        NativeInductionWorkshopPack.digest, NativeInductionSeedPack.digest,
       ])
     #expect(library.packs[0].manifest.version == pack.manifest.version)
     #expect(try ScriptPackLibrary.read(installed).digest == pack.digest)
@@ -242,7 +268,12 @@ struct BundledScriptPackTests {
         bundledConsentedFreightDigest, bundledCabinJourneyDigest, bundledOrbitalOutlookDigest,
         bundledOriginalRescueDigest, NativeOriginalEvacuation.digest, NativeOriginalSurvey.digest,
         NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
-        NativeMeasuredExtraction.digest,
+        WayfarerFieldRelief.digest, NativeMeasuredExtraction.digest,
+        NativeDefensiveFlight.digest, NativeSafeGunnery.digest, NativeFlightReception.digest,
+        NativeWayfarerInduction.digest, NativeInductionArkPack.digest,
+        NativeInductionCrewLogPack.digest, NativeInductionUtilityPack.digest,
+        NativeGlassMeridian.digest, NativeInductionClinicPack.digest,
+        NativeInductionWorkshopPack.digest, NativeInductionSeedPack.digest,
       ])
   }
 
@@ -260,7 +291,13 @@ struct BundledScriptPackTests {
     #expect(discovered.commander.contracts.boards.isEmpty)
     await runtime.key("contracts-open")
     let contracts = await runtime.snapshot()
-    #expect(contracts.screen == .contracts && contracts.contractBoard.rows.count == 23)
+    #expect(
+      contracts.screen == .contracts
+        && originalBundledBoardRows(contracts.contractBoard.rows).count == 23)
+    #expect(
+      Set(contracts.contractBoard.rows.map(\.key)).count == contracts.contractBoard.rows.count)
+    #expect(contracts.contractBoard.rows.filter { $0.safeGunnery == .accept }.count == 1)
+    #expect(contracts.contractBoard.rows.filter { $0.defensiveFlight == .accept }.count == 1)
     let repairRows = contracts.contractBoard.rows.filter {
       $0.repairLoop?.digest == bundledRepairLoopDigest
     }
@@ -311,7 +348,9 @@ struct BundledScriptPackTests {
     #expect(trial.contractBoard.rows.filter { $0.people == .outlook(.request) }.count == 1)
     #expect(contracts.contractBoard.rows.filter { $0.people == .outlook(.request) }.count == 1)
     #expect(contracts.contractBoard.rows.filter { $0.people == .journey(.request) }.count == 1)
-    #expect(trial.contractBoard.rows.count == 23 && trial.contractBoard.action == .back)
+    #expect(
+      originalBundledBoardRows(trial.contractBoard.rows).count == 23
+        && trial.contractBoard.action == .back)
     #expect(
       trial.contractBoard.rows.filter { $0.coldChain?.digest == bundledColdChainDigest }.count == 1)
     #expect(
@@ -390,7 +429,12 @@ struct BundledScriptPackTests {
         bundledCorridorDefenceDigest, bundledConsentedFreightDigest, bundledCabinJourneyDigest,
         bundledOrbitalOutlookDigest, bundledOriginalRescueDigest, NativeOriginalEvacuation.digest,
         NativeOriginalSurvey.digest, NativeIdentifiedSalvage.digest, WayfarerRecordRecovery.digest,
-        NativeMeasuredExtraction.digest,
+        WayfarerFieldRelief.digest, NativeMeasuredExtraction.digest,
+        NativeDefensiveFlight.digest, NativeSafeGunnery.digest, NativeFlightReception.digest,
+        NativeWayfarerInduction.digest, NativeInductionArkPack.digest,
+        NativeInductionCrewLogPack.digest, NativeInductionUtilityPack.digest,
+        NativeGlassMeridian.digest, NativeInductionClinicPack.digest,
+        NativeInductionWorkshopPack.digest, NativeInductionSeedPack.digest,
       ])
     #expect(loaded.scriptPack(for: retained)?.digest == bundledCourierDigest)
     #expect(retained.digest == state.digest && retained.version == state.version)

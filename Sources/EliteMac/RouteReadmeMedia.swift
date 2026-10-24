@@ -34,7 +34,7 @@ func makeRouteReadmeMediaGame() throws -> Game {
   }
   guard game.commander.equipmentInventory != nil,
     game.commander.equipmentPurchaseHistory?.paid.count == 2,
-    game.commander.fuel == 70, game.commander.fuelCapacity == 70, game.commander.valid
+    game.commander.fuel == game.commander.fuelCapacity, game.commander.valid
   else { throw SaveError.invalidCommander }
   game.commander.profitScanEnabled = true
   game.viewportWidth = 1024
@@ -55,7 +55,7 @@ func makeRouteReadmeMediaGame() throws -> Game {
   guard game.screen == .navigation, game.navigationOptions.count > 1 else {
     throw SaveError.invalidCommander
   }
-  // Use the real planner and input path, including its unchanged seven-LY tank limits.
+  // Use the real planner and input path, including the selected hull's actual fuel and navigation limits.
   game.key("down")
   return game
 }

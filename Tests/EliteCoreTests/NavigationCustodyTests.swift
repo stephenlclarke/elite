@@ -3,8 +3,16 @@ import Testing
 
 @testable import EliteCore
 
-private func markedFirearmRoute() throws -> Game {
+/// A 30-tonne hold keeps stock63 nonlimiting so losing one protected tonne changes the score.
+private func navigationCustodyGame() -> Game {
   var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  return game
+}
+
+private func markedFirearmRoute() throws -> Game {
+  var game = navigationCustodyGame()
   game.commander.galaxy = 1
   game.commander.system = 233
   game.systems = Universe.systemsIncludingPlugh(number: 1)
@@ -51,7 +59,7 @@ struct NavigationCustodyTests {
   }
 
   @Test func acceptedMaximumSaleQuantityIsFiniteWithoutIntegerMultiplication() {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     game.commander.unlimitedCargo = true
     game.commander.cargo[0] = Int.max / 17
     #expect(game.commander.valid)
@@ -73,7 +81,7 @@ private func navigationTradeMargin(_ game: inout Game, commodity: Int) throws ->
 extension NavigationCustodyTests {
   @Test(arguments: [false, true])
   func purchasedCabinReservesRealHoldEvenWithUnlimitedCargo(unlimited: Bool) throws {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     game.commander.shipID = "SH023"
     game.commander.fuel = game.commander.fuelCapacity
     game.energy = game.commander.performance.energy
@@ -101,7 +109,7 @@ extension NavigationCustodyTests {
   }
 
   @Test func purchasedCabinsFillActualHoldAndLeaveNoTonneTradeOrPurchaseRoom() throws {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     game.commander.shipID = "SH023"
     game.commander.fuel = game.commander.fuelCapacity
     game.energy = game.commander.performance.energy
@@ -129,12 +137,14 @@ extension NavigationCustodyTests {
   @Test func markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold() throws {
     var game = try markedFirearmRoute()
     let hold = game.commander.tradeCargoCapacity
+    try #require(hold <= 63)
     game.commander.cargo[0] = hold - 1
-    let destination = try navigationTradeMargin(&game, commodity: 0)
     try #require(game.commander.cargoTonnes == hold && game.commander.valid)
+    let destination = try navigationTradeMargin(&game, commodity: 0)
     let before = game.commander
     #expect(
-      NavigationGraph(game: game).trade(game.commander.system, destination) == Double(hold - 1))
+      NavigationGraph(game: game).trade(game.commander.system, destination)
+        == Double(hold - 1))
     #expect(game.commander == before && game.commander.sellableCargo(10) == 0)
   }
 
@@ -143,7 +153,7 @@ extension NavigationCustodyTests {
       .deletingLastPathComponent().deletingLastPathComponent()
       .appendingPathComponent("docs/mission-packs/scripted-courier")
     let pack = try ScriptPackLibrary.read(directory)
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     game.screen = .status
     game.scriptPacks = [pack]
     let instance = try game.acceptScriptMission(pack)
@@ -158,20 +168,24 @@ extension NavigationCustodyTests {
   }
 
   @Test func fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade() throws {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     let hold = game.commander.tradeCargoCapacity
+    try #require(hold <= 63)
     game.commander.cargo[0] = hold
     let destination = try navigationTradeMargin(&game, commodity: 0)
     try #require(game.commander.cargoTonnes == game.commander.tradeCargoCapacity)
     let before = game.commander
-    #expect(NavigationGraph(game: game).trade(game.commander.system, destination) == Double(hold))
+    #expect(
+      NavigationGraph(game: game).trade(game.commander.system, destination) == Double(hold)
+    )
     #expect(game.commander == before)
   }
 
   @Test func nonTonneTradeStillLoadsWithAnOccupiedHold() throws {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     game.commander.credits = 100_000
     let hold = game.commander.tradeCargoCapacity
+    try #require(hold <= 63)
     game.commander.cargo[0] = hold
     let destination = try navigationTradeMargin(&game, commodity: 13)
     let before = game.commander
@@ -183,7 +197,7 @@ extension NavigationCustodyTests {
   }
 
   @Test func maximumValidOrdinaryTonnageKeepsTradeScoringFinite() throws {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     game.commander.unlimitedCargo = true
     game.commander.cargo[0] = Int.max / 17
     try #require(game.commander.valid)
@@ -195,7 +209,7 @@ extension NavigationCustodyTests {
   }
 
   @Test func collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates() throws {
-    var game = Game(executive: false)
+    var game = navigationCustodyGame()
     var ledger = game.commander.salvageLedger
     let wreck = WreckIdentity(system: .init(galaxy: 0, system: 7), site: 1, lineage: 2)
     let section = SalvageSectionProfile(

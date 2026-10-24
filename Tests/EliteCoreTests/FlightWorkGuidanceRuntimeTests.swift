@@ -7,10 +7,15 @@ private func workRuntimeGame(module: WorkTargetSpecialty = .salvage, scoops: Boo
   -> Game
 {
   var game = Game(executive: false)
-  if module == .mining {
-    game.commander.shipID = "SH023"
-    game.commander.fuel = game.commander.fuelCapacity
-  }
+  // The fixed scoop approach and clearance coordinates below use this conventional hull.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.system = try #require(
+    game.knownSystems.first { system in
+      !NativeStationSource.bindings.contains {
+        $0.system == SystemIdentity(galaxy: game.commander.galaxy, system: system.id)
+      }
+    }?.id)
   try game.commander.prepareEquipment(legacy: false)
   try game.commander.grantEquipment(
     "Targeting: Military", at: .targetingCore, provenance: .grant("work fixture"))

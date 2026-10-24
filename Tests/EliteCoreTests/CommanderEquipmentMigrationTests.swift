@@ -22,6 +22,7 @@ struct CommanderEquipmentMigrationTests {
   @Test func knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices() throws {
     var commander = Commander()
     commander.shipID = "SH001"
+    commander.fuel = commander.fuelCapacity
     commander.missiles = 1
     commander.equipment.formUnion([Equipment.navalLaser, "Large Cargo Bay"])
     commander.laserMounts = .init(front: .naval, left: .naval, right: .naval, rear: .naval)

@@ -9,7 +9,9 @@ import Testing
   try #require(game.screen == .navigation && game.navigationOptions.count > 1)
   try #require(game.commander.navigationTier == .military && game.commander.valid)
   try #require(game.commander.equipmentPurchaseHistory?.paid.count == 2)
-  try #require(game.commander.fuel == 70 && game.commander.fuelCapacity == 70)
+  try #require(
+    game.commander.fuel == game.commander.fuelCapacity
+      && game.commander.fuelCapacity == NewCommanderDefaults.fuel)
   let options = game.navigationOptions
   let selected = game.navigationSelection
   try #require(selected == 1)

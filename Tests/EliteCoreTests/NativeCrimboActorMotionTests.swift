@@ -192,7 +192,16 @@ struct NativeCrimboActorMotionTests {
   }
 
   @Test func actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock() async throws {
-    var game = try ActorMotionFixture.stationGame()
+    let priorRuntime = GameRuntime(game: try ActorMotionFixture.game())
+    let prior = await priorRuntime.advance(delta: 0.01)
+    let priorFact = try #require(prior.nativeCrimboAttainedMotion)
+    let priorSample = try ActorMotionFixture.sample(from: priorFact, in: prior)
+    // Current original-world routes do not require RRS/convoy coexistence. Test
+    // cleanup of genuine but foreign-world/owner observations at an authentic RRS.
+    var game = try NativeStationTestFixture.launched()
+    game.nativeCrimboAttainedMotion = priorFact
+    game.nativeCrimboMotionSample = priorSample
+    try #require(game.nativeCrimboAttainedMotion != nil && game.nativeCrimboMotionSample != nil)
     let world = try #require(game.commander.nativeStations)
     let station = try #require(
       game.bodies.first {

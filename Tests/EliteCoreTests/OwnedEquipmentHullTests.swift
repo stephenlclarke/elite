@@ -213,9 +213,11 @@ private func ownedHullSaveFiles(at directory: URL) throws -> [String: Data] {
   game.commander.accommodation.ownedCabins = [cabin]
   game.commander.accommodation.ownedBerths = [PassengerBerth(cabinID: cabin.id)]
   game.commander.accommodation.fitted = [cabin.id]
+  // Force a real current conflict: the target has no room for a fitted cabin.
+  try #require(ShipCatalogue.ship("SH040")?.game?.cargo == 0)
   let before = game.commander
   #expect(throws: (any Error).self) {
-    try game.commander.transferEquipment(to: "SH001", hullID: UUID())
+    try game.commander.transferEquipment(to: "SH040", hullID: UUID())
   }
   #expect(game.commander == before)
   _ = try missionPrepareSmallHullExchange(&game)

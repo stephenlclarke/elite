@@ -336,7 +336,10 @@ private func displayColdCommanderExpectation(_ original: Game) throws -> Command
   let privateRows = PlayerHelp.pages(for: privateGallery).flatMap(\.rows)
   #expect(!privateRows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
   #expect(
-    privateRows.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+    privateRows.filter { row in
+      row != "FLIGHT ONLY; MENUS KEEP THEIR KEYS"
+        && !FlightControlAuthority.ActionID.allCases.map(FlightControlInput.helpRow).contains(row)
+    }.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
   let after = await parent.snapshot().commander
   #expect(after == before && game.commander == original)
 }

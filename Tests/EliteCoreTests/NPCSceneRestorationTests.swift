@@ -5,6 +5,13 @@ import Testing
 
 private func actualNPCSceneRestorationGame(nearby: Bool = false) throws -> Game {
   var game = Game(executive: false)
+  // NPC identity restoration is isolated from the separately tested fresh RRS rebind.
+  game.commander.system = try #require(
+    game.knownSystems.first { system in
+      !NativeStationSource.bindings.contains {
+        $0.system == SystemIdentity(galaxy: game.commander.galaxy, system: system.id)
+      }
+    }?.id)
   game.screen = .status
   try game.commander.prepareEquipment()
   game.commander.mirrorFittedEquipment()
@@ -216,6 +223,7 @@ struct NPCSceneRestorationTests {
     let (written, _) = try ScriptSaveStore.read(Data(contentsOf: url), from: url)
     var expectedDisk = before.commander
     expectedDisk.npcPersistence.resetPhysicalBindings(system: before.systemIdentity)
+    expectedDisk.resetWantedCareerBindings(system: before.systemIdentity)
     let actualDiskMatchesDocumentedCopy = written == expectedDisk
     #expect(actualDiskMatchesDocumentedCopy)
     let resumed = GameRuntime(game: before)

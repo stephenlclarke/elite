@@ -61,8 +61,8 @@ private func makeComponentCapacityFixture(_ temporary: URL) throws -> ComponentC
   #expect(admitted.count == 30)
   #expect(admitted.allSatisfy { $0.scriptNPC?.components.count == 32 })
   #expect(admitted.allSatisfy { $0.scriptNativeUnits == 33 })
-  #expect(game.bodies.count == 33)
-  #expect(game.bodies.reduce(0) { $0 + $1.scriptNativeUnits } == 993)
+  #expect(game.bodies.count == 34)
+  #expect(game.bodies.reduce(0) { $0 + $1.scriptNativeUnits } == 994)
   return .init(game: game, instance: instance)
 }
 
@@ -76,9 +76,12 @@ private func assertComponentCapacityCycle(_ fixture: ComponentCapacityFixture) t
 private func assertComponentCapacityDenial(_ game: inout Game, instance: UUID) throws -> Bool {
   game.persistScriptActors(unloading: true)
   game.bodies.removeAll { $0.missionInstanceID == instance }
-  #expect(game.bodies.count == 3)
+  #expect(game.bodies.count == 4)
 
-  for index in 0..<32 {
+  // Fill the actual background to 35 units; the 990-unit cohort must exceed 1024.
+  let fillerCount = 35 - game.bodies.count
+  try #require(fillerCount > 0)
+  for index in 0..<fillerCount {
     let id = game.nextBodyID
     game.nextBodyID += 1
     game.bodies.append(

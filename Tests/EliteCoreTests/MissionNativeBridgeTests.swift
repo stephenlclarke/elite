@@ -324,7 +324,10 @@ private func bridgeLegacyPlasmaNoHitExpiry(_ fixture: BridgeLegacyPlasmaFixture)
   let shot = fixture.shot
   let live = fixture.live
   var noHit = game
-  noHit.bodies[1].position = .init(0, 0, 10000)
+  // Expiry is a no-contact case: retain only the actual projectile, not the newly
+  // authored station cohort that may lie inside its lifetime sweep.
+  noHit.bodies = noHit.bodies.filter { $0.scriptShot?.identity == shotID }
+  try #require(noHit.bodies.count == 1)
   let incidentBefore = noHit.commander.flightSimulation.nextIncident
   let early = try noHit.stepMissionNativeProjectile(projectileID: shotID, delta: delay / 2)
   #expect(early == nil)
@@ -698,6 +701,9 @@ private func makeBridgeLaserFireFixture() throws -> BridgeLaserFireFixture {
     .appendingPathComponent("docs/mission-packs/profiled-skirmish")
   let pack = try ScriptPackLibrary.read(directory)
   var game = Game(executive: false)
+  // This fixed forward beam deliberately targets a closed conventional hull.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   game.screen = .status
   game.scriptPacks = [pack]
   let instance = try game.acceptScriptMission(pack)
@@ -895,7 +901,8 @@ struct MissionNativeBridgeTests {
     #expect(binding.nativeActor == body.physical?.identity)
     try MissionNativeBridge.validateBinding(
       binding, descriptor: descriptor, body: body, context: context)
-    #expect(context.actors.count == 1 && context.actors.first?.identity == binding.nativeActor)
+    #expect(context.actors.filter { $0.identity == binding.nativeActor }.count == 1)
+    #expect(context.actors.first { $0.identity == binding.nativeActor }?.hull == body.hull)
   }
 
   @Test func missingUnprotectedWrongVisitAndUUIDJoinsRefuseBinding() throws {

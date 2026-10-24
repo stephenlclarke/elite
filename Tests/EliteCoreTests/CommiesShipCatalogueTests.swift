@@ -120,6 +120,7 @@ import Testing
   @Test func transporterCargoCorrectionDrivesActualHoldAndCurrentReference() throws {
     var commander = Commander()
     commander.shipID = "SH128"
+    commander.fuel = commander.fuelCapacity
     commander.missiles = 1
     let hold = commander.nativePerformance.cargo
     #expect(hold == 150)

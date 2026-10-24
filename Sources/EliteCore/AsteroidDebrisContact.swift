@@ -372,6 +372,27 @@ final class AsteroidContactFrame {
   }
 }
 
+#if DEBUG
+  private func debrisRefusalVector(_ value: Vector3) -> String {
+    String(format: "%.17g,%.17g,%.17g", value.x, value.y, value.z)
+  }
+
+  private func debrisRefusalPose(_ value: ShipPose) -> String {
+    "p=" + debrisRefusalVector(value.position)
+      + ";x=" + debrisRefusalVector(value.orientation.x)
+      + ";y=" + debrisRefusalVector(value.orientation.y)
+      + ";z=" + debrisRefusalVector(value.orientation.z)
+  }
+
+  private func debrisRefusalMotion(_ value: HullSceneMotion) -> String {
+    "start=[" + debrisRefusalPose(value.start) + "];end=[" + debrisRefusalPose(value.end)
+      + "];v=" + debrisRefusalVector(value.initialVelocity)
+      + ";a=" + debrisRefusalVector(value.acceleration)
+      + ";omega=" + debrisRefusalVector(value.worldAngularVelocity)
+      + ";duration=" + String(value.duration) + ";radius=" + String(value.playerRadius)
+  }
+#endif
+
 private struct DebrisTrajectory {
   let frame: DebrisActorFrame
   let hull: PreparedHull
@@ -828,6 +849,20 @@ extension Game {
             guard samePair else { return .refused("REMAINING CONTACT") }
             next = found
           case .refused(let failure):
+            #if DEBUG
+              // Retain the failed geometric query in ordinary debug/test logs. The candidate
+              // is discarded below; no contact or player-facing diagnostic detail is invented.
+              let sourceID = trajectories[a].frame.bodyID.map(String.init) ?? "player"
+              let targetID = trajectories[b].frame.bodyID.map(String.init) ?? "player"
+              let facts =
+                "source=" + sourceID + " target=" + targetID
+                + " samePair=" + String(samePair)
+                + " lower=" + String(contact.lowerTime) + " upper=" + String(contact.upperTime)
+                + " offset=" + String(offset) + " remainder=" + String(remainder)
+                + " sourceMotion=" + debrisRefusalMotion(trajectories[a].motion)
+                + " targetMotion=" + debrisRefusalMotion(trajectories[b].motion)
+              NSLog("DEBRIS_REMAINING_SWEEP_REFUSAL %@ %@", failure.message, facts)
+            #endif
             return .refused("REMAINING SWEEP UNPROVEN: " + failure.message)
           }
         }

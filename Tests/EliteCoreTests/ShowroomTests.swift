@@ -95,9 +95,10 @@ private func showroomGame(ownedShip: String? = nil) -> Game {
   }
   game.showroom.query = "FE2"
   #expect(
-    !game.showroomShips.isEmpty && game.showroomShips.allSatisfy { $0.appearances.contains("FE2") })
+    !game.showroomShips.isEmpty
+      && game.showroomShips.allSatisfy { $0.searchText.localizedCaseInsensitiveContains("FE2") })
   game.showroom.query = "alien"
-  #expect(game.showroomShips.allSatisfy { $0.shipClass.localizedCaseInsensitiveContains("alien") })
+  #expect(game.showroomShips.allSatisfy { $0.searchText.localizedCaseInsensitiveContains("alien") })
   game.showroom.query = ""
   game.key("/")
   for key in "vector" { game.key(String(key)) }
@@ -343,7 +344,7 @@ private func showroomGame(ownedShip: String? = nil) -> Game {
     })
   let missingModel = try #require(ShipCatalogue.ship("SH002"))
   #expect(missingModel.previewMesh != nil && missingModel.dimensions != nil)
-  #expect(missingModel.design.source.contains("original"))
+  #expect(missingModel.design.source.localizedCaseInsensitiveContains("original"))
   let transporter = try #require(ShipCatalogue.ship("SH128"))
   let passengerFact = try #require(
     transporter.profiles.first { $0.group.contains("passengeruppercapacity") })

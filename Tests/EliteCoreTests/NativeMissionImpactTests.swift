@@ -12,6 +12,9 @@ private func actualLaserImpactGame(towardPlayer: Bool) throws -> (Game, MissionN
 private func initializeActualLaserImpact(_ game: inout Game, index: Int, towardPlayer: Bool) throws
   -> MissionNativeLaserProof
 {
+  // The centre-ray hit/miss oracle uses the closed conventional Cobra hull.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = min(game.commander.fuel, game.commander.fuelCapacity)
   game.ensurePhysicalActors()
   let source = game.bodies[index]
   let npc = try #require(source.scriptNPC)
@@ -155,7 +158,8 @@ struct NativeMissionImpactTests {
     target.position = .init(0, -25, 1000)
     target.orientation = .init()
     target.rotation = 0
-    game.bodies = [target]
+    // Keep the authentic station cohort; firing must not first repair a removed station.
+    game.bodies = [target] + game.bodies.filter { $0.nativeStationIdentity != nil }
     game.celestials = []
     game.screen = .front
     try fillActualMissionEvents(&game, instance: instance, count: 4096)

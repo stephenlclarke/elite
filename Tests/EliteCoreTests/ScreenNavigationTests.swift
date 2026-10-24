@@ -200,8 +200,11 @@ import Testing
   game.fitMaximumHardware()
   game.viewportHeight = 518
   game.screen = .inventory
+  let inventoryNeedsScroll = game.informationWindow.hint != nil
   game.key("k")
-  #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
+  #expect(
+    PlayerHelp.pages(for: game).filter { $0.title == "INVENTORY" }.flatMap(\.rows).contains(
+      inventoryNeedsScroll ? "UP / DOWN / SCROLL - MORE ROWS" : "ALL ROWS VISIBLE"))
   game.key("escape")
   game.key("8")
   let statusNeedsScroll = game.informationWindow.last > 0

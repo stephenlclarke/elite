@@ -7,6 +7,9 @@ import Testing
 
 private func wantedGame(count: Int = 12, spacing: Double = 120) throws -> Game {
   var game = Game(executive: false)
+  // This ownership/exchange fixture uses a conventional transferable 70-unit tank.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   game.launch()
   try #require(!game.docked)
   let station = try #require(game.commander.flightSimulation.anchors?.station)

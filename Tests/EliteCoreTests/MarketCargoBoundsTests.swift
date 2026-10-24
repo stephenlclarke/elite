@@ -9,10 +9,11 @@ struct MarketCargoBoundsTests {
     async throws
   {
     var game = Game(executive: false)
+    game.commander.credits = 1_000_000
     game.screen = .buy
     game.selection = index
     game.commander.cargo[index] = Int.max / 17
-    game.market[index] = .init(price: 2, quantity: 2)
+    game.market[index].quantity = 2
     try #require(game.commander.valid && Commodity.all[index].unit != "t")
     let runtime = GameRuntime(game: game)
     let before = await runtime.snapshot()
@@ -31,17 +32,18 @@ struct MarketCargoBoundsTests {
     defer { try? FileManager.default.removeItem(at: directory) }
     let url = directory.appendingPathComponent("commander.json")
     var game = Game(executive: false)
+    game.commander.credits = 1_000_000
     game.screen = .buy
     game.selection = index
     game.commander.cargo[index] = Int.max / 17 - 1
-    game.market[index] = .init(price: 2, quantity: 2)
+    game.market[index].quantity = 2
     let runtime = GameRuntime(game: game)
     let before = await runtime.snapshot()
     #expect(before.marketAvailability(index) == "BUY")
     await runtime.key("return")
     let accepted = await runtime.snapshot()
     #expect(accepted.commander.cargo[index] == Int.max / 17 && accepted.commander.valid)
-    #expect(accepted.commander.credits == before.commander.credits - 2)
+    #expect(accepted.commander.credits == before.commander.credits - before.market[index].price)
     #expect(
       accepted.market[index].quantity == 1 && accepted.marketAvailability(index) == "HOLD FULL")
     await runtime.key("return")

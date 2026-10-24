@@ -131,6 +131,7 @@ private func verifyRetainedNativeStationFlight(
   let (disk, _) = try ScriptSaveStore.read(Data(contentsOf: storage.url), from: storage.url)
   var expectedDisk = before
   expectedDisk.npcPersistence.resetPhysicalBindings(system: game.systemIdentity)
+  expectedDisk.resetWantedCareerBindings(system: game.systemIdentity)
   let completeDiskPolicyPreserved = disk == expectedDisk
   #expect(completeDiskPolicyPreserved)
   let reloaded = emptyStationRuntime()
