@@ -42,7 +42,7 @@ private func finishMessage(_ game: inout Game) {
       #expect((game.commander.missionStage == .huntingConstrictor) == (galaxy < 2 && score >= 256))
       if game.screen == .mission {
         #expect(
-          game.missionNotice?.text.contains(galaxy == 0 ? "CARRUTHERS" : "FOSDYKE SMYTHE") == true)
+          game.missionNotice?.text.contains(galaxy == 0 ? "ELARA VENN" : "ORIN SOREL") == true)
       }
       game = navalGame(galaxy: galaxy, score: score, stage: .constrictorComplete)
       game.dock()

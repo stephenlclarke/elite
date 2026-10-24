@@ -50,7 +50,15 @@ public struct MissionNotice: Sendable, Equatable {
   public var text: String {
     let template = dialog?.text ?? "MESSAGE UNAVAILABLE"
     return template.replacingOccurrences(of: "{commander}", with: commander)
-      .replacingOccurrences(of: "{captain}", with: galaxy == 0 ? "CARRUTHERS" : "FOSDYKE SMYTHE")
+      .replacingOccurrences(
+        of: "{captain}", with: OriginalContactIdentity.huntCaptain(galaxy: galaxy).name.uppercased()
+      )
+      .replacingOccurrences(
+        of: "{plans_captain}", with: OriginalContactIdentity.plansCaptain.name.uppercased()
+      )
+      .replacingOccurrences(
+        of: "{plans_agent}", with: OriginalContactIdentity.plansAgent.name.uppercased()
+      )
       .replacingOccurrences(
         of: "{sighting}",
         with: galaxy == 0

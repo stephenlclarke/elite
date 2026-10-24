@@ -214,7 +214,9 @@ extension Game {
     let replacements = [
       "commander": commander.name, "galaxy": String(commander.galaxy + 1),
       "kills": String(commander.kills),
-      "captain": commander.galaxy == 0 ? "CARRUTHERS" : "FOSDYKE SMYTHE",
+      "captain": OriginalContactIdentity.huntCaptain(galaxy: commander.galaxy).name.uppercased(),
+      "plans_captain": OriginalContactIdentity.plansCaptain.name.uppercased(),
+      "plans_agent": OriginalContactIdentity.plansAgent.name.uppercased(),
       "sighting": commander.galaxy == 0
         ? "ITS LAST REPORTED SIGHTING WAS AT REESDICE."
         : "INTELLIGENCE BELIEVES IT JUMPED INTO THIS GALAXY.",
