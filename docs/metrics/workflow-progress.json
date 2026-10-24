@@ -12093,6 +12093,17 @@
       ],
       "checks_or_protection_weakened": false,
       "speedup_measured": false
+    },
+    {
+      "at": "2026-10-24T09:42:32.126875+00:00",
+      "checkpoint_key": "20261024-m02-first-help-gap-scoped",
+      "owner": "G4",
+      "packet": "M02.P05",
+      "gap": "Showroom help offers Prev / Next when profile count disables both",
+      "scope": "PlayerHelp showroom projection and pure profile-availability tests",
+      "shared_selector": "Additive unique entries only; all retained methods preserved",
+      "review_branch_policy": "Stacked narrow diff; no merge into frozen M01; retarget main after release checkpoint",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
