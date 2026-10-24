@@ -1,0 +1,56 @@
+{
+  "head": "48e0f4788c597de34d921bd1f1db4a41b01451f6",
+  "mode": "normal focused correction qualification",
+  "source_files_match_reviewed_patch": {
+    "Sources/EliteCore/ScriptMissionState.swift": true,
+    "Tools/CI/script_instance_equality.py": true,
+    "Tools/CI/test_script_instance_equality.py": true
+  },
+  "start_and_result_inputs_match": true,
+  "command": [
+    "/Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/bin/swift",
+    "test",
+    "--jobs",
+    "3",
+    "--enable-code-coverage",
+    "--xunit-output",
+    "/tmp/elite-m01-direct-nil-normal.xml",
+    "--filter",
+    "ScriptInstanceStorageTests|defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial"
+  ],
+  "swift": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0",
+  "sdk": "27.0",
+  "xml_methods": 11,
+  "unique_methods": 11,
+  "suites": 2,
+  "storage_methods": [
+    "copiesDetachNestedContractsDialogueReceiptsAndEncounterMutation",
+    "decodingKeepsOriginalRequiredKeysOptionalOmissionAndMalformedRefusal",
+    "equalityDistinguishesChangedValuesAndAbsentVersusEmptyStoredCollections",
+    "explicitNullOptionalKeysRetainTheOriginalAbsentSchema",
+    "fieldBuffersDetachLargeNestedValuesAndKeepRetainedNilAndCodec",
+    "originalUnwrappedJSONAndEngineDictionaryRoundTripWithoutStorageKeys",
+    "sharedCloneKeepsLargeNativePayloadsWhenTheContractIsModified",
+    "sharedPayloadEqualityPreservesNaNAndSignedZeroMemberSemantics",
+    "suppliedAndActorSnapshotInstancesKeepIndependentNestedValues",
+    "throwingNestedInoutMutationDetachesAndRemainsWritable"
+  ],
+  "owning_courier_method": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial",
+  "owning_courier_seconds": "9.437747208",
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "duplicates": [],
+  "build_seconds": 69.91,
+  "runtime_seconds": 9.438,
+  "wall_seconds": 85.34301037481055,
+  "exit_code": 0,
+  "hashes": {
+    "/tmp/elite-m01-direct-nil-normal.start.json": "7a37ad65e9e5d58858ea589feade1c82158aa2eeb2e272cecc5951e5c724925e",
+    "/tmp/elite-m01-direct-nil-normal.result.json": "701cb1b875f8822480b06f1529935f20565eedfa0c85e09ef39eb8b81a5b4b7d",
+    "/tmp/elite-m01-direct-nil-normal.log": "517a5aeced92e162326c621061ba8a46cc2a67f8030bdb978b9b0eb953aba9c2",
+    "/tmp/elite-m01-direct-nil-normal-swift-testing.xml": "13284b99a8d9c0d05b9d559df7d59d6242482fe7820d732ca5c631ee42540a8c"
+  },
+  "limits": "Focused11-method normal PASS only; complete parameterized methods, no independent case-total claim. Same selection ASAN pending. No reviewer execution/rerun; fullquality/release remain pending.",
+  "exact_ten_source_declared_test_methods_match": true
+}

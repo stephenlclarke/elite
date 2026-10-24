@@ -1,0 +1,58 @@
+{
+  "head": "48e0f4788c597de34d921bd1f1db4a41b01451f6",
+  "mode": "Focused ASAN same selection as qualified normal",
+  "source_files_match_reviewed_patch": {
+    "Sources/EliteCore/ScriptMissionState.swift": true,
+    "Tools/CI/script_instance_equality.py": true,
+    "Tools/CI/test_script_instance_equality.py": true
+  },
+  "start_result_inputs_match": true,
+  "command": [
+    "/Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/bin/swift",
+    "test",
+    "--jobs",
+    "3",
+    "--scratch-path",
+    ".build/asan",
+    "--sanitize=address",
+    "--no-parallel",
+    "--xunit-output",
+    "/tmp/elite-m01-direct-nil-asan.xml",
+    "--filter",
+    "ScriptInstanceStorageTests|defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial"
+  ],
+  "swift": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0",
+  "sdk": "27.0",
+  "xml_methods": 11,
+  "unique_methods": 11,
+  "exact_same_method_set_as_normal": true,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "duplicates": [],
+  "sanitizer_error_markers": [],
+  "build_seconds": 296.57,
+  "runtime_seconds": 28.858,
+  "owning_courier_seconds": "28.083873209",
+  "wall_seconds": 332.19683020794764,
+  "exit_code": 0,
+  "image_observed_after_completion": {
+    "path": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests",
+    "bytes": 459958240,
+    "sha256": "a43349c2ead081635a87101df86a5122259d10df603e5d92000c647c34783797",
+    "macho_uuid": [
+      "cc0e38f5-0c76-3aad-bb7a-1e23917c0d72"
+    ],
+    "asan_dylib": [
+      "@rpath/libclang_rt.asan_osx_dynamic.dylib"
+    ],
+    "limit": "Read actual output image after completion; launch/result receipt has no independent process-image manifest."
+  },
+  "hashes": {
+    "/tmp/elite-m01-direct-nil-asan.start.json": "82a5c8f44b4a0f3fb117f65a4ade8124580516d779291212dc872c1d876eb78e",
+    "/tmp/elite-m01-direct-nil-asan.result.json": "12c806cd3662974dc7bfae2b62cac311d64f2e173b6be267487a63307a57a0f8",
+    "/tmp/elite-m01-direct-nil-asan.log": "e6702abd1acf112b63f9e042bce679cfacddcafa68a7b78ed1e746c266445567",
+    "/tmp/elite-m01-direct-nil-asan-swift-testing.xml": "da0f478a85c3f9e392bc784666678e3234687b1700e82019ff78c471ff761332"
+  },
+  "qualification": "Attributed unsafe initialization repair source-clear and focused11 normal+same11 ASAN passed, retaining storage/COW/codec regressions. Original6552 fullquality remainsfailed; no fullcorrectedquality,leak,merge,mainSonar,release acceptance. No reviewer execution or retry."
+}
