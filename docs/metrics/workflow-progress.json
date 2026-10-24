@@ -11337,6 +11337,21 @@
       "separate_execution_authorized": false,
       "reviewer_execution": "none",
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:48:30.038113+00:00",
+      "checkpoint_key": "20261024-m01-210-parallel-source-review-assigned",
+      "event": "Bounded existing showroom texture failure source review assigned in parallel",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue": 210,
+      "scope": "readonly_existing_source_and_retained_evidence",
+      "actual_combined_patch_review_priority": true,
+      "duplicate_G1_investigation": "held_pending_MBA_result",
+      "new_execution_authorized": false,
+      "reviewer_fixes_authorized": false,
+      "new_feature_authorized": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
