@@ -11440,7 +11440,7 @@
       "unaffected_review_retained": true,
       "usable_delivery": false,
       "makefile_source_correction_review": "clear",
-      "make_graph_regression_followup": "wrong_expected_module_token_assigned_for_source_correction"
+      "make_graph_regression_followup": "withdrawn_after_full_recipe_read_both_original_and_current_tokens_valid"
     },
     {
       "at": "2026-10-24T07:59:04.279989+00:00",
@@ -11452,7 +11452,6 @@
       "swift_fixture_hunks_reviewed": 24,
       "additional_findings_beyond_reported": 0,
       "pending_corrections": [
-        "make_graph_expected_token",
         "registrar_immutable_prepare_register_retry",
         "reused_installation_archive_provenance"
       ],
@@ -11460,6 +11459,21 @@
       "unaffected_review_retained": true,
       "final_composed_review": "pending_corrected_hunks_and_manifest",
       "unit_execution": "none",
+      "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:59:52.207676+00:00",
+      "checkpoint_key": "20261024-m01-review-graph-token-finding-withdrawn",
+      "event": "Reviewer withdrew incorrect make-graph token finding after complete recipe inspection",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "finding_status": "withdrawn_not_a_fixed_bug",
+      "valid_findings_remaining": [
+        "unit_ci_recipe_loss",
+        "registrar_retry_lifecycle",
+        "reused_installation_provenance"
+      ],
+      "both_actual_instance_equality_recipe_gates_retained": true,
       "usable_delivery": false
     }
   ],
