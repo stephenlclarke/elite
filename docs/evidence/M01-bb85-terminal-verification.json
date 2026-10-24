@@ -1,0 +1,77 @@
+{
+  "head": "bb85de185bbd1b39cd4fa763459cdeb8f1eac801",
+  "committed_source_matches_review_start_result": true,
+  "head_start_result_match": true,
+  "selection_matches_review_start_result": true,
+  "filter_match": true,
+  "xml_unique_selected_method": true,
+  "xml_suite": {
+    "name": "TestResults",
+    "errors": "0",
+    "tests": "1",
+    "failures": "0",
+    "skipped": "0",
+    "time": "80.812549792"
+  },
+  "xml_failure_records": 0,
+  "xml_errors": 0,
+  "xml_skips": 0,
+  "phase_starts": [
+    "received",
+    "processed",
+    "held",
+    "allocated"
+  ],
+  "all_four_phase_starts": true,
+  "four_case_pass_summary": true,
+  "all_forgery_loops_source_evidence": {
+    "base_modes": [
+      "source",
+      "leaf",
+      "slots",
+      "owner",
+      "original",
+      "unknown",
+      "older-normal",
+      "older-alien"
+    ],
+    "held_extra": [
+      "witness",
+      "capture",
+      "fragment",
+      "copied"
+    ],
+    "processed_extra": [
+      "mass",
+      "input",
+      "product"
+    ],
+    "received_extra": [
+      "receiver",
+      "raw-delivery"
+    ],
+    "expected_rejection_iterations_by_phase": {
+      "allocated": 8,
+      "held": 12,
+      "processed": 15,
+      "received": 17
+    },
+    "total_expected_rejection_iterations": 52,
+    "proof_limit": "Verified committed method has unconditional full mode loops and expect(throws:) per mode, no early-success return; complete4casePASS establishes no recorded rejection assertion failures. Loop iterations have no separate runtime log markers."
+  },
+  "build_seconds": 44.18,
+  "method_seconds": 80.812088875,
+  "summary_seconds": 80.812,
+  "wall_seconds": 130.52205695817247,
+  "exit_code": 0,
+  "legacy_xml_present": false,
+  "actual_xml_present": true,
+  "artifact_hashes": {
+    "/tmp/elite-m01-bb85-followup.start.json": "a65e5e924973d4fe6619fb9638fa7ff27d3331ef9b36f915130e47a7553f3446",
+    "/tmp/elite-m01-bb85-followup.result.json": "2530a4d584216f83dbac5a8b57bffe8d21744fa83133c1f880c03741b9d1b752",
+    "/tmp/elite-m01-bb85-followup.log": "2f0511d9eea9b057eb12b95ad327d3cc27cee202895f9d3d92d352ec60621962",
+    "/tmp/elite-m01-bb85-followup-swift-testing.xml": "1c5327b3bc8b88fc27c899d92284a2aeb4e2f3c6679565796a17e6755bc2d105"
+  },
+  "warning": "ImportedEMPCompatibility140 unnecessarytry remains; earlier GameplayOrdnance260 redundantrequire remains separately recorded, not compiled/reported in this log.",
+  "execution_by_reviewer": "None; no fullM01/releasepass claim."
+}

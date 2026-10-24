@@ -81,6 +81,8 @@ Start with **numbers, arrows, Return, Escape and K**. Numbers open game areas, a
 | 6 | Ship showroom | System data and planet view |
 | 7 / 8 / 9 | Market / status summary / inventory | Prices / status summary / inventory |
 
+Native NPC front lasers can intercept a missile aimed at that ship when its actual launcher is the NPC's intended target. The beam uses the nearest real collision, spends normal energy and heat, and gives no ship kill or bounty for destroying ordnance.
+
 For keyboard flight, **arrows steer**, **Space accelerates**, **Delete brakes**, **Return uses the selected tool**, **W cycles Combat Laser / Mining Laser / Salvage Cutter / EMP Pirate Blaster**, **F cycles Ships / Mining / Salvage / All target filters**, and **Tab selects a target**. Selecting the station engages automatic docking with a suitable targeting computer; Q returns to manual control. The trackpad controls are below.
 
 Escape never launches an escape pod. Use **Flight > Launch Escape Pod** or **Command-Shift-E** deliberately. Help and pause close before the screen beneath them; search closes before its browser. Mission dialogs return without transferring anything when you press Escape.
