@@ -12846,6 +12846,22 @@
       "measured_speedup": null,
       "reviewer_execution": false,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-chart-help-unit-qualified-issue221-closed",
+      "timestamp": "2026-10-24T13:38:30.982452+00:00",
+      "pr": 215,
+      "head": "c31417baeadddf3ad2d7f7e400a036cf2f2b83ef",
+      "unit_run": 40097592301,
+      "verified_methods": 529,
+      "new_methods": 2,
+      "issue_closed": 221,
+      "closed_at": "2026-10-24T13:37:25Z",
+      "pr216_isolated_run": 40097494469,
+      "pr216_verified_methods": 529,
+      "pr216_changed_runtime_qualified": false,
+      "affected_execution_owner": "G1 after M01 CPU lease",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
