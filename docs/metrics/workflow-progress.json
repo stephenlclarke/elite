@@ -10620,11 +10620,16 @@
       ],
       "source_review": "clear",
       "remote_pushed": false,
-      "normal_batch": "preparing",
+      "normal_batch": "running",
       "all62_assertion_methods_required": true,
       "directly_affected_shared_fixture_users_required": true,
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "terminal_method_set_exactly_verified": 62,
+      "additional_directly_affected_suites": 11,
+      "selection_manifest": "/tmp/elite-m01-authored-fixtures-selection.json",
+      "guest_evidence_prefix": "/tmp/elite-m01-authored-fixtures",
+      "owned_host_tart_pid": 66069
     }
   ],
   "two_developer_phase": {
