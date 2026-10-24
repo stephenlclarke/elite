@@ -11368,6 +11368,25 @@
       "actual_combined_patch_review": "pending_final_manifest",
       "unit_execution": "none",
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:53:57.619941+00:00",
+      "checkpoint_key": "20261024-m01-combined-78-path-review-assigned",
+      "event": "Frozen single combined blocker patch mechanically verified and assigned for actual independent review",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "base": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+      "patch_sha256": "6015ed48d60c73bd3f02cb4f609914b63ce6cf04c5077ae52321736f34ea7298",
+      "manifest_files": 78,
+      "code_config_build_files": 29,
+      "all_manifest_hashes_match": true,
+      "actual_independent_review": "assigned",
+      "candidate_frozen": true,
+      "new_unit_execution": "none",
+      "native_runner_registration": "none",
+      "source_publication": "pending_review_and_qualification",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
