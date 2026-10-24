@@ -10303,6 +10303,27 @@
       "unit_result": "pending",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T00:05:04.685855+00:00",
+      "checkpoint_key": "20261024-m01-original19-terminal-pass",
+      "event": "Combined M01 blocker qualification passes all 19 methods; final PR release qualification now unblocked",
+      "source_head": "e7749ef9b0686d8b2d7427b2fe5a2eee1fb0f2de",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "exit_code": 0,
+      "build_seconds": 48.26,
+      "wall_seconds": 79.76679975,
+      "test_seconds": 30.088,
+      "methods_completed": 19,
+      "methods_passed": 19,
+      "game_size": 8,
+      "game_stride": 8,
+      "game_alignment": 8,
+      "independent_evidence_review": "pending",
+      "pr_reopen_condition_met": true,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
