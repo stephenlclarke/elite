@@ -11669,9 +11669,13 @@
       "selected_methods": 15,
       "failed_methods": 13,
       "shared_helper_consumers": 2,
-      "actual_execution": "not_yet_verified",
+      "actual_execution": "live_processes_verified_compiling",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "source_commit": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "harness_pid_observed": 80439,
+      "swift_pid_observed": 80519,
+      "batch_prefix": "/tmp/elite-m01-5944-followup"
     }
   ],
   "two_developer_phase": {
