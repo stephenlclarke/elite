@@ -11517,6 +11517,27 @@
       "native_runner_registration": "none",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:07:59.305782+00:00",
+      "checkpoint_key": "20261024-m01-combined-source-clear-affected-batch-authorized",
+      "event": "Corrected combined actual review source-clear; one focused qualification batch authorized",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "patch_sha256": "b626bed3b0ede6f999e2b85fc67e0007b1020a9e5b1f85c5642fd22de4e4e88b",
+      "correction_patch_sha256": "fc17f423315297a483cdc6c2e970f83b4aebd0a52c0e29b84b998807e68786c0",
+      "all_final_manifest_hashes_verified": 78,
+      "retained_unchanged_reviewed_paths": 74,
+      "actual_review_status": "source_clear",
+      "review_disposition_comment": 6381795946,
+      "valid_findings": "resolved_in_source",
+      "graph_token_finding": "withdrawn_not_fixed_bug",
+      "authorized_batch": "all_55_recorded_failed_methods_plus_justified_direct_consumers_and_existing_runner_fake_units",
+      "batch_start": "not_yet_verified",
+      "native_cpu_lease": "G1_confirmed",
+      "real_runner_registration": "not_authorized_at_this_stage",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
