@@ -10343,6 +10343,26 @@
         170
       ],
       "issue_closures_verified_by_root": true
+    },
+    {
+      "at": "2026-10-24T00:10:10.439075+00:00",
+      "checkpoint_key": "20261024-m01-publication-pr25-reopened",
+      "event": "Reviewed source and passing unit evidence published; PR25 reopened for final qualification",
+      "head": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
+      "passing_source_head": "e7749ef9b0686d8b2d7427b2fe5a2eee1fb0f2de",
+      "pr_state": "OPEN",
+      "draft": true,
+      "dependency_review": "success",
+      "required_ci_run": 40043514103,
+      "required_ci_status": "pending",
+      "obsolete_runs_cancel_requested": [
+        40043511034,
+        40043511050
+      ],
+      "publisher": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
