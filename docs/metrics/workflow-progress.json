@@ -11248,6 +11248,20 @@
       "required_quality_weakened": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:34:12.314705+00:00",
+      "checkpoint_key": "20261024-m01-205-parallel-source-review-assigned",
+      "event": "Bounded existing save-rehash failure source attribution assigned to MBA in parallel with G1 corrections",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issue": 205,
+      "scope": "readonly_existing_source_and_retained_terminal_evidence",
+      "duplicate_G1_investigation": "held_pending_MBA_result",
+      "new_execution_authorized": false,
+      "reviewer_fixes_authorized": false,
+      "work_packet": "single_M01_193_213_correction",
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
