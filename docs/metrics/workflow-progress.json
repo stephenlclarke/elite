@@ -11163,7 +11163,22 @@
       "retained_maintained_unit_pass_methods": 524,
       "issue185_status": "open",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "normal_summary_tests": 3395,
+      "normal_summary_issue_records": 99,
+      "normal_summary_seconds": 9718.235,
+      "make_seconds": 10698.646589334,
+      "coverage_check_result": "Error 1",
+      "observer_target_exit_status": 1,
+      "observer_handed_back": true,
+      "observer_interruption": false,
+      "crash_report_present": false,
+      "earlier_sigbus_recurrence": false,
+      "distinct_failed_methods": "pending_independent_inventory",
+      "retained_source_comparison": "pending_independent_verification",
+      "later_sanitizer_and_leak_stages": "not_qualified",
+      "terminal_artifact_download_owner": "MBA",
+      "terminal_artifact_download_count": 1
     }
   ],
   "two_developer_phase": {
