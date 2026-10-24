@@ -1,0 +1,32 @@
+{
+  "run": 40129434861,
+  "head": "ad13110ad1598d16b55df9347cf18c7d1407b4c9",
+  "status": "passed",
+  "result_commit_filter_and_xml_set_match": true,
+  "selector_count": 524,
+  "xml_cases": 524,
+  "unique_cases": 524,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "missing": [],
+  "extra": [],
+  "duplicates": [],
+  "timing": [
+    "Build complete! (512.11s)",
+    "\u2714 Test run with 524 tests passed after 165.056 seconds."
+  ],
+  "artifact": {
+    "id": 12574563827,
+    "size_in_bytes": 89095,
+    "digest": "sha256:0640c04b8e735db6de1a201fa5a0ac5ad43d87d92ed7f32409266177b31d85b5"
+  },
+  "sole_artifact_path": "/tmp/elite-mba-ad131-unit40129434861",
+  "hashes": {
+    "result.json": "9932773555c4956f647dab82aaf5acd3f612c458584e1b851400354852555972",
+    "tests-swift-testing.xml": "bca56fba993661493763c7da84cdd36c4a3eebaa63efd8b341bbef95412ab172",
+    "output.log": "85ed41b3a9ad5d9c20d51e7170f55b42d7efacc6bf6e826a4085d239d475517c"
+  },
+  "publication_receipt": "/tmp/elite-mba-ad131-publication-composition-verification.json",
+  "qualification": "Actual ad131 maintained524 selected unit methods PASS. Python18fake evidence separate; no actual sanitizer-checkpoint build/discovery/TSAN/ASAN or fullquality/merge/release pass. Duplicate40129439629cancellednotPASS. No reviewer execution/rerun."
+}

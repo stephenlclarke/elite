@@ -180,9 +180,37 @@ class MaintainedMakeTargetsTests(unittest.TestCase):
         self.assertIn("test_script_instance_equality.py", plan)
         quality = subprocess.check_output(["make", "-n", "ci"], cwd=root, text=True)
         self.assertNotIn("Tools/CI/isolated_units.py", quality)
-        for gate in ["test_native_runner.py", "script/coverage.sh", "--sanitize=thread",
-                     "--sanitize=address", "leaks --atExit"]:
+        for gate in ["test_native_runner.py", "script/coverage.sh", "leaks --atExit"]:
             self.assertIn(gate, quality)
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import sanitizer_checkpoints as checkpoints
+
+        class CapturedBuild(Exception):
+            pass
+
+        for mode, scratch in [("thread", ".build/tsan"), ("address", ".build/asan")]:
+            self.assertEqual(quality.count("python3 Tools/CI/sanitizer_checkpoints.py " + mode), 1)
+            with TemporaryDirectory() as directory:
+                fixture = Path(directory).resolve()
+                with (patch.object(checkpoints, "ROOT", fixture),
+                      patch.object(checkpoints, "ensure_no_live_tests"),
+                      patch.object(checkpoints, "output", side_effect=["a" * 40, ""]),
+                      patch.object(checkpoints, "executable_inputs", return_value={}),
+                      patch.object(checkpoints.shutil, "which", return_value="/toolchain/swift"),
+                      patch.object(checkpoints.subprocess, "run", side_effect=CapturedBuild) as run):
+                    # Capture the actual production build command before any process can run.
+                    with self.assertRaises(CapturedBuild):
+                        checkpoints.run_mode(mode, fixture / "checkpoints")
+                command = run.call_args.args[0]
+                self.assertEqual(command[:3], ["/toolchain/swift", "build", "--build-tests"])
+                flags = command[3:]
+                self.assertEqual(flags, ["--scratch-path", scratch, "--sanitize=" + mode])
+                test = checkpoints.batch_command(
+                    "/toolchain/swift", flags, mode, fixture, ["EliteCoreTests.Smoke/always()"])
+                self.assertIn("--sanitize=" + mode, test)
+                self.assertEqual("--no-parallel" in test, mode == "address")
+                self.assertEqual("--filter" in test, mode == "address")
 
 
 class ImmutablePreparationTests(unittest.TestCase):
