@@ -750,6 +750,13 @@ METHODS = {
     "FrontVisibilityRenderUnitTests": (
         "frontRenderOverridePreservesOutputAndCallerState",
     ),
+    "M03IdentityUnitTests": (
+        "freshValuesRetainApprovedCommanderWorldShipMoneyAndFullFuel",
+        "approvedContactsKeepExactRolesAndGalaxySelectionWithoutInventedNames",
+        "noticeAndPackTemplatesUseSameApprovedContactsAndPreserveChosenCommander",
+        "bothStartupProjectionsUseCurrentTitleAndKeepTruthfulBuildAttribution",
+        "homePortUsesOriginalWorldIdentityRatherThanPredecessorNameOrOtherGalaxy",
+    ),
 }
 
 

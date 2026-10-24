@@ -223,12 +223,12 @@ public enum Display {
     frame.line(0, 20, 255, 20)
   }
   private static func title(_ game: Game, into frame: inout Frame) {
-    frame.centered("E L I T E", 22)
+    frame.centered(NewCommanderDefaults.title, 22)
     // Keep the complete rotating hull between the title and version text.
     var ship = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 280))
     ship.rotation = game.time * 0.6
     draw(ship, game: game, into: &frame)
-    frame.centered("RIGHT-ON COMMANDER VERSION", 163)
+    frame.centered("SPACE TRADING, EXPLORATION AND DISCOVERY", 163)
     frame.centered("PRESS SPACE COMMANDER", 190)
     frame.centered(BuildIdentity.current.versionLine, 208)
     frame.centered(BuildIdentity.repository, 218)
@@ -248,7 +248,7 @@ public enum Display {
     for body in demonstration.bodies { draw(body, game: demonstration, into: &frame) }
     let lines =
       [
-        "XYZZY PRESENTS", "RIGHT-ON COMMANDER VERSION", "WELCOME COMMANDER " + game.commander.name,
+        "XYZZY PRESENTS", NewCommanderDefaults.title, "WELCOME COMMANDER " + game.commander.name,
         "THE GALAXY AWAITS", "FLY. TRADE. SURVIVE.",
         BuildIdentity.current.versionLine, BuildIdentity.repository,
       ] + BuildIdentity.current.legacyRevisionLines
