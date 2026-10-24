@@ -10917,7 +10917,24 @@
       "owning_crash_method_selected": true,
       "expected_unique_methods": 26,
       "owner_session_id": 44100,
-      "status": "running",
+      "status": "completed_compile_failure",
+      "m01_complete": false,
+      "usable_delivery": false,
+      "exit_code": 1,
+      "wall_seconds": 271.596645833,
+      "tests_executed": 0
+    },
+    {
+      "at": "2026-10-24T03:52:08.675547+00:00",
+      "checkpoint_key": "20261024-m01-914690-compile-fix-same26-starting",
+      "event": "Reviewed compile-only correction frozen; identical affected selection rerun starting",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "head": "9146909960b97dca6fa03135125d256bb08aec6c",
+      "expected_unique_methods": 26,
+      "filter_unchanged": true,
+      "existing_build_outputs_retained": true,
+      "status": "starting",
       "m01_complete": false,
       "usable_delivery": false
     }
