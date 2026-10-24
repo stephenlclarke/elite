@@ -11676,6 +11676,24 @@
       "harness_pid_observed": 80439,
       "swift_pid_observed": 80519,
       "batch_prefix": "/tmp/elite-m01-5944-followup"
+    },
+    {
+      "at": "2026-10-24T08:37:41.376334+00:00",
+      "checkpoint_key": "20261024-m01-5944-terminal-seven-remaining",
+      "event": "Focused blocker follow-up terminal; eight methods pass and seven remain",
+      "source_commit": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "wall_seconds": 166.2363279168494,
+      "build_seconds": 43.5,
+      "runtime_seconds": 118.52,
+      "exit_code": 1,
+      "selected_methods": 15,
+      "root_xml_passed_methods": 8,
+      "root_xml_failed_methods": 7,
+      "failure_elements": 10,
+      "mba_verification": "assigned",
+      "police_refusal_source_cause": "fixture_clearance_atomic_pair",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
