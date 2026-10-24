@@ -1,0 +1,41 @@
+{
+  "base": "7b51ccd21c09cec2aa5f8ccf214ec55a536670e7",
+  "patch_sha256": "999d7121f81a6766b74ef0ee1763dbf67d556524a2a618a5d8280842b2ada609",
+  "files": {
+    "Sources/EliteCore/ScriptBundledPacks.swift": "f4b58b69de2bfe3783e0c699664271318ddb972388387817924e0e5bcb97b245",
+    "Sources/EliteCore/ScriptPack.swift": "df5da0f59d733ee95e03dba03ee4b742e7dd113def0665aed14c9c582886ce5e"
+  },
+  "executed": false,
+  "disposition": "SOURCE_CLEAR",
+  "findings": [],
+  "live_hashes_match": {
+    "Sources/EliteCore/ScriptBundledPacks.swift": true,
+    "Sources/EliteCore/ScriptPack.swift": true
+  },
+  "exact_changed_paths_match": true,
+  "independent_mechanical_checks": {
+    "original_core_and_resource_guard_bodies_byteidentical": true,
+    "all_original_27_validator_calls_order_preserved": true,
+    "native_calls_after_core": 24,
+    "bundled_directories_and_errorprefix_pairs_identical": 31,
+    "installed_first_and_digest_only_dedup_preserved": true,
+    "read_installed_declarations_schema_state_and_tests_unchanged": true
+  },
+  "retained_prologue_review": {
+    "file": "/tmp/elite-m01-7b51-parent-prologues.json",
+    "defaultLibrary_stack_frame_allocation": "0x56000+0x220+0x30=352848bytes",
+    "owning_test_frame_allocation": "0xa000+0xe20+0x30=44624bytes",
+    "qualification": "Readretaineddisassembly only; no newlycompiledframe or executionclaim."
+  },
+  "lifetime_contract": "Eachbundledread/dedup/errorappend runs in one noninline helper frame and releases its decodedpack temporaries between calls. Commoncore/resourceframes finish outside24nativevalidators while preserving alloriginalvalidation order/errors. Thinvalidate and defaultLibrary bothnoninline.",
+  "selected_methods": [
+    "productionResourcePinsNativeTermsAndDeduplicatesItsExactDigest",
+    "originalUUIDOfferKeysPassLocalGrammar",
+    "authoredPackAndPinCannotAuthorizeGenericOrLuaSettlement",
+    "originalTypedChainRejectsUnjoinedMissionClaims",
+    "closedCurrentFieldReliefCodecRejectsHiddenOrDroppedEvidence",
+    "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf"
+  ],
+  "scope": "Sameone6methodnormalstackcoveragebatch on actualSwift6.4.1/SDK27. No broad audit, newtests, representation/cache/schema/authority/statechange or readerassertion weakening.",
+  "execution": "None; sourcereview only, no compile/runtime/fullqualitypass."
+}

@@ -1,0 +1,132 @@
+{
+  "head": "47fdded58b2a124fbe03d26f8eca8214ab6fe2b2",
+  "committed_three_source_hashes_match_reviewed_parent_and_wrapper": true,
+  "parent_two_hashes_match_start_result": true,
+  "start_result_head_command_match": true,
+  "selection_matches_review": true,
+  "exact_filter_matches_review": true,
+  "method_count": 6,
+  "unique_methods": 6,
+  "missing_methods": [],
+  "extra_methods": [],
+  "duplicate_methods": [],
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "source_parameter_values": {
+    "originalUUIDOfferKeysPassLocalGrammar": [
+      "01234567-89AB-CDEF-0123-456789ABCDEF",
+      "ABCDEF01-2345-6789-ABCD-EF0123456789"
+    ],
+    "originalTypedChainRejectsUnjoinedMissionClaims": [
+      "owner",
+      "consignment",
+      "original",
+      "hull",
+      "source",
+      "route",
+      "payout",
+      "install-operation",
+      "engineer",
+      "socket",
+      "reception-operation",
+      "duplicate-instance"
+    ],
+    "closedCurrentFieldReliefCodecRejectsHiddenOrDroppedEvidence": [
+      "missing",
+      "null",
+      "foreign",
+      "unknown",
+      "oversize",
+      "stripped",
+      "embedded",
+      "wrong-envelope"
+    ]
+  },
+  "logged_parameter_values": {
+    "closedCurrentFieldReliefCodecRejectsHiddenOrDroppedEvidence": [
+      "missing",
+      "foreign",
+      "null",
+      "stripped",
+      "wrong-envelope",
+      "oversize",
+      "unknown",
+      "embedded"
+    ],
+    "originalTypedChainRejectsUnjoinedMissionClaims": [
+      "owner",
+      "original",
+      "source",
+      "hull",
+      "payout",
+      "consignment",
+      "route",
+      "install-operation",
+      "engineer",
+      "socket",
+      "reception-operation",
+      "duplicate-instance"
+    ],
+    "originalUUIDOfferKeysPassLocalGrammar": [
+      "01234567-89AB-CDEF-0123-456789ABCDEF",
+      "ABCDEF01-2345-6789-ABCD-EF0123456789"
+    ]
+  },
+  "all_parameter_values_exact": true,
+  "parameterized_case_count": 22,
+  "total_cases_including_three_nonparameterized_methods": 25,
+  "outcomes": [
+    {
+      "classname": "EliteCoreTests.WayfarerFieldReliefTests",
+      "name": "authoredPackAndPinCannotAuthorizeGenericOrLuaSettlement()",
+      "time": "11.825446916999999"
+    },
+    {
+      "classname": "EliteCoreTests.WayfarerFieldReliefTests",
+      "name": "originalUUIDOfferKeysPassLocalGrammar(text:)",
+      "time": "10.994649084"
+    },
+    {
+      "classname": "EliteCoreTests.WayfarerFieldReliefTests",
+      "name": "closedCurrentFieldReliefCodecRejectsHiddenOrDroppedEvidence(fault:)",
+      "time": "11.030079624999999"
+    },
+    {
+      "classname": "EliteCoreTests.WayfarerFieldReliefTests",
+      "name": "originalTypedChainRejectsUnjoinedMissionClaims(fault:)",
+      "time": "11.912226292"
+    },
+    {
+      "classname": "EliteCoreTests.WayfarerFieldReliefTests",
+      "name": "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()",
+      "time": "11.471164375"
+    },
+    {
+      "classname": "EliteCoreTests.OriginalColdChainTests",
+      "name": "productionResourcePinsNativeTermsAndDeduplicatesItsExactDigest()",
+      "time": "10.994628334000002"
+    }
+  ],
+  "full_summary": "6tests/2suitesPASS11.912s",
+  "build_seconds": 120.96,
+  "wall_seconds": 138.89035070780665,
+  "exit_code": 0,
+  "actual_swift": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0",
+  "sdk": "27.0",
+  "flags": "Normal runtime stack; jobs3 compile bound; ordinary SwiftTesting selection and coverage; no diagnostic replay or target interruption.",
+  "legacy_requested_xml_present": false,
+  "actual_complete_xml_present": true,
+  "artifact_hashes": {
+    "/tmp/elite-m01-47fd-parent-lifetimes.start.json": "668cf15d6857c3f093977434082446a6f5427bfaa97707141007bd76e693a3b3",
+    "/tmp/elite-m01-47fd-parent-lifetimes.result.json": "db6994b2dcc1a8fc7fed314d8f97bae394e3965e52df8256009b006da5480627",
+    "/tmp/elite-m01-47fd-parent-lifetimes.log": "cf2340650d18a925394772becb7b1f9453a9784e5bbc52cb30dc46331b3f318f",
+    "/tmp/elite-m01-47fd-parent-lifetimes-swift-testing.xml": "e1b04382b41b8b006ac38611292041cb3d5921994e85dca836ca8fd7779dd678"
+  },
+  "warning_notes": [
+    "ImportedEMP140 unnecessarytry",
+    "ScriptInstanceStorage202 redundantrequire"
+  ],
+  "qualification": "Exactattributedownercoldchainmethod+5fieldreliefconsumer methods allPASS on actualSwift6.4.1/SDK27/normalstack/coverage. Combinedsource-lifetimerepair scopedPASS; priorSIGBUS attempts retained, no fullquality/M01/releasepassclaim.",
+  "execution_by_reviewer": "None"
+}
