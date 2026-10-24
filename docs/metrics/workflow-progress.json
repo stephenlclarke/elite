@@ -12971,6 +12971,19 @@
       "g3_next_queued": "Original12equipmenttechnologyavailability/readout alignment afterpricepush",
       "g4_next_review": "G3exactreadypricepacket",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-m03-prices-pushed-pr223",
+      "timestamp": "2026-10-24T14:32:53.599158+00:00",
+      "owner": "G3",
+      "pr": 223,
+      "initial_head": "2c29c71b79de02454a2d4e5328ea61c60db8ba86",
+      "initial_selection_methods": 536,
+      "unit_run": 40102816410,
+      "source_reviewer": "G4",
+      "coherency_followup": "EliteTests.equipmentPurchases exactpricefixture/consumerwrapper",
+      "unit_qualification": "pending",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
