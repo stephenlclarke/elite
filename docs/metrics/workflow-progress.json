@@ -10496,6 +10496,26 @@
       "terminal_62_method_inventory_retained": true,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T01:42:17.255506+00:00",
+      "checkpoint_key": "20261024-m01-grouped-failure-assignments180185",
+      "event": "Six remaining release failure groups assigned in the same M01 packet, including bounded retained crash diagnosis",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "issues": {
+        "180": "actual-scene component admission baseline",
+        "181": "persistent plasma breakup contract",
+        "182": "stable actor and scoop geometry fixtures",
+        "183": "intended salvage storage backend",
+        "184": "complete bundled registry and board counts",
+        "185": "retained freight-decoding SIGBUS attribution; source cause pending"
+      },
+      "status": "assigned_and_preparing_or_diagnosing",
+      "unit_result": "pending",
+      "terminal_62_method_inventory_retained": true,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
