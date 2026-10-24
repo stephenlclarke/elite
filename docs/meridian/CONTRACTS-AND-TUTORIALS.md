@@ -1379,6 +1379,8 @@ First-success clue:
 
 **Identity:** `l337.wayfarer-service/cold-chain`.
 
+**Closed native profile:** Cedamar G01-S085 -> Celalen G01-S241; 2,700 armed-flight seconds from actual pickup, H0, six original stock units, shared maximum three active, 405 CR at verified receiving. Pause freezes flight time and save/load preserves the original deadline. These are existing terms for this exact native profile, not a default for all possible variants.
+
 - **Kind:** cold-chain
 - **Description:** Carry a sealed medical sample with an advertised integrity budget.
 - **Required cargo tonnes:** 1
@@ -1509,6 +1511,8 @@ First-success clue:
 ## W03 - Seed-bank transfer
 
 **Identity:** `l337.wayfarer-service/seed-transfer`.
+
+**Closed native profile:** Celalen G01-S241 -> Cedamar G01-S085; 2,700 armed-flight seconds from actual pickup, H0, six original stock units, shared maximum three active, 605 CR at verified receiving. Pause freezes flight time and save/load preserves the original deadline. These are existing terms for this exact native profile, not a default for all possible variants.
 
 - **Kind:** seed-transfer
 - **Description:** Transfer a consented seed consignment between independent custodians.

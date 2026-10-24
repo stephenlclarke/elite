@@ -1,0 +1,508 @@
+{
+  "candidate": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+  "files": [
+    {
+      "path": "Sources/EliteCore/AsteroidDebrisContact.swift",
+      "sha256": "5771bd8ff0cf996d3f79de737e5df295b380408a5513f0c72ee286c470542092"
+    },
+    {
+      "path": "Sources/EliteCore/AsteroidFragmentation.swift",
+      "sha256": "ed6339d01de6bf29907bf867f796b856810731cd767656f9aaa71f8736b6b8d5"
+    },
+    {
+      "path": "Sources/EliteCore/ContractBoard.swift",
+      "sha256": "5b33c575b6485a3c01d2a3e3ea8599d5412f6abda242154f2672da8da2aa73d1"
+    },
+    {
+      "path": "Sources/EliteCore/MissionGallery.swift",
+      "sha256": "74d34de20e2ca0bbfe65f3e3318de3fa6e3544fcd6998444cd05d0361d2dd497"
+    },
+    {
+      "path": "Sources/EliteCore/NativeC01ReservationAuditBoard.swift",
+      "sha256": "9cf0ce64ce7616b97c74ffb3ff3bc3993decf3a8972eb26a34d79b336492d159"
+    },
+    {
+      "path": "Sources/EliteCore/NativeC01SurveyorPickup.swift",
+      "sha256": "3ee8855f0ea66682d6a6167a2769c0a1d8fcbd785e5316c5e17ed122adee7513"
+    },
+    {
+      "path": "Sources/EliteCore/NativeDefensiveFlightBoard.swift",
+      "sha256": "4413d463a8b7be0429cc4462ce7101497406cc6ce57cb0198c780e1771dcc5fd"
+    },
+    {
+      "path": "Sources/EliteCore/NativeDefensiveFlightReception.swift",
+      "sha256": "389eed0ed76ee448a4ae7e07ac1af55e1d6fdeb50bbc6d7ef8218b6bce3c8fe2"
+    },
+    {
+      "path": "Sources/EliteCore/NativeFleetDiscovery.swift",
+      "sha256": "48a94722d2961e33b4f905394bdf2559edd7d7ba0aba9dff009ff7c876c4b6ff"
+    },
+    {
+      "path": "Sources/EliteCore/NativeFlightReception.swift",
+      "sha256": "df4f075062b321929a01a2ad822aed23282018c23134f797709c944ce2852158"
+    },
+    {
+      "path": "Sources/EliteCore/NativeFlightReceptionBoard.swift",
+      "sha256": "6010b6989cf8f9f2c3ad776fed326a44257589540043766c44dd37173d7ede87"
+    },
+    {
+      "path": "Sources/EliteCore/NativeGlassMeridian.swift",
+      "sha256": "52d185503ab06adbff2b6fcc80a6535d4ca13ed23ce2ce543a6b9fb522c252f1"
+    },
+    {
+      "path": "Sources/EliteCore/NativeGlassMeridianBoard.swift",
+      "sha256": "953347cbd269dd3218492d9cb1cb1923225367b28463d5fdbfd845a2f2f1815a"
+    },
+    {
+      "path": "Sources/EliteCore/NativeGlassMeridianScan.swift",
+      "sha256": "00397129bd54c945abd0039014d3481d4d19d23858e7d34c50e5f6fe104b0297"
+    },
+    {
+      "path": "Sources/EliteCore/NativeIdentifiedSalvageBoard.swift",
+      "sha256": "064388176ad7b9acb6a7f974817d7de7114a7778b21ded01485e50bb09d893a5"
+    },
+    {
+      "path": "Sources/EliteCore/NativeIdentifiedSalvageRecovery.swift",
+      "sha256": "d33c1418fa48c8df4cd52acb2eba2233421251cc8d1bd978c09fdbcd8f90e82f"
+    },
+    {
+      "path": "Sources/EliteCore/NativeIsolationProgrammerCustody.swift",
+      "sha256": "923cfa0839d5af7defe7690bd07ef708d49fb1193e3462c90c279c3d22c41ba1"
+    },
+    {
+      "path": "Sources/EliteCore/NativeIsolationProgrammerDefinition.swift",
+      "sha256": "ea0a582b595b874fda5b5272eee27405641aa4f4fcfec674a8de97aea5046746"
+    },
+    {
+      "path": "Sources/EliteCore/NativeMeasuredExtraction.swift",
+      "sha256": "37743e55099993545e459dff55bfc18da9ce25b899eac0efefe1d1cfaf843ae0"
+    },
+    {
+      "path": "Sources/EliteCore/NativeMeasuredExtractionBoard.swift",
+      "sha256": "99f095c49e4c582a1fc891b00ea41c234d86e08f5dfc9e9dceb3d0e8764230b7"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOrbitalOutlookJourneyBoard.swift",
+      "sha256": "eedca412d84ae5eda552bad757abcc71cac08cda36bc02189530439ad364fd1c"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOrbitalOutlookScan.swift",
+      "sha256": "d3d9f4c2fe124ac3c78ab337c2e663c5c8c66651fe553a25f978b40d7e3f32fa"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOriginalEvacuation.swift",
+      "sha256": "6ee831f503b71f5cb5c5fbb4aaf5573f3c2e61ca49030e22d1f3f7db09034f2e"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOriginalEvacuationBoard.swift",
+      "sha256": "9ed1251d7b5c73ca98c64deadeac77778dc8c06146b451e707d12c5a18fcbece"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOriginalRescueCapsules.swift",
+      "sha256": "a2c225c3a5d232e7f4561bb4e197d81f546d2fc624ae22b24b1c9022fd627e60"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOriginalRescueJourneyBoard.swift",
+      "sha256": "48b0d5b8cb6a218c8fd830166968feb7e70a1ca031a29e0a7e9467c6fcdf3fd2"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOriginalSurvey.swift",
+      "sha256": "a83ef1909373b0c19bc37bc4b5f6518e90669836b6249c9d176f622466dc385d"
+    },
+    {
+      "path": "Sources/EliteCore/NativeOriginalSurveyBoard.swift",
+      "sha256": "24891df65e744d0cf163e5cd426532d3b4ee2fd163e28fd2218a3c71b88a66e3"
+    },
+    {
+      "path": "Sources/EliteCore/NativePeopleRuntime.swift",
+      "sha256": "45b13763a18e996a854f035c2baaa6f98edac50ac1ab670c87f9d45e4921ccfb"
+    },
+    {
+      "path": "Sources/EliteCore/NativeSafeGunneryBoard.swift",
+      "sha256": "74ad4e6465b8c24c6a7199349016c0a10665314f8e42ba58b436306c83456688"
+    },
+    {
+      "path": "Sources/EliteCore/NativeSafeGunneryReception.swift",
+      "sha256": "cce15a78779637b040106f97ed82bb1275d7c9f01b62cecf9f2de863e65cd909"
+    },
+    {
+      "path": "Sources/EliteCore/NativeStationPassengerJourney.swift",
+      "sha256": "0ebf9df37ed4cbc537b34df3358e695a54bc61b4eba28414d19956a52275453f"
+    },
+    {
+      "path": "Sources/EliteCore/NativeStationPassengerJourneyBoard.swift",
+      "sha256": "197ee1cafde2b7c5119339cc79392c3a23f78bc16c53394f50228dbdb58a7cf4"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInduction.swift",
+      "sha256": "4e3ac96ba97b30383f42097c02589e7d6ef95a883c70bf94b7337f6ca307d440"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionAccreditationBoard.swift",
+      "sha256": "84b0ace51d083b93e2a2e95538f16b22634a550d20511dc141992a6637c61a59"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionArkReceivingBoard.swift",
+      "sha256": "a3e93fa820a0a39bfbb788e168f1b8cde5dc3778d2520ad9dea0a2fb3b49ec59"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionArkRoute.swift",
+      "sha256": "4d199be179ae0040fb1a1f1c89c76c15283e08ded6b1d6376f7eaca54b7c740c"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionBoard.swift",
+      "sha256": "6f0b0bd98f92ddea45f8c2d34004875139331f7506ee747e78251247eb67bff3"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionCapacityBoard.swift",
+      "sha256": "e113d27616bfa77f52c60ac027bf389e4e5c98b71cc5d23a2a78c1ca0834de32"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionCassetteService.swift",
+      "sha256": "29109618ceaad8cfdaf5c514045486c3c704daf07cc114a04ced4a53307b5de4"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionCharterBoard.swift",
+      "sha256": "09eb1dd78d133b9207c979edb0aea38d49d3e48d6a9950170f1f861ad317d627"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionCharterConsentBoard.swift",
+      "sha256": "79acd6599360efb1db40bfaad7b611db52b8d15b5357b5aeedb8f252308ac510"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionClinicCustodyBoard.swift",
+      "sha256": "b7b5ab80b370d61d282f79620a7a890a797b77eb6c5ddcdb90141608e90cea95"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionClinicPickup.swift",
+      "sha256": "8272082d3e374b625ad23aec391c4d7799a04cabcbf24f285b8a04047adadacb"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionContinuationBoard.swift",
+      "sha256": "42460a06d1f7112bf9a244c11ff1be70cf0ccf73ac9c0a7701a5dc4153b88d80"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionCrewLogPickup.swift",
+      "sha256": "c8baca32a37a806e0da853e213601cc50cd56ae11bad020a53c301fa4f0dc510"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionNetworkBoard.swift",
+      "sha256": "c670632aff7d9dc314b98d241476c00ca5d5357b1bbc088cdea4b3beebc1540c"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionRescueFlightRuntime.swift",
+      "sha256": "36fdfd72a86938cac7a1bb5f71b4fd45a7ba0ec26a24c6f57279ea0f0a2e7f15"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionRescueReceivingBoard.swift",
+      "sha256": "b341bd7349094a4dc83e4c2b00b061b8be7bfcba15e6b6388abd970ad194354a"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionUtilityReceivingBoard.swift",
+      "sha256": "6672d75faf3e8c80f2ba5542816aaca1ec2fe8f3f2a91471c0ff5d86a9debb0c"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionUtilityWorkRuntime.swift",
+      "sha256": "6b60e274c914b222bdcbc18271c81b1abc5ebc97fa6e4b272c403a2f184c083e"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionVaultKey.swift",
+      "sha256": "004fada34c0656dd866a7aebc298ff6f89947089e8de2d2461a9672d6811ec48"
+    },
+    {
+      "path": "Sources/EliteCore/NativeWayfarerInductionWorkshopBoard.swift",
+      "sha256": "eff16f21969c2e88649cdc05e83780b2051a86bbf2a33ae01c0cd5e5de40c0e5"
+    },
+    {
+      "path": "Sources/EliteCore/OriginalConsentedFreightSupply.swift",
+      "sha256": "f62270c0467c6d48ddfe575a0f9b344fee9254f87f8c9d941096658d51bb58d2"
+    },
+    {
+      "path": "Sources/EliteCore/OriginalCorridorDefence.swift",
+      "sha256": "b95d41df2a1103c1e3b731cd62ceea26c04be409fe4d4956777311ced9fd4969"
+    },
+    {
+      "path": "Sources/EliteCore/OriginalMutualContribution.swift",
+      "sha256": "472027cbdd058d0c258dff8829f2e75ae0f7928ebb24958d144cc233e96df0fe"
+    },
+    {
+      "path": "Sources/EliteCore/OriginalPlayerHullActivation.swift",
+      "sha256": "096c1ad8eb2e7abef36bca8039c804cec91af9d72a142c60c1c7131711320d06"
+    },
+    {
+      "path": "Sources/EliteCore/OriginalSealedDispatch.swift",
+      "sha256": "0bf551bca2382c02a6c0c3277d9e2c7a53031b7fec3e9b7e6c55f913dbf425ed"
+    },
+    {
+      "path": "Sources/EliteCore/OriginalVerifiedWarrant.swift",
+      "sha256": "d94a7bd181e597b86a59e5773a25816f66f974fe8696b78e209120ec6f17d64e"
+    },
+    {
+      "path": "Sources/EliteCore/Resources/ScriptPacks/l337-cold-chain/manifest.toml",
+      "sha256": "c00c9ca31654cbca1343970141f50d9efa53ff615ffa3645fd872c4c979ac2ce"
+    },
+    {
+      "path": "Sources/EliteCore/Resources/ScriptPacks/l337-seed-transfer/manifest.toml",
+      "sha256": "13b350f5e36697f106bcf8c2e2884ab4b2697b7af1640603934dc4d26f1b57b7"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptBaseClueCatalog.swift",
+      "sha256": "e9019fde694299109c5594625d9fcca5699cef7ba45d571617f6d585766911a6"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptClueJournal.swift",
+      "sha256": "e68be950d4b178ad8a4e91530d891ca937b7f618b00259a6c3a48fae9ece7f35"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptCourier.swift",
+      "sha256": "ba7768b890f6381ab7b6798b761b57db7280de2187beb9ebff5685160ab0a83d"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptEquipmentTransactions.swift",
+      "sha256": "9ffe56fbab03a5004f514cef2971815ad5b41b87e296707ca3f2cba1048740f4"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptEventContext.swift",
+      "sha256": "78176dc7edc3886e6f2ba303bb4640d96cd4bd1b1394b2147e98075789e92422"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptFreight.swift",
+      "sha256": "a6c27d4eea84eed59e952f90ccf5202e2debceeda86af70627f8fe69d08ea959"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptNPCFlight.swift",
+      "sha256": "853e98eb31d0a7481f4b580998c83a7a175f919e77859e7e1cb023395ce813b8"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptNavigationTradeContent.swift",
+      "sha256": "d666e811f69418b0e1abb1c68a53869668cd177a577081b87884ab8ce8967daa"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptPack.swift",
+      "sha256": "df5da0f59d733ee95e03dba03ee4b742e7dd113def0665aed14c9c582886ce5e"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptPledge.swift",
+      "sha256": "a6f9958bd81ebd368cbe3afadd385f84b437cf66a513ef73ee68c550c5847c06"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptRuntime.swift",
+      "sha256": "78d5a316a6e685653a12ee7ccdcdf6635a6ecd02fc30321d415119796feb39e3"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptTransactions.swift",
+      "sha256": "6adb577d1eebd8a357927194992c7e05e3b8571b0ed6b083391f9b6e8914a537"
+    },
+    {
+      "path": "Sources/EliteCore/ScriptWorldJobCommands.swift",
+      "sha256": "b9379c07b31045249197f4ea9f54499b8df9c8178938f9e3ca07d663500e1edf"
+    },
+    {
+      "path": "Sources/EliteCore/ShipAccommodation.swift",
+      "sha256": "6a503430bd7ebe5e55c5af2259efa2a2c4094ccb55f2e15b3756e7ac625039f6"
+    },
+    {
+      "path": "Sources/EliteCore/ShipCatalogueMetadata.swift",
+      "sha256": "9eedf0cfa562666056e3c0afa15c7b1eb8ff0cbb0c5f89b4d0be4a021eef01ea"
+    },
+    {
+      "path": "Sources/EliteCore/ShipShowroom.swift",
+      "sha256": "05a5deb8af665a8f895d1a56f44349175860713e6913ff5e0fad236e6719a985"
+    },
+    {
+      "path": "Sources/EliteCore/ShipTrade.swift",
+      "sha256": "553d0c24d7f29d5bc57073061eed966c447b9f05b4ee855adbc71a40cb24b016"
+    },
+    {
+      "path": "Sources/EliteCore/ShowroomDisplay.swift",
+      "sha256": "e7adec95bb90745abfcd17f7db008ecf5f35167ea8cadd8c7c4a6a19b2f9cfd7"
+    },
+    {
+      "path": "Sources/EliteCore/WayfarerColdChain.swift",
+      "sha256": "a0cb870c0d61d2dbe829190492df8d0cfcaa6dfac79205acaff91a4eaff26a1b"
+    },
+    {
+      "path": "Sources/EliteCore/WayfarerColdChainBoard.swift",
+      "sha256": "85702364bf9b59c9a8f0a22a7bd257786081b2b97d2a10cb60d26bef913f0865"
+    },
+    {
+      "path": "Sources/EliteCore/WayfarerFieldRelief.swift",
+      "sha256": "fde869762a9f77ea4282f0c208d2ea7dee4fd25ea9dc6e152e57e9e6fe47be38"
+    },
+    {
+      "path": "Sources/EliteCore/WayfarerRecordRecovery.swift",
+      "sha256": "28da5a82b829b1d0faa9c4e4edc4a5f0e6d2ad2366bd1fa5ab9742ccd39dd4c8"
+    },
+    {
+      "path": "Sources/EliteCore/WayfarerRecordRecoveryBoard.swift",
+      "sha256": "8050ba045c057330eb3e6d1581176a3724ff49382c24555101cd353516539ecb"
+    },
+    {
+      "path": "Sources/EliteCore/WayfarerRepairLoopBoard.swift",
+      "sha256": "5353344e7834e9cde31d96cd5009e902ef63bf7a9d67686bdff62d2b0ebf3cbd"
+    }
+  ],
+  "bundledPacks": [
+    {
+      "stateID": "l337.contract/bonded-freight",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-bonded-freight/manifest.toml",
+      "sha256": "c8b08c9b1ee7e703b85a791f293f5c6af55ee90a226791bfd9c0ad03a2ba820e"
+    },
+    {
+      "stateID": "l337.contract/cabin-journey",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-cabin-journey/manifest.toml",
+      "sha256": "5ad860a6b7699895b8484e1d107f4e8d45546b845afd22631c239806f372c34e"
+    },
+    {
+      "stateID": "l337.contract/consented-freight",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-consented-freight/manifest.toml",
+      "sha256": "8bb5f739bf3c4658d6709b20149c8adcce0e1f32a3c7a67da39c35db8d8a46d4"
+    },
+    {
+      "stateID": "l337.contract/consented-survey",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-consented-survey/manifest.toml",
+      "sha256": "0a60028030e1423b2e0566dfe9484e7756c9c8fc332da4fec3a6267c156dc167"
+    },
+    {
+      "stateID": "l337.contract/corridor-defence",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-corridor-defence/manifest.toml",
+      "sha256": "c0c223fbd8e427c81728ec75dcf3797183f90d80b596c0f77755a531f1213836"
+    },
+    {
+      "stateID": "l337.contract/custody-rescue",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-custody-rescue/manifest.toml",
+      "sha256": "57327777d7752607bb2de5a1b0f6cb22f73e2292982fd4dacfb8204f849ada18"
+    },
+    {
+      "stateID": "l337.contract/identified-salvage",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-identified-salvage/manifest.toml",
+      "sha256": "5078140248d3b65b6edc85d6d9fb37b77ebf305933e644b7315c9d81eae25a74"
+    },
+    {
+      "stateID": "l337.contract/measured-extraction",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-measured-extraction/manifest.toml",
+      "sha256": "eef6f2c60582f01157206792e7305aef37260e0bf7f7ec22ed1935b76da92d38"
+    },
+    {
+      "stateID": "l337.contract/mutual-contribution",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-mutual-contribution/manifest.toml",
+      "sha256": "5f2c060764af41c5aeabeba25f71c1456c32bdfb1825774ef3eae4e502a03ec5"
+    },
+    {
+      "stateID": "l337.contract/orbital-evacuation",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-orbital-evacuation/manifest.toml",
+      "sha256": "d19a6f174fa6a6b92e731954394a21d0c716aaebf885481989f8578fe62adcda"
+    },
+    {
+      "stateID": "l337.contract/orbital-outlook",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-orbital-outlook/manifest.toml",
+      "sha256": "c02de836274decdb293d54229a12ab676948ef91898970880f0cf2d876d0f3e8"
+    },
+    {
+      "stateID": "l337.contract/sealed-dispatch",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-sealed-dispatch/manifest.toml",
+      "sha256": "a3f16e1166361eee11593c935d3636befe6d2e51f3e018c8c005bd01c48c61be"
+    },
+    {
+      "stateID": "l337.contract/verified-warrant",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-verified-warrant/manifest.toml",
+      "sha256": "b39e7f0ef17615c23f779153ec85d78ca53e94b2889fcc64b718e37b5455a94a"
+    },
+    {
+      "stateID": "l337.glass-meridian/glass-meridian",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-glass-meridian/manifest.toml",
+      "sha256": "b8b2434a254ab6cc8a8d88c08454155795140c312213fe606df4de8cd3814e06"
+    },
+    {
+      "stateID": "l337.induction-consignment/clinic",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-induction-clinic/manifest.toml",
+      "sha256": "c11648961d7ae5b0b593ffabebe94d827450e99b653c7c9108b425699668bc6c"
+    },
+    {
+      "stateID": "l337.induction-consignment/seed",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-induction-seed/manifest.toml",
+      "sha256": "9b99069cf87307ba2015fd490590a1b6f733dab574a4139d3ec012456d18bc41"
+    },
+    {
+      "stateID": "l337.induction-consignment/workshop",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-induction-workshop/manifest.toml",
+      "sha256": "ed17f9c0781cfd4e093bc4b0e197c9cc900652cf6a60304747ac94c53b701410"
+    },
+    {
+      "stateID": "l337.induction-crew-log/original-crew-log",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-induction-crew-log/manifest.toml",
+      "sha256": "84af3ce892297fb24ef1638b94564300571e31b6b7f6b7ec4996c225503f4c50"
+    },
+    {
+      "stateID": "l337.induction-utility/original-utility-source",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-induction-utility/manifest.toml",
+      "sha256": "a21ef9789fa3dfdef795a6b6116dc84a8d96a4a48b82d5f4c4c1d9187f67ef69"
+    },
+    {
+      "stateID": "l337.training/defensive-flight",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-defensive-flight/manifest.toml",
+      "sha256": "9e1b675d9749b77262e55e79620c15e7cb9df5d42a1dc62d863cc6c2f13b0ba8"
+    },
+    {
+      "stateID": "l337.training/flight-reception",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-flight-reception/manifest.toml",
+      "sha256": "1c26539b4f08a5a876850b90e719575c07d26391206e9873378db994162911d8"
+    },
+    {
+      "stateID": "l337.training/navigation-trade",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-navigation-trade/manifest.toml",
+      "sha256": "31d93d59496147301ac306f652e740175e5af653a77c7d2063cc970e5f09d478"
+    },
+    {
+      "stateID": "l337.training/safe-gunnery",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-safe-gunnery/manifest.toml",
+      "sha256": "23a2d16b45005be0af5d127cbc344f0d735ad7768b3bbc0a4b6bfd3c520a66aa"
+    },
+    {
+      "stateID": "l337.wayfarer-exchange/wayfarer-exchange",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-wayfarer-induction/manifest.toml",
+      "sha256": "51a47fe10fc6804259b5caff4c1825e46e2b716a784b961a1c83d23ffdcc2e76"
+    },
+    {
+      "stateID": "l337.wayfarer-seed-ark/registered-ark",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-wayfarer-seed-ark/manifest.toml",
+      "sha256": "f6a53f7eff835c198ca7402b6fdcdf76ee0c575d0e51ea95e228d95712348559"
+    },
+    {
+      "stateID": "l337.wayfarer-service/cold-chain",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-cold-chain/manifest.toml",
+      "sha256": "c00c9ca31654cbca1343970141f50d9efa53ff615ffa3645fd872c4c979ac2ce"
+    },
+    {
+      "stateID": "l337.wayfarer-service/field-relief",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-field-relief/manifest.toml",
+      "sha256": "fb04c9df7887da33106918f3ef523ad9608469d9a2da1daef7ab6cf92c4e06a8"
+    },
+    {
+      "stateID": "l337.wayfarer-service/record-recovery",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-record-recovery/manifest.toml",
+      "sha256": "d970f0c0482a1a727fa7e210e9acd20494096ad86b8ce31247a847a9d2134bf0"
+    },
+    {
+      "stateID": "l337.wayfarer-service/repair-loop",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-repair-loop/manifest.toml",
+      "sha256": "09251440895d5bdc9dd01d350fbc937b616838ef37ef0ba5d476fe569e638250"
+    },
+    {
+      "stateID": "l337.wayfarer-service/seed-transfer",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/l337-seed-transfer/manifest.toml",
+      "sha256": "13b350f5e36697f106bcf8c2e2884ab4b2697b7af1640603934dc4d26f1b57b7"
+    },
+    {
+      "stateID": "project.crimbo/guiding-light",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/guiding-light/manifest.toml",
+      "sha256": "6a35a4adc4d81b55c0a8ddfc61b5fbfdd014d34f87212f54c5a01d55b2316f68"
+    },
+    {
+      "stateID": "project.generated-couriers/courier",
+      "file": "Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml",
+      "sha256": "f4c2a1bb538f257a229cce4911c81c4471a0aa92b2d30fe1605959c0740407f6"
+    }
+  ],
+  "method": "Inspected source producers, boards, runtime dispatch, persistence, terminal/clue authorisation, manifests and renderer state; absent originals determined by exact identities in manifest/source inventory, not title similarity."
+}

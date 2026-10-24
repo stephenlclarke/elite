@@ -12,6 +12,7 @@ Start with [the gameplay review](GAMEPLAY.md). [The complete single-file oracle]
 - [Exact asset provenance and geometry-image hashes](ASSET-PROVENANCE.json)
 - [Coverage counts](COVERAGE.json)
 - [Mission coherence and gameplay progression review](MISSION-COHERENCE-REVIEW.md)
+- [Game-mechanics support audit and every objective](GAME-MECHANICS-SUPPORT.md)
 
 ## Complete original campaigns
 

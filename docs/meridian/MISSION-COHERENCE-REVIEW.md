@@ -2,7 +2,7 @@
 
 This review checks the intended finished game against the [oracle](FINAL-GAME-ORACLE.md), all portable mission definitions and the later source contracts recorded in [the source evidence](references/mission-review-source-evidence.json). It covers all 39 campaigns and 368 stages, 15 general families, four tutorials, six Wayfarer families and the seven-step finale. It is a documentation and design review, not a runtime playthrough or a claim that the game implements these definitions. Implementation ownership and scheduling remain exclusively in the main project ledger; finding labels here identify evidence, not new work packets.
 
-**Conclusion:** the stories have intelligible causes, investigations and outcomes; stage ordering, world identities and the 64-clue membership are structurally sound. Progression cannot yet receive an unconditional implementation-ready verdict. The unresolved cases below concern real failure recovery, resource conservation and incomplete operation profiles. A valid graph alone cannot prove a mission is playable or balanced.
+**Conclusion:** the stories have intelligible causes, investigations and outcomes; stage ordering, world identities and the 64-clue membership are structurally sound. Progression cannot yet receive an unconditional implementation-ready verdict. The deeper mechanics audit resolves F02 and F04 from existing source rules; F01, F03, F05, F06 and F07 remain open. The unresolved cases below concern real failure recovery, resource conservation and incomplete operation profiles. A valid graph alone cannot prove a mission is playable or balanced.
 
 ## Verified structure
 
@@ -15,7 +15,7 @@ This review checks the intended finished game against the [oracle](FINAL-GAME-OR
 
 The [machine-readable structural receipts](MISSION-REVIEW-CHECKS.json) record each campaign definition hash and the exact scope of these checks.
 
-## Unresolved findings and recommended resolutions
+## Findings, resolutions and remaining recommendations
 
 ### F01 - Required clues can become permanently unavailable after finite-source failure
 
@@ -23,11 +23,9 @@ The [machine-readable structural receipts](MISSION-REVIEW-CHECKS.json) record ea
 
 **Recommended resolution:** author genuine replenishment, repair or separately funded replacement stock and a new contract instance while retaining original losses, obligations and identities. Exhausted C08 Ark/Rescue reserves and every named-person campaign need the same achievable-clue audit. Do not reset the lifetime guard, clone an original, revive casualties, award the clue on failure or quietly reduce the 64-source set. The exact funding/availability/recovery rule is unresolved, not supplied by this review.
 
-### F02 - Still Current's fixed buffer outcome can exceed its remaining energy
+### F02 - Resolved portable omission: Still Current's community transfer restriction
 
-**Consequence:** the array begins with 900 units and explicitly permits recorded safe discharge of up to 90 per operation. The community branch then requires exactly 300 delivered plus 600 retained. If any prior discharge or recovery removed charge, `300 + 600 + discharged + recovered > 900`. The material-recovery branch can instead account for the remainder. Sources: [energy rules and branch objective](definitions/missions/still-current.json), later Still Current contract evidence.
-
-**Recommended resolution:** define before acceptance and branch confirmation whether the community route requires all 900 units intact, or whether its tested capacity of 600 differs from its actual remaining stored charge. If depleted, explain the unavailable branch and preserve an achievable authorised settlement. Resolve earlier permitted discharges and already chosen branches explicitly. Never refill from nowhere, erase discharge receipts or retain the phrase “buffer holds 600” when the measured balance is smaller. No numerical rule changed here.
+The earlier review treated permitted discharge and the fixed 300+600 settlement as an unresolved contradiction. The existing accepted Still Current contract already resolves it: line 11 permits only the 300-unit delivery and 600-unit retained buffer on the community route, forbidding optional discharge there. The material-recovery route accounts for storage and controlled discharge. The rule is now copied into the [portable energy rules](definitions/missions/still-current.json) and C07 reading view. Its exact source hash and excerpt remain in the [source evidence](references/mission-review-source-evidence.json). No balance value or accepted rule changed. The actual C07 native workflow remains unimplemented at the audited candidate.
 
 ### F03 - Glass Meridian's 8 kg recorder is absent from its generic custody effects
 
@@ -35,11 +33,9 @@ The [machine-readable structural receipts](MISSION-REVIEW-CHECKS.json) record ea
 
 **Recommended resolution:** make the physical recorder identity and 0.008 t accounting canonical, including source, issue/recovery, loss, audit retention and explicit final custodian. If it overlaps the standard, require 1.008 t rather than one tonne. If an authorised audit receiver keeps it, record that real handoff before releasing capacity. The final disposition is not invented by this review. The zero-mass clue remains distinct from the physical recorder.
 
-### F04 - Cold-chain offers promise a budget without closing its default value
+### F04 - Resolved portable omission: existing native integrity allowances
 
-**Consequence:** C08's pickup promises an advertised integrity budget, but its portable definition gives no initial numerical budget, quality-loss rate or minimum usable threshold. Generic W01 text likewise cannot alone determine a concrete variant's perishability. Source: [C08 definition](definitions/missions/wayfarer-exchange.json), [Wayfarer services](definitions/missions/wayfarer-services.json).
-
-**Recommended resolution:** author a closed route-specific initial budget, decay/thermal policy, usable threshold, pickup arming point and genuine replacement-stock rule. Preview them before collection. Its armed-flight clock remains distinct from C05's continuous emergency clock. No guessed timer was introduced.
+The earlier review correctly found omitted numerical profiles in the portable definitions but had not checked the later native implementation. The game source already specifies C08's 1,800 armed-flight-second allowance, and the closed W01 cold-chain/W03 seed-transfer profiles independently specify 2,700 seconds. These existing terms are now in the [C08 definition](definitions/missions/wayfarer-exchange.json), [service definitions](definitions/missions/wayfarer-services.json) and reading views, with their original route/clock scope. See the [mechanics audit](GAME-MECHANICS-SUPPORT.md#correction-to-the-prior-coherence-review) for exact source links. No guessed timer was added. General variants still require their own closed terms, and real finite stock/failure recovery remains subject to F01/F05.
 
 ### F05 - Story-complete templates are not complete native-operation profiles
 
@@ -80,8 +76,8 @@ The [machine-readable structural receipts](MISSION-REVIEW-CHECKS.json) record ea
 | [C04 The Borrowed Voice](missions/C04.md) | Private witness contact legitimately precedes extraction. Both revocation and empty-decoy routes produce authenticated evidence before rekeying. Sol retry requires the actual surviving capsule, never resurrection. |
 | [C05 The Shattered Wake](missions/C05.md) | Untimed warning/preparation precedes explicit arming, physical impacts, relief and inquiry. Both mitigation choices and all three station outcomes remain valid narrative endings. Runtime difficulty is unproven. |
 | [C06 The Tithe of Worlds](missions/C06.md) | Informed permanent commission precedes resource proof, actual civilian delivery and three verified charter/severance settlements. Finite reserve losses and supplies must persist across travel. |
-| [C07 The Still Current](missions/C07.md) | Cell/programmer exchange, technician reception and isolation precede settlement/audit. **F02:** fixed buffer settlement conflicts with permitted prior discharge. |
-| [C08 Wayfarer Exchange](missions/C08.md) | Cold-chain, repair, seed and rescue receiving precede utility restoration and charter accreditation. **F04:** integrity budget lacks a numerical closed profile; later Ark/Rescue finite source rules also need the F01 recovery audit. |
+| [C07 The Still Current](missions/C07.md) | Cell/programmer exchange, technician reception and isolation precede settlement/audit. F02 corrected: community-buffer forbids optional discharge; material recovery accounts for actual storage/discharge. The native C07 workflow is still missing. |
+| [C08 Wayfarer Exchange](missions/C08.md) | Cold-chain, repair, seed and rescue receiving precede utility restoration and charter accreditation. F04 corrected: existing C08 native allowance is 1,800 flight seconds; Ark/Rescue finite failures still need the F01 recovery audit. |
 | [C09 The Quiet Nursery](missions/C09.md) | Pressure observation precedes sealed culture test, grower arrival and independent/shared ventilation proof. Distinguish temporary culture installation from loan return. |
 | [C10 Borrowed Dawn](missions/C10.md) | Illumination readings precede actuator stops, crew arrival and independent-segment/shared-rota proof. Publish the safe temperature envelope; do not arm a hidden parking countdown. |
 | [C11 The Open Shadow](missions/C11.md) | Privacy and collision channels are measured separately before volunteer crossing and policy proof. Neither branch may suppress collision warning or expose private identities. |
@@ -139,7 +135,7 @@ All these sources retain their own distinct clue. The common three-stage accept/
 | T02 Safe gunnery practice | Three distinct uncrewed target hits and cease-fire; no bounty, legal offence or real combat score. |
 | T03 Defensive flight practice | Manual centre acquisition, ordered lateral gates and safe withdrawal; no firing, AUTO/Tab substitute or T02 prerequisite. |
 | T04 Navigation and trade practice | Actual affordable legal one-tonne buy, travel and sale; real fuel and price difference, no invented guaranteed profit. |
-| W01 Cold-chain clinic service | Sealed medical sample and preserved usable quality; F04 numerical variant/decay needs closure. |
+| W01 Cold-chain clinic service | Sealed medical sample and preserved usable quality; Existing closed W01 allowance is 2,700 flight seconds; different variants require their own terms. |
 | W02 Closed repair exchange | Failed unit goes to service and the same identified serviced unit returns to its owner; no duplicate replacement issue. |
 | W03 Seed-bank transfer | Three tonnes of consented living seed; genuine donor/receiver custody and viability; not the C08 seed-ark clue. |
 | W04 Remote utility relief | Four tonnes of real relief material and working utility receiving handoff; no promise creates installed repair. |

@@ -723,5 +723,15 @@
         "visibility": "Mission stage briefing and completed history"
       }
     }
-  ]
+  ],
+  "oracleNativeIntegrity": {
+    "allowanceSeconds": 1800,
+    "clock": "armed-flight time after confirmed actual pickup",
+    "receivingCondition": "same original intact sample; remaining allowance strictly greater than zero",
+    "expiry": "at zero remaining allowance the original is spoiled; no receiving success, payment or clue",
+    "persistence": "pause stops the flight clock; save/load retains the same original deadline",
+    "sourceCommit": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+    "sourceFile": "Sources/EliteCore/NativeWayfarerInduction.swift",
+    "sourceSymbol": "NativeWayfarerInduction.flightAllowance"
+  }
 }

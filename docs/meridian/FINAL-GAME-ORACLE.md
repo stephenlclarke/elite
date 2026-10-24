@@ -2245,6 +2245,7 @@ Mission-specific rules and resources:
 - **Energy rules / Buffer capacity:** 600
 - **Energy rules / Required local delivery units:** 300
 - **Energy rules / Accounting:** Measured charge = remaining + physically delivered + safely discharged + recovered storage. No negative quantity, repeated transfer or unverified receiving endpoint.
+- **Accepted branch transfer policy:** Community-buffer permits only the verified 300-unit utility delivery and 600-unit retained tested buffer; optional discharge and recovery-store transfer are refused on that route. Material-recovery permits verified storage and controlled discharge of at most 90 units per operation, plus actual collector-material reception. Every route preserves remaining + delivered + safely discharged + recovered = 900. This is the existing Still Current contract rule, not an extra energy source or a new balance estimate.
 - **Energy rules / Heat:** A named geometric work volume supplies bounded simulation-time heat through the ordinary thermal system. It is never tied to a random GUI event or commander identity.
 - **Energy rules / Restoration:** A current save restores the same meter identities, actual balances and recorded baffle placements. Culled scene meshes do not change logical control or charge.
 - **Terminal stage:** complete
@@ -2568,6 +2569,8 @@ Independent clinics, repair workshops, seed custodians and remote utility crews 
 ![Custodian Tomas Veil](assets/missions/portraits/tomas-veil.png)
 
 Mission-specific rules and resources:
+
+- **Native cold-crate integrity:** The original sealed 1t clinic sample has 1,800 armed-flight seconds from confirmed actual pickup. Preparation is untimed; normal pause stops flight time, and save/load retains the same original deadline. Receiving requires the same original intact sample with strictly positive remaining allowance; at zero it is spoiled. This is the existing native C08 rule, independent of W01's route-specific allowance.
 
 - **Origin kind:** new-original
 - **Branch policy:** Choose pooled-windows or protected-reservations once at choose-charter. Obtain the corresponding three service signatures at commit-charter. Both successful charters pay 7,600 CR and grant one permanent clue. Repeat contracts never award this campaign clue or its induction payment again.
@@ -12074,6 +12077,8 @@ First-success clue:
 
 **Identity:** `l337.wayfarer-service/cold-chain`.
 
+**Closed native profile:** Cedamar G01-S085 -> Celalen G01-S241; 2,700 armed-flight seconds from actual pickup, H0, six original stock units, shared maximum three active, 405 CR at verified receiving. Pause freezes flight time and save/load preserves the original deadline. These are existing terms for this exact native profile, not a default for all possible variants.
+
 - **Kind:** cold-chain
 - **Description:** Carry a sealed medical sample with an advertised integrity budget.
 - **Required cargo tonnes:** 1
@@ -12204,6 +12209,8 @@ First-success clue:
 ### W03 - Seed-bank transfer
 
 **Identity:** `l337.wayfarer-service/seed-transfer`.
+
+**Closed native profile:** Celalen G01-S241 -> Cedamar G01-S085; 2,700 armed-flight seconds from actual pickup, H0, six original stock units, shared maximum three active, 605 CR at verified receiving. Pause freezes flight time and save/load preserves the original deadline. These are existing terms for this exact native profile, not a default for all possible variants.
 
 - **Kind:** seed-transfer
 - **Description:** Transfer a consented seed consignment between independent custodians.

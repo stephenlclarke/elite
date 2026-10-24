@@ -23,9 +23,7 @@
   "runtimeExecuted": false,
   "openDesignFindings": [
     "F01",
-    "F02",
     "F03",
-    "F04",
     "F05",
     "F06",
     "F07"
@@ -253,7 +251,7 @@
       "stages": 12,
       "branchVariants": 4,
       "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "334c17f893145b58ff0f3e8b9040d427f164a3e42d4349c36a7995466764b91f"
+      "definitionSHA256": "a258bb5518ec94feead3e14c3dbede7cfa4a9a0cf314b41f65ae388bd413c78e"
     },
     {
       "id": "l337.tithe-of-worlds",
@@ -295,7 +293,7 @@
       "stages": 14,
       "branchVariants": 2,
       "peakDeclaredLoanMassTonnes": 1,
-      "definitionSHA256": "8a232e2632db6faea0848692c9000c419ae27f256aa32710b69a1640f4ef3d46"
+      "definitionSHA256": "f2dc336ff52eaaa1b4f61a913d17841d4f5016edf552a2a1d902891a3e04e554"
     },
     {
       "id": "l337.witness-window",
@@ -304,5 +302,9 @@
       "peakDeclaredLoanMassTonnes": 1,
       "definitionSHA256": "c11bac6ccdc20d02e46cf74100e0a4719781769b90464916e776fe8ae553da19"
     }
+  ],
+  "resolvedPortableOmissions": [
+    "F02",
+    "F04"
   ]
 }

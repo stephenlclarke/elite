@@ -60,7 +60,15 @@
     "requiredLocalDeliveryUnits": 300,
     "accounting": "Measured charge = remaining + physically delivered + safely discharged + recovered storage. No negative quantity, repeated transfer or unverified receiving endpoint.",
     "heat": "A named geometric work volume supplies bounded simulation-time heat through the ordinary thermal system. It is never tied to a random GUI event or commander identity.",
-    "restoration": "A current save restores the same meter identities, actual balances and recorded baffle placements. Culled scene meshes do not change logical control or charge."
+    "restoration": "A current save restores the same meter identities, actual balances and recorded baffle placements. Culled scene meshes do not change logical control or charge.",
+    "branchTransferPolicy": {
+      "communityBuffer": "Only the 300-unit verified local delivery and 600-unit retained tested buffer are permitted. Optional discharge or transfer to recovery storage is not an allowed community-buffer operation.",
+      "materialRecovery": "Account for the emptied reservoir through verified recovery storage and controlled discharge, plus actual collector-material reception. Each discharge operation is capped at 90 units.",
+      "conservation": "remaining + delivered + safely discharged + recovered = 900; no branch permits new charge or erased receipts",
+      "authority": "original-missions/STILL-CURRENT-CONTRACT.md",
+      "authoritySHA256": "ed92e61707ffdecd3f64d085621b6b9bd1c9cf2f6a8f493f243652d8b69d0b41",
+      "sourceLine": 11
+    }
   },
   "schema": "l337-mission-design/1",
   "version": "1.0.0",

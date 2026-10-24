@@ -93,6 +93,21 @@
           "sha256": "9625ad0dfda283b927bcb5c406e99b05c458bcf2b3495cb752372ec1ae1d3769",
           "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
         }
+      },
+      "oracleClosedNativeProfile": {
+        "sourceSystem": 85,
+        "receiverSystem": 241,
+        "galaxy": 0,
+        "flightAllowanceSeconds": 2700,
+        "tonnes": 1,
+        "stockUnits": 6,
+        "maximumActive": 3,
+        "hazardTier": 0,
+        "rewardCR": 405,
+        "clock": "armed-flight after actual pickup; save/load preserves the original deadline, pause freezes flight time",
+        "scope": "this closed original route profile; other variants require their own authored terms",
+        "sourceCommit": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+        "sourceFile": "Sources/EliteCore/Resources/ScriptPacks/l337-cold-chain/manifest.toml"
       }
     },
     {
@@ -260,6 +275,21 @@
           "sha256": "b0cf69a956ed6002bd75cdf93a6814344ec7d47146c341cde943e3a6b9778d84",
           "visibility": "Only after the source successful-completion receipt; no future trail instruction or ship identity"
         }
+      },
+      "oracleClosedNativeProfile": {
+        "sourceSystem": 241,
+        "receiverSystem": 85,
+        "galaxy": 0,
+        "flightAllowanceSeconds": 2700,
+        "tonnes": 3,
+        "stockUnits": 6,
+        "maximumActive": 3,
+        "hazardTier": 0,
+        "rewardCR": 605,
+        "clock": "armed-flight after actual pickup; save/load preserves the original deadline, pause freezes flight time",
+        "scope": "this closed original route profile; other variants require their own authored terms",
+        "sourceCommit": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+        "sourceFile": "Sources/EliteCore/Resources/ScriptPacks/l337-seed-transfer/manifest.toml"
       }
     },
     {

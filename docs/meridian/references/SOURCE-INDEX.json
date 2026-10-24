@@ -137,7 +137,7 @@
     },
     {
       "file": "definitions/missions/still-current.json",
-      "sha256": "334c17f893145b58ff0f3e8b9040d427f164a3e42d4349c36a7995466764b91f"
+      "sha256": "a258bb5518ec94feead3e14c3dbede7cfa4a9a0cf314b41f65ae388bd413c78e"
     },
     {
       "file": "definitions/missions/tithe-of-worlds.json",
@@ -165,11 +165,11 @@
     },
     {
       "file": "definitions/missions/wayfarer-exchange.json",
-      "sha256": "8a232e2632db6faea0848692c9000c419ae27f256aa32710b69a1640f4ef3d46"
+      "sha256": "f2dc336ff52eaaa1b4f61a913d17841d4f5016edf552a2a1d902891a3e04e554"
     },
     {
       "file": "definitions/missions/wayfarer-services.json",
-      "sha256": "6fed075f1ad3b5d6e15880da1a2be0b61c4e272ba7f7ed6144fb665df28f9fcc"
+      "sha256": "e7a8f2c56f3dc565ff17fdd8c8e89bd3b1bd2f7dfad85bd19631a493d950195f"
     },
     {
       "file": "definitions/missions/witness-window.json",
