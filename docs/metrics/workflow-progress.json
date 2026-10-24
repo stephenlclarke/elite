@@ -12923,6 +12923,23 @@
       "m01_candidate_preserved": true,
       "mbp_native_jobs_authorized": false,
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-m03-price-table-ready",
+      "timestamp": "2026-10-24T14:25:13.233286+00:00",
+      "owner": "G3",
+      "branch": "fix/original-base-equipment-prices",
+      "changed_price_items": 12,
+      "energy_prices_retained_tenths": [
+        15000,
+        45000
+      ],
+      "plugh_once_discount_preserved": true,
+      "shield_price_join_preserved": true,
+      "price_units": "tenths CR; Fuel per0.1LY",
+      "technology_or_damage_change_authorized": false,
+      "implementation_status": "authoring",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
