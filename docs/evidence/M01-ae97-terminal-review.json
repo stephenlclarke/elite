@@ -1,0 +1,1305 @@
+{
+  "run": 40043514103,
+  "productHead": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
+  "artifactCheckout": "2ed76d96e929f8c5fec2c931b2ea2e6b40a7fd9e",
+  "sourceInputsEquivalent": true,
+  "comparedInputs": "all retained tracked Sources/Tests/Tools/.github files, Makefile, Package.swift and Package.resolved",
+  "ciExit": 2,
+  "durationSeconds": 4856.494226292,
+  "terminalCause": "SwiftPM helper unexpected signal10 (SIGBUS); coverage-check Error1; exact source defect unproven",
+  "completeXML": false,
+  "finalSuiteSummary": false,
+  "normalCrashReport": false,
+  "individualPassLines": 532,
+  "startedMethodLines": 3295,
+  "methods": [
+    {
+      "method": "normalizedComparisonsSortAndTOMLLoaderAreConsistent()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShipTradeTests.swift:174"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 171,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "physical profiles, broad catalogue search and provenance expectations",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "normalizedComparisonsSortAndTOMLLoaderAreConsistent()",
+          "status": "passed",
+          "seconds": 25.128780167
+        }
+      }
+    },
+    {
+      "method": "helpUsesTheUnderlyingInformationScreenAndExchangeContext()",
+      "assertionRecords": 1,
+      "locations": [
+        "ScreenNavigationTests.swift:204"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 172,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "help pagination and repeated controls footer",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "helpUsesTheUnderlyingInformationScreenAndExchangeContext()",
+          "status": "passed",
+          "seconds": 26.497828625
+        }
+      }
+    },
+    {
+      "method": "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShipAppearanceTests.swift:23"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 173,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "archival/original texture dialect fixture mixing",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()",
+          "status": "passed",
+          "seconds": 24.862153375
+        }
+      }
+    },
+    {
+      "method": "marketTransactionsRespectCashCapacityAndStock()",
+      "assertionRecords": 1,
+      "locations": [
+        "EliteTests.swift:164"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 174,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored commodity display order",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "marketTransactionsRespectCashCapacityAndStock()",
+          "status": "passed",
+          "seconds": 24.86212725
+        }
+      }
+    },
+    {
+      "method": "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()",
+      "assertionRecords": 2,
+      "locations": [
+        "OwnedEquipmentHullTests.swift:217",
+        "OwnedEquipmentHullTests.swift:220"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()",
+          "status": "passed",
+          "seconds": 24.862011083
+        }
+      }
+    },
+    {
+      "method": "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()",
+      "assertionRecords": 1,
+      "locations": [
+        "DisplayOptionsTests.swift:338"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 172,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "help pagination and repeated controls footer",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()",
+          "status": "passed",
+          "seconds": 25.128211917
+        }
+      }
+    },
+    {
+      "method": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeOrbitalOutlookJourneyTests.swift:187"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 176,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "berth ID passed where owned cabin module ID required",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
+          "status": "passed",
+          "seconds": 25.127812625
+        }
+      }
+    },
+    {
+      "method": "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()",
+      "assertionRecords": 2,
+      "locations": [
+        "ShowroomTests.swift:100",
+        "ShowroomTests.swift:97"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 171,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "physical profiles, broad catalogue search and provenance expectations",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()",
+          "status": "passed",
+          "seconds": 25.128472333
+        }
+      }
+    },
+    {
+      "method": "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShowroomTests.swift:346"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 171,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "physical profiles, broad catalogue search and provenance expectations",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()",
+          "status": "passed",
+          "seconds": 25.127662917
+        }
+      }
+    },
+    {
+      "method": "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()",
+      "assertionRecords": 2,
+      "locations": [
+        "PassengerCabinGradesTests.swift:299",
+        "PassengerCabinGradesTests.swift:303"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()",
+          "status": "passed",
+          "seconds": 24.862241458
+        }
+      }
+    },
+    {
+      "method": "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()",
+      "assertionRecords": 1,
+      "locations": [
+        "OwnedEquipmentTests.swift:56"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()",
+          "status": "passed",
+          "seconds": 25.127783666
+        }
+      }
+    },
+    {
+      "method": "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()",
+      "assertionRecords": 1,
+      "locations": [
+        "CommanderEquipmentMigrationTests.swift:37"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()",
+          "status": "passed",
+          "seconds": 25.507101417
+        }
+      }
+    },
+    {
+      "method": "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShipAccommodationTests.swift:94"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stale zero-hold/incompatible hull premise",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()",
+          "status": "passed",
+          "seconds": 24.861854584
+        }
+      }
+    },
+    {
+      "method": "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()",
+      "assertionRecords": 7,
+      "locations": [
+        "NPCSceneRestorationTests.swift:220",
+        "NPCSceneRestorationTests.swift:226",
+        "NPCSceneRestorationTests.swift:227",
+        "NPCSceneRestorationTests.swift:236",
+        "NPCSceneRestorationTests.swift:237"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 179,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "WantedCareer disk binding projection and explicit station restoration scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()",
+          "status": "passed",
+          "seconds": 27.785875708
+        }
+      }
+    },
+    {
+      "method": "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeShipShieldComparisonTests.swift:45"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()",
+          "status": "passed",
+          "seconds": 26.566579833
+        }
+      }
+    },
+    {
+      "method": "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:134"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()",
+          "status": "passed",
+          "seconds": 27.786724916
+        }
+      }
+    },
+    {
+      "method": "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:225"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()",
+          "status": "passed",
+          "seconds": 27.785277917
+        }
+      }
+    },
+    {
+      "method": "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:154"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()",
+          "status": "passed",
+          "seconds": 27.785354
+        }
+      }
+    },
+    {
+      "method": "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:167"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()",
+          "status": "passed",
+          "seconds": 27.785256625
+        }
+      }
+    },
+    {
+      "method": "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredEquipmentRuntimeTests.swift:157"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)",
+          "status": "passed",
+          "seconds": 25.127681125
+        }
+      }
+    },
+    {
+      "method": "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredEquipmentRuntimeTests.swift:197"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)",
+          "status": "passed",
+          "seconds": 25.127636125
+        }
+      }
+    },
+    {
+      "method": "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()",
+      "assertionRecords": 7,
+      "locations": [
+        "NativeMissionActorAdmissionComponentTests.swift:116",
+        "NativeMissionActorAdmissionComponentTests.swift:121",
+        "NativeMissionActorAdmissionComponentTests.swift:64",
+        "NativeMissionActorAdmissionComponentTests.swift:65",
+        "NativeMissionActorAdmissionComponentTests.swift:79",
+        "NativeMissionActorAdmissionComponentTests.swift:96",
+        "NativeMissionActorAdmissionComponentTests.swift:97"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "extra legitimate station actor and hardcoded scene baseline",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()",
+          "status": "passed",
+          "seconds": 27.248094875
+        }
+      }
+    },
+    {
+      "method": "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
+      "assertionRecords": 1,
+      "locations": [
+        "WantedBoardTests.swift:87"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
+          "status": "passed",
+          "seconds": 25.2184915
+        }
+      }
+    },
+    {
+      "method": "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)",
+      "assertionRecords": 6,
+      "locations": [
+        "MarketCargoBoundsTests.swift:127",
+        "MarketCargoBoundsTests.swift:43"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)",
+          "status": "passed",
+          "seconds": 25.127486542
+        }
+      }
+    },
+    {
+      "method": "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)",
+      "assertionRecords": 3,
+      "locations": [
+        "MarketCargoBoundsTests.swift:16"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)",
+          "status": "passed",
+          "seconds": 24.861829834
+        }
+      }
+    },
+    {
+      "method": "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeStationPersistenceTests.swift:135"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 179,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "WantedCareer disk binding projection and explicit station restoration scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()",
+          "status": "passed",
+          "seconds": 12.877430458
+        }
+      }
+    },
+    {
+      "method": "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()",
+      "assertionRecords": 1,
+      "locations": [
+        "RoutePreviewRenderingTests.swift:7"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()",
+          "status": "passed",
+          "seconds": 31.468620334
+        }
+      }
+    },
+    {
+      "method": "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeCrimboActorMotionTests.swift:197"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "independently parsed OriginalWorlds/catalogue.json G08-S008 Crimbo Anarchy governmentID0; NativeStationSource.hasWaystation only permits7/6/5 and HQg7system7; original7/8RRS premise false. Revised authenticRRS fixture uses genuine foreignworldowner prior fact/sample, requiresbothpresent, retains original entry/refusal/clock/clearing checks",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()",
+          "status": "passed",
+          "seconds": 27.785433209
+        }
+      }
+    },
+    {
+      "method": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
+      "assertionRecords": 2,
+      "locations": [
+        "NativeMissionRuntimeFrameTests.swift:158",
+        "NativeMissionRuntimeFrameTests.swift:159"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "ExplicitSH023 selected for the fixedforward centre-ray musthit premise; physical query/hostility guards unchanged",
+      "acceptedEvidence": {
+        "run": "85a focused40",
+        "head": "85a69ab6445e0390063638fc26ae2c58a7d7921d",
+        "method": {
+          "name": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
+          "status": "passed",
+          "seconds": 15.0892955
+        }
+      }
+    },
+    {
+      "method": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
+      "assertionRecords": 3,
+      "locations": [
+        "MissionLedgerImpactTests.swift:396",
+        "MissionLedgerImpactTests.swift:401",
+        "MissionLedgerImpactTests.swift:403"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 181,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "persistent plasma breakup motion and return-value contract",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
+          "status": "passed",
+          "seconds": 27.010800875
+        }
+      }
+    },
+    {
+      "method": "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()",
+      "assertionRecords": 3,
+      "locations": [
+        "MissionLedgerImpactTests.swift:324",
+        "MissionLedgerImpactTests.swift:329",
+        "MissionLedgerImpactTests.swift:330"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 181,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "persistent plasma breakup motion and return-value contract",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()",
+          "status": "passed",
+          "seconds": 27.01067975
+        }
+      }
+    },
+    {
+      "method": "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionImpactTests.swift:204"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "camera-origin aim fixture must intersect actual selected player mesh",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)",
+          "status": "passed",
+          "seconds": 27.785375459
+        }
+      }
+    },
+    {
+      "method": "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionImpactTests.swift:169"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "extra legitimate station actor and hardcoded scene baseline",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()",
+          "status": "passed",
+          "seconds": 27.785360084
+        }
+      }
+    },
+    {
+      "method": "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredFeatureRuntimeTests.swift:50"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)",
+          "status": "passed",
+          "seconds": 26.494946125
+        }
+      }
+    },
+    {
+      "method": "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredFeatureRuntimeTests.swift:29"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()",
+          "status": "passed",
+          "seconds": 26.4672255
+        }
+      }
+    },
+    {
+      "method": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
+      "assertionRecords": 1,
+      "locations": [
+        "AsteroidFragmentationTests.swift:591"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 186,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "remaining native hull sweep returns conservative unproven for velocity-3000; physical cause unresolved",
+      "acceptedEvidence": {
+        "run": "85a focused40",
+        "head": "85a69ab6445e0390063638fc26ae2c58a7d7921d",
+        "method": {
+          "name": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
+          "status": "passed",
+          "seconds": 16.043986
+        }
+      }
+    },
+    {
+      "method": "transporterCargoCorrectionDrivesActualHoldAndCurrentReference()",
+      "assertionRecords": 1,
+      "locations": [
+        "CommiesShipCatalogueTests.swift:128"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "transporterCargoCorrectionDrivesActualHoldAndCurrentReference()",
+          "status": "passed",
+          "seconds": 25.127504709
+        }
+      }
+    },
+    {
+      "method": "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()",
+      "assertionRecords": 1,
+      "locations": [
+        "MissionNativeBridgeTests.swift:898"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "extra legitimate station actor and hardcoded scene baseline",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()",
+          "status": "passed",
+          "seconds": 27.785325167
+        }
+      }
+    },
+    {
+      "method": "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()",
+      "assertionRecords": 2,
+      "locations": [
+        "MissionNativeBridgeTests.swift:335",
+        "MissionNativeBridgeTests.swift:337"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "Only genuine shot retained for no-contact expiry; actual specific former occluder not established; age/movement/incident/cleanup checks unchanged",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()",
+          "status": "passed",
+          "seconds": 27.785300625
+        }
+      }
+    },
+    {
+      "method": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
+      "assertionRecords": 2,
+      "locations": [
+        "MissionNativeBridgeTests.swift:762",
+        "MissionNativeBridgeTests.swift:773"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "camera-origin aim fixture must intersect actual selected player mesh",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
+          "status": "passed",
+          "seconds": 27.785306333
+        }
+      }
+    },
+    {
+      "method": "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()",
+      "assertionRecords": 6,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:319",
+        "FlightWorkGuidanceRuntimeTests.swift:320",
+        "FlightWorkGuidanceRuntimeTests.swift:321",
+        "FlightWorkGuidanceRuntimeTests.swift:322",
+        "FlightWorkGuidanceRuntimeTests.swift:323",
+        "FlightWorkGuidanceRuntimeTests.swift:326"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()",
+          "status": "passed",
+          "seconds": 10.037011
+        }
+      }
+    },
+    {
+      "method": "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:445"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()",
+          "status": "passed",
+          "seconds": 10.839014542
+        }
+      }
+    },
+    {
+      "method": "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:1006"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()",
+          "status": "passed",
+          "seconds": 10.443491333
+        }
+      }
+    },
+    {
+      "method": "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:483"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()",
+          "status": "passed",
+          "seconds": 11.03766175
+        }
+      }
+    },
+    {
+      "method": "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:471"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()",
+          "status": "passed",
+          "seconds": 10.762045125
+        }
+      }
+    },
+    {
+      "method": "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()",
+      "assertionRecords": 3,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:714",
+        "FlightWorkGuidanceRuntimeTests.swift:715",
+        "FlightWorkGuidanceRuntimeTests.swift:716"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()",
+          "status": "passed",
+          "seconds": 10.443190292
+        }
+      }
+    },
+    {
+      "method": "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()",
+      "assertionRecords": 2,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:419",
+        "FlightWorkGuidanceRuntimeTests.swift:423"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()",
+          "status": "passed",
+          "seconds": 10.6870055
+        }
+      }
+    },
+    {
+      "method": "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:242"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()",
+          "status": "passed",
+          "seconds": 11.088086334
+        }
+      }
+    },
+    {
+      "method": "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:369"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()",
+          "status": "passed",
+          "seconds": 10.443206209
+        }
+      }
+    },
+    {
+      "method": "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:1032"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()",
+          "status": "passed",
+          "seconds": 10.453042334
+        }
+      }
+    },
+    {
+      "method": "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionWeaponGeometryTests.swift:76"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()",
+          "status": "passed",
+          "seconds": 27.785389417
+        }
+      }
+    },
+    {
+      "method": "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionWeaponGeometryTests.swift:109"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()",
+          "status": "passed",
+          "seconds": 27.78529425
+        }
+      }
+    },
+    {
+      "method": "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()",
+      "assertionRecords": 2,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:1084",
+        "FlightWorkGuidanceRuntimeTests.swift:1085"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()",
+          "status": "passed",
+          "seconds": 22.942752834
+        }
+      }
+    },
+    {
+      "method": "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()",
+      "assertionRecords": 1,
+      "locations": [
+        "SalvageWorldRuntimeTests.swift:385"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 183,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()",
+          "status": "passed",
+          "seconds": 25.127634709
+        }
+      }
+    },
+    {
+      "method": "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()",
+      "assertionRecords": 5,
+      "locations": [
+        "SalvageWorldRuntimeTests.swift:279",
+        "SalvageWorldRuntimeTests.swift:283",
+        "SalvageWorldRuntimeTests.swift:285",
+        "SalvageWorldRuntimeTests.swift:287",
+        "SalvageWorldRuntimeTests.swift:294"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 183,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()",
+          "status": "passed",
+          "seconds": 25.12765125
+        }
+      }
+    },
+    {
+      "method": "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)",
+      "assertionRecords": 2,
+      "locations": [
+        "SalvageWorldRuntimeTests.swift:344"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 183,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)",
+          "status": "passed",
+          "seconds": 25.127588375
+        }
+      }
+    },
+    {
+      "method": "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:183"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()",
+          "status": "passed",
+          "seconds": 25.1275675
+        }
+      }
+    },
+    {
+      "method": "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:385"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()",
+          "status": "passed",
+          "seconds": 25.509371541
+        }
+      }
+    },
+    {
+      "method": "installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)",
+      "assertionRecords": 2,
+      "locations": [
+        "BundledScriptPackTests.swift:208"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)",
+          "status": "passed",
+          "seconds": 25.127854458
+        }
+      }
+    },
+    {
+      "method": "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:151"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()",
+          "status": "passed",
+          "seconds": 25.1276645
+        }
+      }
+    },
+    {
+      "method": "malformedInstalledContentReportsItsErrorAlongsideBundledCourier()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:237"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "malformedInstalledContentReportsItsErrorAlongsideBundledCourier()",
+          "status": "passed",
+          "seconds": 25.127584291
+        }
+      }
+    },
+    {
+      "method": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
+      "assertionRecords": 2,
+      "locations": [
+        "BundledScriptPackTests.swift:263",
+        "BundledScriptPackTests.swift:314"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "owner-qualified; awaiting coherent publication and required final quality",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows",
+      "acceptedEvidence": {
+        "run": "6423 combined135",
+        "head": "6423e889ab76109f04821e4159fb110be0f9b779",
+        "method": {
+          "name": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
+          "status": "passed",
+          "seconds": 25.509190875
+        }
+      }
+    }
+  ],
+  "saveReopenPasses": [
+    {
+      "method": "courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row:)",
+      "argumentRows": 6,
+      "seconds": 2522.957
+    },
+    {
+      "method": "freightRealPartialChoiceAndFailedFinalWriterPreserveUnitsAndPayOnce()",
+      "seconds": 3545.056
+    }
+  ],
+  "crashIssue": 185,
+  "qualification": "individual passes and recorded failures only; failed unfiltered suite; no sanitizer/leak/release qualification"
+}
