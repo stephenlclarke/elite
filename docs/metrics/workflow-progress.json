@@ -11965,6 +11965,21 @@
       "real_quality_state": "pending",
       "usable_build_delivered": false,
       "m01_complete": false
+    },
+    {
+      "at": "2026-10-24T09:25:23.345413+00:00",
+      "checkpoint_key": "20261024-m01-69f8-real-hook-passed-shell-dispatch-failed",
+      "commit": "69f8af9653e5b274574f837984cad2fbdbb0399a",
+      "quality_run": 40081705267,
+      "quality_conclusion": "failure",
+      "host_hook_executed": true,
+      "evidence": "Actual failed-step environment contains ELITE_NATIVE_APPROVED_HEAD and host policy; shell invocation fails on Library/Application path",
+      "failure_stage": "first shell step before checkout",
+      "game_tests_executed": 0,
+      "correction_owner": "G1",
+      "independent_reviewer": "MBA",
+      "usable_build_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
