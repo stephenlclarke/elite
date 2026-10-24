@@ -2637,7 +2637,7 @@ func stationAutoCoverSourceCannotBorrowAnotherAttackersActiveHazard(condition: S
     var game = try ScriptProcurementFixture.freshG03FlightGame()
     try game.prepareG03FlightEquipment()
     try ScriptProcurementFixture.requirePaidG03Preparation(game)
-    try #require(game.commander.shipID == "SH025" && game.commander.credits == 14000)
+    try #require(game.commander.shipID == "SH025" && game.commander.credits == 6125)
     let parcel = try MissionPackLibrary.read(parcelURL)
     game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [parcel])
     game.key("b")

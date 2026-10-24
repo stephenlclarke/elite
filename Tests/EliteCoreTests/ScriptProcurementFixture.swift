@@ -161,11 +161,11 @@ struct ScriptProcurementFixture {
         "Targeting: Docking", 40000, .targetingCore, EquipmentPurchaseCatalog.targeting,
         "Targeting: Advanced"
       ),
-      ("Pulse Shield Booster", 3000, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
+      ("Pulse Shield Booster", 10875, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
       ("Extra Energy Unit", 15000, .energy, EquipmentPurchaseCatalog.energy, "Basic Energy System"),
     ]
     if escapeReady {
-      rows.append(("Escape Pod", 10000, .utility(.escapePod), .init("utility-escapePod"), nil))
+      rows.append(("Escape Pod", 36000, .utility(.escapePod), .init("utility-escapePod"), nil))
     }
     try #require(history.paid.count == rows.count && history.legacy.isEmpty)
     try #require(history.owner == inventory.owner && history.revision == UInt64(rows.count))
@@ -173,7 +173,7 @@ struct ScriptProcurementFixture {
     let first = try #require(history.paid.first)
     var expectedItems = first.binding.snapshot.items
     let foundation = expectedItems
-    var funds = 100000
+    var funds = escapeReady ? 136000 : 100000
     for (index, row) in rows.enumerated() {
       let (name, price, slot, family, predecessor) = row
       let receipt = history.paid[index]
@@ -219,7 +219,7 @@ struct ScriptProcurementFixture {
     }
     let actual = try game.commander.purchaseSnapshot()
     try #require(actual.items == expectedItems && game.commander.credits == funds)
-    try #require(funds == (escapeReady ? 4000 : 14000))
+    try #require(funds == 6125)
     for old in foundation {
       let retained = try #require(inventory.items.first { $0.id == old.id })
       try #require(retained.node == old.node && retained.provenance == old.provenance)

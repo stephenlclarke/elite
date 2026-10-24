@@ -45,7 +45,7 @@ struct ScriptG03FlightPreparationTests {
     let before = game
     try game.prepareG03FlightEquipment()
     try ScriptProcurementFixture.requirePaidG03Preparation(game)
-    #expect(game.commander.credits == before.commander.credits - 86000)
+    #expect(game.commander.credits == before.commander.credits - 93875)
     #expect(game.commander.equipmentOwnerID == before.commander.equipmentOwnerID)
     #expect(game.commander.hullInstanceID == before.commander.hullInstanceID)
     #expect(
@@ -91,7 +91,7 @@ struct ScriptG03FlightPreparationTests {
 
   @Test func insufficientBudgetRefusesWithoutPublishingAnyPaidPredecessor() throws {
     var game = try ScriptProcurementFixture.freshG03FlightGame()
-    game.commander.credits = 85999
+    game.commander.credits = 93874
     try game.commander.prepareEquipment(legacy: false)
     let before = game
     #expect(throws: EquipmentPurchaseError.insufficientFunds) {

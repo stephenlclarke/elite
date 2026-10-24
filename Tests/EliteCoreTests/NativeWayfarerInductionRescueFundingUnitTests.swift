@@ -154,12 +154,12 @@ struct NativeWayfarerInductionRescueFundingUnitTests {
     let original = try #require(f.state.rescueFuel)
     let request = f.request()
     let quote = try original.quote(request)
-    #expect(quote.cost == 180 && quote.fuelAfter == 9)
+    #expect(quote.cost == 1620 && quote.fuelAfter == 9)
     let purchased = try original.purchasing(quote, current: request)
     let receipt = try #require(purchased.purchases.last)
     let stock = try NativeArkStationFuel(contact: request.offer.contact)
     let afterRescue = try stock.dispensing(receipt)
-    #expect(purchased.remainingCredits == 9820 && afterRescue.remainingTenthsLY == 910)
+    #expect(purchased.remainingCredits == 8380 && afterRescue.remainingTenthsLY == 910)
     let key = try #require(f.parent.seedKey)
     let ark = try NativeInductionArkSource(
       loan: key, permission: f.parent.permission, service: #require(f.parent.cassetteService))
@@ -183,7 +183,7 @@ struct NativeWayfarerInductionRescueFundingUnitTests {
     let bank = try #require(f.state.rescueFuel)
     let request = f.request(before: 8.25)
     let quote = try bank.quote(request)
-    #expect(quote.cost == 16 && abs(quote.fuelAfter - 9.05) < 1e-9)
+    #expect(quote.cost == 144 && abs(quote.fuelAfter - 9.05) < 1e-9)
     #expect(throws: NativeArkFuelRefusal.noFuelNeeded) { try bank.quote(f.request(before: 9)) }
     #expect(throws: NativeArkFuelRefusal.unavailableStock) { try bank.quote(f.request(stock: 89)) }
     for request in [
@@ -200,15 +200,15 @@ struct NativeWayfarerInductionRescueFundingUnitTests {
     let f = try RescueFinanceFixture()
     var bank = try #require(f.state.rescueFuel)
     // Distinct actual station identities in a pure financial fixture; no reset of one supply is claimed.
-    for index in 1...55 {
+    for index in 1...6 {
       let request = f.request(sequence: UInt64(index), system: index)
       bank = try bank.purchasing(bank.quote(request), current: request)
     }
-    #expect(bank.remainingCredits == 100 && bank.purchases.count == 55)
-    let request = f.request(sequence: 56, system: 56)
+    #expect(bank.remainingCredits == 280 && bank.purchases.count == 6)
+    let request = f.request(sequence: 7, system: 7)
     #expect(throws: NativeArkFuelRefusal.insufficientEscrow) { try bank.quote(request) }
     let refused = try bank.recordingRefusal(request)
-    #expect(refused.refusal?.reason == .insufficientEscrow && refused.remainingCredits == 100)
+    #expect(refused.refusal?.reason == .insufficientEscrow && refused.remainingCredits == 280)
     let restored = try NativeRescueFuelEscrow.decodeClosed(JSONEncoder().encode(refused))
     #expect(restored == refused && restored.refusal == refused.refusal)
     var altered = try #require(

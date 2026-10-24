@@ -16,6 +16,24 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "ScriptG03FlightPreparationTests": (
+        "declaredTrialBuysItsWholeFitAtTheActualOriginalShop",
+        "lowerTechnologyShopRefusesWithoutPublishingTheFourEarlierPurchases",
+        "insufficientBudgetRefusesWithoutPublishingAnyPaidPredecessor",
+        "alteredOrdinaryShopCannotClaimTheInstalledTechnology",
+    ),
+    "OriginalEquipmentPriceUnitTests": (
+        "approvedPricesReachActualQuotesReadoutsAndOnceOnlyDebits",
+        "insufficientFundsAndFabricatedPricesCannotMutateTheCommander",
+        "retainedShieldPurchaseScenariosUseUpdatedPrices",
+        "retainedFuelMissileAndCargoPurchasesUseTheApprovedDebits",
+        "laterEnergyPricesAndLaserDerivedShieldQuotesRetainTheirExistingJoins",
+    ),
+    "EquipmentRuntimeTransactionTests": (
+        "actualShopAllowsAllFourMiningFacingsAndTheDeclaredIndependentTool",
+        "storageAndSeparateWorkToolsChargeExactlyWithoutRefillingOrReplacingCombatWeapons",
+        "stockShieldPurchasesAreMonotonicAndPreserveBothCurrentFractions",
+    ),
     "NativeTrainingReservationCodecUnitTests": (
         "reservationAndTrainingArchivesRetainClosedNamespacesAndValueSemantics",
     ),

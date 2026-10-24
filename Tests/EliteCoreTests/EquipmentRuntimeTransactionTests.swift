@@ -56,7 +56,7 @@ struct EquipmentRuntimeTransactionTests {
     #expect(mining.count == 5 && mining.allSatisfy { $0.location != nil })
     #expect(Set(mining.map(\.id)).count == 5)
     #expect(game.commander.equipmentPurchaseHistory?.paid.count == 5)
-    #expect(game.commander.credits == before - 5 * 8000)
+    #expect(game.commander.credits == before - 5 * 33000)
     #expect(LaserMount.allCases.allSatisfy { game.commander.laser(on: $0) == .mining })
     let tool = try #require(game.commander.fittedMiningWorkTool)
     try game.storeEquipment(tool, expectedRevision: inventory.revision)
@@ -190,7 +190,7 @@ struct EquipmentRuntimeTransactionTests {
     #expect(game.commander.fittedEquipment(at: .utility(.salvageCutter)) != nil)
     #expect(game.commander.fittedEquipment(at: .targetingMining) == nil)
     #expect(game.commander.fittedEquipment(at: .targetingSalvage) == nil)
-    #expect(game.commander.credits == before.credits - 20000 - 8000 - 25000)
+    #expect(game.commander.credits == before.credits - 20000 - 33000 - 25000)
   }
 
   @Test func specialistAvailabilityAndIndependentPricesUseActualShopTechnology() throws {

@@ -14,28 +14,31 @@ extension Game {
     else {
       throw MissionPackError("Prepare this G03 flight at an installed ordinary world's shop.")
     }
-    let purchases: [(String, Int, ComponentFittingSlot)] = [
-      (TargetingTier.basic.equipmentName, 8000, .targetingCore),
-      (TargetingTier.advanced.equipmentName, 20000, .targetingCore),
-      (TargetingTier.docking.equipmentName, 40000, .targetingCore),
-      (ShieldBooster.pulse.equipmentName, 3000, .shield),
-      ("Extra Energy Unit", 15000, .energy),
+    let purchases: [(String, ComponentFittingSlot)] = [
+      (TargetingTier.basic.equipmentName, .targetingCore),
+      (TargetingTier.advanced.equipmentName, .targetingCore),
+      (TargetingTier.docking.equipmentName, .targetingCore),
+      (ShieldBooster.pulse.equipmentName, .shield),
+      ("Extra Energy Unit", .energy),
     ]
     var candidate = self
     try candidate.commander.prepareEquipment(legacy: false)
     let before = candidate.commander
-    for (name, price, slot) in purchases {
+    var totalPrice = 0
+    for (name, slot) in purchases {
       guard let item = Equipment.all.first(where: { $0.name == name }),
-        candidate.equipmentAvailable(item), candidate.shopPrice(item) == price
+        candidate.equipmentAvailable(item)
       else { throw EquipmentRuntimeError.unavailable }
+      let price = candidate.shopPrice(item)
       let quote = try candidate.quoteEquipmentPurchase(item)
       guard quote.purchase.requiredDebit == price else { throw EquipmentRuntimeError.unavailable }
+      totalPrice += price
       let fitted = try candidate.applyEquipmentPurchase(quote)
       guard fitted,
         candidate.commander.fittedEquipment(at: slot)?.id == quote.request.newItem
       else { throw EquipmentRuntimeError.incompatibleFit }
     }
-    guard candidate.commander.credits == before.credits - 86000,
+    guard candidate.commander.credits == before.credits - totalPrice,
       candidate.commander.equipmentOwnerID == before.equipmentOwnerID,
       candidate.commander.hullInstanceID == before.hullInstanceID,
       candidate.commander.cargo == before.cargo, candidate.commander.fuel == before.fuel,

@@ -86,7 +86,7 @@ struct NativeWayfarerInductionArkServiceUnitTests {
     let request = f.request(time: 900, supplier: freshVisit)
     #expect(request.offer.valid)
     let quote = try f.bank.quote(request)
-    #expect(quote.suppliedLY == 9 && quote.cost == 180)
+    #expect(quote.suppliedLY == 9 && quote.cost == 1620)
     #expect(throws: NativeArkFuelRefusal.unavailableStock) {
       try f.bank.quote(f.request(stock: 89))
     }
