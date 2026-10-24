@@ -10354,7 +10354,7 @@
       "draft": true,
       "dependency_review": "success",
       "required_ci_run": 40043514103,
-      "required_ci_status": "pending",
+      "required_ci_status": "in_progress",
       "obsolete_runs_cancel_requested": [
         40043511034,
         40043511050
@@ -10362,7 +10362,17 @@
       "publisher": "G1",
       "reviewer": "MBA",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "publication_review": "clear",
+      "root_import_sha": "ee8a9b0b85e1e2f0ad328a87a91725ca8dad7489",
+      "authoritative_unit_run": 40043507224,
+      "authoritative_unit_status": "in_progress",
+      "obsolete_runs_cancelled": [
+        40043511034,
+        40043511050
+      ],
+      "optional_pr_duplicate_cancelled": 40043514113,
+      "review_request_comment": 6377295280
     }
   ],
   "two_developer_phase": {
