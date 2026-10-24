@@ -22,14 +22,14 @@ Actual jumps use the fitted reach, current fuel and effective fuel cost. Compati
 | Shield | Stock front/rear capacity versus hull base | Stock recharge versus hull base | Acquisition |
 | --- | ---: | ---: | --- |
 | Basic | 1 | 1 | Included foundation |
-| Basic II | 1.5 | 1 | 300 CR |
-| Intermediate | 1.8 | 1 | 600 CR |
-| Intermediate II | 2 | 1 | 750 CR |
-| Advanced | 2.3 | 1 | 4,500 CR |
+| Basic II | 1.5 | 1 | 1,087.5 CR |
+| Intermediate | 1.8 | 1 | 2,475 CR |
+| Intermediate II | 2 | 1 | 3,525 CR |
+| Advanced | 2.3 | 1 | 12,300 CR |
 | Advanced II | 6.9 | 1 | Elite-rank Capital reward, XYZZY or PLUGH |
 | Elite | 9.2 | 1 | Compatible recovered-upgrade progression; no ordinary shop row |
 
-Prices are base stock prices before station discounts and availability rules. Actual capacities and recharge multiply the hull's native values. The Elite combat-rank reward supplies the preserved Capital item, now stock Advanced II; the Elite component grade is a separate threshold. Current XYZZY supplies the Elite stock shield, Advanced navigation module and Elite energy module. It does not manufacture recovered-upgrade history.
+Prices are base stock prices before station discounts and availability rules. The four ordinary shield prices retain their existing three-quarter join to the approved Pulse, Mining, Beam and Military Laser prices; the later energy-module prices remain unchanged. Actual capacities and recharge multiply the hull's native values. The Elite combat-rank reward supplies the preserved Capital item, now stock Advanced II; the Elite component grade is a separate threshold. Current XYZZY supplies the Elite stock shield, Advanced navigation module and Elite energy module. It does not manufacture recovered-upgrade history.
 
 ## Applying upgrades
 
