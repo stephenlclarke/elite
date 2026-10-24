@@ -1,0 +1,747 @@
+{
+  "run": 40043514103,
+  "productHead": "ae97d337cb9cf25b58322a21946e9ece297dd60a",
+  "artifactCheckout": "2ed76d96e929f8c5fec2c931b2ea2e6b40a7fd9e",
+  "sourceInputsEquivalent": true,
+  "comparedInputs": "all retained tracked Sources/Tests/Tools/.github files, Makefile, Package.swift and Package.resolved",
+  "ciExit": 2,
+  "durationSeconds": 4856.494226292,
+  "terminalCause": "SwiftPM helper unexpected signal10 (SIGBUS); coverage-check Error1; exact source defect unproven",
+  "completeXML": false,
+  "finalSuiteSummary": false,
+  "normalCrashReport": false,
+  "individualPassLines": 532,
+  "startedMethodLines": 3295,
+  "methods": [
+    {
+      "method": "normalizedComparisonsSortAndTOMLLoaderAreConsistent()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShipTradeTests.swift:174"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 171,
+      "status": "source-backed correction identified",
+      "cause": "physical profiles, broad catalogue search and provenance expectations"
+    },
+    {
+      "method": "helpUsesTheUnderlyingInformationScreenAndExchangeContext()",
+      "assertionRecords": 1,
+      "locations": [
+        "ScreenNavigationTests.swift:204"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 172,
+      "status": "source-backed correction identified",
+      "cause": "help pagination and repeated controls footer"
+    },
+    {
+      "method": "sourceTextureMetadataRoundTripsWithoutInventingRenderedPixels()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShipAppearanceTests.swift:23"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 173,
+      "status": "source-backed correction identified",
+      "cause": "archival/original texture dialect fixture mixing"
+    },
+    {
+      "method": "marketTransactionsRespectCashCapacityAndStock()",
+      "assertionRecords": 1,
+      "locations": [
+        "EliteTests.swift:164"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 174,
+      "status": "source-backed correction identified",
+      "cause": "authored commodity display order"
+    },
+    {
+      "method": "hullConflictsRefuseAtomicallyAndExplicitRefitsKeepTheSameLasersRoundsAndEmptyCabins()",
+      "assertionRecords": 2,
+      "locations": [
+        "OwnedEquipmentHullTests.swift:217",
+        "OwnedEquipmentHullTests.swift:220"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "source-backed correction identified",
+      "cause": "stale zero-hold/incompatible hull premise"
+    },
+    {
+      "method": "emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry()",
+      "assertionRecords": 1,
+      "locations": [
+        "DisplayOptionsTests.swift:338"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 172,
+      "status": "source-backed correction identified",
+      "cause": "help pagination and repeated controls footer"
+    },
+    {
+      "method": "outlookNativeRepliesWithdrawWhenActualCabinFitChanges()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeOrbitalOutlookJourneyTests.swift:187"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 176,
+      "status": "source-backed correction identified",
+      "cause": "berth ID passed where owned cabin module ID required"
+    },
+    {
+      "method": "showroomSearchFindsEveryShipAndSupportsNamesSourcesClassesAndNoResults()",
+      "assertionRecords": 2,
+      "locations": [
+        "ShowroomTests.swift:100",
+        "ShowroomTests.swift:97"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 171,
+      "status": "source-backed correction identified",
+      "cause": "physical profiles, broad catalogue search and provenance expectations"
+    },
+    {
+      "method": "catalogueDefaultsEstimatesAndActualNativeFitKeepTheirProvenanceDistinct()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShowroomTests.swift:346"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 171,
+      "status": "source-backed correction identified",
+      "cause": "physical profiles, broad catalogue search and provenance expectations"
+    },
+    {
+      "method": "hullTransferPreservesCabinPlaceAndPersonIDsOrRefusesWholeModuleAtomically()",
+      "assertionRecords": 2,
+      "locations": [
+        "PassengerCabinGradesTests.swift:299",
+        "PassengerCabinGradesTests.swift:303"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "source-backed correction identified",
+      "cause": "stale zero-hold/incompatible hull premise"
+    },
+    {
+      "method": "anOccupiedCabinBlocksAZeroHoldHullWhileItsPersonAndEquipmentRemainOwned()",
+      "assertionRecords": 1,
+      "locations": [
+        "OwnedEquipmentTests.swift:56"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "source-backed correction identified",
+      "cause": "stale zero-hold/incompatible hull premise"
+    },
+    {
+      "method": "knownUnfittableLegacyHardwareIsRetainedAsHeldPhysicalDevices()",
+      "assertionRecords": 1,
+      "locations": [
+        "CommanderEquipmentMigrationTests.swift:37"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "zeroPhysicalHoldAndAlienCompatibilityDoNotGainFreeAccommodation()",
+      "assertionRecords": 1,
+      "locations": [
+        "ShipAccommodationTests.swift:94"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 175,
+      "status": "source-backed correction identified",
+      "cause": "stale zero-hold/incompatible hull premise"
+    },
+    {
+      "method": "actualExtendedLoadAndFirstSubsequentStepsMatchTheUninterruptedScene()",
+      "assertionRecords": 7,
+      "locations": [
+        "NPCSceneRestorationTests.swift:220",
+        "NPCSceneRestorationTests.swift:226",
+        "NPCSceneRestorationTests.swift:227",
+        "NPCSceneRestorationTests.swift:236",
+        "NPCSceneRestorationTests.swift:237"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 179,
+      "status": "source-backed correction identified",
+      "cause": "WantedCareer disk binding projection and explicit station restoration scene"
+    },
+    {
+      "method": "actualRecoveredRearUpgradeKeepsFrontAndRearComparisonsAvailable()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeShipShieldComparisonTests.swift:45"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "source-backed correction identified",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+    },
+    {
+      "method": "markedFirearmReservesOneTonneAfterOrdinaryCargoIsSold()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:134"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "collectedTechnologyKeepsItsReservedTonneOutOfTradeEstimates()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:225"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "acceptedProtectedPayloadKeepsItsTonneOutOfTradeEstimates()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:154"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "fullOrdinaryHoldCanBeSoldBeforeTheNextTonneTrade()",
+      "assertionRecords": 1,
+      "locations": [
+        "NavigationCustodyTests.swift:167"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "otherNavigationAxesAffectActualShipValuesAndKeepLegacyKeys(axis:)",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredEquipmentRuntimeTests.swift:157"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "source-backed correction identified",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+    },
+    {
+      "method": "anActualDifferentOwnerOrHullCannotApplyTheOriginalPhysicalQuote(changeHull:)",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredEquipmentRuntimeTests.swift:197"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "source-backed correction identified",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+    },
+    {
+      "method": "actualAuthoredThirtyActorCohortHonoursComponentUnitsIndependentlyOfRootCapacity()",
+      "assertionRecords": 7,
+      "locations": [
+        "NativeMissionActorAdmissionComponentTests.swift:116",
+        "NativeMissionActorAdmissionComponentTests.swift:121",
+        "NativeMissionActorAdmissionComponentTests.swift:64",
+        "NativeMissionActorAdmissionComponentTests.swift:65",
+        "NativeMissionActorAdmissionComponentTests.swift:79",
+        "NativeMissionActorAdmissionComponentTests.swift:96",
+        "NativeMissionActorAdmissionComponentTests.swift:97"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "source-backed correction identified",
+      "cause": "extra legitimate station actor and hardcoded scene baseline"
+    },
+    {
+      "method": "nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
+      "assertionRecords": 1,
+      "locations": [
+        "WantedBoardTests.swift:87"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "source-backed correction identified",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+    },
+    {
+      "method": "lastSupportedPreciousUnitCanBeBoughtSavedAndReloadedButTheNextIsRefused(index:)",
+      "assertionRecords": 6,
+      "locations": [
+        "MarketCargoBoundsTests.swift:127",
+        "MarketCargoBoundsTests.swift:43"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "maximumSupportedPreciousCargoRefusesAnActorPurchaseWithoutLosingSaveValidity(index:)",
+      "assertionRecords": 3,
+      "locations": [
+        "MarketCargoBoundsTests.swift:16"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "retainedFlightRebindsOnlyNativeStationActorsAndPreservesCommanderResources()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeStationPersistenceTests.swift:135"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 179,
+      "status": "source-backed correction identified",
+      "cause": "WantedCareer disk binding projection and explicit station restoration scene"
+    },
+    {
+      "method": "routePreviewSequentialExportsRetainEveryCandidateAndMetricRow()",
+      "assertionRecords": 1,
+      "locations": [
+        "RoutePreviewRenderingTests.swift:7"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "actualRefusedRRSEntryConsumesSampleAndKeepsCompletedPhysicalClock()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeCrimboActorMotionTests.swift:197"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": null,
+      "status": "diagnosis pending",
+      "cause": "expected waystation absent after tick in galaxy7 system8; binding/admission cause unresolved"
+    },
+    {
+      "method": "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility(hostile:)",
+      "assertionRecords": 2,
+      "locations": [
+        "NativeMissionRuntimeFrameTests.swift:158",
+        "NativeMissionRuntimeFrameTests.swift:159"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": null,
+      "status": "diagnosis pending",
+      "cause": "hostile classic actor has no emission/shield hit; intent, preflight or physical query cause unresolved"
+    },
+    {
+      "method": "plasmaDestructionPreservesAFullOrdinaryOreQueueInsteadOfRequiringYieldCapacity()",
+      "assertionRecords": 3,
+      "locations": [
+        "MissionLedgerImpactTests.swift:396",
+        "MissionLedgerImpactTests.swift:401",
+        "MissionLedgerImpactTests.swift:403"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 181,
+      "status": "source-backed correction identified",
+      "cause": "persistent plasma breakup motion and return-value contract"
+    },
+    {
+      "method": "plasmaTerminalDamageCommitsOnlyTheTombstoneAndHasNoOreYield()",
+      "assertionRecords": 3,
+      "locations": [
+        "MissionLedgerImpactTests.swift:324",
+        "MissionLedgerImpactTests.swift:329",
+        "MissionLedgerImpactTests.swift:330"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 181,
+      "status": "source-backed correction identified",
+      "cause": "persistent plasma breakup motion and return-value contract"
+    },
+    {
+      "method": "actualInstantLaserIsConsumedOnceForMissAndPlayerShieldHit(hit:)",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionImpactTests.swift:204"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "fixture premise identified; correction not yet verified",
+      "cause": "camera-origin aim fixture must intersect actual selected player mesh"
+    },
+    {
+      "method": "fullMissionQueueRefusesActualPlayerFireBeforeEmissionAndGunDebit()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionImpactTests.swift:169"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "source-backed correction identified",
+      "cause": "extra legitimate station actor and hardcoded scene baseline"
+    },
+    {
+      "method": "explicitInSpaceActionCreatesOneSourceLinkedDeviceWithoutPaidHistoryOrRefilling(id:)",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredFeatureRuntimeTests.swift:50"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "source-backed correction identified",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+    },
+    {
+      "method": "recoveredCutterEnablesTheActualToolWithoutChangingCombatLasers()",
+      "assertionRecords": 1,
+      "locations": [
+        "RecoveredFeatureRuntimeTests.swift:29"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "source-backed correction identified",
+      "cause": "authored supported slots, carried hull compatibility or native jump floor"
+    },
+    {
+      "method": "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward(targetVelocity:)",
+      "assertionRecords": 1,
+      "locations": [
+        "AsteroidFragmentationTests.swift:591"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": null,
+      "status": "diagnosis pending",
+      "cause": "remaining native hull sweep returns conservative unproven for velocity-3000; physical cause unresolved"
+    },
+    {
+      "method": "transporterCargoCorrectionDrivesActualHoldAndCurrentReference()",
+      "assertionRecords": 1,
+      "locations": [
+        "CommiesShipCatalogueTests.swift:128"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 177,
+      "status": "source-backed correction identified",
+      "cause": "hull fuel capacity, authenticated prices or market stock fixture"
+    },
+    {
+      "method": "realProtectedMissionActorBindsStableBodyIDWithoutAllocatingIdentity()",
+      "assertionRecords": 1,
+      "locations": [
+        "MissionNativeBridgeTests.swift:898"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 180,
+      "status": "source-backed correction identified",
+      "cause": "extra legitimate station actor and hardcoded scene baseline"
+    },
+    {
+      "method": "actualLegacyPlasmaRecordProducesGeometricUnknownImpactAndRejectsImmutableDrift()",
+      "assertionRecords": 2,
+      "locations": [
+        "MissionNativeBridgeTests.swift:335",
+        "MissionNativeBridgeTests.swift:337"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": null,
+      "status": "diagnosis pending",
+      "cause": "no-hit expiry fixture instead records contact; actual occluder/fixture isolation not yet established"
+    },
+    {
+      "method": "actualProfiledLaserFireDebitsOnceAndKernelRefusalRestoresWholeVisibleState()",
+      "assertionRecords": 2,
+      "locations": [
+        "MissionNativeBridgeTests.swift:762",
+        "MissionNativeBridgeTests.swift:773"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 178,
+      "status": "fixture premise identified; correction not yet verified",
+      "cause": "camera-origin aim fixture must intersect actual selected player mesh"
+    },
+    {
+      "method": "realTickCollectsOneCargoAndBrakesAgainstCurrentSceneWithoutGhostPrimary()",
+      "assertionRecords": 6,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:319",
+        "FlightWorkGuidanceRuntimeTests.swift:320",
+        "FlightWorkGuidanceRuntimeTests.swift:321",
+        "FlightWorkGuidanceRuntimeTests.swift:322",
+        "FlightWorkGuidanceRuntimeTests.swift:323",
+        "FlightWorkGuidanceRuntimeTests.swift:326"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "realLargeHullHoldsSelectsItsCutterAndDoesNotRetargetACollectedChild()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:445"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "acquisitionSelectsImmediatelyAndManualWeaponOverrideSurvivesHoldReadiness()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:1006"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "actualHeldManualSteeringCannotContinueCuttingUntilFireIsReleased()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:483"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "changedSectionAuthorityCancelsAnOtherwiseIdenticalLargeParent()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:471"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "canonicalizingVisibleLegacySpinDoesNotMoveAnyMeshVertex()",
+      "assertionRecords": 3,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:714",
+        "FlightWorkGuidanceRuntimeTests.swift:715",
+        "FlightWorkGuidanceRuntimeTests.swift:716"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "actualLegacyAIIsPlannedOnceBeforeTheProofAndNotMovedAgain()",
+      "assertionRecords": 2,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:419",
+        "FlightWorkGuidanceRuntimeTests.swift:423"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "filterKeyUsesActualFittedModulesAndKeepsOriginalShipDefault()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:242"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "actualApertureOverspeedRefusesCollectionAndKeepsTheTarget()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:369"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "actualAcquisitionNeverSubstitutesCombatForAnAbsentDefaultCutter()",
+      "assertionRecords": 1,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:1032"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "authoredComponentOccludesMiningWithoutTakingDamageOrChargingTheTool()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionWeaponGeometryTests.swift:76"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "authoredComponentOccludesAnEligibleCutterSurfaceWithoutAnyChargeOrDamage()",
+      "assertionRecords": 1,
+      "locations": [
+        "NativeMissionWeaponGeometryTests.swift:109"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "liveCatalogueCapitalAcquiresGeometryHoldWithoutBecomingSalvage()",
+      "assertionRecords": 2,
+      "locations": [
+        "FlightWorkGuidanceRuntimeTests.swift:1084",
+        "FlightWorkGuidanceRuntimeTests.swift:1085"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 182,
+      "status": "source-backed correction identified",
+      "cause": "stable actor joins, authored work slots, scoop geometry and explicit scene"
+    },
+    {
+      "method": "optionalWreckHealthMigratesOldRecordsAndRejectsInvalidLiveHealth()",
+      "assertionRecords": 1,
+      "locations": [
+        "SalvageWorldRuntimeTests.swift:385"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 183,
+      "status": "source-backed correction identified",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck"
+    },
+    {
+      "method": "failedTerminalMarkRetainsTheActualSourceAndRefusesDockSaveAndBothJumpPaths()",
+      "assertionRecords": 5,
+      "locations": [
+        "SalvageWorldRuntimeTests.swift:279",
+        "SalvageWorldRuntimeTests.swift:283",
+        "SalvageWorldRuntimeTests.swift:285",
+        "SalvageWorldRuntimeTests.swift:287",
+        "SalvageWorldRuntimeTests.swift:294"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 183,
+      "status": "source-backed correction identified",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck"
+    },
+    {
+      "method": "actualSurvivingDamageIsCapturedBeforeEitherDepartureWithoutAnotherTick(galactic:)",
+      "assertionRecords": 2,
+      "locations": [
+        "SalvageWorldRuntimeTests.swift:344"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 183,
+      "status": "source-backed correction identified",
+      "cause": "legacy ledger assertions accidentally select native-backed wreck"
+    },
+    {
+      "method": "identicalInstalledCopyDeduplicatesWithoutRewritingUserContent()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:183"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "source-backed correction identified",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+    },
+    {
+      "method": "defaultDiscoveryRestoresTheSavedOriginalDigestBesideChangedSameVersionContent()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:385"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "source-backed correction identified",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+    },
+    {
+      "method": "installedDistinctContentKeepsItsIdentityAndExternalOrdering(_:)",
+      "assertionRecords": 2,
+      "locations": [
+        "BundledScriptPackTests.swift:208"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "source-backed correction identified",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+    },
+    {
+      "method": "defaultDiscoveryIsReadOnlyAndExplicitMissingDirectoryStaysExternalOnly()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:151"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "source-backed correction identified",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+    },
+    {
+      "method": "malformedInstalledContentReportsItsErrorAlongsideBundledCourier()",
+      "assertionRecords": 1,
+      "locations": [
+        "BundledScriptPackTests.swift:237"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "source-backed correction identified",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+    },
+    {
+      "method": "defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
+      "assertionRecords": 2,
+      "locations": [
+        "BundledScriptPackTests.swift:263",
+        "BundledScriptPackTests.swift:314"
+      ],
+      "expectation": "unexpected failure; no deliberate expected failure identified",
+      "issue": 184,
+      "status": "source-backed correction identified",
+      "cause": "expected registry19 versus actual31 bundled packs and board rows"
+    }
+  ],
+  "saveReopenPasses": [
+    {
+      "method": "courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row:)",
+      "argumentRows": 6,
+      "seconds": 2522.957
+    },
+    {
+      "method": "freightRealPartialChoiceAndFailedFinalWriterPreserveUnitsAndPayOnce()",
+      "seconds": 3545.056
+    }
+  ],
+  "crashIssue": 185,
+  "qualification": "individual passes and recorded failures only; failed unfiltered suite; no sanitizer/leak/release qualification"
+}

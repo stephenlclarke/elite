@@ -10516,6 +10516,40 @@
       "terminal_62_method_inventory_retained": true,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T01:43:24.347351+00:00",
+      "checkpoint_key": "20261024-m01-durable62map-local-repairs",
+      "event": "Complete terminal assertion mapping persisted; coherent local repairs authored but unqualified",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "methods_mapped": 62,
+      "assertion_records_mapped": 107,
+      "explicit_pending_source_diagnoses": 4,
+      "issue_groups": [
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184
+      ],
+      "separate_crash_issue": 185,
+      "mapping_path": "docs/evidence/M01-ae97-terminal-review.json",
+      "review_comment": 6378311082,
+      "local_changed_files_approx": 30,
+      "source_review": "pending",
+      "unit_result": "not_run",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
