@@ -207,15 +207,12 @@ def inspect_instance_storage(source: str) -> list[str]:
     field = body.split("  private struct Field<Value: Sendable>: Sendable {", 1)[1].split("\n  }", 1)[0]
     field = re.sub(r"//[^\n]*", "", field)
     expected = """
-        private final class InitialNil { var value: Value? }
         private var values: [Value?]
+        @inline(never)
         init() {
-          let initial = InitialNil()
-          values = withUnsafePointer(to: &initial.value) { source in
-            Array(unsafeUninitializedCapacity: 1) { destination, initializedCount in
-              destination.baseAddress!.initialize(from: source, count: 1)
-              initializedCount = 1
-            }
+          values = Array(unsafeUninitializedCapacity: 1) { destination, initializedCount in
+            destination.baseAddress!.initialize(to: nil)
+            initializedCount = 1
           }
         }
         init(_ value: consuming Value?) { values = [consume value] }
@@ -226,7 +223,7 @@ def inspect_instance_storage(source: str) -> list[str]:
         }
     """
     if compact(field) != compact(expected):
-        raise ValueError("Field storage must retain typed Array COW and initialized heap-to-heap nil construction")
+        raise ValueError("Field storage must retain typed Array COW and bounded direct nil initialization")
     keys = re.search(r"private enum CodingKeys: String, CodingKey \{(.*?)\n  \}", body, re.S)
     if keys is None or re.findall(r"case (\w+)", keys[1]) != fields:
         raise ValueError("Codec must retain every logical key once in order")

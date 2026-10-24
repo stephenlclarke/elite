@@ -165,7 +165,8 @@ class ScriptInstanceStorageInventoryTests(unittest.TestCase):
         for before, after in [
             ("_modify { yield &values[0] }", "_modify { fatalError() }"),
             ("initializedCount = 1", "initializedCount = 0"),
-            ("initialize(from: source, count: 1)", "initialize(to: source.pointee)"),
+            ("destination.baseAddress!.initialize(to: nil)", ""),
+            ("    @inline(never)\n    init() {", "    init() {"),
         ]:
             with self.subTest(before=before), self.assertRaisesRegex(ValueError, "typed Array COW"):
                 inspect_instance_storage(self.changed(before, after))

@@ -52,20 +52,15 @@ private struct ScriptInstanceValue: Codable, Sendable, Equatable {
   // Each large optional value has its own standard Array COW buffer. Parent cloning
   // shares these small handles; only mutation of that field detaches its initialized value.
   private struct Field<Value: Sendable>: Sendable {
-    private final class InitialNil {
-      var value: Value?
-    }
     private var values: [Value?]
 
+    @inline(never)
     init() {
-      // This fresh, unshared heap slot supplies nil without a child-sized value argument.
-      // Only this constructor takes inout access; shared source fields are always read only.
-      let initial = InitialNil()
-      values = withUnsafePointer(to: &initial.value) { source in
-        Array(unsafeUninitializedCapacity: 1) { destination, initializedCount in
-          destination.baseAddress!.initialize(from: source, count: 1)
-          initializedCount = 1
-        }
+      // Initialize the array element directly. Copying from a class field can read
+      // past that field's allocation when the optional's stride exceeds its size.
+      values = Array(unsafeUninitializedCapacity: 1) { destination, initializedCount in
+        destination.baseAddress!.initialize(to: nil)
+        initializedCount = 1
       }
     }
 
