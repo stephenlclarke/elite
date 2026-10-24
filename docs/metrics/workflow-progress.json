@@ -11590,6 +11590,24 @@
       "mba_active_assignment": "206_actual_EMP_reload_diagnostic_source_attribution",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:18:50.108712+00:00",
+      "checkpoint_key": "20261024-m01-bbfb-terminal-remaining-corrections",
+      "event": "Combined affected qualification terminal; remaining corrections stay in one packet",
+      "source_commit": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "exit_code": 1,
+      "wall_seconds": 280.3813554160297,
+      "build_seconds": 154.28,
+      "runtime_summary_seconds": 122.185,
+      "selected_methods": 67,
+      "root_counted_pass_summaries": 54,
+      "root_counted_failed_method_summaries": 13,
+      "issue_records": 26,
+      "xml_present": false,
+      "mba_terminal_verification": "assigned",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
