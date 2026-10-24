@@ -11262,6 +11262,21 @@
       "reviewer_fixes_authorized": false,
       "work_packet": "single_M01_193_213_correction",
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T07:36:04.955790+00:00",
+      "checkpoint_key": "20261024-m01-combined-fixture-patch-in-progress",
+      "event": "Observed actual working-tree fixture corrections in progress within single M01 packet",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "test_files_changed_at_observation": 14,
+      "additions_at_observation": 57,
+      "removals_at_observation": 17,
+      "frozen_patch": false,
+      "independent_review": "pending_combined_delta",
+      "unit_execution": "not_started",
+      "implemented_acceptance": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
