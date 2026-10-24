@@ -10934,9 +10934,38 @@
       "expected_unique_methods": 26,
       "filter_unchanged": true,
       "existing_build_outputs_retained": true,
-      "status": "starting",
+      "status": "completed_assertion_failure",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "exit_code": 1,
+      "wall_seconds": 781.684727208,
+      "build_seconds": 128.54,
+      "reported_methods": 26,
+      "reported_passed": 24,
+      "reported_failed": 2,
+      "reported_test_seconds": 651.955,
+      "xml_available": false,
+      "independent_verification": "complete",
+      "sigbus": false,
+      "verification_receipt": "/tmp/elite-mba-914-page-lifetimes-result-verification.json"
+    },
+    {
+      "at": "2026-10-24T04:06:03.297251+00:00",
+      "checkpoint_key": "20261024-m01-914690-two-failure-correction-assigned",
+      "event": "Corrected affected batch completed; two remaining source diagnoses assigned in same packet",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "head": "9146909960b97dca6fa03135125d256bb08aec6c",
+      "remaining_issues": [
+        190,
+        191
+      ],
+      "owner_evacuation_method_reported_passed": true,
+      "automatic_g12_docking_reported_passed": true,
+      "independent_verification": "complete",
+      "m01_complete": false,
+      "usable_delivery": false,
+      "verification_receipt": "/tmp/elite-mba-914-page-lifetimes-result-verification.json"
     }
   ],
   "two_developer_phase": {
