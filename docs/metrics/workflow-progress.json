@@ -10273,6 +10273,22 @@
       "unit_result": "pending",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T00:00:53.653902+00:00",
+      "checkpoint_key": "20261024-m01-outergame-batch-compile-exclusivity",
+      "event": "First outer Game batch stopped at test compile; two unique projected-access test errors assigned to G1 in same packet",
+      "source_head": "e1516c6830fdcc914504c2e5645d810c61f1bcc1",
+      "wall_seconds": 229.258909167,
+      "exit_code": 1,
+      "failure_phase": "test_compile",
+      "unique_source_errors": 2,
+      "methods_completed": 0,
+      "game_size_measured": false,
+      "owner": "G1",
+      "reviewer": "MBA",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
