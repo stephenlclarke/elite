@@ -12287,6 +12287,28 @@
       "usable_build_delivered": false,
       "new_report_directory": "/tmp/elite-m01-7b51-crash",
       "new_image_uuid": "3784B026-06B9-3ECF-846F-0BEA63675892"
+    },
+    {
+      "at": "2026-10-24T10:03:19.647215+00:00",
+      "checkpoint_key": "20261024-m02-l337-product-packet-pushed",
+      "owner": "G4",
+      "pr": 215,
+      "commit": "29df8a0c7662b2b84a5dfeeb96314f4f56923bfb",
+      "new_hosted_run": 40084290033,
+      "unit_selector_methods": 527,
+      "owner_reported_python_packaging_pass": 7,
+      "owner_reported_crash_fixture_pass": 59,
+      "owner_reported_observer_fixture_pass": 14,
+      "new_source_review": "queued behind actionableM01",
+      "last_upstream_sync": "2026-10-24T10:01:00Z",
+      "upstream_sha": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "sync_outcome": "unchanged/no-op",
+      "m01_new_crash_independent_receipt": "/tmp/elite-mba-7b51-delayed-crash-verification.json",
+      "usable_build_delivered": false,
+      "m01_final62b_unit_run": 40082188469,
+      "m01_final62b_unit_verified_methods": 524,
+      "m01_unit_receipt": "/tmp/elite-mba-62b-unit-verification.json",
+      "m01_commoncaller_scope": "Two demonstrated parent files; one combined review and same six-method batch"
     }
   ],
   "two_developer_phase": {
