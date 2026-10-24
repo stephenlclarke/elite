@@ -1,6 +1,6 @@
 # M01 combined release-blocker checkpoint
 
-This draft checkpoint combines issues159-168 in one packet. The actual source is `eb5ab2d865066bfbd199527ded51fdf3af15a566`; the publication child adds evidence and the four agreed Root documents from `3d59874d9e45a28172a1040a5a8dc25672c620e9`. Independent combined source review found no additional concrete semantic, authority or style defect. Runtime qualification remains incomplete, so this packet is not ready to merge or release.
+This M01 packet combines scoped blockers159-170. The current affected source `e7749ef9b0686d8b2d7427b2fe5a2eee1fb0f2de` passes the combined19-method normal batch, including the original crash paths and value/actor/quote/writer isolation checks. Independent source and result review is clear. The [durable receipt](evidence/M01-outer-game-value-storage.json) records exact command, timings and Game's measured8-byte value footprint. Required full quality, completed-save/native journey and release acceptance remain pending. Earlier failed receipts below remain historical evidence.
 
 ## Included corrections
 
@@ -16,10 +16,12 @@ This draft checkpoint combines issues159-168 in one packet. The actual source is
 | [166](https://github.com/stephenlclarke/elite/issues/166) | Shared target candidate receiver with unchanged traversal/provider ordering |
 | [167](https://github.com/stephenlclarke/elite/issues/167) | Full mission-actor fit/profile/component/design equality with borrowed inputs |
 | [168](https://github.com/stephenlclarke/elite/issues/168) | Procurement, RRS and native courier ordering; concrete emitted Game-copy boundary |
+| [169](https://github.com/stephenlclarke/elite/issues/169) | Ordered mission availability and quote-parent lifetime boundaries |
+| [170](https://github.com/stephenlclarke/elite/issues/170) | Outer Game copy-on-write values, snapshot/epoch/rollback isolation |
 
-The final pass uses synchronous inout stored reads for the proven receiver-copy boundary, the analogous candidate collector and concrete script-state projections. No actor/state/save/schema, eligibility, reward, deadline or terminal publication policy changes. No held hull work, new feature or test selector is imported.
+The final pass uses synchronous inout stored reads for the proven receiver-copy boundary, the analogous candidate collector and concrete script-state projections. No actor/state/save/schema, eligibility, reward, deadline or terminal publication policy changes. No held hull work or new feature is imported. Original selectors remain; focused value-isolation regression methods accompany170.
 
-## Actual affected batch
+## Historical first combined batch
 
 The existing Swift6.1.2/SDK15.5 executor ran one normal four-method batch with jobs3 and coverage enabled. Compilation passed in185.42seconds. The process failed with signal10/exit1 after198.327703625seconds. All four original methods started; none completed and none produced an assertion result. The legacy XCTest wrapper executed0 tests; its passed line is not a Swift Testing result. Swift Testing XML remains unfinished52bytes.
 
@@ -36,7 +38,7 @@ Three unaffected individual passes from `ec83d6f8` remain separate evidence: two
 
 ## Remaining acceptance and publication
 
-All159-168 original-method acceptance remains open. Required final-head quality, complete unit coverage, ThreadSanitizer, AddressSanitizer and leak stages must actually pass; no later-stage success is inferred from earlier crashes. Completed-contract save/reopen and native M01 journey/release proof remain unqualified. The old d04 signed/notarized ZIP excludes later corrections and is not this release.
+The original four blocked methods now pass within the19-method affected batch at `e7749ef9`; scoped159-170 blockers have individual acceptance evidence, while project merge/release acceptance still requires the remaining gates. Required final-head quality, complete unit coverage, ThreadSanitizer, AddressSanitizer and leak stages must actually pass; no later-stage success is inferred from earlier crashes. Completed-contract save/reopen and native M01 journey/release proof remain unqualified. The old d04 signed/notarized ZIP excludes later corrections and is not this release.
 
 Save the coherent checkpoint remotely, keep PR25 draft, request one actual-head review, then address only genuinely evidenced follow-up findings within this packet. Main protection remains strict with administrator enforcement and required quality. SonarQube stays committed-main-only with the exact main SHA. No merge, administrator bypass, new package or Homebrew publication follows from this checkpoint.
 
@@ -87,3 +89,11 @@ Reviewed `c514fcae576af00ac35cee99935326c6d5e9a431` compiled with Swift6.1.2/SDK
 ## Ordinary presence execution
 
 Reviewed `3b85c914a95ba993b9c8ec25284068acb46ea08f` compiled with Swift6.1.2/SDK15.5 in125.69seconds. The one unchanged eleven-method normal batch exited1/rawSIGBUS10 after137.901964041seconds, with zero completed methods/assertions and unfinished52-byte Swift Testing XML. `/tmp/elite-m01-ordinary-presence` retains log/start/result/image/XML receipts. A normal report matches UUID5B62432A-C02D-3C75-A51A-F42733A1FF8F and collector SHA2560bdc5374fbcc7e5e52bc29ff114ad039af56e32e4f0caccbc10408ade6433de1; the234546 report is retained as `/tmp/elite-m01-ordinary-presence-crash.ips`. Independent current normal-report identity/source/guard attribution is pending. No diagnostic replay was run. No method, issue or new compiled/runtime success is qualified. PR25 remains closed for recovery and final review plus all required gates remain mandatory.
+
+## Combined affected normal batch passes
+
+Source `e7749ef9b0686d8b2d7427b2fe5a2eee1fb0f2de` passes the unchanged combined19-method normal command with Swift6.1.2/SDK15.5, jobs3, default stack and coverage enabled. Compilation completed in48.26seconds; command exit0 after79.76679975seconds. Swift Testing reports19 methods passed after30.088seconds. Its3,273-byte XML contains19 test cases and zero failures, errors or skips. The original delayed-report, station-entry, board-browsing and targeting-price methods now complete. Crew-log authority, protected pod/crew cases, nested value/default isolation, epoch assignment/inout, actor snapshots, failed real writer rollback/retry and frozen quote review also complete.
+
+The same run measures Game size8bytes, stride8bytes and alignment8bytes, within the64-byte regression budget. This is actual normal-unit evidence, not a lazy metadata inference or separate size probe. [The durable receipt](evidence/M01-outer-game-value-storage.json) retains exact source, command, per-method timings, layout and remaining limits; `/tmp/elite-m01-outer-game-repair` retains the original log/start/result/XML. Earlier failed/compile-only receipts remain separate and are not converted into passes.
+
+This satisfies the affected original-method condition for reopening PR25 after independent result verification. Full final-head make ci coverage/sanitizer/leak gates, automated/manual review, completed-contract save/reopen, native M01 journey and release/signing acceptance remain required. This is not full-project or playable-release qualification and does not prove independent child/body temporaries disappear.

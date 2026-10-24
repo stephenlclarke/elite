@@ -1,0 +1,152 @@
+{
+  "source_commit": "e7749ef9b0686d8b2d7427b2fe5a2eee1fb0f2de",
+  "swift": "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0\n",
+  "sdk": "15.5",
+  "command": [
+    "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+    "test",
+    "--jobs",
+    "3",
+    "--enable-code-coverage",
+    "--xunit-output",
+    "/tmp/elite-m01-outer-game-repair.xml",
+    "--filter",
+    "(?:^|\\.)(?:delayedNativeReportRetainsCauseTimeSeparatelyFromCompletionCommitTime|NativeStationSnapshotUnitTests/authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget|nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline|targetingUpgradesUseLaserRelatedPricesAndPersistOneEffectiveTier)\\(|NativeCrewLogRecorderBoundaryUnitTests/|NativePodProtectionTests/|NativeCrewCaptureTests/(?:actualCutterCapturesRemainingOriginalPeopleFittingRealHold|refusedActualInteractionLeavesEveryOriginalPersonAtSource)|GameOuterStorageUnitTests/|GameCommanderStorageTests/|frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 79.76679975,
+  "build_seconds": 48.26,
+  "swift_testing_seconds": 30.088,
+  "method_count": 19,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "game_value_layout": {
+    "size_bytes": 8,
+    "stride_bytes": 8,
+    "alignment_bytes": 8,
+    "budget_bytes": 64,
+    "source": "same normal unit-run log"
+  },
+  "methods": [
+    {
+      "classname": "EliteCoreTests",
+      "name": "nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline()",
+      "time": "13.657785542",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativeCrewLogRecorderBoundaryUnitTests",
+      "name": "markedRecorderRetainsEveryPresentAuthorityAndExactReturnedBody(condition:)",
+      "time": "13.67765625",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativeCrewLogRecorderBoundaryUnitTests",
+      "name": "unmarkedTargetsRejectWithoutChangingRetainedCustody(condition:)",
+      "time": "13.558059625",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests",
+      "name": "frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept()",
+      "time": "13.558259584",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameOuterStorageUnitTests",
+      "name": "retainedRuntimeValuesDetachNestedSceneUIAndCommanderWritesWithoutNewDefaults()",
+      "time": "13.657470083",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameOuterStorageUnitTests",
+      "name": "epochWritesResetOnlyTheirOwnedRuntimeAndPreserveRetainedSnapshots(mode:)",
+      "time": "13.557971417",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameOuterStorageUnitTests",
+      "name": "outerRuntimeValueKeepsBoundedCopyFootprint()",
+      "time": "13.55820075",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativePodProtectionTests",
+      "name": "genuinePodCannotBorrowRescuePermissionAcrossIndependentClaimsOrBrokenCustody(reason:)",
+      "time": "13.657429375",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativePodProtectionTests",
+      "name": "actualVerifiedLaserContactCannotDamageAnOtherwiseRescuableProtectedPod()",
+      "time": "13.668686833",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativePodProtectionTests",
+      "name": "actualProtectedPodAllowsNativeRescueButCannotBecomeOrdinaryCargo(legacy:)",
+      "time": "13.657484417",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests",
+      "name": "delayedNativeReportRetainsCauseTimeSeparatelyFromCompletionCommitTime()",
+      "time": "30.088157375",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativeStationSnapshotUnitTests",
+      "name": "authenticEntryAttackStillUsesMountedGunPhysicalEvasionAndOneBudget()",
+      "time": "13.558013125",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests",
+      "name": "targetingUpgradesUseLaserRelatedPricesAndPersistOneEffectiveTier()",
+      "time": "13.558224708",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativeCrewCaptureTests",
+      "name": "refusedActualInteractionLeavesEveryOriginalPersonAtSource(reason:)",
+      "time": "16.510967292",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.NativeCrewCaptureTests",
+      "name": "actualCutterCapturesRemainingOriginalPeopleFittingRealHold()",
+      "time": "13.657443583",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameCommanderStorageTests",
+      "name": "failedActualLaunchPublicationRollsBackNestedStateAndRetryKeepsOldSnapshots()",
+      "time": "2.515163042",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameCommanderStorageTests",
+      "name": "gameCopiesDetachNestedCommanderMutationsAndWholeValueReplacement()",
+      "time": "2.384309875",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameCommanderStorageTests",
+      "name": "borrowedCommanderReadsPreserveDefaultFlightAndOwnedSnapshots()",
+      "time": "2.384258458",
+      "status": "passed"
+    },
+    {
+      "classname": "EliteCoreTests.GameCommanderStorageTests",
+      "name": "actorSnapshotsRemainIndependentThroughActualXYZzyGrantAndCallerMutation()",
+      "time": "2.610225292",
+      "status": "passed"
+    }
+  ],
+  "limits": [
+    "Affected normal batch only; full make ci coverage/sanitizer/leak gates remain pending.",
+    "No native M01 journey, completed-contract save/reopen or release qualification follows from this batch.",
+    "Earlier failed normal and test-compilation receipts remain retained separately."
+  ]
+}
