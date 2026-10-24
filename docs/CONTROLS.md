@@ -94,7 +94,7 @@ Naval mission messages retain the two-second incoming-message delay. Return/Spac
 
 ## Charts, search and routes
 
-Left/Right or clicking selects a planet. Docked charts 4/5 include all planet facts, clues and the globe; Option-Up/Down scrolls that data panel. In flight, 6 retains the separate data page. The retired docked data page is replaced by showroom 6.
+Left/Right or clicking selects a planet. Docked charts 4/5 include all planet facts, clues and the globe; Option-Up/Down scrolls that data panel. Context help advertises scrolling only when the selected planet data exceeds the current viewport; otherwise it states that all planet data is visible. In flight, 6 retains the separate data page. The retired docked data page is replaced by showroom 6.
 
 | Action | Control |
 | --- | --- |

@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-private let gameplayCombatLogger = Logger(subsystem: "io.xyzzy.elite", category: "GameplayCombat")
+private let gameplayCombatLogger = Logger(subsystem: "io.xyzzy.l337", category: "GameplayCombat")
 
 extension Game {
   /// Capture the emitter once. Projectiles retain this origin even if it disappears.

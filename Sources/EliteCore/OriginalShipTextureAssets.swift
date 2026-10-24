@@ -43,7 +43,7 @@ public enum OriginalShipTextureAssets {
   private static let pixels: [String: ShipTexturePixels] = {
     let bundle =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     guard let folder = bundle.url(forResource: "OriginalShipTextures", withExtension: nil),
       let manifest = boundedData(folder.appendingPathComponent("manifest.json"), maximum: 131_072)

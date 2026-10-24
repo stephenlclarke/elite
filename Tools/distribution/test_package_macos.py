@@ -1,5 +1,6 @@
 """Preserve copied resource paths and exact bytes in either macOS bundle layout."""
 
+import plistlib
 import re
 import tempfile
 import unittest
@@ -15,8 +16,8 @@ class PackagedResourceTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.source = self.root / "Sources/EliteCore/Resources"
-        self.app = self.root / "Elite.app"
-        self.bundle = self.app / "Contents/Resources/Elite_EliteCore.bundle"
+        self.app = self.root / "L337.app"
+        self.bundle = self.app / "Contents/Resources/L337_EliteCore.bundle"
         self.resources = {
             "Ships/ship.toml": b"ship",
             "MissionPacks/campaign/manifest.toml": b"legacy campaign",
@@ -55,6 +56,62 @@ class PackagedResourceTests(unittest.TestCase):
                 path = Path(path.name)
             self.write(destination / path, contents)
         return destination
+
+    def test_created_app_preserves_executable_legal_and_resource_bytes(self):
+        legal = {"LICENSE": b"project licence", "NOTICE.md": b"original attribution",
+                 "Resources/Elite.icns": b"existing renderer icon"}
+        for relative, contents in legal.items():
+            self.write(self.root / relative, contents)
+        for nested in (False, True):
+            with self.subTest(nested=nested):
+                directory = self.root / str(nested)
+                binaries = directory / "bin"
+                executable = binaries / "L337"
+                self.write(executable, b"fixture executable, never launched")
+                executable.chmod(0o755)
+                bundle = binaries / "L337_EliteCore.bundle"
+                destination = bundle / "Contents/Resources" if nested else bundle
+                for relative, contents in self.resources.items():
+                    path = Path(relative)
+                    if path.parts[0] in ("Legal", "ModelLicenses"):
+                        path = Path(path.name)
+                    self.write(destination / path, contents)
+                app = package_macos.create_bundle(directory / "output", binaries,
+                                                  "2.3.4", "a" * 40)
+                self.assertEqual(app.name, "L337.app")
+                delivered = app / "Contents/MacOS/L337"
+                self.assertEqual(delivered.read_bytes(), executable.read_bytes())
+                self.assertEqual(delivered.stat().st_mode & 0o777, 0o755)
+                for relative, contents in legal.items():
+                    self.assertEqual((app / "Contents/Resources" / Path(relative).name)
+                                     .read_bytes(), contents)
+                package_macos.verify_resources(app)
+                info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+                self.assertEqual(info["CFBundleExecutable"], delivered.name)
+                self.assertEqual(info["CFBundleName"], "L337")
+                self.assertEqual(info["CFBundleDisplayName"], "L337")
+                self.assertEqual(info["CFBundleIdentifier"], "io.xyzzy.l337")
+                self.assertEqual(info["CFBundleShortVersionString"], "2.3.4")
+                self.assertEqual(info["CFBundleVersion"], "2.3.4")
+                self.assertEqual(info["EliteSourceRevision"], "a" * 40)
+                self.assertEqual(info["LSMinimumSystemVersion"], "14.0")
+                self.assertFalse((app / "Contents/MacOS/Elite").exists())
+
+    def test_development_and_release_bundle_identity_agree(self):
+        root = Path(package_macos.__file__).resolve().parents[2]
+        launcher = (root / "script/build_and_run.sh").read_text()
+        template = launcher.split("<<'PLIST'\n", 1)[1].split("\nPLIST", 1)[0]
+        development = plistlib.loads(template.encode())
+        for relative in ("Resources/Elite.icns", "LICENSE", "NOTICE.md"):
+            self.write(self.root / relative, b"legal/icon fixture")
+        binaries = self.root / "bin"
+        self.write(binaries / "L337", b"never executed")
+        (binaries / "L337_EliteCore.bundle").mkdir()
+        app = package_macos.create_bundle(self.root / "output", binaries, "2.3.4", "b" * 40)
+        release = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+        for key, value in development.items():
+            with self.subTest(key=key):
+                self.assertEqual(release[key], value)
 
     def test_copied_paths_and_processed_legal_files_survive_both_bundle_layouts(self):
         for nested in (False, True):

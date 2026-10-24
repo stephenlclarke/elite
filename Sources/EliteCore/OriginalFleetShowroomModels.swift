@@ -61,7 +61,7 @@ public enum OriginalFleetShowroomModels {
   private static let bundled: Result<Store, Failure> = {
     let bundle =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     guard
       let directory = bundle.url(forResource: "OriginalFleetShowroomModels", withExtension: nil),

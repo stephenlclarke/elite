@@ -67,16 +67,16 @@ def source_checkpoint(action="packaging"):
 
 def create_bundle(directory, binary_directory, version, revision):
     """Package the release executable and its exact runtime resources."""
-    app = directory / "Elite.app"
+    app = directory / "L337.app"
     contents = app / "Contents"
     macos = contents / "MacOS"
     resources = contents / "Resources"
     macos.mkdir(parents=True)
     resources.mkdir()
-    shutil.copy2(binary_directory / "Elite", macos / "Elite")
+    shutil.copy2(binary_directory / "L337", macos / "L337")
     shutil.copytree(
-        binary_directory / "Elite_EliteCore.bundle",
-        resources / "Elite_EliteCore.bundle",
+        binary_directory / "L337_EliteCore.bundle",
+        resources / "L337_EliteCore.bundle",
     )
     for source, name in [
         ("Resources/Elite.icns", "Elite.icns"),
@@ -85,10 +85,10 @@ def create_bundle(directory, binary_directory, version, revision):
     ]:
         shutil.copy2(ROOT / source, resources / name)
     info = {
-        "CFBundleExecutable": "Elite",
-        "CFBundleIdentifier": "io.xyzzy.elite",
-        "CFBundleName": "Elite",
-        "CFBundleDisplayName": "XYZZY Elite - Right-On Commander",
+        "CFBundleExecutable": "L337",
+        "CFBundleIdentifier": "io.xyzzy.l337",
+        "CFBundleName": "L337",
+        "CFBundleDisplayName": "L337",
         "CFBundlePackageType": "APPL",
         "CFBundleIconFile": "Elite.icns",
         "CFBundleShortVersionString": version,
@@ -105,7 +105,7 @@ def create_bundle(directory, binary_directory, version, revision):
 
 def verify_resources(app):
     """Verify maintained resources using SwiftPM's copied/processed layouts."""
-    bundle = app / "Contents/Resources/Elite_EliteCore.bundle"
+    bundle = app / "Contents/Resources/L337_EliteCore.bundle"
     if (bundle / "Contents/Resources").is_dir():
         bundle = bundle / "Contents/Resources"
     for source in (ROOT / "Sources/EliteCore/Resources").rglob("*"):
@@ -141,7 +141,7 @@ def package(options):
     binary_directory = Path(run(*build, "--show-bin-path", capture=True).stdout.strip())
     output = ROOT / "releases/macos"
     output.mkdir(parents=True, exist_ok=True)
-    name = f"Elite-{options.version}-universal"
+    name = f"L337-{options.version}-universal"
     archive = output / (name + ".zip")
     with tempfile.TemporaryDirectory(
         prefix="elite-package-", dir=ROOT / ".build"
@@ -155,7 +155,7 @@ def package(options):
             "--timestamp",
             "--sign",
             options.identity,
-            str(app / "Contents/Resources/Elite_EliteCore.bundle"),
+            str(app / "Contents/Resources/L337_EliteCore.bundle"),
         )
         run(
             "codesign",
@@ -205,7 +205,7 @@ def package(options):
             )
         extracted = directory / "extracted"
         run("ditto", "-x", "-k", str(archive), str(extracted))
-        delivered = extracted / "Elite.app"
+        delivered = extracted / "L337.app"
         run("codesign", "--verify", "--strict", "--deep", "--verbose=2", str(delivered))
         details = run("codesign", "-dvv", str(delivered), capture=True).stderr
         if (
@@ -217,7 +217,7 @@ def package(options):
                 "Expected a timestamped Developer ID signature with hardened runtime."
             )
         architectures = run(
-            "lipo", "-archs", str(delivered / "Contents/MacOS/Elite"), capture=True
+            "lipo", "-archs", str(delivered / "Contents/MacOS/L337"), capture=True
         ).stdout.split()
         if set(architectures) != {"arm64", "x86_64"}:
             raise RuntimeError("Universal artifact is missing an architecture.")
@@ -225,14 +225,14 @@ def package(options):
             "xcrun",
             "vtool",
             "-show-build",
-            str(delivered / "Contents/MacOS/Elite"),
+            str(delivered / "Contents/MacOS/L337"),
             capture=True,
         ).stdout
         minimums = re.findall(r"minos\s+([0-9.]+)", build_versions)
         if minimums != ["14.0", "14.0"]:
             raise RuntimeError("Both executable slices must target macOS 14.0.")
         verify_resources(delivered)
-        run(str(delivered / "Contents/MacOS/Elite"), "--diagnostics")
+        run(str(delivered / "Contents/MacOS/L337"), "--diagnostics")
         gatekeeper = run(
             "spctl",
             "--assess",
@@ -263,7 +263,7 @@ def package(options):
             "sha256": digest,
             "signature": "Developer ID Application",
             "signatureDetails": [
-                "Executable=Elite.app/Contents/MacOS/Elite"
+                "Executable=L337.app/Contents/MacOS/L337"
                 if line.startswith("Executable=")
                 else line
                 for line in details.splitlines()
@@ -274,7 +274,7 @@ def package(options):
             "gatekeeperAccepted": gatekeeper.returncode == 0,
             "gatekeeperAssessment": (gatekeeper.stdout + gatekeeper.stderr)
             .strip()
-            .replace(str(delivered), "Elite.app"),
+            .replace(str(delivered), "L337.app"),
             "verification": "Extracted ZIP: strict deep signature, architectures, exact resources and diagnostics passed.",
         }
         (output / (name + ".json")).write_text(json.dumps(manifest, indent=2) + "\n")

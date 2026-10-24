@@ -176,7 +176,7 @@ public enum ShipCatalogue {
   public static var modelCount: Int { all.count }
   private static let resources: Bundle =
     Bundle.main.resourceURL.flatMap {
-      Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+      Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
     } ?? Bundle.module
   public static var folder: URL { resources.resourceURL!.appendingPathComponent("Ships") }
   public static func load(from directory: URL) throws -> [CatalogueShip] {

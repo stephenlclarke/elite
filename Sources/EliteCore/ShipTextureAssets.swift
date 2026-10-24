@@ -50,7 +50,7 @@ public enum ShipTextureAssets {
   private static let catalogue: Catalogue = {
     let bundle =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     guard let folder = bundle.url(forResource: "ShipTextures", withExtension: nil),
       let data = boundedData(folder.appendingPathComponent("manifest.json"), maximum: 32_768)

@@ -199,7 +199,7 @@ def main():
             assert doc.count('## '+ship['id']+' - ')==1
             assert '(ships/'+ship['id']+'.gif)' in doc
         print('All',len(ships),'TOMLs/GIFs/reference sections current');return
-    if changed:subprocess.run(['swift','run','Elite','--ship-media',*changed],check=True)
+    if changed:subprocess.run(['swift','run','L337','--ship-media',*changed],check=True)
     MEDIA.mkdir(parents=True,exist_ok=True)
     manifest={s['id']:dict(input=fingerprint((ship_files.SHIP_FOLDER/(s['id']+'.toml')).read_bytes(),shared),output=digest((MEDIA/(s['id']+'.gif')).read_bytes())) for s in ships}
     manifest_path.write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
