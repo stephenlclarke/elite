@@ -10981,6 +10981,21 @@
       "issue191_status": "diagnostic_attribution_not_fixed",
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T04:11:16.593373+00:00",
+      "checkpoint_key": "20261024-m01-b58-two-failed-methods-running",
+      "event": "Reviewed two-file follow-up frozen; only two failed methods selected and running",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "head": "b58f3b83595392bd4f0a415bd9265ae5a9fe1a93",
+      "committed_reviewed_code_hashes_match": true,
+      "expected_methods": 2,
+      "retained_prior_passes": 24,
+      "status": "running",
+      "issue191_status": "diagnostic_attribution_not_fixed",
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
