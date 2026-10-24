@@ -11639,6 +11639,23 @@
       "new_execution": false,
       "m01_complete": false,
       "usable_delivery": false
+    },
+    {
+      "at": "2026-10-24T08:28:22.530233+00:00",
+      "checkpoint_key": "20261024-m01-bbfb-followup-frozen-review-assigned",
+      "event": "One combined 10-file blocker follow-up frozen and assigned actual delta review",
+      "owner": "G1",
+      "reviewer": "MBA",
+      "base": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "patch_sha256": "2c776c0e67aa773c7405e62ad5ccd30696ad04268330cf6d92d2814bf86f05ec",
+      "root_verified_hashes": 10,
+      "production_changes": false,
+      "executed": false,
+      "retained_passes": 54,
+      "retained_fake_unit_passes": 14,
+      "gpu_passes_in_retained54": 2,
+      "m01_complete": false,
+      "usable_delivery": false
     }
   ],
   "two_developer_phase": {
