@@ -10636,9 +10636,25 @@
       "test_seconds_reported": 39.895,
       "methods_completed_reported": 135,
       "assertion_issues_reported": 6,
-      "independent_result_review": "pending",
+      "independent_result_review": "clear_complete_xml_and_source_hashes",
       "sigbus_reproduced": false,
-      "crash185_still_open": true
+      "crash185_still_open": true,
+      "xml_methods": 135,
+      "xml_passed": 131,
+      "xml_failed": 4,
+      "xml_failure_elements": 6,
+      "xml_errors": 0,
+      "xml_skips": 0,
+      "original62_present": 62,
+      "original62_passed": 60,
+      "original62_failed": 2,
+      "remaining_failed_methods": [
+        "actualClassicRuntimeSteersAndTranslatesOnceWithNativeFireOnlyForDeclaredHostility",
+        "nativeMovingDebrisUsesNPCShieldsAndNativeDeathWithoutPlayerReward",
+        "recoveredECMAndScoopsUseTheRealFlightConsumers",
+        "pendingOreRecoveryWaitsExpiresAndQPreservesMomentum"
+      ],
+      "reviewed_code_file_hashes_matched": 32
     }
   ],
   "two_developer_phase": {
