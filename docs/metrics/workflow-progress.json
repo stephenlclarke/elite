@@ -11924,6 +11924,22 @@
       "usable_delivery": false,
       "correction_scope": "separate_no_whitespace_authorization_root_preserve_runner_location_and_security",
       "unit_duplicate_cancellation": "G1_requested_optional_PR40081071124_keep_VM_push40081066612"
+    },
+    {
+      "at": "2026-10-24T09:21:27.117515+00:00",
+      "checkpoint_key": "20261024-m01-d009-524-units-verified-hook-review",
+      "source_commit": "d0099a77199bf5586062f0a22a7ef44439e3d8de",
+      "unit_run": 40081066612,
+      "unit_methods_passed": 524,
+      "unit_missing_extra_failed_skipped": 0,
+      "review_receipt": "/tmp/elite-mba-d009-unit-verification.json",
+      "duplicate_optional_unit_run": 40081071124,
+      "duplicate_optional_unit_conclusion": "cancelled",
+      "hook_fix_patch_sha256": "85e9d04dfa24a5f74680bff452562af1ef273d020277b230dd82cc5136229dcf",
+      "hook_fix_state": "frozen; MBA independent review assigned",
+      "full_quality_passed": false,
+      "usable_build_delivered": false,
+      "m01_complete": false
     }
   ],
   "two_developer_phase": {
