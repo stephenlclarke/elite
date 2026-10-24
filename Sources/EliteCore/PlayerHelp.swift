@@ -419,7 +419,7 @@ public enum PlayerHelp {
           "DELETE - ERASE; COMMAND-DELETE - CLEAR",
           "CLICK CLEAR FILTER - SHOW ALL SHIPS",
           "CLICK PIN BASE / YOUR SHIP / COMPARE",
-          "CLICK PREV / NEXT TO CHANGE PROFILE",
+        ] + ShowroomProfileGuide.rows(profileCount: game.showroomProfiles.count) + [
           "CLICK SOURCE NOTES / GAME VALUES",
           "CLICK PAUSE / ROTATE TO STOP MOTION",
           "OPTION-UP/DOWN - PAGE ACTIVE PANE",

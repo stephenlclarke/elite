@@ -39,6 +39,11 @@ METHODS = {
         "storageAndSeparateWorkToolsChargeExactlyWithoutRefillingOrReplacingCombatWeapons",
         "stockShieldPurchasesAreMonotonicAndPreserveBothCurrentFractions",
     ),
+    "ShowroomProfileGuideUnitTests": (
+        "carriedFitHelpDoesNotAdvertiseDisabledProfileButtons",
+        "sourceProfileHelpRetainsRealCyclingControlsAndCompactPaging",
+        "noFilteredProfileDoesNotInventCyclingInEitherValueMode",
+    ),
     "NativeTrainingReservationCodecUnitTests": (
         "reservationAndTrainingArchivesRetainClosedNamespacesAndValueSemantics",
     ),
