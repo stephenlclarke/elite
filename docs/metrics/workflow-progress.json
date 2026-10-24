@@ -12250,6 +12250,22 @@
       "result": "pending",
       "m01_complete": false,
       "usable_build_delivered": false
+    },
+    {
+      "at": "2026-10-24T09:59:06.994529+00:00",
+      "checkpoint_key": "20261024-m03-first-packet-qualified-m02-package-rename-authorised",
+      "m03_pr": 214,
+      "m03_commit": "af73ed995ccf2d6aee8ea4086e51049229ca2b2e",
+      "m03_run": 40083085221,
+      "m03_verified_methods": 529,
+      "m03_new_methods_passed": 5,
+      "m03_failure_error_skip_missing_extra_duplicate": 0,
+      "m03_disposition": "source and unit qualified; not merged or playable",
+      "m02_owner": "G4",
+      "m02_packet": "19-file L337 package/product/app phase; modules and storage migration deferred",
+      "hosted_artifact_owner": "MBA sole downloader",
+      "m01_complete": false,
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
