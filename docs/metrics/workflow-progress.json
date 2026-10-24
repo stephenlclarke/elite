@@ -12984,6 +12984,20 @@
       "coherency_followup": "EliteTests.equipmentPurchases exactpricefixture/consumerwrapper",
       "unit_qualification": "pending",
       "usable_build_delivered": false
+    },
+    {
+      "checkpoint_key": "20261024-pr223-coherent-followup-pushed",
+      "timestamp": "2026-10-24T14:35:38.824259+00:00",
+      "pr": 223,
+      "head": "04aa01c86e5168a5160f4cd87f07a3af72f47df9",
+      "production_unchanged_from": "2c29c71b79de02454a2d4e5328ea61c60db8ba86",
+      "followup_paths": 5,
+      "selected_methods": 537,
+      "unit_run": 40103063706,
+      "superseded_run": 40102816410,
+      "superseded_cancellation_requested": true,
+      "followup_review": "pending G4",
+      "usable_build_delivered": false
     }
   ],
   "two_developer_phase": {
