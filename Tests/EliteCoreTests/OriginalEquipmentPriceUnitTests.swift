@@ -26,7 +26,7 @@ struct OriginalEquipmentPriceUnitTests {
       game.commander.system = Plugh.systemID
     } else {
       game.commander.system = try #require(
-        game.systems.first { !$0.isPlugh && $0.technology >= 19 }?.id)
+        game.systems.filter { !$0.isPlugh }.max { $0.technology < $1.technology }?.id)
     }
     game.selectedSystem = game.commander.system
     game.screen = .equipment
