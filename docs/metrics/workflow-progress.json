@@ -11855,9 +11855,16 @@
       "next_patch_sha256": "d611539acbdca990e7044faf5bdf65bf24a9fa6a87f981a31f3f199768b77c19",
       "next_selected_methods": 1,
       "production_changed": false,
-      "mba_terminal_verification": "assigned",
+      "mba_terminal_verification": "complete_committed_hashes_selection_xml",
       "m01_complete": false,
-      "usable_delivery": false
+      "usable_delivery": false,
+      "next_source_review": "clear",
+      "next_review_receipt": "/tmp/elite-mba-907b-scalar-correction-review.json",
+      "next_source_commit": "bb85de185bbd1b39cd4fa763459cdeb8f1eac801",
+      "next_execution": "live_processes_verified",
+      "harness_pid_observed": 28915,
+      "swift_pid_observed": 28987,
+      "next_batch_prefix": "/tmp/elite-m01-bb85-followup"
     }
   ],
   "two_developer_phase": {
