@@ -39,6 +39,10 @@ METHODS = {
         "storageAndSeparateWorkToolsChargeExactlyWithoutRefillingOrReplacingCombatWeapons",
         "stockShieldPurchasesAreMonotonicAndPreserveBothCurrentFractions",
     ),
+    "ShowroomNavigationHintUnitTests": (
+        "specificationArrowHintsFollowActualWindowAndHelpReturnContext",
+        "browseAndSearchKeepSelectionHintsInsteadOfInactiveSpecArrows",
+    ),
     "ApplicationDataPathUnitTests": (
         "freshCommanderAndPackLibrariesShareTheL337Root",
         "explicitSaveDestinationAndRecoveryKeepTheirExistingPathPolicy",
