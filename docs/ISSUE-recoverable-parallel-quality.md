@@ -2,30 +2,28 @@
 
 ## Motivation
 
-The current sanitizer helper runs whole-suite groups serially under one executor lock. A failed or interrupted long campaign can leave later groups unexecuted, and GitHub retries operate at the campaign job boundary. Existing complete checkpoint receipts help local recovery, but their packing-index identity does not provide stable independent shard jobs.
+The existing sanitizer helper executes packing-index batches serially under one global executor lock. A long failed campaign leaves later work unexecuted, and GitHub retries operate at the campaign job boundary. Passed work needs stable, independently recoverable proofs rather than a batch number tied to packing order.
 
-The reviewed planning sample contained 3,403 methods in 36 groups. Twelve completed groups took about 9,212 seconds in total, with one indivisible consumer taking about 5,099 seconds. Two workers cannot remove that consumer's duration. These are retained planning observations, not performance measurements of this change.
+Retained G2 planning evidence describes 3,403 methods in 36 serial groups. One indivisible consumer took about 5,099 seconds; another retained 98-ID batch took about 8,966 seconds. These are planning hints from the existing run, not performance results for this change. More workers cannot make one indivisible consumer finish sooner.
 
-## Requested behavior
+## Required behavior
 
-- Pack whole suites and reviewed shared-process groups against a soft five to ten minute budget. Run long units first and report oversized units intact.
-- Freeze one actual build and discovery per mode and host. Give each worker its own authorized workspace, scratch/database and output directories.
-- Preserve internal TSAN concurrency, single-process ASAN ordering, the 170-method/32-source AppKit group and 13-method/two-source salvage group.
-- Reuse only durable, complete, immutable successes bound to the actual source, host, compiler, SDK, OS, image, environment, selection and policies. Retry missing, failed and incomplete attempts without deleting prior evidence.
-- Serialize unknown or conflicting external resources. Bound the combined TSAN/ASAN pool by reviewed CPU, RAM and disk admission, rather than separate mode budgets.
-- Require exact inventory once per mode, strict declared opt-ins, full normal coverage at the existing 80% gate and zero leaks. Preserve review, protection, SonarQube and release requirements.
+- Pack whole suites and unchanged audited process groups against a soft 300-600 second target, longest first. Keep oversized units intact.
+- Build/discover once per mode and host; retain a complete durable scratch bundle and restore private worker copies without recompiling completed preparation.
+- Preserve internal TSAN concurrency, ASAN ordering, the 170-method/32-source AppKit group and the 13-method/two-source salvage group.
+- Reuse only exact, immutable, exit-zero successes bound to actual inputs, host, toolchain, SDK, OS, image, controls, selection and relevant policies. Retry only missing, failed or incomplete work and retain original evidence.
+- Bound both modes and all controllers through one host pool. Serialize unknown or conflicting external resources. Treat timing hints and worker placement as planning metadata.
+- Bind physical admission to a separately reviewed manual workflow, exact source and workflow bytes, owned host policy and exact run-attempt assignment before checkout.
+- Retain independent per-shard artifacts through an external trusted digest, and require exact both-mode inventory plus full normal coverage at the existing 80% gate and zero leaks. Cancelled or missing work cannot become a physical pass.
 
-## Scope and current hold
+## Implemented scope and hold
 
-This packet adds the protocol, native builder/executor/command adapters and fake-only acceptance tests in five new reserved files. Existing helpers, runner authorization, CI jobs, Makefile, host variables, branch protection and the active M01 run remain unchanged. Every native command fails before file inspection or probes while the activation guard is disabled. The draft targets `release/m01` and must remain unmerged until the current G1 run is terminal and an independent activation review is complete.
+[PR #242](https://github.com/stephenlclarke/elite/pull/242) implements the planner, durable receipts/builds/phases, bounded workers, actual native adapters, pre-job authorizer, artifact transport and manual workflow routing. Changes are limited to the five original reserved new files plus the separately reserved `native_runner.py` policy extension and its tests. Legacy CI authorization remains the default.
 
-The existing host policy authorizes one exact checkout and workflow. A GitHub matrix alone cannot create additional authorized physical workers. Source validation does not establish resource independence, native descendant ownership, host capacity or sanitizer equivalence. Those remain activation prerequisites, detailed in [the PR handoff](PR-recoverable-parallel-quality.md).
+Physical execution remains disabled in code and defaults off in the workflow. No host provisioning, routing-variable edit, workflow dispatch, native build, test, sanitizer, leak probe, GUI or performance measurement is part of this packet. The existing M01 checkout, helper bytes, policy and qualified receipts remain untouched. This PR targets `release/m01` and stays draft/unmerged pending independent review and a separate safe activation.
 
 ## Acceptance evidence
 
-Fake Python processes must cover hard controller loss before and after success publication, timeout, inherited locks, duplicate work, unknown live helpers, incomplete XML, nonzero exit despite complete XML, diagnostic logs, evidence tampering, trusted artifact restore, failed-only retry, exact aggregate gates, resource serialization and CPU/RAM/disk admission. No Swift, game process, sanitizer, leak probe or workflow dispatch is permitted during this source-only packet.
+The focused local packet has 64 passing fake-only test methods: 50 recovery/native-adapter/workflow tests plus 14 selected existing/new authorization tests. Faults cover controller loss, timeout, duplicate/inherited claims, unknown children, invalid XML and exits, diagnostic logs, output/path/permission tampering, failed-only resume, durable mode restoration, phase retry with zero execution, observed helper image mismatch, growing-worker headroom, stale assignments and held/cancelled final gates. Exact receipts and hashes accompany the frozen Orchestrator handoff.
 
-## Links
-
-- Paired implementation handoff: [PR-recoverable-parallel-quality.md](PR-recoverable-parallel-quality.md).
-- The Orchestrator holds the approved G2 design receipt with SHA-256 `881cd106c9a9504ad9e10339350255e1f4e6496e3f7740e69da05b6fae4d8dd2`.
+See [the implementation handoff](PR-recoverable-parallel-quality.md) for protocol details, operational prerequisites and remaining validation.

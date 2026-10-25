@@ -21,10 +21,12 @@ import threading
 import time
 import uuid
 import xml.etree.ElementTree as ET
+import zipfile
 
 import quality_phase_checkpoints as phases
 import sanitizer_checkpoints as legacy
-from crash_artifacts import cleanup_owned_identity, image_uuids, runtime_child_environment, same_process
+from crash_artifacts import (arguments, cleanup_owned_identity, confined, image_uuids,
+                             runtime_child_environment, same_process)
 import native_runner
 
 SCHEMA = 1
@@ -32,6 +34,17 @@ POLICY = "recoverable-parallel-shards-v1"
 # Activation requires a separate reviewed change after the current M01 run.
 PHYSICAL_EXECUTION_ENABLED = False
 MODES = ("thread", "address")
+AUTHORIZATION_CONTROLS = (
+    "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_PATH",
+    "ELITE_RECOVERABLE_REQUEST_MODE", "ELITE_RECOVERABLE_REQUEST_SHARD",
+    "ELITE_RECOVERABLE_REQUEST_WORKER", "ELITE_RECOVERABLE_REQUEST_PHASE",
+    "ELITE_RECOVERABLE_POLICY_SHA256", "ELITE_RECOVERABLE_WORKFLOW_SHA256",
+    "ELITE_RECOVERABLE_ACTIVATION_SHA256", "ELITE_RECOVERABLE_CODE_ENABLED")
+
+
+def execution_policy_digest(config):
+    """Shared execution limits matter; planning hints and physical worker assignment do not."""
+    return fingerprint({"schema": SCHEMA, "policy": POLICY, "host": config["host"], "admission": config["admission"]})
 
 
 def fingerprint(value):
@@ -56,6 +69,30 @@ def require_fields(value, names):
         raise ValueError("Unexpected evidence fields")
 
 
+def validate_authorization(record, runtime):
+    require_fields(record, ("schema", "kind", "head", "host", "role", "run_id", "run_attempt", "mode", "shard",
+                            "worker", "phase", "workflow_sha256", "plan_sha256", "instance", "workspace",
+                            "policy_sha256", "execution_policy_sha256", "controls"))
+    expected = runtime["environment"].get("ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256")
+    if (type(record["schema"]) is not int or record["schema"] != SCHEMA or record["kind"] != "validated-control-plane-v1"
+            or set(record["controls"]) != set(AUTHORIZATION_CONTROLS)
+            or record["host"] != runtime["host"]
+            or record["role"] not in native_runner.RECOVERABLE_JOBS
+            or not re.fullmatch(r"[0-9a-f]{40}", record["head"])
+            or any(not re.fullmatch(r"[1-9][0-9]*", record[name]) for name in ("run_id", "run_attempt"))
+            or any(not re.fullmatch(r"[0-9a-f]{64}", record[name]) for name in (
+                "policy_sha256", "execution_policy_sha256", "workflow_sha256"))
+            or any(value is not None and not re.fullmatch(r"[0-9a-f]{64}", value) for value in record["controls"].values())
+            or hashlib.sha256(record["execution_policy_sha256"].encode()).hexdigest() != expected):
+        raise ValueError("Authorization and actual child execution policy differ")
+    for field, name in (("policy_sha256", "ELITE_RECOVERABLE_POLICY_SHA256"),
+                        ("workflow_sha256", "ELITE_RECOVERABLE_WORKFLOW_SHA256")):
+        if record["controls"][name] != hashlib.sha256(record[field].encode()).hexdigest():
+            raise ValueError("Typed authorization controls differ from admitted facts")
+    if record["controls"]["ELITE_RECOVERABLE_CODE_ENABLED"] != hashlib.sha256(b"true").hexdigest():
+        raise ValueError("Parent activation was not validated")
+
+
 def positive(value):
     if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
         raise ValueError("A finite positive resource bound is required")
@@ -66,6 +103,7 @@ def durable_json(path, value):
     """Use the existing atomic writer, then persist the containing directory."""
     temporary = path.with_name(path.name + ".pending-" + str(uuid.uuid4()))
     legacy.atomic_json(temporary, value)
+    temporary.chmod(0o600)
     temporary.replace(path)
     sync_directory(path.parent)
 
@@ -297,7 +335,7 @@ def evidence_outputs(attempt, runtime, methods):
     """Reuse strict native XML and opt-in validation, without promoting old schemas."""
     entries = physical_tree(attempt)
     allowed = {"test.log", "tests.xml", "tests-swift-testing.xml", "start.json", "result.json",
-               "commit.json", "child.json", "child-exit.json", "processes.json", "environment.json"}
+               "commit.json", "child.json", "child-exit.json", "processes.json", "environment.json", "authorization.json"}
     if any(name not in allowed and not name.startswith("profiles/") for name in entries):
         raise ValueError("Unaccounted evidence file")
     report = attempt / "tests-swift-testing.xml"
@@ -327,6 +365,11 @@ def evidence_outputs(attempt, runtime, methods):
     if (record["schema"] != SCHEMA or record["base"] != runtime["environment"]
             or record["bindings"] != expected or record["actual"] != actual):
         raise ValueError("Actual child environment or typed ephemeral binding changed")
+    if "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256" in runtime["environment"]:
+        authorization = load_json(attempt / "authorization.json")
+        validate_authorization(authorization, runtime)
+        if authorization["head"] != load_json(attempt / "start.json")["tested_head"]:
+            raise ValueError("Authorized source and actual attempt head differ")
     return {name: digest for name, digest in entries.items()
             if name not in ("result.json", "commit.json")}
 
@@ -339,10 +382,7 @@ def validate_success(attempt, identity, receipt_digest=None, immutable=True):
         raise ValueError("Unknown shard identity protocol")
     physical_tree(attempt)
     if immutable:
-        for directory, names, files in os.walk(attempt):
-            if Path(directory).stat().st_mode & 0o222 or any(
-                    (Path(directory) / name).stat().st_mode & 0o222 for name in files):
-                raise ValueError("Success checkpoint is not immutable")
+        require_sealed(attempt)
     receipt_path = attempt / "result.json"
     commit = load_json(attempt / "commit.json")
     require_fields(commit, ("schema", "receipt_sha256"))
@@ -373,12 +413,31 @@ def seal(attempt):
     for directory, names, files in os.walk(attempt, topdown=False):
         for name in files:
             path = Path(directory) / name
+            if path.is_symlink():
+                continue
             with path.open("rb") as stream:
                 os.fsync(stream.fileno())
-            path.chmod(0o400)
+            path.chmod(0o500 if path.stat().st_mode & 0o111 else 0o400)
         Path(directory).chmod(0o500)
         sync_directory(directory)
     sync_directory(attempt.parent)
+
+
+def require_sealed(root):
+    for directory, names, files in os.walk(root, followlinks=False):
+        if Path(directory).stat().st_mode & 0o222 or any(
+                not (Path(directory) / name).is_symlink() and (Path(directory) / name).stat().st_mode & 0o222
+                for name in files):
+            raise ValueError("Committed checkpoint is not immutable")
+
+
+def atomic_copy(source, destination):
+    legacy.owned_directory(destination.parent)
+    stage = destination.with_name(destination.name + ".pending-" + str(uuid.uuid4()))
+    shutil.copytree(source, stage)
+    seal(stage)
+    stage.rename(destination)
+    sync_directory(destination.parent)
 
 
 class Store:
@@ -390,8 +449,10 @@ class Store:
         parent = self.root / "attempts" / fingerprint(identity)
         if not parent.exists():
             return None
-        physical_tree(parent)
+        legacy.owned_directory(parent)
         for attempt in sorted(parent.iterdir()):
+            if attempt.is_symlink() or not attempt.is_dir():
+                raise ValueError("Unexpected attempt storage entry")
             if attempt.is_dir() and (attempt / "result.json").exists():
                 try:
                     return attempt, validate_success(attempt, identity)
@@ -473,6 +534,25 @@ class Store:
             raise ValueError("Artifact contains unaccounted entries")
         return self.restore(bundle / "attempt", index["receipt_sha256"], identity)
 
+    def export_outcome(self, identity, destination):
+        if self.matching(identity):
+            return {"status": "passed", "index_sha256": self.export(identity, destination)}
+        destination = Path(destination)
+        if destination.exists():
+            raise ValueError("Outcome artifact already exists")
+        legacy.owned_directory(destination)
+        parent = self.root / "attempts" / fingerprint(identity)
+        attempts = sorted(parent.iterdir(), key=lambda path: path.stat().st_mtime_ns) if parent.exists() else []
+        if attempts:
+            physical_tree(attempts[-1])
+            shutil.copytree(attempts[-1], destination / "last-attempt")
+        files = physical_tree(destination)
+        durable_json(destination / "failure.json", {"schema": SCHEMA, "status": "failed" if attempts else "missing",
+                                                   "identity": identity, "outputs": files})
+        checksum = legacy.digest(destination / "failure.json")
+        seal(destination)
+        return {"status": "failed" if attempts else "missing", "index_sha256": checksum}
+
 
 def freeze_build(mode, builder, destination):
     """One exclusive build/discovery per mode; workers may only use its frozen manifest."""
@@ -493,9 +573,13 @@ def _freeze_build(mode, builder, destination):
     legacy.owned_directory(destination)
     value = {"schema": SCHEMA, "runtime": runtime, "inventory": sorted(methods),
              "shared_groups": groups, "image": str(Path(image).resolve()), "tested_head": head}
+    if hasattr(builder, "image_relative"):
+        value["image_relative"] = builder.image_relative(image)
+        value["scratch"] = builder.freeze_scratch(runtime, destination)
     # Validate all units now; the build cannot silently remove or split a suite.
     make_plan(runtime, methods, groups)
     durable_json(destination / "build.json", value)
+    durable_json(destination / "build-commit.json", {"sha256": legacy.digest(destination / "build.json")})
     seal(destination)
     return value
 
@@ -530,13 +614,19 @@ def execute_process(command, workspace, attempt, timeout, descriptors, environme
                     isolate_environment=True):
     """Terminate only this owned process session on timeout, never report timeout as success."""
     actual_environment = child_environment(attempt, environment) if isolate_environment else dict(environment)
-    with (attempt / "test.log").open("xb") as log:
-        process = subprocess.Popen(command, cwd=workspace, env=actual_environment, stdout=log,
-                                   stderr=subprocess.STDOUT, pass_fds=tuple(descriptors),
-                                   start_new_session=True)
-        durable_json(attempt / "child.json", {"pid": process.pid,
-                                             "command": command, "started": time.time()})
+    descriptor = os.open(attempt / "test.log", os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(descriptor, "wb") as log:
         try:
+            process = subprocess.Popen(command, cwd=workspace, env=actual_environment, stdout=log,
+                                       stderr=subprocess.STDOUT, pass_fds=tuple(descriptors),
+                                       start_new_session=True, umask=0o077)
+        except OSError as error:
+            durable_json(attempt / "launch-failure.json", {"schema": SCHEMA, "status": "not-launched",
+                                                           "error": type(error).__name__})
+            raise
+        try:
+            durable_json(attempt / "child.json", {"pid": process.pid,
+                                                 "command": command, "started": time.time()})
             if observer:
                 observer.start(process.pid)
             try:
@@ -566,18 +656,93 @@ def execute_process(command, workspace, attempt, timeout, descriptors, environme
 
 
 def worker_limit(explicit, cpu_budget, ram_available, ram_reserve, peak_per_worker,
-                 disk_available, disk_reserve, disk_per_worker):
+                 disk_available, disk_reserve, disk_per_worker, ram_capacity=None, disk_capacity=None):
     if type(explicit) is not int or explicit not in (1, 2):
         raise ValueError("Reviewed initial worker cap is one or two")
     for value in (cpu_budget, ram_available, ram_reserve, peak_per_worker,
                   disk_available, disk_reserve, disk_per_worker):
         positive(value)
+    for capacity in (ram_capacity, disk_capacity):
+        if capacity is not None:
+            positive(capacity)
     result = min(explicit, int(cpu_budget),
                  int((ram_available - ram_reserve) // peak_per_worker),
                  int((disk_available - disk_reserve) // disk_per_worker))
     if result < 1:
         raise ValueError("RAM/disk admission reserve blocks a new worker")
     return result
+
+
+def reservation_update(store, reservation, **changes):
+    with claim(store.root / "claims", "admission", wait_seconds=30):
+        current = load_json(reservation["path"])
+        if current["nonce"] != reservation["nonce"]:
+            raise ValueError("Reservation generation changed")
+        if current["state"] == "released":
+            return
+        current.update(changes)
+        durable_json(reservation["path"], current)
+
+
+@contextmanager
+def reserve_worker(store, executor, runtime, admission, timeout):
+    chosen, reservation = None, None
+    with ExitStack() as held:
+        with claim(store.root / "claims", "admission", wait_seconds=timeout):
+            if hasattr(executor, "observe_admission"):
+                admission = executor.observe_admission()
+            worker_limit(**admission)
+            static = {name: value for name, value in admission.items()
+                      if name not in ("ram_available", "disk_available")}
+            policy = {"schema": SCHEMA, "host": runtime["host"], "bounds": static}
+            policy_path = store.root / "admission.json"
+            if policy_path.exists() and load_json(policy_path) != policy:
+                raise ValueError("Host worker admission policy changed")
+            if not policy_path.exists():
+                durable_json(policy_path, policy)
+            # Namespace depends on reviewed capacity, never the current remaining free capacity.
+            cap = worker_limit(**{**admission, "ram_available": admission["ram_capacity"],
+                                   "disk_available": admission["disk_capacity"]})
+            active, candidates = 0, []
+            legacy.owned_directory(store.root / "reservations")
+            for slot in range(cap):
+                context = claim(store.root / "claims", "worker:" + str(slot))
+                try:
+                    lock = context.__enter__()
+                except BlockingIOError:
+                    active += 1
+                    continue
+                path = store.root / "reservations" / (str(slot) + ".json")
+                prior = load_json(path) if path.exists() else None
+                if prior and prior["state"] != "released" and not executor.reclaimable(prior):
+                    active += 1
+                    context.__exit__(None, None, None)
+                else:
+                    candidates.append((context, lock, path))
+            try:
+                # Charge full running headroom if no trustworthy actual-use binding exists.
+                # This deliberately double-charges current use and may admit fewer workers.
+                if (not candidates or admission["ram_available"] - admission["ram_reserve"]
+                        < (active + 1) * admission["peak_per_worker"]
+                        or admission["disk_available"] - admission["disk_reserve"]
+                        < (active + 1) * admission["disk_per_worker"]):
+                    raise ValueError("Occupied slots or conservative RAM/disk headroom blocks admission")
+                chosen, lock, path = candidates.pop(0)
+                held.callback(chosen.__exit__, None, None, None)
+                record = {"schema": SCHEMA, "nonce": str(uuid.uuid4()), "state": "pending",
+                          "owner": executor.owner_identity(), "attempt": None}
+                durable_json(path, record)
+                reservation = {"path": path, "nonce": record["nonce"], "lock": lock}
+            finally:
+                for context, lock, path in candidates:
+                    context.__exit__(None, None, None)
+        try:
+            yield reservation
+        finally:
+            current = load_json(reservation["path"])
+            safe = current["state"] == "pending" or (current["attempt"] is not None
+                                                      and executor.proven_exited(Path(current["attempt"])))
+            reservation_update(store, reservation, state="released" if safe else "unknown")
 
 
 def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
@@ -610,31 +775,13 @@ def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
             store.index([identity])
             return {"id": shard_id, "reused": True, "attempt": str(found[0]),
                     "tested_head": found[1]["tested_head"], "current_head": current_head}
-        cap = worker_limit(**admission)
-        # Every caller and mode on this host must use this same durable cache and cap.
-        with claim(store.root / "claims", "admission", wait_seconds=timeout):
-            policy_path = store.root / "admission.json"
-            # One conservative maximum RSS/disk policy covers *all* modes/controllers.
-            policy = {"schema": SCHEMA, "host": plan["runtime"]["host"],
-                      "bounds": {name: value for name, value in admission.items()
-                                 if name not in ("ram_available", "disk_available")}}
-            if policy_path.exists() and load_json(policy_path) != policy:
-                raise ValueError("Host worker admission policy changed")
-            if not policy_path.exists():
-                durable_json(policy_path, policy)
-        # A single slot namespace covers all modes and all controller processes.
-        for slot in range(cap):
-            try:
-                slot_lock = stack.enter_context(claim(store.root / "claims", "worker:" + str(slot)))
-                locks.append(slot_lock)
-                break
-            except BlockingIOError:
-                continue
-        else:
-            raise ValueError("All bounded host worker slots are occupied")
+        reservation = stack.enter_context(reserve_worker(store, executor, plan["runtime"], admission, timeout))
+        locks.append(reservation["lock"])
         parent = store.root / "attempts" / shard_id
         legacy.owned_directory(parent)
         for prior in parent.iterdir():
+            if prior.name.startswith(".restore-"):
+                continue
             if prior.is_dir() and not (prior / "result.json").exists():
                 if not executor.proven_exited(prior):
                     raise ValueError("Incomplete attempt still has an unproven owner")
@@ -644,8 +791,13 @@ def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
                                              "owner": executor.owner_identity(),
                                              "paths": {"proof": str(attempt), "temporary": str(
                                                  store.root / "temporary" / attempt.name)}})
+        if hasattr(executor, "authority"):
+            durable_json(attempt / "authorization.json", executor.authority.authorization())
+        reservation_update(store, reservation, attempt=str(attempt))
         fault("before-execution")
         started = time.monotonic()
+        reservation_update(store, reservation, state="launching")
+        executor.reservation_callback = lambda: reservation_update(store, reservation, state="running")
         # The executor must retain inherited claim descriptors in its owned child.
         exit_code = executor.execute(shard, attempt, timeout, [lock.fileno() for lock in locks])
         fault("after-exit")
@@ -757,6 +909,7 @@ def freeze_phase(attempt, identity, runtime, inventory, verifier, destination):
                 "receipt_sha256": legacy.digest(destination / "attempt" / "result.json")}
     durable_json(destination / "index.json", manifest)
     checksum = legacy.digest(destination / "index.json")
+    durable_json(destination / "commit.json", {"sha256": checksum})
     seal(destination)
     return checksum
 
@@ -765,13 +918,16 @@ def validate_phase(bundle, trusted_digest, phase, runtime, inventory):
     bundle = Path(bundle)
     physical_tree(bundle)
     if (legacy.digest(bundle / "index.json") != trusted_digest
-            or {item.name for item in bundle.iterdir()} != {"index.json", "attempt"}):
+            or {item.name for item in bundle.iterdir()} != {"index.json", "attempt", "commit.json"}
+            or load_json(bundle / "commit.json") != {"sha256": trusted_digest}):
         raise ValueError("Phase index differs from trusted host capture")
     manifest = load_json(bundle / "index.json")
     require_fields(manifest, ("schema", "host", "identity", "origin", "receipt_sha256"))
     identity = manifest["identity"]
     origin = manifest["origin"]
-    require_fields(origin, ("schema", "host", "phase", "tested_head", "receipt_sha256", "exit_code"))
+    require_fields(origin, ("schema", "host", "phase", "tested_head", "receipt_sha256", "exit_code", "authorization"))
+    if "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256" in runtime["environment"]:
+        validate_authorization(origin["authorization"], runtime)
     if (manifest["schema"] != SCHEMA or manifest["host"] != runtime["host"]
             or identity["phase"] != phase
             or origin["schema"] != SCHEMA or origin["host"] != runtime["host"] or origin["phase"] != phase
@@ -806,6 +962,8 @@ def aggregate(plans, store, normal_bundle, normal_digest, leaks_bundle, leaks_di
         summaries[plan["runtime"]["mode"]] = len(actual)
     if plans[0]["inventory"] != plans[1]["inventory"]:
         raise ValueError("Sanitizer mode inventories differ")
+    require_sealed(Path(normal_bundle))
+    require_sealed(Path(leaks_bundle))
     for plan in plans:
         validate_phase(normal_bundle, normal_digest, "normal", plan["runtime"], plan["inventory"])
         validate_phase(leaks_bundle, leaks_digest, "leaks", plan["runtime"], plan["inventory"])
@@ -821,7 +979,8 @@ def require_physical_activation():
 def native_output(command, workspace, environment, descriptors=()):
     return subprocess.check_output(command, cwd=workspace, env=environment,
                                    pass_fds=tuple(descriptors), stderr=subprocess.PIPE,
-                                   text=True).strip()
+                                   text=True, timeout=900 if command[:2] == ["git", "clone"] else 60,
+                                   umask=0o077).strip()
 
 
 def process_rows(raw):
@@ -861,11 +1020,20 @@ class NativeAuthority:
         if policy_path.is_symlink() or info.st_uid != os.getuid() or info.st_mode & 0o022:
             raise ValueError("Native activation policy must be host-owned")
         self.policy = load_json(policy_path)
+        if self.environment.get("GITHUB_JOB") in native_runner.RECOVERABLE_JOBS and (
+                self.environment.get("ELITE_NATIVE_POLICY") != str(policy_path)
+                or self.environment.get("ELITE_NATIVE_APPROVED_HEAD") != self.policy["approved_head"]):
+            raise ValueError("CLI policy/source differs from the owned native approval")
+        if "recoverable_activation" in self.policy:
+            native_runner.require_owned_activation_file(policy_path)
         self.root = native_runner.validate(self.policy, self.environment)
+        native_runner.require_recoverable_checkout(self.policy, self.environment, self.root)
         if policy_path.is_relative_to(self.root):
             raise ValueError("Repository content cannot authorize native execution")
         self.config = self.policy["recoverable_shards"]
-        require_fields(self.config, ("schema", "host", "cache", "legacy_cache", "workers", "admission"))
+        required = {"schema", "host", "cache", "legacy_cache", "workers", "admission"}
+        if not required <= set(self.config) or set(self.config) - required - {"planning"}:
+            raise ValueError("Unexpected native activation fields")
         if type(self.config["schema"]) is not int or self.config["schema"] != SCHEMA or not self.config["workers"]:
             raise ValueError("Reviewed native workspace activation is required")
         self.cache = Path(self.config["cache"])
@@ -890,7 +1058,8 @@ class NativeAuthority:
             raise ValueError("Native preparation requires a clean committed controller")
 
     def output(self, command, workspace=None, environment=None, descriptors=()):
-        return self.read(command, workspace or self.root, environment or self.environment, descriptors)
+        return self.read(command, self.root if workspace is None else workspace,
+                         self.execution_environment() if environment is None else environment, descriptors)
 
     def snapshot(self):
         return process_rows(self.output(["ps", "-axo", "pid=,ppid=,pgid=,stat=,lstart=,command="]))
@@ -905,7 +1074,7 @@ class NativeAuthority:
     def admission(self):
         bounds = dict(self.config["admission"])
         require_fields(bounds, ("explicit", "cpu_budget", "ram_reserve", "peak_per_worker",
-                                "disk_reserve", "disk_per_worker"))
+                                "disk_reserve", "disk_per_worker", "ram_capacity", "disk_capacity"))
         cpus = int(self.output(["sysctl", "-n", "hw.logicalcpu"]))
         memory = self.output(["vm_stat"])
         size = re.search(r"page size of (\d+) bytes", memory)
@@ -924,12 +1093,43 @@ class NativeAuthority:
         return bounds
 
     def environment_for(self, mode):
-        value = runtime_child_environment(self.environment)
+        value = self.execution_environment()
         if mode == "address":
             value["ASAN_OPTIONS"] = "detect_leaks=0"
         return value
 
-    def runtime(self, workspace, mode, image, flags):
+    def execution_environment(self):
+        value = runtime_child_environment(self.environment)
+        # These exact authorization controls never enter the native process. Unknown ELITE_ keys remain bound.
+        for name in AUTHORIZATION_CONTROLS:
+            value.pop(name, None)
+        value["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"] = execution_policy_digest(self.config)
+        return value
+
+    def authorization(self):
+        return {"schema": SCHEMA, "kind": "validated-control-plane-v1", "head": self.policy["approved_head"],
+                "host": self.config["host"], "role": self.environment.get("GITHUB_JOB", ""),
+                "run_id": self.environment.get("GITHUB_RUN_ID", ""),
+                "run_attempt": self.environment.get("GITHUB_RUN_ATTEMPT", ""),
+                "mode": self.environment.get("ELITE_RECOVERABLE_REQUEST_MODE", ""),
+                "shard": self.environment.get("ELITE_RECOVERABLE_REQUEST_SHARD", ""),
+                "worker": self.environment.get("ELITE_RECOVERABLE_REQUEST_WORKER", ""),
+                "phase": self.environment.get("ELITE_RECOVERABLE_REQUEST_PHASE", ""),
+                "workflow_sha256": self.policy.get("recoverable_activation", {}).get("workflow_sha256"),
+                "plan_sha256": self.environment.get("PLAN_DIGEST"),
+                "instance": self.environment.get("RUNNER_NAME", ""), "workspace": str(self.root),
+                "policy_sha256": native_runner.policy_digest(self.policy),
+                "execution_policy_sha256": execution_policy_digest(self.config),
+                "controls": {name: hashlib.sha256(self.environment[name].encode()).hexdigest()
+                             if name in self.environment else None for name in AUTHORIZATION_CONTROLS}}
+
+    def verify_request(self, mode=None, shard=None, worker=None, phase=None):
+        if self.environment.get("GITHUB_JOB") in native_runner.RECOVERABLE_JOBS:
+            for name, value in (("MODE", mode), ("SHARD", shard), ("WORKER", worker), ("PHASE", phase)):
+                if value is not None and self.environment.get("ELITE_RECOVERABLE_REQUEST_" + name, "") != value:
+                    raise ValueError("CLI request differs from host-owned job assignment")
+
+    def runtime(self, workspace, mode, image, flags, inputs=None):
         environment = self.environment_for(mode)
         swift = shutil.which("swift", path=environment.get("PATH"))
         if not swift:
@@ -938,7 +1138,7 @@ class NativeAuthority:
         if not uuids["uuids"]:
             raise ValueError("Actual test image UUID is unavailable")
         return {"schema": SCHEMA, "mode": mode,
-                "inputs": legacy.executable_inputs(workspace, flags[1]),
+                "inputs": legacy.executable_inputs(workspace, flags[1]) if inputs is None else inputs,
                 "toolchain": self.output([swift, "--version"], workspace, environment),
                 "sdk": fingerprint({"version": self.output(["xcrun", "--show-sdk-version"]),
                                     "path": self.output(["xcrun", "--show-sdk-path"])}),
@@ -947,7 +1147,7 @@ class NativeAuthority:
                 "architecture": platform.machine(), "image_sha256": legacy.digest(image),
                 "image_uuid": fingerprint(uuids["uuids"]),
                 "environment": legacy.runtime_identity(environment), "flags": flags,
-                "phase_environment": legacy.runtime_identity(runtime_child_environment(self.environment)),
+                "phase_environment": legacy.runtime_identity(self.execution_environment()),
                 "policy": POLICY, "opt_in_policy": legacy.opt_in_policy(workspace, environment)}
 
 
@@ -965,9 +1165,83 @@ def copy_build_tree(source, destination):
     shutil.copytree(source, destination, symlinks=True)
 
 
+def build_entries(root):
+    """Hash complete SwiftPM layout, including confined relative links and executable bits."""
+    legacy.owned_directory(root)
+    entries = {}
+    for directory, names, files in os.walk(root, followlinks=False):
+        for name in names + files:
+            path = Path(directory) / name
+            info = path.lstat()
+            if info.st_uid != os.getuid() or (not path.is_symlink() and info.st_mode & 0o022):
+                raise ValueError("Frozen build ownership changed")
+            key = path.relative_to(root).as_posix()
+            if path.is_symlink():
+                if Path(os.readlink(path)).is_absolute() or not path.resolve().is_relative_to(root.resolve()):
+                    raise ValueError("Frozen build link escaped")
+                entries[key] = {"link": os.readlink(path)}
+            elif path.is_file():
+                entries[key] = {"sha256": legacy.digest(path), "executable": bool(info.st_mode & 0o111)}
+            elif path.is_dir():
+                entries[key] = {"directory": True}
+            else:
+                raise ValueError("Unsupported frozen build node")
+    return entries
+
+
+def writable_private_tree(root):
+    for directory, names, files in os.walk(root, followlinks=False):
+        Path(directory).chmod(0o700)
+        for name in files:
+            path = Path(directory) / name
+            if not path.is_symlink():
+                path.chmod(0o700 if path.stat().st_mode & 0o111 else 0o600)
+
+
 class NativeBuilder:
     def __init__(self, authority):
         self.authority, self.lock = authority, None
+
+    def image_relative(self, image):
+        return str(Path(image).resolve().relative_to(self.authority.root))
+
+    def freeze_scratch(self, runtime, destination):
+        source = self.authority.root / runtime["flags"][1]
+        entries = build_entries(source)
+        size = sum((source / name).stat().st_size for name, entry in entries.items() if "sha256" in entry)
+        budget = self.authority.admission()
+        if budget["disk_available"] - budget["disk_reserve"] < size:
+            raise ValueError("Disk reserve blocks durable build capture")
+        copy_build_tree(source, destination / "scratch")
+        if build_entries(destination / "scratch") != entries:
+            raise ValueError("Durable scratch copy changed")
+        return entries
+
+    def validate_frozen(self, build, destination, immutable=True):
+        validate_runtime(build["runtime"])
+        if immutable:
+            require_sealed(destination)
+        if load_json(destination / "build-commit.json") != {"sha256": legacy.digest(destination / "build.json")}:
+            raise ValueError("Frozen build manifest was not committed or changed")
+        if build_entries(destination / "scratch") != build["scratch"]:
+            raise ValueError("Durable scratch is missing or tampered")
+        runtime, flags = build["runtime"], build["runtime"]["flags"]
+        current = legacy.executable_inputs(self.authority.root, flags[1])
+        if ({name: digest for name, digest in current.items() if not name.startswith(".build/")}
+                != {name: digest for name, digest in runtime["inputs"].items() if not name.startswith(".build/")}):
+            raise ValueError("Controller source changed since durable build")
+        scratch = Path(flags[1])
+        for name, digest in runtime["inputs"].items():
+            if name.startswith(".build/"):
+                if legacy.digest(destination / "scratch" / Path(name).relative_to(scratch)) != digest:
+                    raise ValueError("Durable dependency inputs changed")
+        relative = Path(build["image_relative"])
+        if relative.is_absolute() or ".." in relative.parts or not relative.is_relative_to(scratch):
+            raise ValueError("Frozen image path escaped scratch")
+        image = destination / "scratch" / relative.relative_to(scratch)
+        if self.authority.runtime(self.authority.root, runtime["mode"], image, flags,
+                                  inputs=runtime["inputs"]) != runtime:
+            raise ValueError("Durable image/toolchain/host/environment changed")
 
     @contextmanager
     def preparation_claim(self):
@@ -1013,30 +1287,49 @@ class NativeBuilder:
     def prepare(self, mode, destination):
         with self.preparation_claim():
             destination = Path(destination)
+            if not destination.exists() and destination.parent.exists():
+                for stage in sorted(destination.parent.glob(destination.name + ".pending-*")):
+                    try:
+                        candidate = load_json(stage / "build.json")
+                        self.validate_frozen(candidate, stage, immutable=False)
+                        if candidate["runtime"]["mode"] != mode or candidate["tested_head"] != self.authority.policy["approved_head"]:
+                            raise ValueError("Orphaned build is for another mode/head")
+                        seal(stage)
+                        stage.rename(destination)
+                        sync_directory(destination.parent)
+                        break
+                    except (OSError, ValueError, KeyError):
+                        continue
             if destination.exists():
-                physical_tree(destination)
                 build = load_json(destination / "build.json")
-                actual = self.authority.runtime(self.authority.root, mode, Path(build["image"]),
-                                                build["runtime"]["flags"])
-                if build["runtime"] != actual or build["tested_head"] != self.authority.policy["approved_head"]:
+                self.validate_frozen(build, destination)
+                if build["tested_head"] != self.authority.policy["approved_head"] or build["runtime"]["mode"] != mode:
                     raise ValueError("Frozen build differs from current preparation")
             else:
-                build = _freeze_build(mode, self, destination)
+                if any((base / (mode + "-build.json")).exists() for base in self.authority.workers.values()):
+                    raise ValueError("Known durable mode bundle is missing; verified restoration is required")
+                legacy.owned_directory(destination.parent)
+                pending = destination.with_name(destination.name + ".pending-" + str(uuid.uuid4()))
+                build = _freeze_build(mode, self, pending)
+                self.validate_frozen(build, pending)
+                pending.rename(destination)
+                sync_directory(destination.parent)
             for base in self.authority.workers.values():
                 with claim(self.authority.cache / "claims", "workspace:" + str(base)):
-                    self.prepare_worker(build, base)
+                    self.prepare_worker(build, base, destination)
             return build
 
-    def prepare_worker(self, build, base):
+    def prepare_worker(self, build, base, bundle):
         mode = build["runtime"]["mode"]
         workspace, marker = base / mode, base / (mode + "-build.json")
         if marker.exists():
             if load_json(marker) != build:
                 raise ValueError("Worker contains another build; reserve a new workspace")
-            image = workspace / Path(build["image"]).relative_to(self.authority.root)
-            if self.authority.runtime(workspace, mode, image, build["runtime"]["flags"]) != build["runtime"]:
-                raise ValueError("Existing private worker changed")
-            return
+            if workspace.exists():
+                image = workspace / build["image_relative"]
+                if self.authority.runtime(workspace, mode, image, build["runtime"]["flags"]) != build["runtime"]:
+                    raise ValueError("Existing private worker changed")
+                return
         if workspace.exists():
             raise ValueError("Uncommitted private worker preparation requires inspection")
         self.authority.output(["git", "clone", "--no-hardlinks", "--no-checkout",
@@ -1044,8 +1337,14 @@ class NativeBuilder:
         self.authority.output(["git", "checkout", "--detach", build["tested_head"]], workspace)
         scratch = Path(build["runtime"]["flags"][1])
         legacy.owned_directory((workspace / scratch).parent)
-        copy_build_tree(self.authority.root / scratch, workspace / scratch)
-        image = workspace / Path(build["image"]).relative_to(self.authority.root)
+        budget = self.authority.admission()
+        size = sum((bundle / "scratch" / name).stat().st_size for name, entry in build["scratch"].items()
+                   if "sha256" in entry)
+        if budget["disk_available"] - budget["disk_reserve"] < size:
+            raise ValueError("Disk reserve blocks private scratch restoration")
+        copy_build_tree(bundle / "scratch", workspace / scratch)
+        writable_private_tree(workspace / scratch)
+        image = workspace / build["image_relative"]
         if self.authority.runtime(workspace, mode, image, build["runtime"]["flags"]) != build["runtime"]:
             raise ValueError("Copied private image/source/runtime differs from frozen build")
         durable_json(marker, build)
@@ -1054,20 +1353,52 @@ class NativeBuilder:
 
 class NativeMonitor:
     """Persist verified descendants; reuse capture-quality cleanup's fresh identity checks."""
-    def __init__(self, authority, attempt, workspace):
+    def __init__(self, authority, attempt, workspace, expected_runtime=None, expected_image=None):
         self.authority, self.attempt, self.workspace = authority, attempt, workspace
         self.known, self.errors = {}, []
         self.controller, self.root_identity = None, None
+        self.expected_runtime, self.expected_image = expected_runtime, expected_image
+        self.observed = {}
+        self.bound_callback = None
         self.stop, self.thread = threading.Event(), None
 
     def observe(self):
         rows = self.authority.snapshot()
         live = descendants(self.known, rows)
         self.known.update(live)
+        for row in live.values():
+            argv = arguments(row)
+            if "swiftpm-testing-helper" not in row["command"]:
+                continue
+            try:
+                if not argv or Path(argv[0]).name != "swiftpm-testing-helper" or "--test-bundle-path" not in argv:
+                    raise ValueError("Unrecognized native helper invocation")
+                image = Path(argv[argv.index("--test-bundle-path") + 1])
+                if not image.is_absolute() or image != image.resolve():
+                    raise ValueError("Observed helper image is not a canonical physical path")
+                confined(image, self.workspace / ".build")
+                if self.expected_image is not None and image != self.expected_image:
+                    raise ValueError("Helper executed a different private image")
+                if str(image) not in self.observed:
+                    uuids = image_uuids(image)["uuids"]
+                    if not uuids:
+                        raise ValueError("Observed helper image UUID missing")
+                    observed = {"sha256": legacy.digest(image), "uuid": fingerprint(uuids)}
+                    if self.expected_runtime is not None and observed != {
+                            "sha256": self.expected_runtime["image_sha256"],
+                            "uuid": self.expected_runtime["image_uuid"]}:
+                        raise ValueError("Observed helper image hash or UUID differs")
+                    self.observed[str(image)] = observed
+                    if self.bound_callback is not None:
+                        self.bound_callback()
+                        self.bound_callback = None
+            except (OSError, ValueError, IndexError):
+                self.errors.append("helper image binding failed")
         durable_json(self.attempt / "processes.json", {"schema": SCHEMA, "workspace": str(self.workspace),
                                                       "controller": self.controller,
                                                       "root": self.root_identity,
                                                       "running": not self.stop.is_set(),
+                                                      "observed_images": self.observed,
                                                       "processes": {str(pid): row for pid, row in self.known.items()}})
         return live
 
@@ -1101,7 +1432,7 @@ class NativeMonitor:
         while live and time.monotonic() < deadline:
             time.sleep(0.05)
             live = self.observe()
-        clean = not live and not self.errors
+        clean = not live and not self.errors and (self.expected_runtime is None or bool(self.observed))
         for pid, row in live.items():
             cleanup_owned_identity({"pid": pid, **row}, self.authority.snapshot)
         if self.observe():
@@ -1119,14 +1450,31 @@ class NativeExecutor:
     def legacy_claim(self):
         return file_claim(self.authority.legacy_cache / "executor.lock", shared=True)
 
+    def observe_admission(self):
+        return self.authority.admission()
+
+    def reclaimable(self, reservation):
+        rows = self.authority.snapshot()
+        if same_process(reservation["owner"], rows.get(reservation["owner"]["pid"])):
+            return False
+        return (not self.unknown_live_helpers() and (reservation["attempt"] is None
+                or self.proven_exited(Path(reservation["attempt"]))))
+
     def verify(self, runtime):
         mode = runtime["mode"]
         build = load_json(self.workspace / (mode + "-build.json"))
         workspace = self.workspace / mode
-        image = workspace / Path(build["image"]).relative_to(self.authority.root)
+        relative = Path(build["image_relative"])
+        if relative.is_absolute() or ".." in relative.parts or relative.parts[:1] != (".build",):
+            raise ValueError("Private test image escaped its prepared scratch")
+        image = workspace / relative
+        if image != image.resolve() or image.is_symlink():
+            raise ValueError("Private test image is not canonical and physical")
         actual = self.authority.runtime(workspace, mode, image, runtime["flags"])
         if (actual != runtime or build["runtime"] != runtime
-                or legacy.executable_inputs(self.authority.root, runtime["flags"][1]) != runtime["inputs"]
+                or {name: digest for name, digest in legacy.executable_inputs(
+                    self.authority.root, runtime["flags"][1]).items() if not name.startswith(".build/")}
+                != {name: digest for name, digest in runtime["inputs"].items() if not name.startswith(".build/")}
                 or self.authority.output(["git", "rev-parse", "HEAD"], workspace) != build["tested_head"]
                 or self.authority.output(["git", "status", "--porcelain"], workspace)):
             raise ValueError("Private source, image, environment or toolchain changed")
@@ -1155,7 +1503,9 @@ class NativeExecutor:
     def unknown_live_helpers(self):
         rows = self.authority.snapshot()
         owned = descendants(self.registered_processes(rows), rows)
-        return any(("swiftpm-testing-helper" in row["command"] or ".xctest/Contents/MacOS/Elite" in row["command"])
+        return any(("swiftpm-testing-helper" in row["command"] or ".xctest/Contents/MacOS/Elite" in row["command"]
+                   or (arguments(row) and Path(arguments(row)[0]).name in ("swift", "swift-test")
+                       and "test" in arguments(row)))
                    and pid not in owned for pid, row in rows.items())
 
     def owner_identity(self):
@@ -1167,14 +1517,21 @@ class NativeExecutor:
     def proven_exited(self, attempt):
         start = load_json(attempt / "start.json")
         rows = self.authority.snapshot()
+        if self.unknown_live_helpers():
+            return False
         path = attempt / "processes.json"
         known = {int(pid): row for pid, row in load_json(path)["processes"].items()} if path.exists() else {}
         if descendants(known, rows):
             return False
+        if (attempt / "launch-failure.json").exists() and not (attempt / "child.json").exists():
+            record = load_json(attempt / "launch-failure.json")
+            return (record["schema"] == SCHEMA and record["status"] == "not-launched"
+                    and not self.unknown_live_helpers())
         if (attempt / "child-exit.json").exists():
             terminal, child = load_json(attempt / "child-exit.json"), load_json(attempt / "child.json")
             if (type(terminal["exit_code"]) is not int or terminal["pid"] != child["pid"]
-                    or (path.exists() and load_json(path)["running"] is not False)):
+                    or (path.exists() and load_json(path)["running"] is not False
+                        and same_process(start["owner"], rows.get(start["owner"]["pid"])))):
                 return False
             return True
         return not same_process(start["owner"], rows.get(start["owner"]["pid"]))
@@ -1183,10 +1540,13 @@ class NativeExecutor:
         swift = shutil.which("swift", path=self.authority.environment_for(self.runtime["mode"]).get("PATH"))
         command = legacy.batch_command(swift, self.runtime["flags"], self.runtime["mode"],
                                        attempt, shard["methods"])
-        monitor = NativeMonitor(self.authority, attempt, self.active_workspace)
+        build = load_json(self.workspace / (self.runtime["mode"] + "-build.json"))
+        image = self.active_workspace / build["image_relative"]
+        monitor = NativeMonitor(self.authority, attempt, self.active_workspace, self.runtime, image)
+        monitor.bound_callback = getattr(self, "reservation_callback", None)
         code = execute_process(command, self.active_workspace, attempt, timeout, descriptors,
                                self.authority.environment_for(self.runtime["mode"]), monitor)
-        if self.unknown_live_helpers():
+        if self.unknown_live_helpers() or not monitor.observed or monitor.errors:
             return code or 126
         return code
 
@@ -1196,6 +1556,7 @@ class NativePhaseRunner:
     def __init__(self, authority, executor):
         self.authority, self.executor = authority, executor
         self.origin, self.attempt = None, None
+        self.reused = False
 
     def verify(self, runtime):
         self.executor.verify(runtime)
@@ -1207,10 +1568,40 @@ class NativePhaseRunner:
             raise ValueError("No host-bound fresh phase execution origin")
         return self.origin
 
-    def run(self, phase, plan, destination, timeout):
+    def run(self, phase, plan, destination, timeout, fault=lambda stage: None):
         validate_plan(plan)
         with NativeBuilder(self.authority).preparation_claim() as lock:
             self.verify(plan["runtime"])
+            runtime = plan["runtime"]
+            durable = self.authority.cache / "full-phases" / phase_key(runtime, plan["inventory"], phase)
+            legacy.owned_directory(durable.parent)
+            def deliver():
+                require_sealed(durable)
+                checksum = load_json(durable / "commit.json")["sha256"]
+                validate_phase(durable, checksum, phase, runtime, plan["inventory"])
+                target = Path(destination)
+                if target.exists():
+                    validate_phase(target, checksum, phase, runtime, plan["inventory"])
+                else:
+                    atomic_copy(durable, target)
+                return checksum
+            if not durable.exists():
+                for stage in sorted(durable.parent.glob(durable.name + ".pending-*")):
+                    try:
+                        checksum = load_json(stage / "commit.json")["sha256"]
+                        validate_phase(stage, checksum, phase, runtime, plan["inventory"])
+                        seal(stage)
+                        stage.rename(durable)
+                        sync_directory(durable.parent)
+                        break
+                    except (OSError, ValueError, KeyError):
+                        continue
+            if durable.exists():
+                self.reused = True
+                return deliver()
+            policy_path = self.authority.environment.get("ELITE_NATIVE_POLICY")
+            if phase == "normal" and policy_path and (Path(policy_path).parent / "m01-normal-attestation.json").exists():
+                raise ValueError("New full normal execution requires separate authorization without the M01 attestation")
             execution = self.authority.cache / "phase-runs" / str(uuid.uuid4())
             legacy.owned_directory(execution)
             head, host = self.authority.policy["approved_head"], self.authority.host()
@@ -1220,7 +1611,7 @@ class NativePhaseRunner:
                        phase, "--cache", str(fresh_cache)]
             monitor = NativeMonitor(self.authority, execution, self.authority.root)
             code = execute_process(command, self.authority.root, execution, timeout, [lock.fileno()],
-                                   runtime_child_environment(self.authority.environment), monitor,
+                                   self.authority.execution_environment(), monitor,
                                    isolate_environment=False)
             if code or self.executor.unknown_live_helpers():
                 raise ValueError("Full phase process/descendants failed")
@@ -1229,12 +1620,27 @@ class NativePhaseRunner:
                 raise ValueError("Expected exactly one fresh full phase outcome")
             self.attempt = receipts[0].parent
             result = load_json(receipts[0])
+            if phase == "normal":
+                parsed = {}
+                for uuid_value, architecture in re.findall(r"UUID: ([0-9A-Fa-f-]{36}) \(([^)]+)\)",
+                                                          result["identity"]["image_uuid"]):
+                    if architecture in parsed:
+                        raise ValueError("Duplicate full normal image UUID")
+                    parsed[architecture] = uuid_value.upper()
+                expected = {"sha256": result["identity"]["image_sha256"], "uuid": fingerprint(parsed)}
+                if not parsed or expected not in monitor.observed.values() or monitor.errors:
+                    raise ValueError("Full normal helper did not execute the recorded image")
             if result["tested_head"] != head or self.authority.host() != host:
                 raise ValueError("Full phase did not execute on this approved host/head")
             self.origin = {"schema": SCHEMA, "host": host, "phase": phase,
-                           "tested_head": head, "receipt_sha256": legacy.digest(receipts[0]), "exit_code": code}
-            return freeze_phase(self.attempt, result["identity"], plan["runtime"], plan["inventory"],
-                                self, destination)
+                           "tested_head": head, "receipt_sha256": legacy.digest(receipts[0]), "exit_code": code,
+                           "authorization": self.authority.authorization()}
+            pending = durable.with_name(durable.name + ".pending-" + str(uuid.uuid4()))
+            freeze_phase(self.attempt, result["identity"], runtime, plan["inventory"], self, pending)
+            pending.rename(durable)
+            sync_directory(durable.parent)
+            fault("after-capture")
+            return deliver()
 
 
 def trusted_json(path, checksum):
@@ -1245,10 +1651,353 @@ def trusted_json(path, checksum):
     return load_json(path)
 
 
+class GitHubArtifacts:
+    """Authenticate the complete archive against GitHub's run-bound digest before extraction."""
+    def __init__(self, authority, api=None, download=None):
+        self.authority = authority
+        self.run = authority.environment.get("GITHUB_RUN_ID", "")
+        if not re.fullmatch(r"[1-9][0-9]*", self.run):
+            raise ValueError("A trusted workflow run is required")
+        self.api = api or (lambda path: json.loads(subprocess.check_output(
+            ["gh", "api", path], env=self.gh_environment(), stderr=subprocess.PIPE, timeout=60)))
+        self.download = download or self.download_archive
+        run = self.api(f"repos/{native_runner.REPOSITORY}/actions/runs/{self.run}")
+        ref = authority.environment.get("GITHUB_REF", "")
+        branch = ref.removeprefix("refs/heads/")
+        workflow = ".github/workflows/recoverable-quality.yml"
+        paths = {workflow, workflow + "@" + branch, workflow + "@" + ref,
+                 workflow + "@" + authority.policy["approved_head"]}
+        if (str(run["id"]) != self.run or run["head_sha"] != authority.policy["approved_head"]
+                or str(run.get("run_attempt")) != authority.environment.get("GITHUB_RUN_ATTEMPT")
+                or run.get("status") != "in_progress"
+                or run["event"] != "workflow_dispatch" or run["repository"]["full_name"] != native_runner.REPOSITORY
+                or str(run["actor"]["id"]) != native_runner.ACTOR
+                or str(run["triggering_actor"]["id"]) != native_runner.ACTOR
+                or not ref.startswith("refs/heads/") or run["head_branch"] != branch
+                or run["path"] not in paths):
+            raise ValueError("Artifact run provenance differs from approved manual workflow")
+
+    def gh_environment(self):
+        environment = dict(self.authority.environment)
+        environment["GH_TOKEN"] = environment.get("GITHUB_TOKEN", "")
+        if not environment["GH_TOKEN"]:
+            raise ValueError("Scoped artifact read token is unavailable")
+        return environment
+
+    def download_archive(self, artifact, path):
+        with path.open("xb") as stream:
+            subprocess.run(["gh", "api", f"repos/{native_runner.REPOSITORY}/actions/artifacts/{artifact['id']}/zip"],
+                           env=self.gh_environment(), stdout=stream, stderr=subprocess.PIPE, check=True, timeout=900)
+            stream.flush()
+            os.fsync(stream.fileno())
+
+    def artifacts(self, prefix):
+        if not re.fullmatch(r"[A-Za-z0-9._-]+", prefix):
+            raise ValueError("Unsafe artifact selector")
+        found, page = [], 1
+        while True:
+            result = self.api(f"repos/{native_runner.REPOSITORY}/actions/runs/{self.run}/artifacts?per_page=100&page={page}")
+            for artifact in result["artifacts"]:
+                if artifact["name"].startswith(prefix) and not artifact["expired"]:
+                    found.append(artifact)
+            if len(result["artifacts"]) < 100:
+                return sorted(found, key=lambda item: item["id"], reverse=True)
+            page += 1
+
+    def fetch(self, artifact, expected_digest=None):
+        checksum = artifact.get("digest", "")
+        if (type(artifact["id"]) is not int or artifact["id"] <= 0
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", checksum)
+                or artifact["workflow_run"]["head_sha"] != self.authority.policy["approved_head"]
+                or str(artifact["workflow_run"]["id"]) != self.run
+                or (expected_digest is not None and expected_digest != checksum[7:])):
+            raise ValueError("Artifact digest/run/head does not match trusted metadata")
+        root = self.authority.cache / "quarantine" / str(uuid.uuid4())
+        legacy.owned_directory(root)
+        archive, destination = root / "download.zip", root / "bundle"
+        size = artifact.get("size_in_bytes")
+        reserve = self.authority.config["admission"]["disk_reserve"]
+        if type(size) is not int or size <= 0 or shutil.disk_usage(self.authority.cache).free - reserve < size:
+            raise ValueError("Disk reserve blocks artifact download")
+        self.download(artifact, archive)
+        limit = self.authority.config["admission"]["disk_per_worker"]
+        if archive.stat().st_size > limit or legacy.digest(archive) != checksum[7:]:
+            raise ValueError("Artifact archive differs from external GitHub digest or disk budget")
+        legacy.owned_directory(destination)
+        with zipfile.ZipFile(archive) as zipped:
+            members, names = zipped.infolist(), set()
+            expanded = sum(member.file_size for member in members)
+            if expanded > limit or shutil.disk_usage(self.authority.cache).free - reserve < expanded:
+                raise ValueError("Artifact expansion exceeds reserved disk budget")
+            for member in members:
+                path = Path(member.filename)
+                key = member.filename.rstrip("/").casefold()
+                kind = (member.external_attr >> 16) & 0o170000
+                if (not key or key in names or path.is_absolute() or ".." in path.parts
+                        or "\\" in member.filename or kind not in (0, 0o040000, 0o100000)):
+                    raise ValueError("Artifact has duplicate/escaping/nonphysical paths")
+                names.add(key)
+                target = destination / path
+                legacy.owned_directory(target if member.is_dir() else target.parent)
+                if not member.is_dir():
+                    with zipped.open(member) as source, target.open("xb") as output:
+                        shutil.copyfileobj(source, output)
+                    target.chmod(0o600)
+        physical_tree(destination)
+        return destination
+
+    def restore_shard(self, plan, shard, store):
+        identity = shard_identity(plan["runtime"], shard)
+        if store.matching(identity):
+            return True
+        prefix = "native-shard-" + plan["runtime"]["mode"] + "-" + shard["id"] + "-"
+        for artifact in self.artifacts(prefix):
+            bundle = self.fetch(artifact)
+            if (bundle / "failure.json").exists():
+                failed = load_json(bundle / "failure.json")
+                if failed["identity"] != identity or failed["status"] not in ("failed", "missing"):
+                    raise ValueError("Failure artifact identity changed")
+                continue
+            # The index is trusted only after the entire archive matched an external API digest.
+            store.restore_artifact(bundle, legacy.digest(bundle / "index.json"), identity)
+            return True
+        return False
+
+
+def workflow_manifest(plans, workers, store, head):
+    if len(plans) != 2 or {plan["runtime"]["mode"] for plan in plans} != set(MODES):
+        raise ValueError("Workflow requires both complete sanitizer plans")
+    if (not workers or not set(workers) <= {"one", "two"} or len(set(workers)) != len(workers)
+            or not re.fullmatch(r"[0-9a-f]{40}", head)):
+        raise ValueError("Workflow uses only reviewed worker instances")
+    pending, expected, inventories, hosts, units = [], [], [], set(), []
+    for plan in plans:
+        validate_plan(plan)
+        inventories.append(plan["inventory"])
+        hosts.add(plan["runtime"]["host"])
+        for shard in plan["shards"]:
+            units.append((plan, shard))
+    for plan, shard in sorted(units, key=lambda unit: (-unit[1]["estimated_seconds"], unit[1]["id"])):
+        item = {"mode": plan["runtime"]["mode"], "shard": shard["id"],
+                "worker": workers[len(expected) % len(workers)]}
+        expected.append(item)
+        if store.matching(shard_identity(plan["runtime"], shard)) is None:
+            pending.append(item)
+    if len(hosts) != 1 or inventories[0] != inventories[1] or not expected or len(pending) > 256:
+        raise ValueError("Invalid/empty/oversized workflow inventory or cross-host plans")
+    return {"schema": SCHEMA, "head": head, "host": next(iter(hosts)), "expected": expected,
+            "pending": pending, "phases": ["normal", "leaks"],
+            "matrix": {"include": pending or [{"mode": "thread", "shard": "HELD", "worker": "one"}]},
+            "has_pending": bool(pending)}
+
+
+def phase_key(runtime, inventory, phase):
+    common = {key: runtime[key] for key in ("toolchain", "sdk", "host", "os", "architecture",
+                                           "phase_environment", "opt_in_policy", "policy")}
+    common.update(inputs=canonical_inputs(runtime["inputs"]), inventory=inventory, phase=phase)
+    return fingerprint(common)
+
+
+def portable_build(source, destination):
+    legacy.owned_directory(destination)
+    for directory, names, files in os.walk(source, followlinks=False):
+        target = destination / Path(directory).relative_to(source)
+        legacy.owned_directory(target)
+        names[:] = [name for name in names if not (Path(directory) / name).is_symlink()]
+        for name in files:
+            path = Path(directory) / name
+            if not path.is_symlink():
+                shutil.copy2(path, target / name)
+
+
+class NativeWorkflow:
+    def __init__(self, authority, remote=None):
+        self.authority, self.store, self.remote = authority, Store(authority.cache), remote
+
+    def artifacts(self):
+        if self.remote is None:
+            self.remote = GitHubArtifacts(self.authority)
+        return self.remote
+
+    def plans(self, bundle, digest):
+        manifest = trusted_json(bundle / "workflow-plan.json", digest)
+        plans = []
+        if manifest["schema"] != SCHEMA or manifest["head"] != self.authority.policy["approved_head"]:
+            raise ValueError("Workflow plan is not this approved source")
+        for mode in MODES:
+            item = manifest["plans"][mode]
+            if item["path"] != mode + ".json":
+                raise ValueError("Workflow plan path changed")
+            plan = validate_plan(trusted_json(bundle / item["path"], item["sha256"]))
+            if plan["runtime"]["mode"] != mode:
+                raise ValueError("Workflow plan mode changed")
+            plans.append(plan)
+        expected = workflow_manifest(plans, sorted(self.authority.workers), self.store,
+                                     self.authority.policy["approved_head"])
+        if (manifest["host"] != expected["host"] or manifest["expected"] != expected["expected"]
+                or len({fingerprint(item) for item in manifest["pending"]}) != len(manifest["pending"])
+                or any(item not in expected["expected"] for item in manifest["pending"])
+                or manifest["has_pending"] != bool(manifest["pending"])
+                or manifest["matrix"] != {"include": manifest["pending"] or [
+                    {"mode": "thread", "shard": "HELD", "worker": "one"}]}):
+            raise ValueError("Workflow expected/pending inventory changed")
+        return plans, manifest
+
+    def restore_builds(self, bundle, only_mode=None):
+        builder = NativeBuilder(self.authority)
+        for mode in (only_mode,) if only_mode else MODES:
+            source = bundle if only_mode else bundle / "builds" / mode
+            destination = self.authority.cache / "builds" / self.authority.policy["approved_head"] / mode
+            if destination.exists() or not (source / "build.json").exists():
+                continue
+            legacy.owned_directory(destination.parent)
+            size = sum(path.stat().st_size for path in source.rglob("*") if path.is_file())
+            budget = self.authority.admission()
+            if budget["disk_available"] - budget["disk_reserve"] < size:
+                raise ValueError("Disk reserve blocks frozen mode restoration")
+            stage = destination.with_name(mode + ".restore-" + str(uuid.uuid4()))
+            shutil.copytree(source, stage)
+            writable_private_tree(stage)
+            build = load_json(stage / "build.json")
+            if build["runtime"]["mode"] != mode:
+                raise ValueError("Portable build mode does not match its destination")
+            for name, entry in build["scratch"].items():
+                if Path(name).is_absolute() or ".." in Path(name).parts or Path(name).as_posix() != name:
+                    raise ValueError("Portable build path escaped scratch")
+                path = stage / "scratch" / name
+                if "sha256" in entry:
+                    path.chmod(0o700 if entry["executable"] else 0o600)
+                elif "link" in entry:
+                    if Path(entry["link"]).is_absolute():
+                        raise ValueError("Portable build has an absolute link")
+                    path.symlink_to(entry["link"])
+            builder.validate_frozen(build, stage, immutable=False)
+            seal(stage)
+            require_sealed(stage)
+            stage.rename(destination)
+            sync_directory(destination.parent)
+
+    def prepare(self, output):
+        if output.exists():
+            raise ValueError("Workflow output bundle exists")
+        # Restore a prior attempt only after archive authentication; retain failed local stages.
+        for mode in MODES:
+            if (self.authority.cache / "builds" / self.authority.policy["approved_head"] / mode).exists():
+                continue
+            for artifact in self.artifacts().artifacts("native-build-" + mode + "-"):
+                try:
+                    bundle = self.artifacts().fetch(artifact)
+                    with NativeBuilder(self.authority).preparation_claim():
+                        self.restore_builds(bundle, mode)
+                    break
+                except (OSError, ValueError, KeyError, zipfile.BadZipFile) as error:
+                    legacy.progress(json.dumps({"rejected_prepare_artifact": artifact["id"],
+                                                "reason": type(error).__name__}))
+        legacy.owned_directory(output)
+        plans, builder = [], NativeBuilder(self.authority)
+        for mode in MODES:
+            frozen = self.authority.cache / "builds" / self.authority.policy["approved_head"] / mode
+            build = builder.prepare(mode, frozen)
+            hints = self.authority.config.get("planning", {}).get(mode, {})
+            plan = make_plan(build["runtime"], build["inventory"], build["shared_groups"],
+                             hints.get("history"), hints.get("resources"), hints.get("budget_seconds", 600))
+            plans.append(plan)
+            durable_json(output / (mode + ".json"), plan)
+            portable_build(frozen, output / "builds" / mode)
+        manifest = workflow_manifest(plans, sorted(self.authority.workers), self.store,
+                                     self.authority.policy["approved_head"])
+        manifest["plans"] = {mode: {"path": mode + ".json", "sha256": legacy.digest(output / (mode + ".json"))}
+                             for mode in MODES}
+        durable_json(output / "workflow-plan.json", manifest)
+        checksum = legacy.digest(output / "workflow-plan.json")
+        metadata = output / "plan"
+        legacy.owned_directory(metadata)
+        for name in ("workflow-plan.json", "thread.json", "address.json"):
+            shutil.copyfile(output / name, metadata / name)
+        cached = self.authority.cache / "workflow-plans" / checksum
+        legacy.owned_directory(cached.parent)
+        if not cached.exists():
+            atomic_copy(metadata, cached)
+        return {"manifest_sha256": checksum, "matrix": manifest["matrix"], "has_pending": manifest["has_pending"]}
+
+    def load(self, artifact_id, archive_digest, digest, output):
+        cached = self.authority.cache / "workflow-plans" / digest
+        if cached.exists():
+            source = cached
+        else:
+            artifact = self.artifacts().api(f"repos/{native_runner.REPOSITORY}/actions/artifacts/{artifact_id}")
+            if not artifact["name"].startswith("native-plan-"):
+                raise ValueError("Wrong workflow plan artifact")
+            source = self.artifacts().fetch(artifact, archive_digest)
+        self.plans(source, digest)
+        if output.exists():
+            self.plans(output, digest)
+        else:
+            atomic_copy(source, output)
+
+    def restore_phase(self, plan, phase):
+        target = self.authority.cache / "full-phases" / phase_key(plan["runtime"], plan["inventory"], phase)
+        if target.exists():
+            require_sealed(target)
+            validate_phase(target, load_json(target / "commit.json")["sha256"], phase,
+                           plan["runtime"], plan["inventory"])
+            return target
+        for artifact in self.artifacts().artifacts("native-phase-" + phase + "-"):
+            bundle = self.artifacts().fetch(artifact)
+            if (bundle / "failure.json").exists():
+                continue
+            checksum = legacy.digest(bundle / "index.json")
+            validate_phase(bundle, checksum, phase, plan["runtime"], plan["inventory"])
+            legacy.owned_directory(target.parent)
+            atomic_copy(bundle, target)
+            return target
+        return None
+
+    def aggregate(self, plans):
+        for plan in plans:
+            NativeExecutor(self.authority, sorted(self.authority.workers)[0]).verify(plan["runtime"])
+            for shard in plan["shards"]:
+                if self.store.matching(shard_identity(plan["runtime"], shard)) is None:
+                    self.artifacts().restore_shard(plan, shard, self.store)
+        phases = [self.restore_phase(plans[0], phase) for phase in ("normal", "leaks")]
+        if any(path is None for path in phases):
+            raise ValueError("A full normal/leak proof is missing")
+        return aggregate(plans, self.store, phases[0], legacy.digest(phases[0] / "index.json"),
+                         phases[1], legacy.digest(phases[1] / "index.json"))
+
+    def export_phase(self, plan, phase, output):
+        complete = self.restore_phase(plan, phase)
+        if complete is not None:
+            if not output.exists():
+                atomic_copy(complete, output)
+            validate_phase(output, legacy.digest(complete / "index.json"), phase, plan["runtime"], plan["inventory"])
+            return {"status": "passed"}
+        legacy.owned_directory(output)
+        if (output / "failure.json").exists():
+            return {"status": "failed", "retained": True}
+        candidates = []
+        for launch in (self.authority.cache / "phase-runs").glob("*/launch.json"):
+            physical_tree(launch.parent)
+            record = load_json(launch)
+            if (record["phase"] == phase and record["head"] == self.authority.policy["approved_head"]
+                    and record["host"] == plan["runtime"]["host"]):
+                candidates.append(launch.parent)
+        if candidates:
+            latest = max(candidates, key=lambda path: path.stat().st_mtime_ns)
+            shutil.copytree(latest, output / "last-attempt")
+        durable_json(output / "failure.json", {"schema": SCHEMA, "status": "failed" if candidates else "missing",
+                                               "phase": phase, "head": self.authority.policy["approved_head"],
+                                               "outputs": physical_tree(output)})
+        seal(output)
+        return {"status": "failed" if candidates else "missing"}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("plan", "prepare", "worker", "pool", "export", "restore",
-                                             "phase", "aggregate"))
+                                             "phase", "aggregate", "workflow-prepare", "workflow-load",
+                                             "workflow-run", "workflow-phase", "workflow-export",
+                                             "workflow-phase-export", "workflow-aggregate"))
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--digest")
@@ -1260,6 +2009,9 @@ def main():
     parser.add_argument("--artifact", type=Path)
     parser.add_argument("--artifact-digest")
     parser.add_argument("--phase", choices=("normal", "leaks"))
+    parser.add_argument("--artifact-id", type=int)
+    parser.add_argument("--archive-digest")
+    parser.add_argument("--include-failures", action="store_true")
     args = parser.parse_args()
     if args.command == "plan":
         if args.input is None or args.output is None:
@@ -1274,8 +2026,59 @@ def main():
     if args.policy is None:
         parser.error("a host-owned activation policy is required")
     authority = NativeAuthority(args.policy)
+    authority.verify_request(args.mode, args.shard, args.worker, args.phase)
     store = Store(authority.cache)
     positive(args.timeout)
+    if args.command.startswith("workflow-"):
+        workflow = NativeWorkflow(authority)
+        if args.command == "workflow-prepare":
+            if args.output is None:
+                parser.error("workflow-prepare requires --output")
+            result = workflow.prepare(args.output)
+            with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
+                for name, value in result.items():
+                    output.write(name + "=" + json.dumps(value, separators=(",", ":")) + "\n"
+                                 if not isinstance(value, str) else name + "=" + value + "\n")
+        elif args.command == "workflow-load":
+            if not args.digest or not args.archive_digest or not args.artifact_id or args.output is None:
+                parser.error("workflow-load requires trusted artifact ID/archive digest/manifest digest and output")
+            workflow.load(args.artifact_id, args.archive_digest, args.digest, args.output)
+            result = {"loaded": True}
+        else:
+            if args.input is None or not args.digest:
+                parser.error("workflow operation requires plan bundle --input and trusted --digest")
+            plans, manifest = workflow.plans(args.input, args.digest)
+            if args.command == "workflow-aggregate":
+                result = workflow.aggregate(plans)
+            elif args.command in ("workflow-phase", "workflow-phase-export"):
+                if args.phase is None or args.output is None:
+                    parser.error("workflow phase requires --phase and --output")
+                if args.command == "workflow-phase":
+                    workflow.restore_phase(plans[0], args.phase)
+                    checksum = NativePhaseRunner(authority, NativeExecutor(authority, "one")).run(
+                        args.phase, plans[0], args.output, args.timeout)
+                    result = {"phase_sha256": checksum}
+                else:
+                    result = workflow.export_phase(plans[0], args.phase, args.output)
+            else:
+                plan = next((plan for plan in plans if plan["runtime"]["mode"] == args.mode), None)
+                shard = next((row for row in plan["shards"] if row["id"] == args.shard), None) if plan else None
+                if shard is None:
+                    parser.error("exact workflow --mode and --shard are required")
+                assignment = {"mode": args.mode, "shard": args.shard, "worker": args.worker}
+                if assignment not in manifest["expected"]:
+                    parser.error("worker is outside trusted planned assignment")
+                if args.command == "workflow-export":
+                    if args.output is None:
+                        parser.error("workflow-export requires --output")
+                    result = store.export_outcome(shard_identity(plan["runtime"], shard), args.output)
+                else:
+                    if store.matching(shard_identity(plan["runtime"], shard)) is None:
+                        workflow.artifacts().restore_shard(plan, shard, store)
+                    result = run_shard(plan, shard["id"], store, NativeExecutor(authority, args.worker),
+                                       authority.policy["approved_head"], args.timeout, authority.admission())
+        legacy.progress(json.dumps(result))
+        return
     if args.command == "prepare":
         if args.mode is None or args.output is None:
             parser.error("prepare requires --mode and --output")
@@ -1308,9 +2111,11 @@ def main():
     elif args.command == "phase":
         if args.phase is None or args.output is None or args.worker is None:
             parser.error("phase requires --phase, --worker and --output")
-        checksum = NativePhaseRunner(authority, NativeExecutor(authority, args.worker)).run(
-            args.phase, plans[0], args.output, args.timeout)
-        result = {"phase_sha256": checksum}
+        runner = NativePhaseRunner(authority, NativeExecutor(authority, args.worker))
+        checksum = runner.run(args.phase, plans[0], args.output, args.timeout)
+        result = {"phase_sha256": checksum, "reused": runner.reused,
+                  "tested_head": load_json(args.output / "index.json")["origin"]["tested_head"],
+                  "current_head": authority.policy["approved_head"]}
     else:
         shard = next((row for row in plans[0]["shards"] if row["id"] == args.shard), None)
         if shard is None:
@@ -1322,7 +2127,8 @@ def main():
         elif args.command == "export":
             if args.output is None:
                 parser.error("export requires --output")
-            result = {"index_sha256": store.export(identity, args.output)}
+            result = (store.export_outcome(identity, args.output) if args.include_failures else
+                      {"index_sha256": store.export(identity, args.output)})
         else:
             if args.artifact is None or args.artifact_digest is None:
                 parser.error("restore requires --artifact and trusted --artifact-digest")

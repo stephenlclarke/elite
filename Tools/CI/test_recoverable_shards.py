@@ -2,24 +2,30 @@
 
 from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
+import hashlib
+import io
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
 import threading
 import time
+import textwrap
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
+import zipfile
 
 import recoverable_shards as shards
 
 HEAD = "a" * 40
 ADMISSION = dict(explicit=2, cpu_budget=2, ram_available=20, ram_reserve=4,
-                 peak_per_worker=6, disk_available=100, disk_reserve=20, disk_per_worker=20)
+                 peak_per_worker=6, disk_available=100, disk_reserve=20, disk_per_worker=20,
+                 ram_capacity=20, disk_capacity=100)
 METHODS = ["EliteCoreTests.A/one()", "EliteCoreTests.A/two()", "EliteCoreTests.B/three()"]
 
 
@@ -52,12 +58,15 @@ class FakeExecutor:
     def proven_exited(self, attempt):
         return self.exited
 
+    def reclaimable(self, reservation):
+        return self.exited and not self.unknown
+
     def owner_identity(self):
         return {"pid": os.getpid(), "start": "fake-process-start", "image": "fake-python"}
 
     def phase_origin(self, attempt, identity):
         return dict(schema=1, host=self.current["host"], phase=identity["phase"], tested_head=HEAD,
-                    receipt_sha256=shards.legacy.digest(attempt / "result.json"), exit_code=0)
+                    receipt_sha256=shards.legacy.digest(attempt / "result.json"), exit_code=0, authorization=None)
 
     def execute(self, shard, attempt, timeout, descriptors):
         self.calls += 1
@@ -308,8 +317,7 @@ class CheckpointTests(Fixture):
         attempt.chmod(0o700)
         (attempt / "test.log").unlink()
         (attempt / "test.log").symlink_to(self.image)
-        with self.assertRaises(ValueError):
-            self.store.matching(self.identity())
+        self.assertIsNone(self.store.matching(self.identity()))
 
     def test_trusted_artifact_restore_runs_zero_times_and_rejects_index_tampering(self):
         self.run_one()
@@ -347,6 +355,55 @@ class CheckpointTests(Fixture):
 
 
 class AdmissionTests(Fixture):
+    def test_static_slot_namespace_and_conservative_pending_running_headroom(self):
+        first = {**ADMISSION, "ram_available": 16}
+        second = FakeExecutor(self.root / "worker-2", self.runtimes)
+        with shards.reserve_worker(self.store, self.executor, self.runtimes["thread"], first, 5) as one:
+            with shards.reserve_worker(self.store, second, self.runtimes["address"], first, 5) as two:
+                self.assertNotEqual(one["path"], two["path"])
+                self.assertEqual(shards.load_json(two["path"])["state"], "pending")
+            # Free memory has fallen; reserve full future headroom instead of assuming current RSS is peak.
+            with self.assertRaises(ValueError):
+                with shards.reserve_worker(self.store, second, self.runtimes["address"],
+                                           {**first, "ram_available": 10}, 5):
+                    pass
+        growing = {**ADMISSION, "ram_capacity": 32, "ram_available": 32, "peak_per_worker": 12}
+        self.store = shards.Store(self.root / "growing-worker")
+        with shards.reserve_worker(self.store, self.executor, self.runtimes["thread"], growing, 5):
+            with self.assertRaises(ValueError):
+                with shards.reserve_worker(self.store, second, self.runtimes["address"],
+                                           {**growing, "ram_available": 22}, 5):
+                    pass
+            with shards.reserve_worker(self.store, second, self.runtimes["address"],
+                                       {**growing, "ram_available": 28}, 5):
+                pass
+
+    def test_unknown_startup_claim_blocks_replacement_until_proven_exit_and_nonce_cas(self):
+        budget = {**ADMISSION, "explicit": 1}
+        attempt = self.root / "failed-launch"
+        attempt.mkdir(mode=0o700)
+        self.executor.exited = False
+        with shards.reserve_worker(self.store, self.executor, self.runtimes["thread"], budget, 5) as old:
+            shards.reservation_update(self.store, old, attempt=str(attempt), state="launching")
+        self.assertEqual(shards.load_json(old["path"])["state"], "unknown")
+        with self.assertRaises(ValueError):
+            with shards.reserve_worker(self.store, self.executor, self.runtimes["thread"], budget, 5):
+                pass
+        self.executor.exited = True
+        with shards.reserve_worker(self.store, self.executor, self.runtimes["thread"], budget, 5) as new:
+            self.assertNotEqual(new["nonce"], old["nonce"])
+            with self.assertRaises(ValueError):
+                shards.reservation_update(self.store, old, state="released")
+
+    def test_fresh_resource_observation_occurs_under_atomic_host_admission_lock(self):
+        def observe():
+            with self.assertRaises(BlockingIOError), shards.claim(self.store.root / "claims", "admission"):
+                pass
+            return ADMISSION
+        self.executor.observe_admission = observe
+        with shards.reserve_worker(self.store, self.executor, self.runtimes["thread"], ADMISSION, 5):
+            pass
+
     def test_unequal_mode_peaks_and_reserve_disk_host_policy_changes_are_rejected(self):
         budget = {**ADMISSION, "ram_available": 16, "ram_reserve": 4, "peak_per_worker": 10}
         plan = self.audited("thread", claim=None)
@@ -447,11 +504,24 @@ class AdmissionTests(Fixture):
 
 
 class PhaseTests(Fixture):
+    def test_guard_or_policy_transition_never_relabels_previous_normal_proof(self):
+        bundle, checksum = self.full_phase("normal")
+        runtime = deepcopy(self.runtimes["thread"])
+        runtime["inputs"]["Tools/CI/native_runner.py"] = "f" * 64
+        with self.assertRaises(ValueError):
+            shards.validate_phase(bundle, checksum, "normal", runtime, METHODS)
+        runtime = deepcopy(self.runtimes["thread"])
+        runtime["phase_environment"]["ELITE_RECOVERABLE_POLICY_SHA256"] = "e" * 64
+        with self.assertRaises(ValueError):
+            shards.validate_phase(bundle, checksum, "normal", runtime, METHODS)
+
     def full_phase(self, phase):
         runtime = self.runtimes["thread"]
         identity = dict(phase=phase, inputs=runtime["inputs"], swift=runtime["toolchain"],
                         sdk="fake-sdk", sdk_path="/fake/sdk", architecture=runtime["architecture"],
                         os_version={"release": "fake-os", "version": "fake-version"},
+                        image_sha256=shards.legacy.digest(self.image),
+                        image_uuid="UUID: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA (fake-arm64) /fake/image",
                         environment=runtime["environment"], inventory=METHODS if phase == "normal" else [],
                         opt_in_policy={}, flags=["--enable-code-coverage"] if phase == "normal" else [],
                         parallel=phase == "normal", policy="normal-coverage-80-v1" if phase == "normal"
@@ -508,6 +578,14 @@ class PhaseTests(Fixture):
 
 
 class ProcessTests(Fixture):
+    def test_child_startup_failure_has_durable_no_launch_proof(self):
+        attempt = self.root / "not-launched"
+        attempt.mkdir(mode=0o700)
+        with patch.object(shards.subprocess, "Popen", side_effect=OSError("fake exec failure")):
+            with self.assertRaises(OSError):
+                shards.execute_process(["/fake/command"], self.root, attempt, 5, [], {"LANG": "C"})
+        self.assertEqual(shards.load_json(attempt / "launch-failure.json")["status"], "not-launched")
+        self.assertFalse((attempt / "child.json").exists())
     def test_child_temp_leftovers_qualify_and_unexpected_proof_or_environment_still_fails(self):
         class PythonExecutor(FakeExecutor):
             def execute(inner, shard, attempt, timeout, descriptors):
@@ -598,14 +676,73 @@ shards.run_shard(plan, plan['shards'][0]['id'], shards.Store(cache), executor,
             pass
 
     def test_physical_cli_fails_before_any_execution(self):
-        for command in ("prepare", "worker", "pool", "export", "restore", "phase", "aggregate"):
+        for command in ("prepare", "worker", "pool", "export", "restore", "phase", "aggregate",
+                        "workflow-prepare", "workflow-load", "workflow-run", "workflow-phase", "workflow-export",
+                        "workflow-phase-export", "workflow-aggregate"):
             result = subprocess.run([sys.executable, str(Path(shards.__file__)), command],
-                                    text=True, capture_output=True)
+                                    text=True, capture_output=True,
+                                    env={**os.environ, "ELITE_RECOVERABLE_CODE_ENABLED": "true"})
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("HELD", result.stderr)
 
 
 class NativeAdapterTests(Fixture):
+    def test_only_closed_new_job_controls_are_removed_and_actual_popen_env_keeps_unknown_and_native_approval(self):
+        authority = self.authority()
+        expected = {"ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_PATH",
+                    "ELITE_RECOVERABLE_REQUEST_MODE", "ELITE_RECOVERABLE_REQUEST_SHARD",
+                    "ELITE_RECOVERABLE_REQUEST_WORKER", "ELITE_RECOVERABLE_REQUEST_PHASE",
+                    "ELITE_RECOVERABLE_POLICY_SHA256", "ELITE_RECOVERABLE_WORKFLOW_SHA256",
+                    "ELITE_RECOVERABLE_ACTIVATION_SHA256", "ELITE_RECOVERABLE_CODE_ENABLED"}
+        self.assertEqual(set(shards.AUTHORIZATION_CONTROLS), expected)
+        authority.environment.update({name: "fake-job-control" for name in expected})
+        authority.environment.update(ELITE_UNKNOWN_TEST_CONTROL="retain-me", ELITE_NATIVE_APPROVED_HEAD=HEAD,
+                                     ELITE_NATIVE_POLICY="/fixture/legacy-policy", SWIFT_EXEC="/fixture/swift",
+                                     DYLD_PRINT_LIBRARIES="1", LC_ALL="C")
+        actual = authority.environment_for("thread")
+        self.assertFalse(set(actual) & expected)
+        for name in ("ELITE_UNKNOWN_TEST_CONTROL", "ELITE_NATIVE_APPROVED_HEAD", "ELITE_NATIVE_POLICY",
+                     "SWIFT_EXEC", "DYLD_PRINT_LIBRARIES", "LC_ALL"):
+            self.assertEqual(actual[name], authority.environment[name])
+        self.assertEqual(actual["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"], shards.execution_policy_digest(authority.config))
+        original = actual["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"]
+        authority.config["planning"] = {"thread": {"history": {"unrelated": 5100}}}
+        authority.config["workers"]["two"] = str(self.root / "different-owned-instance")
+        authority.environment["ELITE_RECOVERABLE_POLICY_SHA256"] = "different-parent-policy"
+        self.assertEqual(authority.environment_for("thread")["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"], original)
+        authority.config["admission"]["ram_reserve"] += 1
+        self.assertNotEqual(authority.environment_for("thread")["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"], original)
+        authority.config["admission"]["ram_reserve"] -= 1
+        attempt = self.root / "actual-env-spy"
+        attempt.mkdir(mode=0o700)
+        with patch.object(shards.subprocess, "Popen", side_effect=OSError("fake no launch")) as spawn:
+            with self.assertRaises(OSError):
+                shards.execute_process(["/fake/swift", "test"], self.root, attempt, 5, [], actual)
+        observed = spawn.call_args.kwargs["env"]
+        self.assertFalse(set(observed) & expected)
+        self.assertEqual(observed["ELITE_UNKNOWN_TEST_CONTROL"], "retain-me")
+        runtime = {**self.runtimes["thread"], "host": authority.config["host"],
+                   "environment": shards.legacy.runtime_identity(actual)}
+        authority.environment.update(GITHUB_JOB="native_shards", GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1",
+                                     ELITE_RECOVERABLE_CODE_ENABLED="true")
+        authority.policy["recoverable_activation"] = {"workflow_sha256": "f" * 64}
+        authority.environment.update(ELITE_RECOVERABLE_WORKFLOW_SHA256="f" * 64,
+                                     ELITE_RECOVERABLE_POLICY_SHA256=shards.native_runner.policy_digest(authority.policy))
+        proof = authority.authorization()
+        shards.validate_authorization(proof, runtime)
+        for mutate in (lambda value: value["controls"].update(ELITE_UNAPPROVED_IGNORE="f" * 64),
+                       lambda value: value.update(execution_policy_sha256="f" * 64),
+                       lambda value: value.update(host="other-host")):
+            changed = deepcopy(proof)
+            mutate(changed)
+            with self.assertRaises(ValueError):
+                shards.validate_authorization(changed, runtime)
+        authority.environment.update(GITHUB_JOB="native_shards", ELITE_RECOVERABLE_REQUEST_MODE="thread",
+                                     ELITE_RECOVERABLE_REQUEST_SHARD="a" * 64, ELITE_RECOVERABLE_REQUEST_WORKER="one")
+        authority.verify_request("thread", "a" * 64, "one")
+        with self.assertRaises(ValueError):
+            authority.verify_request("address", "a" * 64, "one")
+
     def authority(self):
         controller = self.root / "controller"
         controller.mkdir(mode=0o700)
@@ -655,7 +792,7 @@ class NativeAdapterTests(Fixture):
             image.parent.mkdir(parents=True, mode=0o700)
             image.write_bytes(self.image.read_bytes())
             return image, METHODS, 0.001
-        def runtime(workspace, mode, image, flags):
+        def runtime(workspace, mode, image, flags, inputs=None):
             return {**self.runtimes[mode], "flags": flags, "image_sha256": shards.legacy.digest(image)}
         patches = [patch.object(shards.legacy, "ensure_no_live_tests"),
                    patch.object(shards.shutil, "which", return_value="/fake/swift"),
@@ -663,7 +800,7 @@ class NativeAdapterTests(Fixture):
                    patch.object(shards.legacy, "build_and_discover", side_effect=build),
                    patch.object(shards.legacy, "grouping_policy", return_value={"shared_groups": [METHODS[:2]]}),
                    patch.object(authority, "runtime", side_effect=runtime),
-                   patch.object(authority, "admission", return_value=ADMISSION)]
+                   patch.object(authority, "admission", return_value={**ADMISSION, "disk_available": 1000000})]
         for item in patches:
             item.start()
             self.addCleanup(item.stop)
@@ -675,7 +812,8 @@ class NativeAdapterTests(Fixture):
         with patch.object(shards.native_runner, "validate") as validate, patch.object(
                 shards, "native_output") as read:
             with self.assertRaisesRegex(ValueError, "HELD"):
-                shards.NativeAuthority(self.root / "does-not-exist", read=read)
+                shards.NativeAuthority(self.root / "does-not-exist",
+                                       {"ELITE_RECOVERABLE_CODE_ENABLED": "true"}, read=read)
             read.assert_not_called()
             validate.assert_not_called()
 
@@ -713,9 +851,12 @@ class NativeAdapterTests(Fixture):
             plan = shards.make_plan(runtime, METHODS)
             attempt = self.root / ("native-execution-" + mode)
             attempt.mkdir(mode=0o700)
-            with patch.object(shards, "execute_process", return_value=0) as execute, patch.object(
+            def completed(*args):
+                args[6].observed = {"fake": {"sha256": runtime["image_sha256"], "uuid": runtime["image_uuid"]}}
+                return 0
+            with patch.object(shards, "execute_process", side_effect=completed) as execute, patch.object(
                     one, "unknown_live_helpers", return_value=False):
-                one.execute(plan["shards"][0], attempt, 5, [])
+                self.assertEqual(one.execute(plan["shards"][0], attempt, 5, []), 0)
             command, workspace = execute.call_args.args[:2]
             self.assertEqual(workspace, one.active_workspace)
             self.assertIn("--skip-build", command)
@@ -737,6 +878,20 @@ class NativeAdapterTests(Fixture):
         with patch.object(shards.legacy, "executable_inputs", return_value={"Sources/Game.swift": "f" * 64}):
             with self.assertRaises(ValueError):
                 executor.verify(builds["thread"]["runtime"])
+
+    def test_durable_mode_bundle_restores_lost_controller_scratch_and_private_worker_without_compile(self):
+        authority, builder, builds, calls = self.prepared()
+        shutil.rmtree(authority.root / ".build")
+        shutil.rmtree(authority.workers["one"] / "thread")
+        restored = builder.prepare("thread", self.root / "frozen-thread")
+        self.assertEqual(restored, builds["thread"])
+        self.assertEqual(calls, ["thread", "address"])
+        shards.NativeExecutor(authority, "one").verify(restored["runtime"])
+        bundle_image = self.root / "frozen-thread/scratch" / Path(restored["image_relative"]).relative_to(".build/tsan")
+        self.change(bundle_image, "tampered frozen binary")
+        with self.assertRaises(ValueError):
+            builder.prepare("thread", self.root / "frozen-thread")
+        self.assertEqual(calls, ["thread", "address"])
 
     def test_descendant_tracking_includes_separate_groups_and_cleanup_never_owns_reused_pid(self):
         authority = self.authority()
@@ -846,15 +1001,258 @@ class NativeAdapterTests(Fixture):
             fresh.parent.mkdir(parents=True, mode=0o700)
             import shutil
             shutil.copytree(self.root / "normal", fresh)
+            monitor.observed = {"/fake/image": {"sha256": shards.legacy.digest(self.image), "uuid": shards.fingerprint(
+                {"fake-arm64": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"})}}
             return 0
-        with patch.object(shards, "execute_process", side_effect=execute), patch.object(
+        with patch.object(shards, "execute_process", side_effect=execute) as invocation, patch.object(
                 executor, "unknown_live_helpers", return_value=False), patch.object(
                 authority, "host", return_value=self.runtimes["thread"]["host"]):
-            checksum = shards.NativePhaseRunner(authority, executor).run(
+            runner = shards.NativePhaseRunner(authority, executor)
+            with self.assertRaises(RuntimeError):
+                runner.run("normal", plan, self.root / "fresh-normal-proof", 5,
+                           lambda stage: (_ for _ in ()).throw(RuntimeError("lost before upload")))
+            checksum = runner.run(
                 "normal", plan, self.root / "fresh-normal-proof", 5)
+            self.assertEqual(runner.run("normal", plan, self.root / "fresh-normal-proof", 5), checksum)
+            self.assertEqual(runner.run("normal", plan, self.root / "another-normal-export", 5), checksum)
+            self.assertEqual(invocation.call_count, 1)
+            self.assertTrue(runner.reused)
         shards.validate_phase(self.root / "fresh-normal-proof", checksum, "normal", plan["runtime"], METHODS)
         with self.assertRaises(ValueError):
             shards.NativePhaseRunner(authority, executor).phase_origin(self.root / "normal", {})
+
+    def test_observed_helper_must_match_private_path_image_hash_uuid_and_be_present(self):
+        authority, _, builds, _ = self.prepared()
+        workspace = authority.workers["one"] / "thread"
+        image = workspace / builds["thread"]["image_relative"]
+        uuids = {"arm64": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
+        runtime = {**builds["thread"]["runtime"], "image_uuid": shards.fingerprint(uuids)}
+        root = dict(parent=1, group=10, state="S", start="root", command="swift test")
+        for case in ("valid", "wrong-path", "wrong-hash", "wrong-uuid", "missing"):
+            attempt = self.root / ("image-binding-" + case)
+            attempt.mkdir(mode=0o700)
+            path = image if case != "wrong-path" else self.image
+            helper = dict(parent=10, group=20, state="S", start="helper",
+                          command=f"/fake/swiftpm-testing-helper --test-bundle-path {path} {path} --testing-library swift-testing")
+            rows = {10: root} if case == "missing" else {10: root, 20: helper}
+            authority.snapshot = lambda: dict(rows)
+            expected = {**runtime, **({"image_sha256": "f" * 64} if case == "wrong-hash" else
+                                     {"image_uuid": "wrong"} if case == "wrong-uuid" else {})}
+            monitor = shards.NativeMonitor(authority, attempt, workspace, expected, image)
+            monitor.known[10] = root
+            with patch.object(shards, "image_uuids", return_value={"uuids": uuids}):
+                monitor.observe()
+            rows.clear()
+            self.assertEqual(monitor.finish(False), case == "valid", case)
+
+
+class WorkflowTests(Fixture):
+    authority = NativeAdapterTests.authority
+    prepared = NativeAdapterTests.prepared
+
+    def workflow(self):
+        authority, builder, builds, calls = self.prepared()
+        for mode in shards.MODES:
+            destination = authority.cache / "builds" / HEAD / mode
+            destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            shutil.copytree(self.root / ("frozen-" + mode), destination)
+        class Remote:
+            def artifacts(inner, prefix):
+                return []
+
+            def restore_shard(inner, plan, shard, store):
+                return store.matching(shards.shard_identity(plan["runtime"], shard)) is not None
+        workflow = shards.NativeWorkflow(authority, Remote())
+        output = self.root / "workflow-plan"
+        result = workflow.prepare(output)
+        plans, manifest = workflow.plans(output, result["manifest_sha256"])
+        return authority, workflow, output, result, plans, manifest, calls
+
+    def test_workflow_pending_empty_all_failed_and_exact_cached_aggregate(self):
+        authority, workflow, bundle, result, plans, manifest, calls = self.workflow()
+        self.assertTrue(result["has_pending"])
+        self.assertEqual(len(manifest["expected"]), len(manifest["pending"]))
+        with self.assertRaises(ValueError):
+            shards.workflow_manifest([], ["one"], self.store, HEAD)
+        with self.assertRaises(ValueError):
+            workflow.aggregate(plans)
+        executor = FakeExecutor(self.root / "workflow-worker", {plan["runtime"]["mode"]: plan["runtime"] for plan in plans})
+        outcomes = shards.run_pending(plans, self.store, [executor], HEAD, 5, ADMISSION)
+        self.assertFalse(any("failed" in item for item in outcomes))
+        complete = shards.workflow_manifest(plans, sorted(authority.workers), self.store, HEAD)
+        self.assertFalse(complete["has_pending"])
+        self.assertEqual(len(complete["expected"]), 2)
+        for phase in ("normal", "leaks"):
+            proof, _ = PhaseTests.full_phase(self, phase)
+            destination = authority.cache / "full-phases" / shards.phase_key(plans[0]["runtime"], METHODS, phase)
+            destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            shutil.copytree(proof, destination)
+        self.assertEqual(workflow.aggregate(plans)["status"], "passed")
+        self.assertEqual(calls, ["thread", "address"])
+        altered = deepcopy(manifest)
+        altered["expected"].pop()
+        self.change(bundle / "workflow-plan.json", json.dumps(altered))
+        with self.assertRaises(ValueError):
+            workflow.plans(bundle, shards.legacy.digest(bundle / "workflow-plan.json"))
+
+    def test_portable_mode_restoration_after_zip_permissions_loss_never_compiles(self):
+        authority, workflow, bundle, result, plans, manifest, calls = self.workflow()
+        shutil.rmtree(authority.root / ".build")
+        for mode in shards.MODES:
+            frozen = authority.cache / "builds" / HEAD / mode
+            writable = lambda path: shards.writable_private_tree(path)
+            writable(frozen)
+            shutil.rmtree(frozen)
+        # Zip extraction loses executable bits; the bound manifest restores only those bits.
+        for path in (bundle / "builds").rglob("*"):
+            if path.is_file():
+                path.chmod(0o600)
+        with shards.NativeBuilder(authority).preparation_claim():
+            workflow.restore_builds(bundle)
+        for mode in shards.MODES:
+            shards.NativeBuilder(authority).prepare(mode, authority.cache / "builds" / HEAD / mode)
+        self.assertEqual(calls, ["thread", "address"])
+
+    def test_failed_phase_upload_retains_raw_attempt_but_cannot_become_a_phase_proof(self):
+        authority, workflow, bundle, result, plans, manifest, calls = self.workflow()
+        attempt = authority.cache / "phase-runs/fake-failed-phase"
+        attempt.mkdir(parents=True, mode=0o700)
+        shards.durable_json(attempt / "launch.json", {"phase": "normal", "head": HEAD,
+                                                      "host": plans[0]["runtime"]["host"]})
+        (attempt / "test.log").write_text("original fake failure log")
+        output = self.root / "failed-phase-artifact"
+        self.assertEqual(workflow.export_phase(plans[0], "normal", output)["status"], "failed")
+        self.assertEqual((output / "last-attempt/test.log").read_text(), "original fake failure log")
+        with self.assertRaises((ValueError, OSError)):
+            shards.validate_phase(output, shards.legacy.digest(output / "failure.json"), "normal", plans[0]["runtime"], METHODS)
+
+    def archive(self, files):
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            for name, value in files.items():
+                archive.writestr(name, value)
+        return buffer.getvalue()
+
+    def remote(self, authority, payload, name="native-test-1", metadata=None):
+        authority.environment["GITHUB_RUN_ID"] = "123"
+        authority.environment["GITHUB_RUN_ATTEMPT"] = "1"
+        authority.environment["GITHUB_REF"] = "refs/heads/approved"
+        authority.config["admission"]["disk_per_worker"] = 2 * 1024 * 1024
+        artifact = dict(id=1, name=name, expired=False, digest="sha256:" + hashlib.sha256(payload).hexdigest(),
+                        size_in_bytes=len(payload), workflow_run={"id": 123, "head_sha": HEAD})
+        disk = patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=10000000))
+        disk.start()
+        self.addCleanup(disk.stop)
+        artifact.update(metadata or {})
+        run = dict(id=123, run_attempt=1, status="in_progress", head_sha=HEAD, event="workflow_dispatch", repository={"full_name": shards.native_runner.REPOSITORY},
+                   actor={"id": 22142777}, triggering_actor={"id": 22142777}, head_branch="approved",
+                   path=".github/workflows/recoverable-quality.yml@approved")
+        def api(path):
+            return {"artifacts": [artifact]} if "/artifacts?" in path else run
+        remote = shards.GitHubArtifacts(authority, api=api, download=lambda record, path: path.write_bytes(payload))
+        return remote, artifact
+
+    def test_artifact_archive_external_digest_head_run_paths_links_and_size_are_strict(self):
+        authority = self.authority()
+        for filename in ("../escape", "/absolute", "back\\slash"):
+            remote, artifact = self.remote(authority, self.archive({filename: "bad"}))
+            with self.assertRaises(ValueError):
+                remote.fetch(artifact)
+        payload = self.archive({"index.json": "{}"})
+        remote, artifact = self.remote(authority, payload)
+        self.assertTrue((remote.fetch(artifact) / "index.json").exists())
+        for changes in ({"digest": "sha256:" + "f" * 64},
+                        {"workflow_run": {"id": 123, "head_sha": "b" * 40}},
+                        {"workflow_run": {"id": 456, "head_sha": HEAD}}):
+            with self.assertRaises(ValueError):
+                remote.fetch({**artifact, **changes})
+        with self.assertRaises(ValueError):
+            remote.fetch(artifact, "f" * 64)
+        authority.config["admission"]["disk_per_worker"] = 1
+        with self.assertRaises(ValueError):
+            remote.fetch(artifact)
+        link = zipfile.ZipInfo("link")
+        link.create_system, link.external_attr = 3, 0o120777 << 16
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, "w") as archive:
+            archive.writestr(link, "outside")
+        remote, artifact = self.remote(authority, data.getvalue())
+        with self.assertRaises(ValueError):
+            remote.fetch(artifact)
+
+    def test_authenticated_passed_shard_restore_executes_zero_and_failed_artifact_never_qualifies(self):
+        self.run_one()
+        artifact_dir = self.root / "passed-export"
+        self.store.export(self.identity(), artifact_dir)
+        payload = self.archive({path.relative_to(artifact_dir).as_posix(): path.read_bytes()
+                                for path in artifact_dir.rglob("*") if path.is_file()})
+        authority = self.authority()
+        remote, metadata = self.remote(authority, payload, "native-shard-thread-" + self.plan["shards"][0]["id"] + "-1")
+        restored = shards.Store(self.root / "api-restored")
+        before = self.executor.calls
+        self.assertTrue(remote.restore_shard(self.plan, self.plan["shards"][0], restored))
+        self.assertIsNotNone(restored.matching(self.identity()))
+        self.assertEqual(self.executor.calls, before)
+        failure = self.root / "failure-export"
+        shards.Store(self.root / "empty-failure").export_outcome(self.identity(), failure)
+        remote, metadata = self.remote(authority, self.archive({"failure.json": (failure / "failure.json").read_bytes()}),
+                                       "native-shard-thread-" + self.plan["shards"][0]["id"] + "-2")
+        empty = shards.Store(self.root / "failed-api-restore")
+        self.assertFalse(remote.restore_shard(self.plan, self.plan["shards"][0], empty))
+        self.assertIsNone(empty.matching(self.identity()))
+
+    def workflow_script(self, marker):
+        source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
+        body = source.split(marker, 1)[1].split("python3 - <<'PY'\n", 1)[1].split("\n          PY", 1)[0]
+        return textwrap.dedent(body)
+
+    def test_physical_guard_requires_separate_host_hook_before_any_checkout_and_cancelled_never_passes(self):
+        source = self.workflow_script("Require host hook and exact instance")
+        activation = dict(schema=1, enabled=True, revoked=False, expires_at=time.time() + 60,
+                          head=HEAD, ref="refs/heads/approved", workflow_sha256="a" * 64,
+                          assignment_root=str(self.root / "owned-assignments"),
+                          runners={"owned-one": {"workspace": "/fixture/runner/_work/elite/elite", "jobs": ["native_shards"]}})
+        env = dict(ACTIVATION=json.dumps(activation), POLICY_DIGESTS=json.dumps({"owned-one": "b" * 64}),
+                   REQUESTED_NATIVE="true", RUNNER_ENVIRONMENT="self-hosted", RUNNER_NAME="owned-one",
+                   GITHUB_REPOSITORY="stephenlclarke/elite", GITHUB_ACTOR_ID="22142777", GITHUB_EVENT_NAME="workflow_dispatch",
+                   GITHUB_SHA=HEAD, GITHUB_REF="refs/heads/approved", GITHUB_JOB="native_shards",
+                   GITHUB_WORKSPACE="/fixture/runner/_work/elite/elite", GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1",
+                   PLAN_DIGEST="e" * 64, ELITE_RECOVERABLE_PLAN_SHA256="e" * 64,
+                   ELITE_RECOVERABLE_REQUEST_MODE="thread", ELITE_RECOVERABLE_REQUEST_SHARD="f" * 64,
+                   ELITE_RECOVERABLE_REQUEST_WORKER="one",
+                   GITHUB_WORKFLOW_REF="stephenlclarke/elite/.github/workflows/recoverable-quality.yml@refs/heads/approved",
+                   ELITE_NATIVE_APPROVED_HEAD=HEAD, ELITE_RECOVERABLE_CODE_ENABLED="true",
+                   ELITE_NATIVE_POLICY="/fixture/owned-policy.json",
+                   ELITE_RECOVERABLE_ACTIVATION_SHA256=shards.fingerprint(activation),
+                   ELITE_RECOVERABLE_WORKFLOW_SHA256="a" * 64, ELITE_RECOVERABLE_POLICY_SHA256="b" * 64)
+        binding = dict(schema=1, head=HEAD, workflow_sha256="a" * 64,
+                       activation_sha256=shards.fingerprint(activation), policy_sha256="b" * 64,
+                       run_id="123", run_attempt="1", job="native_shards", runner="owned-one",
+                       workspace=env["GITHUB_WORKSPACE"], mode="thread", shard="f" * 64, worker="one", phase="",
+                       policy_path=env["ELITE_NATIVE_POLICY"],
+                       plan_sha256="e" * 64, expires_at=activation["expires_at"], revoked=False)
+        root = Path(activation["assignment_root"])
+        root.mkdir(mode=0o700)
+        path = root / (shards.native_runner.assignment_digest(env) + ".json")
+        path.write_text(json.dumps(binding))
+        path.chmod(0o400)
+        env.update(ELITE_RECOVERABLE_ASSIGNMENT_PATH=str(path),
+                   ELITE_RECOVERABLE_ASSIGNMENT_SHA256=shards.fingerprint(binding))
+        with patch.dict(os.environ, env, clear=True):
+            exec(compile(source, "fake-precheckout-guard", "exec"), {})
+        for change in ({"REQUESTED_NATIVE": "false"}, {"GITHUB_SHA": "f" * 40},
+                       {"RUNNER_NAME": "unknown"}, {"GITHUB_WORKSPACE": "/other"},
+                       {"ELITE_RECOVERABLE_CODE_ENABLED": "false"}, {"ELITE_RECOVERABLE_POLICY_SHA256": "f" * 64}):
+            with patch.dict(os.environ, {**env, **change}, clear=True), self.assertRaises((AssertionError, KeyError)):
+                exec(compile(source, "fake-precheckout-guard", "exec"), {})
+        gate = self.workflow_script("Held, failed or cancelled execution")
+        passed = dict(AUTHORIZED="true", PREPARE="success", PHASES="success", AGGREGATE="success", SHARDS="skipped", PENDING="false")
+        with patch.dict(os.environ, passed, clear=True):
+            exec(compile(gate, "fake-final-gate", "exec"), {})
+        for change in ({"SHARDS": "failed"}, {"SHARDS": "cancelled"}, {"AGGREGATE": "skipped"},
+                       {"AUTHORIZED": "false"}, {"PENDING": "true"}):
+            with patch.dict(os.environ, {**passed, **change}, clear=True), self.assertRaises(AssertionError):
+                exec(compile(gate, "fake-final-gate", "exec"), {})
 
 
 if __name__ == "__main__":

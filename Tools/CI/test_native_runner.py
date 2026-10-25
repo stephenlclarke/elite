@@ -80,6 +80,209 @@ class NativeAuthorizationTests(unittest.TestCase):
                 require_trusted_job(incomplete, event, SHA)
 
 
+class RecoverableAuthorizationTests(unittest.TestCase):
+    def contract(self):
+        from native_runner import assignment_digest, assignment_payload, policy_digest
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        import json
+        env, event = fixture()
+        workflow = REPO["full_name"] + "/.github/workflows/recoverable-quality.yml@refs/heads/approved"
+        env.update(GITHUB_JOB="native_shards", GITHUB_EVENT_NAME="workflow_dispatch", GITHUB_SHA=SHA,
+                   GITHUB_REF="refs/heads/approved", GITHUB_WORKFLOW_REF=workflow, RUNNER_NAME="owned-one",
+                   GITHUB_WORKSPACE="/fixture/native-runner/_work/elite/elite",
+                   GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1", PLAN_DIGEST="e" * 64,
+                   ELITE_RECOVERABLE_CODE_ENABLED="true",
+                   ELITE_NATIVE_APPROVED_HEAD=SHA, ELITE_NATIVE_POLICY="/fixture/owned-policy.json",
+                   ELITE_RECOVERABLE_PLAN_SHA256="e" * 64,
+                   ELITE_RECOVERABLE_REQUEST_MODE="thread", ELITE_RECOVERABLE_REQUEST_SHARD="f" * 64,
+                   ELITE_RECOVERABLE_REQUEST_WORKER="one",
+                   ELITE_RECOVERABLE_WORKFLOW_SHA256="c" * 64, ELITE_RECOVERABLE_ACTIVATION_SHA256="d" * 64)
+        temporary = TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        assignment_root = Path(temporary.name).resolve()
+        policy = {"approved_head": SHA, "recoverable_activation": {
+            "schema": 1, "enabled": True, "revoked": False, "expires_at": 200,
+            "head": SHA, "workflow_ref": workflow, "workflow_sha256": "c" * 64,
+            "manifest_sha256": "d" * 64, "runners": {"owned-one": {
+                "workspace": env["GITHUB_WORKSPACE"], "jobs": ["native_shards"]}},
+            "assignment_root": str(assignment_root)}}
+        policy["recoverable_shards"] = {"host": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
+        activation = policy["recoverable_activation"]
+        manifest = {name: activation[name] for name in ("schema", "enabled", "revoked", "expires_at", "head",
+                                                       "workflow_sha256", "runners", "assignment_root")}
+        manifest["ref"] = env["GITHUB_REF"]
+        activation["manifest_sha256"] = policy_digest(manifest)
+        env.update(ACTIVATION=json.dumps(manifest), ELITE_RECOVERABLE_ACTIVATION_SHA256=policy_digest(manifest))
+        env["ELITE_RECOVERABLE_POLICY_SHA256"] = policy_digest(policy)
+        env["POLICY_DIGESTS"] = json.dumps({"owned-one": policy_digest(policy)})
+        binding = {**assignment_payload(policy, env), "expires_at": 190, "revoked": False}
+        path = assignment_root / (assignment_digest(env) + ".json")
+        path.write_text(json.dumps(binding))
+        path.chmod(0o400)
+        env["ELITE_RECOVERABLE_ASSIGNMENT_PATH"] = str(path)
+        env["ELITE_RECOVERABLE_ASSIGNMENT_SHA256"] = policy_digest(binding)
+        from unittest.mock import patch
+        owner = patch("native_runner.require_owned_activation_file")
+        owner.start()
+        self.addCleanup(owner.stop)
+        return policy, env, event
+
+    def test_explicit_manual_contract_accepts_only_reserved_instance(self):
+        from native_runner import require_recoverable_job
+        policy, env, event = self.contract()
+        self.assertEqual(require_recoverable_job(policy, env, event, now=100), policy["recoverable_activation"])
+
+    def test_default_ci_policy_never_authorizes_new_workflow(self):
+        from native_runner import require_recoverable_job
+        _, env, event = self.contract()
+        with self.assertRaises(ValueError):
+            require_recoverable_job({"approved_head": SHA}, env, event, now=100)
+        with self.assertRaises(ValueError):
+            require_trusted_job(env, event, SHA)
+
+    def test_contract_drift_expiry_revocation_source_policy_and_instances_fail_closed(self):
+        from native_runner import require_recoverable_job
+        mutations = [lambda p, e: e.update(GITHUB_SHA="b" * 40),
+                     lambda p, e: e.update(GITHUB_ACTOR_ID="2"),
+                     lambda p, e: e.update(GITHUB_EVENT_NAME="push"),
+                     lambda p, e: e.update(GITHUB_JOB="arbitrary-job"),
+                     lambda p, e: e.update(GITHUB_WORKFLOW_REF="outside/workflow"),
+                     lambda p, e: e.update(RUNNER_NAME="unreserved"),
+                     lambda p, e: e.update(GITHUB_WORKSPACE="/other/path"),
+                     lambda p, e: e.update(ELITE_RECOVERABLE_WORKFLOW_SHA256="f" * 64),
+                     lambda p, e: e.update(ELITE_RECOVERABLE_ACTIVATION_SHA256="f" * 64),
+                     lambda p, e: e.update(ELITE_RECOVERABLE_CODE_ENABLED="false"),
+                     lambda p, e: e.update(ELITE_NATIVE_APPROVED_HEAD="b" * 40),
+                     lambda p, e: e.update(ELITE_NATIVE_POLICY="/other/owned-policy.json"),
+                     lambda p, e: e.update(PLAN_DIGEST="f" * 64),
+                     lambda p, e: e.update(GITHUB_RUN_ATTEMPT="2"),
+                     lambda p, e: e.update(ELITE_RECOVERABLE_REQUEST_SHARD="b" * 64),
+                     lambda p, e: p["recoverable_activation"].update(expires_at=99),
+                     lambda p, e: p["recoverable_activation"].update(expires_at=float("inf")),
+                     lambda p, e: p["recoverable_activation"].update(revoked=True),
+                     lambda p, e: p.update(guard_sha256="changed-guard-and-policy")]
+        for mutate in mutations:
+            policy, env, event = self.contract()
+            mutate(policy, env)
+            with self.subTest(mutation=mutations.index(mutate)), self.assertRaises(ValueError):
+                require_recoverable_job(policy, env, event, now=100)
+
+    def test_invalid_new_contract_is_rejected_before_physical_probe(self):
+        import json
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        from native_runner import validate
+        policy, env, event = self.contract()
+        env["RUNNER_NAME"] = "unknown"
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "event.json"
+            path.write_text(json.dumps(event))
+            env["GITHUB_EVENT_PATH"] = str(path)
+            with patch("native_runner.require_physical_host") as physical, self.assertRaises(ValueError):
+                validate(policy, env)
+            physical.assert_not_called()
+
+    def test_prejob_authorizer_authenticates_workflow_then_issues_owned_assignment_and_rejects_replay(self):
+        import base64
+        import hashlib
+        import json
+        from pathlib import Path
+        from types import SimpleNamespace
+        from native_runner import authorize_recoverable, policy_digest, require_recoverable_job
+        for role in ("prepare_native", "native_shards"):
+            policy, env, event = self.contract()
+            Path(env["ELITE_RECOVERABLE_ASSIGNMENT_PATH"]).unlink()
+            source = b"fake reviewed workflow bytes"
+            activation = policy["recoverable_activation"]
+            activation["runners"]["owned-one"]["jobs"] = [role]
+            activation["workflow_sha256"] = hashlib.sha256(source).hexdigest()
+            env.update(GITHUB_JOB=role, GITHUB_TOKEN="fake-private-read-token")
+            if role == "prepare_native":
+                for name in ("PLAN_DIGEST", "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_REQUEST_MODE",
+                             "ELITE_RECOVERABLE_REQUEST_SHARD", "ELITE_RECOVERABLE_REQUEST_WORKER"):
+                    env.pop(name, None)
+            else:
+                env.update(PLAN_ID="7", PLAN_ARCHIVE="b" * 64)
+            cache = Path(activation["assignment_root"]).with_name(Path(activation["assignment_root"]).name + "-cache")
+            policy["recoverable_shards"] = {"host": "fake-host", "cache": str(cache),
+                                             "workers": {"one": "/fixture/private-worker"}, "admission": {"disk_per_worker": 1000}}
+            manifest = {name: activation[name] for name in ("schema", "enabled", "revoked", "expires_at", "head",
+                                                           "workflow_sha256", "runners", "assignment_root")}
+            manifest["ref"] = env["GITHUB_REF"]
+            activation["manifest_sha256"] = policy_digest(manifest)
+            env.update(ACTIVATION=json.dumps(manifest), POLICY_DIGESTS=json.dumps({"owned-one": policy_digest(policy)}))
+            requests = []
+            def api(path):
+                requests.append(path)
+                if "/contents/Tools/CI?" in path:
+                    result = []
+                    for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
+                                 "quality_phase_checkpoints.py", "crash_artifacts.py"):
+                        raw = (Path(__file__).resolve().parent / name).read_bytes()
+                        blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw, usedforsecurity=False).hexdigest()
+                        result.append({"name": name, "type": "file", "sha": blob})
+                    return result
+                return ({"encoding": "base64", "content": base64.b64encode(source).decode()}
+                        if "/contents/" in path else {"name": "native-plan-1"})
+            class Remote:
+                def __init__(self, authority, api):
+                    pass
+
+                def fetch(self, artifact, digest):
+                    self.assertion = digest
+                    return Path(activation["assignment_root"])
+            class Workflow:
+                def __init__(self, authority, remote):
+                    pass
+
+                def plans(self, bundle, digest):
+                    return [], {"host": "fake-host", "phases": ["normal", "leaks"], "expected": [
+                        {"mode": "thread", "shard": "f" * 64, "worker": "one"}]}
+            guard = SimpleNamespace(PHYSICAL_EXECUTION_ENABLED=True, GitHubArtifacts=Remote, NativeWorkflow=Workflow)
+            issued = authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+            require_recoverable_job(policy, issued, event, now=100)
+            binding = Path(issued["ELITE_RECOVERABLE_ASSIGNMENT_PATH"]).read_text()
+            self.assertNotIn("fake-private-read-token", binding)
+            self.assertEqual(json.loads(binding)["plan_sha256"], None if role == "prepare_native" else "e" * 64)
+            self.assertTrue(any("/contents/" in path for path in requests))
+            with self.assertRaises(ValueError):
+                require_recoverable_job(policy, {**issued, "GITHUB_RUN_ATTEMPT": "2"}, event, now=100)
+            guard.PHYSICAL_EXECUTION_ENABLED = False
+            requests.clear()
+            with self.assertRaisesRegex(ValueError, "HELD"):
+                authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+            self.assertEqual(requests, [])
+
+    def test_explicit_new_contract_uses_only_its_named_physical_workspace(self):
+        import json
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        from native_runner import validate
+        policy, env, event = self.contract()
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "event.json"
+            path.write_text(json.dumps(event))
+            env["GITHUB_EVENT_PATH"] = str(path)
+            with patch("native_runner.time.time", return_value=100), patch(
+                    "native_runner.require_physical_host", return_value=Path(env["GITHUB_WORKSPACE"])) as physical, patch(
+                    "native_runner.platform.system", return_value="Darwin"), patch(
+                    "native_runner.platform.machine", return_value="arm64"), patch(
+                    "native_runner.output", return_value='"IOPlatformUUID" = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"'):
+                self.assertEqual(validate(policy, env), Path(env["GITHUB_WORKSPACE"]))
+            self.assertEqual(physical.call_args.args[0]["runner_root"], "/fixture/native-runner")
+
+    def test_environment_self_hash_cannot_replace_missing_owned_assignment(self):
+        from pathlib import Path
+        from native_runner import require_recoverable_job
+        policy, env, event = self.contract()
+        Path(env["ELITE_RECOVERABLE_ASSIGNMENT_PATH"]).unlink()
+        with self.assertRaises(OSError):
+            require_recoverable_job(policy, env, event, now=100)
+
+
 class PhysicalIdentityTests(unittest.TestCase):
     def policy(self):
         """Return only non-secret identities used by the owned checkout gate."""
