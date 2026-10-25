@@ -147,14 +147,28 @@ struct OriginalZebuUnitTests {
     #expect(number("laser_facing_mask") == 15 && number("hold_used_by_cabins") == 0)
     #expect(
       number("fitted_passenger_berths") == 0 && number("required_crew_including_commander") == 1)
+    let budget = try #require(fit.fields.first { $0.key == "equipment_capacity_units" })
+    #expect(budget.number == 20 && budget.text == "20 equipment-budget units")
+    #expect(budget.status == "original-fleet design estimate" && budget.basis.contains("E01"))
+    #expect(number("reserved_crew_accommodation") == 1)
+    let accommodation = try ShipAccommodationProfile(ship: ship)
+    #expect(accommodation.equipmentUnits == 20 && accommodation.operatingCrew == 1)
+    #expect(accommodation.intrinsicCrewQuarters == 1 && accommodation.initialCharterBerths == 0)
+    let historical = try #require(ship.profiles.first { $0.group == "historical-project-refit-v1" })
+    #expect(historical.fields.first { $0.key == "equipment_capacity_units" }?.number == 12)
     #expect(performance.workTools == nil)
     for mount in LaserMount.allCases { #expect(performance.supports(mount)) }
     #expect(ship.catalogue.validEffectiveCargo(performance: performance, profiles: ship.profiles))
     var commander = Commander()
     commander.shipID = ship.id
+    let inventory = commander.equipmentInventory
+    let people = commander.savedNativePeopleCustody
     #expect(commander.standardCargoCapacity == 58 && commander.missileCapacity == 5)
+    #expect(commander.fuelCapacity == 150)
     commander.equipment.insert("Large Cargo Bay")
     #expect(commander.standardCargoCapacity == 83)
+    #expect(
+      commander.equipmentInventory == inventory && commander.savedNativePeopleCustody == people)
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     defer { try? FileManager.default.removeItem(at: directory) }
