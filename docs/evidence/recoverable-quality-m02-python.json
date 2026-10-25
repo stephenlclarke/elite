@@ -1,0 +1,100 @@
+{
+  "canonical_base": "0736f12384ed1ce91d6108924b022419aacb13aa",
+  "rebased_packet_head": "5877bbd63022a0db47d06d0b1fef428b68ec3049",
+  "results": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_sanitizer_checkpoints.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.2625187090598047,
+      "tests": 32,
+      "framework_seconds": 0.119,
+      "log": "/tmp/elite-recoverable-quality-m02/selection-0.log",
+      "log_sha256": "bc1caa7494915652629e4b2e7e65f9cfc98b0e56c9c22edc4ddf74b37c184ba0"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_quality_phase_checkpoints.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.13618058431893587,
+      "tests": 8,
+      "framework_seconds": 0.062,
+      "log": "/tmp/elite-recoverable-quality-m02/selection-1.log",
+      "log_sha256": "ce0e0f09e3ee33dea6071ed579ecd7762f2cc9093fe70e203360f8bab040d8e3"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_crash_artifacts.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.23132816702127457,
+      "tests": 60,
+      "framework_seconds": 0.163,
+      "log": "/tmp/elite-recoverable-quality-m02/selection-2.log",
+      "log_sha256": "ead422d4593451027c9ef57ed4d447a1a50abeec76e6b5f860bf2770fc0ad6d2"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_native_runner.py",
+        "-k",
+        "MaintainedMakeTargetsTests"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.08968649990856647,
+      "tests": 1,
+      "framework_seconds": 0.043,
+      "log": "/tmp/elite-recoverable-quality-m02/selection-3.log",
+      "log_sha256": "0276289a917b36926f4a82fd7b7e1660cb3eb443b96c998d41c5d3cf04007a39"
+    }
+  ],
+  "all_passed": true,
+  "total_affected_cases": 101,
+  "source_before_after": {
+    "Makefile": "959b262609d6bee9b96ad52898607f1e293bf0a687c1c3c42a258f7e6a330268",
+    "README.md": "bfab290ac742a88eabfdd2c3c3b359981e95c3c07275fa1b1a9ddc34a6f1a16a",
+    "Tools/CI/crash_artifacts.py": "b39cc302b45f7e6f2ea6e5f7fd2194695120477ebf9b57fabdf53f97db3c6efb",
+    "Tools/CI/quality_phase_checkpoints.py": "dd5947be65717376b86579d1d01c4ddc578b6d44743cf14aee7e61cf83a63141",
+    "Tools/CI/sanitizer_checkpoints.py": "9f329dd9d7db2c4a122f6b413ed188e0130975d6eafe2d5f96ce35f37ea639f4",
+    "Tools/CI/sanitizer_groups.json": "1de5dde98d7a918ecf50c2fa4e686422a92d381bd90316340dded1a73f1e6778",
+    "Tools/CI/test_crash_artifacts.py": "bf8eb2e345ba4c4b0f5f057164539b7dd8f874f0b5b2d5bfa57dbc69f3a79b13",
+    "Tools/CI/test_native_runner.py": "3e46138edf3412c559c809069582b2f0deb32924c832172e4901ba3be54bc565",
+    "Tools/CI/test_quality_phase_checkpoints.py": "2aae74f186f97283781f762dd247eada011c0a102c3f26ef2411b530f546a203",
+    "Tools/CI/test_sanitizer_checkpoints.py": "e62b6f83dd9bbdb82e7d53868c83e56b3c4aca355d0e2a3264615de200d7bc95",
+    "docs/ISSUE-recoverable-quality-phases.md": "8fd603b8a3e017fd8a2922a59f06592a05e204949fa42fd0388ae66eb460a2cb",
+    "docs/PR-recoverable-quality-phases.md": "04cdffe962b20f2952ff1ad78144feba6006e1415599bcee6332a4ff52a53b2e",
+    "docs/evidence/recoverable-quality-python.json": "150e7d892cf533ae22ae1237dc17c035c41db7473d7daf54e8d7bde797ca36c1",
+    "docs/evidence/recoverable-quality-source-review.json": "48164454d5dd9982359ad3307bcfbe6a0a6af9ab528fb5d2b3f700f9cd571be7"
+  },
+  "delta_patch_sha256": "3b2301e2f78da0000dce55e7108a5ee8a4dcda43014315c6aaa30744946d888b",
+  "limits": "Affected Python only:32group+8phase+60crash+1Makecontract. No nativebuild/test/UI/probe; prior115source/results stayhistoricalscopes."
+}
