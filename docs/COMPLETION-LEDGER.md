@@ -2211,7 +2211,7 @@ Superseded execution notes are retained for traceability. They describe earlier 
 
 ### M03 - Start and trade in the original L337 universe
 
-**Status:** in development. **Owner:** G3, explicitly assigned 24 October on a separate branch; Root coordinates shared hunks and any rename. **Dependencies:** M01, M02 for complete usable acceptance. M03 source implementation may proceed in parallel under Stephen's explicit direction; see current assignment above.
+**Status:** defined coding packets implemented; pending author-owned integration and usable acceptance. **Owner:** G3. M03.P01 identity/contact/startup corrections are in reviewed PR214; P02 world/navigation joins are already implemented; P03 market ordering/finite transaction core is retained and approved equipment price/technology corrections are in reviewed PR223/224. No additional bounded M03 coding criterion is currently identified. Root rechecked the three PRs remain open on25October. Remaining work is merge composition with M02 branding, applicable final-head checks and eventual authorised playable acceptance; this is not a complete or released M03 claim. **Dependencies:** M01, M02 for usable acceptance. Do not invent strength/DPS/recharge changes or adjacent milestone work to keep this owner busy.
 
 **Player journey:** Start as the approved commander at Avenor in SH025 with720CR/full fuel, then trade and travel through the original named galaxies and economy.
 
