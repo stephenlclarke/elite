@@ -1,0 +1,269 @@
+{
+  "run": 40166015524,
+  "published_head": "38ae83ec3517a1085e2d40e315a4c54260bcddac",
+  "actual_tested_head": "23e03e1f1dea2aa5ab876184bfa8e54f45f04d69",
+  "tree": "fdcc1fab11eb54f438a8db294c50cf7e5c76b10d",
+  "evidence_source": "/tmp/elite-m01-38ae-asan-batch10-failure",
+  "github_downloads": 0,
+  "terminal": {
+    "status": "FAILED",
+    "make_exit": 2,
+    "whole_invocation_wall_seconds": 18714.30817829119,
+    "interrupted": false,
+    "tracked_inputs_changed": [],
+    "leaks": "not reached"
+  },
+  "originals_manifest_all11hashes_verified": true,
+  "normal_coverage": "Exact prior qualified phase snapshot prefix/source-before/coverage preserved;3403declared/395suitesPASS2988.871s,115714/127875=90.48993157380254%.",
+  "input_proof": [
+    {
+      "mode": "thread",
+      "source_build_inputs": 1889,
+      "dependency_inputs": 970,
+      "all2859exact": true
+    },
+    {
+      "mode": "address",
+      "source_build_inputs": 1889,
+      "dependency_inputs": 970,
+      "all2859exact": true
+    }
+  ],
+  "fresh_tsan": {
+    "status": "PASS",
+    "reused": false,
+    "declared": 3403,
+    "executed": 3397,
+    "source_declared_inactive_opt_ins": 6,
+    "unexpected_skips": 0,
+    "framework_seconds": 14150.003,
+    "process_wall_seconds": 14156.06320216693,
+    "outputs": {
+      "test.log": "474e523a9e0fa243967869d3dc00f6183425bd887c2bb12764fc627a8d40ae17",
+      "tests-swift-testing.xml": "c2c716a23eb22aef059ff6874ada6cf51039a49e6bfd1d56a5e2a24ce365391b"
+    },
+    "summary": "/tmp/elite-m01-38ae-asan-batch10-failure/reports/sanitizers/thread/a57b056a-6dc7-45ad-bf8f-53505311c00f/summary.json",
+    "actual_image_sha256": "39cf158fda4f194a21009752cc316d7535c45b4f2ead93d02160c94e4abcb431",
+    "actual_image_uuid": "909f382f-5675-3d8b-82ed-9f89f5d2c525",
+    "scope": "Full original concurrent unfiltered selection at23e03/38ae; not new partition policy."
+  },
+  "asan_completed": {
+    "status": "9whole-suitebatchesPASS; modeincomplete",
+    "planned_batches": 35,
+    "completed_methods": 855,
+    "batches": [
+      {
+        "index": 0,
+        "methods": 86,
+        "wall_seconds": 94.01156941708177,
+        "outputs": {
+          "test.log": "4c3caad1ad60399173a8bb54abb47514177b9c0c98760e3d1fc882841eec1948",
+          "tests-swift-testing.xml": "01756122a1d95ece9eb896608cd853309d23f04578ad47c1f6bf1c1fad589a99"
+        }
+      },
+      {
+        "index": 1,
+        "methods": 98,
+        "wall_seconds": 98.54511620895937,
+        "outputs": {
+          "test.log": "b169eb705c6630be2b975eed30f175d1f97b2c4bcb2bb8575a44ac288a5cbae7",
+          "tests-swift-testing.xml": "8f8658b2f320171a39d948cb4fc69b982580797a04adb3a612be253ba2ba6143"
+        }
+      },
+      {
+        "index": 2,
+        "methods": 96,
+        "wall_seconds": 189.0755515000783,
+        "outputs": {
+          "test.log": "1f97e138a481c51f71cc8c68bc022b42c9307aeee0988de4435d514cf497e555",
+          "tests-swift-testing.xml": "340fe7f3399ca8c07b17993d674fc3fcd494081ebb9c81a674316c7f0523e0cb"
+        }
+      },
+      {
+        "index": 3,
+        "methods": 97,
+        "wall_seconds": 38.51492695789784,
+        "outputs": {
+          "test.log": "3aac213c3c4a5436d1eb8dbac85ec016f40082331fe914e96ebd115d24bb8523",
+          "tests-swift-testing.xml": "ed8f488600f0de0e84e1104ce15860dc132d92ebac2d12bf6eb673e716fadaa4"
+        }
+      },
+      {
+        "index": 4,
+        "methods": 99,
+        "wall_seconds": 234.0031465832144,
+        "outputs": {
+          "test.log": "8a6925a22b8c9f7844d0dff6e840f8bcf6e59d1328fdb7d022498c2e823c6ffc",
+          "tests-swift-testing.xml": "50ce77f39b5d8dce4fbb04d1e15737daaf514a081518f42198ac8a5ba6117982"
+        }
+      },
+      {
+        "index": 5,
+        "methods": 98,
+        "wall_seconds": 30.272026916965842,
+        "outputs": {
+          "test.log": "2d0297b5b7e48ab93bd6db551b1786db1d38780a1f2b41004267492181c57b61",
+          "tests-swift-testing.xml": "131a2072514c23d1f14f7e2664195ac42996e0808997b7deea1d123e77d86a05"
+        }
+      },
+      {
+        "index": 6,
+        "methods": 100,
+        "wall_seconds": 46.94998433301225,
+        "outputs": {
+          "test.log": "15de226403cc486ff19c75d8dce5490dd8bc2c84cf9c5a862a97d1ee2c06a766",
+          "tests-swift-testing.xml": "a63835327b910ad9623b2d54a78c0f624b19c1bd3720d214cc87d6617b79a5a7"
+        }
+      },
+      {
+        "index": 7,
+        "methods": 98,
+        "wall_seconds": 53.871558708138764,
+        "outputs": {
+          "test.log": "41e468824531aef9e76cc610f67579c34739b2fb80d875e58dd037eb3535bc6d",
+          "tests-swift-testing.xml": "5fb4ae293c8ceb976dcd0a7952b9e69c7464e69b935c48f989aba6f38192ea2c"
+        }
+      },
+      {
+        "index": 8,
+        "methods": 83,
+        "wall_seconds": 66.12168362503871,
+        "outputs": {
+          "test.log": "3f2398251bc354019054bb7ce380d4ba365c27333a378b2aca0a1a856805d1ec",
+          "tests-swift-testing.xml": "1b8a9d4fc9cd2d738c8e5012ad6349e3a0a65e5c0b263b6f75f2226d48c8d05f"
+        }
+      }
+    ]
+  },
+  "asan_failure": {
+    "index": 9,
+    "selected_methods": 99,
+    "driver_exit": 1,
+    "helper_signal_code": 4,
+    "process_wall_seconds": 299.5036464589648,
+    "xml_bytes": 52,
+    "fullsummary": false,
+    "outputs": {
+      "result.json": "185580be476c8a45c837fd1430bb763040780567e5e2e7effa2c4d7aef74f365",
+      "test.log": "1551f0a50d103cca814b6537ec82bb2413ea50b1e6331ef980aee3086a399f28",
+      "tests-swift-testing.xml": "6edbe77098b9cbc5d4d33c4279d3def109144c23b8014d646fdd7793d16b20b3",
+      "start.json": "c645abc8671f8209f09729f081bcd34aa0876909085c59965e7b14b9c47350ad"
+    },
+    "image_sha256": "02b1165f064c0a86b08470437ee2d22358a776bcf6e01cee3ae17320ee38f34a",
+    "image_uuid": "886268c8-1ac3-37d0-907e-4fe7064b3556",
+    "ips": "/tmp/elite-m01-38ae-asan-batch10-failure/swiftpm-testing-helper-2026-10-25-104713.ips",
+    "ips_sha256": "6e41dc83eedd0ceb79b911d2c26821eb26f3f24ff471391ad3f50918f03334d2",
+    "observed_pid": 18175,
+    "procLaunch": "2026-10-25 10:42:03.0097 +0000",
+    "observed_parent": 18154,
+    "faulting_thread": 2,
+    "sp_far": "0x16b1b3e60",
+    "guard": [
+      "0x16b1b0000",
+      "0x16b1b4000"
+    ],
+    "actual_frames": [
+      "ScriptNPCDefinition.encode(to:)",
+      "protocol witness for Encodable.encode(to:) in conformance ScriptNPCDefinition",
+      "dispatch thunk of Encodable.encode(to:)",
+      "__JSONEncoder.wrapGeneric<A, B>(_:for:)",
+      "_JSONKeyedEncodingContainer.encode<A>(_:forKey:)",
+      "protocol witness for KeyedEncodingContainerProtocol.encode<A>(_:forKey:) in conformance _JSONKeyedEncodingContainer<A>",
+      "_KeyedEncodingContainerBox.encode<A, B>(_:forKey:)",
+      "KeyedEncodingContainer.encode<A>(_:forKey:)",
+      "ScriptNPCFit.encode(to:)",
+      "protocol witness for Encodable.encode(to:) in conformance ScriptNPCFit",
+      "dispatch thunk of Encodable.encode(to:)",
+      "__JSONEncoder.wrapGeneric<A, B>(_:for:)",
+      "_JSONKeyedEncodingContainer.encode<A>(_:forKey:)",
+      "protocol witness for KeyedEncodingContainerProtocol.encode<A>(_:forKey:) in conformance _JSONKeyedEncodingContainer<A>",
+      "_KeyedEncodingContainerBox.encode<A, B>(_:forKey:)",
+      "KeyedEncodingContainer.encode<A>(_:forKey:)",
+      "ScriptNPCState.encode(to:)",
+      "protocol witness for Encodable.encode(to:) in conformance ScriptNPCState",
+      "dispatch thunk of Encodable.encode(to:)",
+      "__JSONEncoder.wrapGeneric<A, B>(_:for:)",
+      "_JSONKeyedEncodingContainer.encode<A>(_:forKey:)",
+      "protocol witness for KeyedEncodingContainerProtocol.encode<A>(_:forKey:) in conformance _JSONKeyedEncodingContainer<A>",
+      "KeyedEncodingContainerProtocol.encodeIfPresent<A>(_:forKey:)",
+      "protocol witness for KeyedEncodingContainerProtocol.encodeIfPresent<A>(_:forKey:) in conformance _JSONKeyedEncodingContainer<A>",
+      "_KeyedEncodingContainerBox.encodeIfPresent<A, B>(_:forKey:)",
+      "KeyedEncodingContainer.encodeIfPresent<A>(_:forKey:)",
+      "SpaceBody.encode(to:)",
+      "protocol witness for Encodable.encode(to:) in conformance SpaceBody",
+      "dispatch thunk of Encodable.encode(to:)",
+      "__JSONEncoder.wrapGeneric<A, B>(_:for:)",
+      "_JSONKeyedEncodingContainer.encode<A>(_:forKey:)",
+      "protocol witness for KeyedEncodingContainerProtocol.encode<A>(_:forKey:) in conformance _JSONKeyedEncodingContainer<A>",
+      "_KeyedEncodingContainerBox.encode<A, B>(_:forKey:)",
+      "KeyedEncodingContainer.encode<A>(_:forKey:)",
+      "ScriptOwnedActor.encode(to:)",
+      "protocol witness for Encodable.encode(to:) in conformance ScriptOwnedActor",
+      "dispatch thunk of Encodable.encode(to:)",
+      "specialized __JSONEncoder.wrapGeneric<A, B>(_:for:)",
+      "_JSONUnkeyedEncodingContainer.encode<A>(_:)",
+      "protocol witness for UnkeyedEncodingContainer.encode<A>(_:) in conformance _JSONUnkeyedEncodingContainer",
+      "Array<A>.encode(to:)",
+      "protocol witness for Encodable.encode(to:) in conformance <A> [A]",
+      "dispatch thunk of Encodable.encode(to:)",
+      "specialized __JSONEncoder.wrapGeneric<A, B>(_:for:)",
+      "JSONEncoder.encode<A>(_:)",
+      "dispatch thunk of JSONEncoder.encode<A>(_:)",
+      "static NativeIdentifiedSalvage.witnessHash<A>(_:)",
+      "static NativeIdentifiedSalvage.lossAuthority(_:)",
+      "static NativeIdentifiedSalvageSave.lossValid(_:state:source:instance:commander:)",
+      "static NativeIdentifiedSalvageSave.stateValid(_:instance:source:commander:requireRecordedLoss:)",
+      "static NativeIdentifiedSalvageSave.validateClaims(_:requireRecordedLoss:)",
+      "Commander.validAfterEquipment()",
+      "Commander.valid.getter",
+      "Game.nativeUtilityQuote(_:)",
+      "Game.nativeUtilityReview(_:)",
+      "closure #1 in Game.nativeUtilityRows.getter",
+      "partial apply for closure #1 in Game.nativeUtilityRows.getter",
+      "Collection.map<A, B>(_:)",
+      "Game.nativeUtilityRows.getter",
+      "Game.refreshContractRows(failures:restoring:)",
+      "Game.applyContractDetailKey(_:)",
+      "Game.applyContractBoardKey(_:)",
+      "Game.contractBoardKey(_:)",
+      "Game.interfaceKey(_:)",
+      "Game.key(_:)",
+      "GameRuntime.applyPlainGameKey(_:)",
+      "GameRuntime.applyKey(_:)",
+      "GameRuntime.keyAfterGallery(_:)",
+      "GameRuntime.key(_:)",
+      "GameRuntime.scriptPageKey(_:expected:)",
+      "NativeIdentifiedSalvageFixture.confirm(_:_:)",
+      "NativeIdentifiedSalvageRecoveryTests.actualDestructionLeavesOneHeldMateForUnpaidOwnerReturn()",
+      "static NativeIdentifiedSalvageRecoveryTests.$s14EliteCoreTests031NativeIdentifiedSalvageRecoveryC0V54actualDestructionLeavesOneHeldMateForUnpaidOwnerReturn4TestfMp_17Z3a49b661c4f20734fMu_@Sendable ()",
+      "implicit closure #1 in static NativeIdentifiedSalvageRecoveryTests.$s14EliteCoreTests031NativeIdentifiedSalvageRecoveryC0V54actualDestructionLeavesOneHeldMateForUnpaidOwnerReturn4TestfMp_25generator3a49b661c4f20734fMu_@Sendable ()",
+      "partial apply for implicit closure #1 in static NativeIdentifiedSalvageRecoveryTests.$s14EliteCoreTests031NativeIdentifiedSalvageRecoveryC0V54actualDestructionLeavesOneHeldMateForUnpaidOwnerReturn4TestfMp_25generator3a49b661c4f20734fMu_@Sendable ()",
+      "specialized static Runner._applyScopingTraits(for:testCase:_:)",
+      "specialized closure #1 in closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+      "closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+      "partial apply for closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+      "specialized static Issue.withErrorRecording(at:configuration:isolation:_:)",
+      "closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+      "partial apply for closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+      "specialized closure #1 in TestCancellable.withCancellationHandling<A>(_:)",
+      "specialized TestCancellable.withCancellationHandling<A>(_:)",
+      "specialized static Test.Case.withCurrent<A>(_:perform:)",
+      "static Runner._runSingleTestCaseIteration(_:within:)",
+      "specialized static Runner._runTestCase(_:within:in:)",
+      "closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+      "partial apply for closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+      "thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+      "partial apply for thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+      "specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+      "partial apply for specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+      "completeTaskWithClosure(swift::AsyncContext*, swift::SwiftError*)"
+    ],
+    "attribution": "Actual fault in ScriptNPCDefinition encoding through NPCfit/state/SpaceBody serialization; NativeIdentifiedSalvageSave.validateClaims\u2192Commander.valid\u2192nativeUtilityQuote/Rows\u2192refreshContractRows/detail\u2192NativeIdentifiedSalvageRecoveryTests.actualDestructionLeavesOneHeldMateForUnpaidOwnerReturn. Stack guard protection fault; not a last-started-test guess.",
+    "limits": "No heap-error or deeper compiler/root-cause inference; no measured total dynamic stack."
+  },
+  "limits": [
+    "No fullquality/leak/releasePASS.",
+    "All prior successes tied to actual oldruntimeidentity; integration/runtime changes invalidate reuse.",
+    "Reviewer performed retained artifact/source/hash/XML/MachO reads only; no test/build/probe/rerun/GitHubdownload."
+  ]
+}

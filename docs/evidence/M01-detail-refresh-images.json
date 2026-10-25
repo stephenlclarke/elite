@@ -1,0 +1,41 @@
+{
+  "normal": {
+    "path": "/tmp/elite-m01-detail-refresh-passed/normal-EliteCoreTests",
+    "sha256": "c6c085df107f44d92b7a9c9d6cea05aa0112173156f668244b89bd2987669d11",
+    "bytes": 227664752,
+    "uuid": "UUID: 3250BC71-70EF-3D07-ACCE-8716EC12FDE9 (arm64) /tmp/elite-m01-detail-refresh-passed/normal-EliteCoreTests",
+    "original_path": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/.build/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests",
+    "process_wall_seconds": 154.92751887487248,
+    "framework_methods": 110,
+    "framework_suites": 17,
+    "framework_seconds": 154.092,
+    "diagnostic_markers": [],
+    "build_reported_seconds": [],
+    "result": "/tmp/elite-m01-detail-refresh-normal-result.json",
+    "result_sha256": "b9eacc4297debd08ac1176593b8942cd1d38dd00ed7dc76ded8db86287650734"
+  },
+  "asan": {
+    "path": "/tmp/elite-m01-detail-refresh-passed/asan-EliteCoreTests",
+    "sha256": "4eefcfa46d3aa8d77aecb9d38c1ac0489cb6455c5e92e87bb25685b5573cd4b6",
+    "bytes": 460927088,
+    "uuid": "UUID: EC70B2F2-D9BE-3F87-9198-AA7963CC95D7 (arm64) /tmp/elite-m01-detail-refresh-passed/asan-EliteCoreTests",
+    "original_path": "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests",
+    "process_wall_seconds": 3625.783773917239,
+    "framework_methods": 110,
+    "framework_suites": 17,
+    "framework_seconds": 3522.929,
+    "diagnostic_markers": [],
+    "build_reported_seconds": [
+      "97.04"
+    ],
+    "result": "/tmp/elite-m01-detail-refresh-asan-result.json",
+    "result_sha256": "126984210b35f75b157e25df9dd0cd0d52a56246dc9db11ba02cee62920f0158",
+    "actual_observed_helper": {
+      "66177": {
+        "parent": 63748,
+        "start": "Sun Oct 25 11:43:31 2026",
+        "command": "/Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper --test-bundle-path /Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests --scratch-path .build/asan --sanitize=address --no-parallel --filter ^(?:EliteCoreTests\\.NativeCrimboRuntimeTests/|EliteCoreTests\\.NativeDefensiveFlightUnitTests/|EliteCoreTests\\.NativeFirstCommoditySaleUnitTests/|EliteCoreTests\\.NativeFleetDiscoveryUnitTests/|EliteCoreTests\\.NativeFlightReceptionUnitTests/|EliteCoreTests\\.NativeGlassMeridianUnitTests/|EliteCoreTests\\.NativeIdentifiedSalvageJourneyTests/|EliteCoreTests\\.NativeIdentifiedSalvageRecoveryTests/|EliteCoreTests\\.NativeIdentifiedSalvageSaveTests/|EliteCoreTests\\.NativeImportedEMPCompatibilityTests/|EliteCoreTests\\.NativeIsolationProgrammerUnitTests/|EliteCoreTests\\.NativeLoanFittingTests/|EliteCoreTests\\.NativeMainStationCapacityTests/|EliteCoreTests\\.NativeMainStationReceiptProjectionTests/|EliteCoreTests\\.NativeMeasuredExtractionAcquisitionTests/)|FreshMainStationStartTests|transientBoardCopiesRetainIndependentOffersMetadataAndReviews|listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty|nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline|nativeBoardReviewDefaultsBackAndRequiresSeparateConfirmedCollection|frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept --xunit-output /tmp/elite-m01-detail-refresh-asan-swift-testing.xml /Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests --testing-library swift-testing"
+      }
+    }
+  }
+}

@@ -227,6 +227,17 @@ struct NativeIdentifiedSalvageRecoveryTests {
     let cash = await runtime.snapshot().commander.credits
     try await f.confirm(runtime, .receive)
     let returned = await runtime.snapshot()
+    // The real confirmation must refresh the list after recording the surviving return.
+    #expect(returned.screen == .contracts && !returned.contractBoard.detail)
+    #expect(!returned.contractBoard.rows.contains { $0.identifiedSalvage != nil })
+    #expect(returned.contractBoard.identifiedSalvageQuote == nil)
+    #expect(returned.contractBoard.utilityQuote == nil)
+    #expect(returned.contractBoard.wayfarerInductionQuote == nil)
+    #expect(returned.contractBoard.glassMeridianQuote == nil)
+    #expect(returned.contractBoard.flightReceptionQuote == nil)
+    #expect(returned.contractBoard.measuredExtractionQuote == nil)
+    #expect(returned.contractBoard.recordRecoveryQuote == nil)
+    #expect(returned.identifiedSalvageState?.losses == lost.identifiedSalvageState?.losses)
     #expect(returned.commander.credits == cash)
     #expect(returned.identifiedSalvageState?.reception?.complete == false)
     #expect(returned.identifiedSalvageState?.reception?.originals.count == 1)

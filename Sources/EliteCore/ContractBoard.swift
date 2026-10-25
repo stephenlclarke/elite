@@ -669,236 +669,257 @@ extension Game {
       return
     }
     do {
-      if let action = contractBoard.selected?.utility {
-        guard contractBoard.action == .accept, let review = contractBoard.utilityQuote,
-          review.action == action, let quote = review.quote, review.allowed
-        else {
-          throw MissionPackError("Review the current utility operation and choose Confirm or Back.")
-        }
-        try confirmNativeUtility(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.utilityQuote = nil
-        return
+      if let completion = try confirmContractDetailAction() {
+        finishContractDetailConfirmation(completion)
       }
-      if let action = contractBoard.selected?.wayfarerInduction {
-        guard contractBoard.action == .accept, let quote = contractBoard.wayfarerInductionQuote,
-          quote.action == action, quote.allowed
-        else {
-          throw MissionPackError("Review the current induction action and choose Confirm or Back.")
-        }
-        try confirmWayfarerInduction(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.wayfarerInductionQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.glassMeridian {
-        guard action == .accept || action == .auditReservations, contractBoard.action == .accept,
-          let quote = contractBoard.glassMeridianQuote
-        else {
-          throw MissionPackError("Read the current investigation; Back preserves it.")
-        }
-        try confirmGlassMeridian(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.wayfarerInductionQuote = nil
-        contractBoard.glassMeridianQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.defensiveFlight {
-        guard contractBoard.action == .accept, let quote = contractBoard.defensiveFlightQuote,
-          quote.action == action
-        else { throw MissionPackError("Review defensive flight and choose Confirm or Back.") }
-        try confirmDefensiveFlight(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.defensiveFlightQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.safeGunnery {
-        guard contractBoard.action == .accept, let quote = contractBoard.safeGunneryQuote,
-          quote.action == action
-        else { throw MissionPackError("Review safe gunnery and choose Confirm or Back.") }
-        try confirmSafeGunnery(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.safeGunneryQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.flightReception {
-        guard contractBoard.action == .accept, let quote = contractBoard.flightReceptionQuote,
-          quote.action == action
-        else { throw MissionPackError("Review the practice and choose Confirm or Back.") }
-        try confirmFlightReception(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.wayfarerInductionQuote = nil
-        contractBoard.glassMeridianQuote = nil
-        contractBoard.flightReceptionQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.measuredExtraction {
-        guard contractBoard.action == .accept, let quote = contractBoard.measuredExtractionQuote,
-          quote.action == action
-        else {
-          throw MissionPackError("Review the extraction operation and choose Confirm or Back.")
-        }
-        try confirmMeasuredExtraction(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.wayfarerInductionQuote = nil
-        contractBoard.glassMeridianQuote = nil
-        contractBoard.flightReceptionQuote = nil
-        contractBoard.measuredExtractionQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.recordRecovery {
-        guard contractBoard.action == .accept, let quote = contractBoard.recordRecoveryQuote,
-          quote.action == action
-        else { throw MissionPackError("Review the depot operation and choose Confirm or Back.") }
-        try confirmRecordRecovery(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.wayfarerInductionQuote = nil
-        contractBoard.glassMeridianQuote = nil
-        contractBoard.flightReceptionQuote = nil
-        contractBoard.measuredExtractionQuote = nil
-        contractBoard.recordRecoveryQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.identifiedSalvage {
-        guard contractBoard.action == .accept, let quote = contractBoard.identifiedSalvageQuote,
-          quote.action == action
-        else { throw MissionPackError("Review the depot operation and choose Confirm or Back.") }
-        try confirmIdentifiedSalvage(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.wayfarerInductionQuote = nil
-        contractBoard.glassMeridianQuote = nil
-        contractBoard.flightReceptionQuote = nil
-        contractBoard.measuredExtractionQuote = nil
-        contractBoard.recordRecoveryQuote = nil
-        contractBoard.identifiedSalvageQuote = nil
-        contractBoard.utilityQuote = nil
-        return
-      }
-      if let action = contractBoard.selected?.survey {
-        guard contractBoard.action == .accept, let quote = contractBoard.surveyQuote,
-          quote.action == action
-        else { throw MissionPackError("Review the survey and choose Confirm or Back.") }
-        try confirmOriginalSurvey(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.surveyQuote = nil
-        return
-      }
-      if let row = contractBoard.selected?.repairLoop {
-        guard contractBoard.action == .accept, let quote = contractBoard.repairLoopQuote,
-          quote.row == row
-        else {
-          throw MissionPackError("Review the native service and choose Confirm or Back.")
-        }
-        try confirmWayfarerRepairLoopBoard(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.repairLoopQuote = nil
-        return
-      }
-      if let row = contractBoard.selected?.coldChain {
-        guard contractBoard.action == .accept, let quote = contractBoard.coldChainQuote,
-          quote.row == row
-        else {
-          throw MissionPackError("Review the native service and choose Confirm or Back.")
-        }
-        try confirmWayfarerColdChainBoard(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.repairLoopQuote = nil
-        contractBoard.coldChainQuote = nil
-        return
-      }
-      if contractBoard.selected?.provider != nil {
-        if contractBoard.action == .decline {
-          gallery.providerIntent = nil
-          contractBoard.detail = false
-          contractBoard.providerQuote = nil
-        } else {
-          try stageProviderContractIntent()
-        }
-        return
-      }
-      if let row = contractBoard.selected?.people {
-        guard contractBoard.action == .accept, let quote = contractBoard.peopleQuote,
-          quote.row == row
-        else {
-          throw MissionPackError("Review the person transfer and choose Confirm or Back.")
-        }
-        try confirmNativePeople(quote)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.peopleQuote = nil
-        notify("PERSON TRANSFER RECORDED")
-        return
-      }
-      if let row = contractBoard.selected?.finance {
-        guard let quote = contractBoard.financeQuote, quote.row == row else {
-          throw MissionPackError("Review the financial terms before confirming.")
-        }
-        try confirmFinance(quote, declining: contractBoard.action == .decline)
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.financeQuote = nil
-        notify("FINANCIAL DECISION RECORDED")
-        return
-      }
-      if let row = contractBoard.selected?.rrs {
-        guard let quote = contractBoard.rrsQuote, quote.row == row else {
-          throw MissionPackError("Review the RRS briefing before confirming.")
-        }
-        if contractBoard.action == .accept {
-          try confirmRRSCourier(quote)
-          switch row {
-          case .offer: notify("RRS DOCUMENT PACKET ACCEPTED - ORIGINAL MAIN STATION")
-          case .debrief: notify("RRS DOCUMENTS DELIVERED - 30.0 CR / REPUTATION +2")
-          case .abandon: notify("RRS ASSIGNMENT ABANDONED - 0 CR / REPUTATION -10")
-          }
-        } else {
-          try declineRRSCourier(quote)
-          notify("RRS OFFER DECLINED")
-        }
-        refreshContractRows()
-        contractBoard.detail = false
-        contractBoard.rrsQuote = nil
-        contractBoard.quote = nil
-        return
-      }
-      guard let row = contractBoard.selected, let offer = row.offer else {
-        throw MissionPackError("This provider is unavailable.")
-      }
-      if contractBoard.action == .accept {
-        guard let quote = contractBoard.quote else {
-          throw MissionPackError("Review this offer before accepting.")
-        }
-        _ = try confirmContract(quote)
-        notify(
-          quote.pledge == nil
-            ? "CONTRACT ACCEPTED - SEE MISSION GALLERY"
-            : quote.pledge.map({ OriginalMutualContribution.matches($0.declaration) }) == true
-              ? "CEDAMAR ORBITAL RELIEF RESERVE RECEIVED 500.0 CR - NO CASH REWARD"
-              : "DONATION COMPLETE - LOCAL STANDING RECORDED")
-      } else {
-        try declineContract(board: row.board, offer: offer.id)
-        notify("OFFER DECLINED")
-      }
-      refreshContractRows()
-      contractBoard.detail = false
-      contractBoard.quote = nil
     } catch {
       openContractBoard()
       notify(String(error.localizedDescription.prefix(512)))
     }
   }
+
+  private enum ContractDetailCompletion {
+    case utility
+    case wayfarerInduction
+    case glassMeridian
+    case defensiveFlight
+    case safeGunnery
+    case flightReception
+    case measuredExtraction
+    case recordRecovery
+    case identifiedSalvage
+    case survey
+    case repairLoop
+    case coldChain
+    case people
+    case finance
+    case rrs
+    case ordinary
+  }
+
+  // Return before refreshing rows: native quotes can validate and encode loss witnesses.
+  @inline(never)
+  private mutating func confirmContractDetailAction() throws -> ContractDetailCompletion? {
+    if let action = contractBoard.selected?.utility {
+      guard contractBoard.action == .accept, let review = contractBoard.utilityQuote,
+        review.action == action, let quote = review.quote, review.allowed
+      else {
+        throw MissionPackError("Review the current utility operation and choose Confirm or Back.")
+      }
+      try confirmNativeUtility(quote)
+      return .utility
+    }
+    if let action = contractBoard.selected?.wayfarerInduction {
+      guard contractBoard.action == .accept, let quote = contractBoard.wayfarerInductionQuote,
+        quote.action == action, quote.allowed
+      else {
+        throw MissionPackError("Review the current induction action and choose Confirm or Back.")
+      }
+      try confirmWayfarerInduction(quote)
+      return .wayfarerInduction
+    }
+    if let action = contractBoard.selected?.glassMeridian {
+      guard action == .accept || action == .auditReservations, contractBoard.action == .accept,
+        let quote = contractBoard.glassMeridianQuote
+      else {
+        throw MissionPackError("Read the current investigation; Back preserves it.")
+      }
+      try confirmGlassMeridian(quote)
+      return .glassMeridian
+    }
+    if let action = contractBoard.selected?.defensiveFlight {
+      guard contractBoard.action == .accept, let quote = contractBoard.defensiveFlightQuote,
+        quote.action == action
+      else { throw MissionPackError("Review defensive flight and choose Confirm or Back.") }
+      try confirmDefensiveFlight(quote)
+      return .defensiveFlight
+    }
+    if let action = contractBoard.selected?.safeGunnery {
+      guard contractBoard.action == .accept, let quote = contractBoard.safeGunneryQuote,
+        quote.action == action
+      else { throw MissionPackError("Review safe gunnery and choose Confirm or Back.") }
+      try confirmSafeGunnery(quote)
+      return .safeGunnery
+    }
+    if let action = contractBoard.selected?.flightReception {
+      guard contractBoard.action == .accept, let quote = contractBoard.flightReceptionQuote,
+        quote.action == action
+      else { throw MissionPackError("Review the practice and choose Confirm or Back.") }
+      try confirmFlightReception(quote)
+      return .flightReception
+    }
+    if let action = contractBoard.selected?.measuredExtraction {
+      guard contractBoard.action == .accept, let quote = contractBoard.measuredExtractionQuote,
+        quote.action == action
+      else {
+        throw MissionPackError("Review the extraction operation and choose Confirm or Back.")
+      }
+      try confirmMeasuredExtraction(quote)
+      return .measuredExtraction
+    }
+    if let action = contractBoard.selected?.recordRecovery {
+      guard contractBoard.action == .accept, let quote = contractBoard.recordRecoveryQuote,
+        quote.action == action
+      else { throw MissionPackError("Review the depot operation and choose Confirm or Back.") }
+      try confirmRecordRecovery(quote)
+      return .recordRecovery
+    }
+    if let action = contractBoard.selected?.identifiedSalvage {
+      guard contractBoard.action == .accept, let quote = contractBoard.identifiedSalvageQuote,
+        quote.action == action
+      else { throw MissionPackError("Review the depot operation and choose Confirm or Back.") }
+      try confirmIdentifiedSalvage(quote)
+      return .identifiedSalvage
+    }
+    if let action = contractBoard.selected?.survey {
+      guard contractBoard.action == .accept, let quote = contractBoard.surveyQuote,
+        quote.action == action
+      else { throw MissionPackError("Review the survey and choose Confirm or Back.") }
+      try confirmOriginalSurvey(quote)
+      return .survey
+    }
+    if let row = contractBoard.selected?.repairLoop {
+      guard contractBoard.action == .accept, let quote = contractBoard.repairLoopQuote,
+        quote.row == row
+      else {
+        throw MissionPackError("Review the native service and choose Confirm or Back.")
+      }
+      try confirmWayfarerRepairLoopBoard(quote)
+      return .repairLoop
+    }
+    if let row = contractBoard.selected?.coldChain {
+      guard contractBoard.action == .accept, let quote = contractBoard.coldChainQuote,
+        quote.row == row
+      else {
+        throw MissionPackError("Review the native service and choose Confirm or Back.")
+      }
+      try confirmWayfarerColdChainBoard(quote)
+      return .coldChain
+    }
+    if contractBoard.selected?.provider != nil {
+      if contractBoard.action == .decline {
+        gallery.providerIntent = nil
+        contractBoard.detail = false
+        contractBoard.providerQuote = nil
+      } else {
+        try stageProviderContractIntent()
+      }
+      return nil
+    }
+    if let row = contractBoard.selected?.people {
+      guard contractBoard.action == .accept, let quote = contractBoard.peopleQuote,
+        quote.row == row
+      else {
+        throw MissionPackError("Review the person transfer and choose Confirm or Back.")
+      }
+      try confirmNativePeople(quote)
+      return .people
+    }
+    if let row = contractBoard.selected?.finance {
+      guard let quote = contractBoard.financeQuote, quote.row == row else {
+        throw MissionPackError("Review the financial terms before confirming.")
+      }
+      try confirmFinance(quote, declining: contractBoard.action == .decline)
+      return .finance
+    }
+    if let row = contractBoard.selected?.rrs {
+      guard let quote = contractBoard.rrsQuote, quote.row == row else {
+        throw MissionPackError("Review the RRS briefing before confirming.")
+      }
+      if contractBoard.action == .accept {
+        try confirmRRSCourier(quote)
+        switch row {
+        case .offer: notify("RRS DOCUMENT PACKET ACCEPTED - ORIGINAL MAIN STATION")
+        case .debrief: notify("RRS DOCUMENTS DELIVERED - 30.0 CR / REPUTATION +2")
+        case .abandon: notify("RRS ASSIGNMENT ABANDONED - 0 CR / REPUTATION -10")
+        }
+      } else {
+        try declineRRSCourier(quote)
+        notify("RRS OFFER DECLINED")
+      }
+      return .rrs
+    }
+    guard let row = contractBoard.selected, let offer = row.offer else {
+      throw MissionPackError("This provider is unavailable.")
+    }
+    if contractBoard.action == .accept {
+      guard let quote = contractBoard.quote else {
+        throw MissionPackError("Review this offer before accepting.")
+      }
+      _ = try confirmContract(quote)
+      notify(
+        quote.pledge == nil
+          ? "CONTRACT ACCEPTED - SEE MISSION GALLERY"
+          : quote.pledge.map({ OriginalMutualContribution.matches($0.declaration) }) == true
+            ? "CEDAMAR ORBITAL RELIEF RESERVE RECEIVED 500.0 CR - NO CASH REWARD"
+            : "DONATION COMPLETE - LOCAL STANDING RECORDED")
+    } else {
+      try declineContract(board: row.board, offer: offer.id)
+      notify("OFFER DECLINED")
+    }
+    return .ordinary
+  }
+
+  @inline(never)
+  private mutating func finishContractDetailConfirmation(_ completion: ContractDetailCompletion) {
+    refreshContractRows()
+    contractBoard.detail = false
+    switch completion {
+    case .utility:
+      contractBoard.utilityQuote = nil
+    case .wayfarerInduction:
+      contractBoard.wayfarerInductionQuote = nil
+    case .glassMeridian:
+      contractBoard.wayfarerInductionQuote = nil
+      contractBoard.glassMeridianQuote = nil
+    case .defensiveFlight:
+      contractBoard.defensiveFlightQuote = nil
+    case .safeGunnery:
+      contractBoard.safeGunneryQuote = nil
+    case .flightReception:
+      contractBoard.wayfarerInductionQuote = nil
+      contractBoard.glassMeridianQuote = nil
+      contractBoard.flightReceptionQuote = nil
+    case .measuredExtraction:
+      contractBoard.wayfarerInductionQuote = nil
+      contractBoard.glassMeridianQuote = nil
+      contractBoard.flightReceptionQuote = nil
+      contractBoard.measuredExtractionQuote = nil
+    case .recordRecovery:
+      contractBoard.wayfarerInductionQuote = nil
+      contractBoard.glassMeridianQuote = nil
+      contractBoard.flightReceptionQuote = nil
+      contractBoard.measuredExtractionQuote = nil
+      contractBoard.recordRecoveryQuote = nil
+    case .identifiedSalvage:
+      contractBoard.wayfarerInductionQuote = nil
+      contractBoard.glassMeridianQuote = nil
+      contractBoard.flightReceptionQuote = nil
+      contractBoard.measuredExtractionQuote = nil
+      contractBoard.recordRecoveryQuote = nil
+      contractBoard.identifiedSalvageQuote = nil
+      contractBoard.utilityQuote = nil
+    case .survey:
+      contractBoard.surveyQuote = nil
+    case .repairLoop:
+      contractBoard.repairLoopQuote = nil
+    case .coldChain:
+      contractBoard.repairLoopQuote = nil
+      contractBoard.coldChainQuote = nil
+    case .people:
+      contractBoard.peopleQuote = nil
+      notify("PERSON TRANSFER RECORDED")
+    case .finance:
+      contractBoard.financeQuote = nil
+      notify("FINANCIAL DECISION RECORDED")
+    case .rrs:
+      contractBoard.rrsQuote = nil
+      contractBoard.quote = nil
+    case .ordinary:
+      contractBoard.quote = nil
+    }
+  }
+
   private mutating func scrollContractDetail(_ key: String) {
     let count = Display.contractDetailRows(self, width: viewportWidth).count
     let visible = ContractBoardLayout(width: viewportWidth, height: viewportHeight).detailCount

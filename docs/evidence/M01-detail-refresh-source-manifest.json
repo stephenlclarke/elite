@@ -1,0 +1,10 @@
+{
+  "base": "6169a44184bfa15abb557918888cd2399485da93",
+  "files": {
+    "Sources/EliteCore/ContractBoard.swift": "79f3f18ee37f51cb179ab9851223232771fdc7f8b7b1c7b8f0bd1de46be19988",
+    "Tests/EliteCoreTests/NativeIdentifiedSalvageRecoveryTests.swift": "abb3738a083e1250b44c092b7ea523f75c9539d8182f2cb5078d515c0e8e6789"
+  },
+  "patch_sha256": "a33b7bf1cea08a4ada381c0f9a6a0af102e755e8d9a3603b20a64026261d43d0",
+  "filter": "^(?:EliteCoreTests\\.NativeCrimboRuntimeTests/|EliteCoreTests\\.NativeDefensiveFlightUnitTests/|EliteCoreTests\\.NativeFirstCommoditySaleUnitTests/|EliteCoreTests\\.NativeFleetDiscoveryUnitTests/|EliteCoreTests\\.NativeFlightReceptionUnitTests/|EliteCoreTests\\.NativeGlassMeridianUnitTests/|EliteCoreTests\\.NativeIdentifiedSalvageJourneyTests/|EliteCoreTests\\.NativeIdentifiedSalvageRecoveryTests/|EliteCoreTests\\.NativeIdentifiedSalvageSaveTests/|EliteCoreTests\\.NativeImportedEMPCompatibilityTests/|EliteCoreTests\\.NativeIsolationProgrammerUnitTests/|EliteCoreTests\\.NativeLoanFittingTests/|EliteCoreTests\\.NativeMainStationCapacityTests/|EliteCoreTests\\.NativeMainStationReceiptProjectionTests/|EliteCoreTests\\.NativeMeasuredExtractionAcquisitionTests/)|FreshMainStationStartTests|transientBoardCopiesRetainIndependentOffersMetadataAndReviews|listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty|nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline|nativeBoardReviewDefaultsBackAndRequiresSeparateConfirmedCollection|frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept",
+  "scope": "16 original confirmation completions move only row refresh and exact ordered post-refresh cleanup to a sibling after noninline confirmation returns; provider/back/error retain behavior. Existing real failed salvage-return regression adds list/quote/witness assertions. Authority/hash/schema validation unchanged."
+}
