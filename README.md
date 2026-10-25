@@ -516,6 +516,8 @@ The original **SH044 Harpy Assault**, **SH046 Harpy Dropship** and **SH047 Harpy
 
 The original **SH045 Erne Corvette** uses its approved metre military hull, 18t hold, 5t expansion, seven pylons, 12-LY tank and 8-LY drive. Its live equipment budget follows the labelled 12-unit Meridian E01 estimate, while historical Federal Corvette profiles retain their 23-unit estimate. Technology-thirteen blueprint rules and existing uncommon placement remain intact; no equipment, people or passenger cabins are issued.
 
+The original **SH054 Hobby Fighter** uses its approved metre military hull, 16t hold, 5t expansion, seven pylons, 12-LY tank and 8-LY drive. Its 12-unit equipment budget, one operating crew place and zero initial passenger cabins match Meridian E01. Technology-ten blueprint rules, existing uncommon placement and historical Gu-97 profiles remain intact.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
