@@ -19,23 +19,32 @@ struct ShowroomManualViewUnitTests {
       && (a.z - b.z).length < 0.000001
   }
 
+  private func surfaces(_ frame: Frame) -> [Graphic] {
+    (frame.worldGraphics + frame.graphics).filter {
+      switch $0 {
+      case .panel, .textured: true
+      default: false
+      }
+    }
+  }
+
   @Test func modelDragRotatesBothRenderedPreviewsTogetherAndPausesAutomaticMotion() throws {
     for width in [512.0, 768, 1000, 1512] {
       var game = game(width: width)
       let commander = game.commander
       let layout = ShowroomLayout(width: width, height: 900, detail: true)
-      let initial = Display.showroomScreen(game, width: width, height: 900).shipPanels
+      let initial = surfaces(Display.showroomScreen(game, width: width, height: 900))
       game.showroomDrag(
         fromX: layout.model.x + 10, fromY: layout.model.y + 40,
         toX: layout.model.x + 40, toY: layout.model.y + 60, roll: false)
       #expect(game.showroom.rotationPaused)
       let frame = Display.showroomScreen(game, width: width, height: 900)
-      #expect(frame.shipPanels != initial)
+      #expect(surfaces(frame) != initial)
       let left = frame.shipPanels.filter { $0.vertices.allSatisfy { $0.x < layout.selectedModelX } }
       let right = frame.shipPanels.filter {
         $0.vertices.allSatisfy { $0.x >= layout.selectedModelX }
       }
-      try #require(!left.isEmpty && left.count == right.count)
+      #expect(left.count == right.count)
       let offset = layout.selectedModelX - layout.model.x
       for (a, b) in zip(left, right) {
         try #require(a.vertices.count == b.vertices.count)
@@ -44,9 +53,32 @@ struct ShowroomManualViewUnitTests {
           #expect(abs(p.x + offset - q.x) < 0.000001 && abs(p.y - q.y) < 0.000001)
         }
       }
+      let textured = surfaces(frame).compactMap { graphic -> ShipTexturedTriangle? in
+        if case .textured(let triangle) = graphic { triangle } else { nil }
+      }
+      let leftTextures = textured.filter {
+        $0.vertices.allSatisfy { $0.point.x < layout.selectedModelX }
+      }
+      let rightTextures = textured.filter {
+        $0.vertices.allSatisfy { $0.point.x >= layout.selectedModelX }
+      }
+      try #require(!left.isEmpty || !leftTextures.isEmpty)
+      try #require(leftTextures.count == rightTextures.count)
+      for (a, b) in zip(leftTextures, rightTextures) {
+        #expect(
+          a.texture == b.texture && a.appearance == b.appearance && a.brightness == b.brightness)
+        try #require(a.vertices.count == b.vertices.count)
+        for (p, q) in zip(a.vertices, b.vertices) {
+          #expect(abs(p.point.x + offset - q.point.x) < 0.000001)
+          #expect(abs(p.point.y - q.point.y) < 0.000001)
+          #expect(abs(p.reciprocalDepth - q.reciprocalDepth) < 0.000000001)
+          #expect(abs(p.uOverDepth - q.uOverDepth) < 0.000000001)
+          #expect(abs(p.vOverDepth - q.vOverDepth) < 0.000000001)
+        }
+      }
       game.showroom.advance(delta: 1)
       #expect(
-        Display.showroomScreen(game, width: width, height: 900).shipPanels == frame.shipPanels)
+        surfaces(Display.showroomScreen(game, width: width, height: 900)) == surfaces(frame))
       #expect(game.commander == commander)
     }
   }
@@ -111,8 +143,16 @@ struct ShowroomManualViewUnitTests {
     #expect(try baselineWidth(compared) < alone * 0.6)
     #expect(compared.labels.filter { $0.text == "Shared metre scale" }.count == 2)
     let starting = try #require(ShipCatalogue.ship("SH025"))
-    #expect(
-      ShowroomPreviewScale(ship: starting, comparedWith: large, physicalSource: false).factor < 1)
+    // Approved physical scale, not a capital/trader label, decides which preview is larger.
+    let startingRadius = starting.design.rawMesh.showroomRadius
+    try #require(startingRadius > largeRadius)
+    let startingScale = ShowroomPreviewScale(
+      ship: starting, comparedWith: large, physicalSource: false)
+    let capitalScale = ShowroomPreviewScale(
+      ship: large, comparedWith: starting, physicalSource: false)
+    #expect(startingScale.factor == 1 && startingScale.caption == "Shared metre scale")
+    #expect(abs(capitalScale.factor - largeRadius / startingRadius) < 0.000001)
+    #expect(capitalScale.factor < 1)
   }
 
   @Test func unknownScaleIsDisclosedAndViewChangesCannotUnlockOrPurchaseACapital() throws {
