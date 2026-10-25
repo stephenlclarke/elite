@@ -120,6 +120,44 @@ class OwnedFaultStackTests(unittest.TestCase):
         self.assertFalse(self.hook.attempted)
         self.assertEqual(self.calls, [])
 
+    def test_checkpoint_coverage_child_requires_exact_owned_attempt_and_arguments(self):
+        cache = self.workspace / 'Library/EliteNativeCI/sanitizer-checkpoints/phases'
+        attempt = cache / ('a' * 64) / '12345678-1234-1234-1234-123456789abc'
+        attempt.mkdir(parents=True, mode=0o700)
+        report = attempt / 'tests-swift-testing.xml'
+        record = {'identity': {'phase': 'normal', 'swift_executable': '/swift'},
+                  'command': ['/swift', 'test', '--enable-code-coverage', '--skip-build',
+                              '--xunit-output', str(attempt / 'tests.xml')]}
+        start = attempt / 'start.json'
+        start.write_text(json.dumps(record))
+        args = [self.argv[0], '--test-bundle-path', str(self.image), '--enable-code-coverage',
+                '--skip-build', '--xunit-output', str(report), str(self.image),
+                '--testing-library', 'swift-testing']
+        with patch.object(artifacts.Path, 'home', return_value=self.workspace):
+            row = dict(self.row, command=shlex.join(args))
+            self.assertIsNotNone(artifacts.coverage_helper(21, row, self.workspace))
+            for changed in [args + ['--filter', 'one'], args + ['--sanitize=thread'],
+                            args[:4] + args[5:], args[:6] + [str(self.workspace / 'outside.xml')] + args[7:],
+                            args[:7] + ['/foreign/image'] + args[8:]]:
+                self.assertIsNone(artifacts.coverage_helper(
+                    21, dict(self.row, command=shlex.join(changed)), self.workspace))
+            record['identity']['phase'] = 'leaks'
+            start.write_text(json.dumps(record))
+            self.assertIsNone(artifacts.coverage_helper(21, row, self.workspace))
+            record['identity']['phase'] = 'normal'
+            record['command'].append('--foreign-option')
+            start.write_text(json.dumps(record))
+            self.assertIsNone(artifacts.coverage_helper(21, row, self.workspace))
+            record['command'].pop()
+            start.write_text(json.dumps(record))
+            start.chmod(0o666)
+            self.assertIsNone(artifacts.coverage_helper(21, row, self.workspace))
+            start.chmod(0o600)
+            external = self.workspace / 'external'
+            start.rename(external)
+            start.symlink_to(external)
+            self.assertIsNone(artifacts.coverage_helper(21, row, self.workspace))
+
     def test_reused_pid_is_rejected_before_attach_and_consumes_one_attempt(self):
         self.rows[21]['start'] = 'foreign-reused-pid'
         self.start()

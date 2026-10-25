@@ -99,8 +99,9 @@ class SanitizerCheckpointTests(unittest.TestCase):
     def test_commands_preserve_full_tsan_concurrency_and_whole_suite_asan_selection(self):
         from sanitizer_checkpoints import batch_command
         thread = batch_command('/swift', ['--sanitize=thread'], 'thread', self.root, self.methods)
-        self.assertNotIn('--filter', thread)
+        self.assertIn('--filter', thread)
         self.assertNotIn('--no-parallel', thread)
+        self.assertNotIn('--filter', batch_command('/swift', [], 'thread', self.root, self.methods, True))
         address = batch_command('/swift', ['--sanitize=address'], 'address', self.root, self.methods)
         self.assertIn('--no-parallel', address)
         pattern = address[address.index('--filter') + 1]
@@ -108,7 +109,47 @@ class SanitizerCheckpointTests(unittest.TestCase):
         self.assertFalse(__import__('re').search(pattern, 'EliteCoreTests.FirstOther/plain()'))
 
     def test_tsan_is_one_full_concurrent_group_even_above_target(self):
-        self.assertEqual(partition(self.methods, 'thread', target=1), [self.methods])
+        self.assertEqual(partition(self.methods, 'thread', target=1, full_concurrent=True), [self.methods])
+
+    def test_grouped_tsan_keeps_suites_and_shared_participants_intact(self):
+        methods = ['EliteCoreTests.A/one()', 'EliteCoreTests.A/two()',
+                   'EliteCoreTests.B/three()', 'EliteCoreTests.C/four()']
+        batches = partition(methods, 'thread', target=1, shared_groups=[methods[:3]])
+        self.assertEqual(batches, [methods[:3], methods[3:]])
+        for group in [methods[:1], methods + ['EliteCoreTests.Foreign/no()']]:
+            with self.assertRaises(ValueError):
+                partition(methods, 'thread', shared_groups=[group])
+        with self.assertRaises(ValueError):
+            partition(methods, 'thread', shared_groups=[methods[:2], methods[:2]])
+
+    def test_shared_group_membership_and_source_drift_require_review(self):
+        from sanitizer_checkpoints import grouping_policy
+        folder = self.root / 'Tests/EliteCoreTests'
+        folder.mkdir(parents=True)
+        app = folder / 'App.swift'
+        app.write_text('import AppKit\n@Test func one() {}')
+        salvage = folder / 'Salvage.swift'
+        salvage.write_text('@Test func two() { NativeSalvageAdmissionTestFixture.released() }')
+        manifest = {'schema': 1, 'groups': [
+            {'name': 'appkit-shared-process', 'sources': {str(app.relative_to(self.root)): digest(app)},
+             'members': ['EliteCoreTests.First/plain()', 'EliteCoreTests.First/rows(value:)']},
+            {'name': 'salvage-shared-release', 'sources': {str(salvage.relative_to(self.root)): digest(salvage)},
+             'members': ['EliteCoreTests.Other/two()']}]}
+        path = self.root / 'Tools/CI/sanitizer_groups.json'
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps(manifest))
+        methods = self.methods + ['EliteCoreTests.Other/two()']
+        self.assertEqual(len(grouping_policy(self.root, methods, 'thread', 100)['shared_groups']), 2)
+        with self.assertRaises(ValueError):
+            grouping_policy(self.root, methods + ['EliteCoreTests.First/new()'], 'thread', 100)
+        foreign = folder / 'New.swift'
+        foreign.write_text('@Test func new() { NativeSalvageAdmissionTestFixture.released() }')
+        with self.assertRaisesRegex(ValueError, 'Salvage'):
+            grouping_policy(self.root, methods, 'thread', 100)
+        foreign.unlink()
+        app.write_text('changed source')
+        with self.assertRaisesRegex(ValueError, 'source requires grouping review'):
+            grouping_policy(self.root, methods, 'thread', 100)
 
     def test_partition_rejects_empty_duplicates_unknown_mode_and_invalid_target(self):
         for methods, mode, target in [([], 'address', 10), (self.methods * 2, 'address', 10),
@@ -344,6 +385,82 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
                 self.assertEqual(len([path for path in (root / 'cache').iterdir() if path.is_dir()]), 2)
 
 
+    def test_thread_groups_resume_without_losing_internal_concurrency(self):
+        import subprocess
+        import sanitizer_checkpoints as runner
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder).resolve()
+            image = root / 'bin/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests'
+            image.parent.mkdir(parents=True)
+            image.write_bytes(b'fixed instrumented image')
+            methods = ['EliteCoreTests.A/rows(value:)', 'EliteCoreTests.B/plain()']
+            head = ['a' * 40]
+            fail_second = [True]
+            executions = []
+
+            def fake_output(command, *_):
+                if command[:2] == ['git', 'rev-parse']:
+                    return head[0]
+                if command[:2] == ['git', 'status']:
+                    return ''
+                if 'list' in command:
+                    return '\n'.join(methods)
+                if '--show-bin-path' in command:
+                    return str(root / 'bin')
+                return 'fixed toolchain identity'
+
+            def fake_run(command, **options):
+                self.assertTrue(options['pass_fds'])
+                self.assertTrue(options['start_new_session'])
+                if '--filter' not in command:
+                    return subprocess.CompletedProcess(command, 0)
+                self.assertNotIn('--no-parallel', command)
+                self.assertNotIn('--no-parallel', command)
+                selected = [method for method in methods if __import__('re').search(command[-1], method)]
+                executions.append(selected)
+                requested = Path(command[command.index('--xunit-output') + 1])
+                actual = requested.with_name('tests-swift-testing.xml')
+                report = ET.Element('testsuites')
+                suite = ET.SubElement(report, 'testsuite', tests=str(len(selected)))
+                for method in selected:
+                    classname, name = method.split('/')
+                    ET.SubElement(suite, 'testcase', classname=classname, name=name, time='1')
+                ET.ElementTree(report).write(actual)
+                options['stdout'].write(b'Original batch output\n')
+                if fail_second[0] and selected == methods[1:]:
+                    return subprocess.CompletedProcess(command, 1)
+                return subprocess.CompletedProcess(command, 0)
+
+            with (patch.object(runner, 'ROOT', root),
+                  patch.object(runner, 'output', side_effect=fake_output),
+                  patch.object(runner, 'executable_inputs', return_value={'Sources/game.swift': 'fixed'}),
+                  patch.object(runner, 'ensure_no_live_tests'),
+                  patch.object(runner, 'opt_in_policy', return_value={'expected_skips': []}),
+                  patch.object(runner, 'grouping_policy', return_value={'policy': 'fake-whole-suites', 'shared_groups': []}),
+                  patch.object(runner.shutil, 'which', return_value='/toolchain/swift'),
+                  patch.object(runner.subprocess, 'run', side_effect=fake_run)):
+                with self.assertRaisesRegex(ValueError, 'batch failed'):
+                    runner.run_mode('thread', root / 'cache', target=1)
+                self.assertEqual(executions, [methods[:1], methods[1:]])
+                fail_second[0] = False
+                head[0] = 'b' * 40  # Same executable inputs, a later documentation commit.
+                runner.run_mode('thread', root / 'cache', target=1)
+                self.assertEqual(executions, [methods[:1], methods[1:], methods[1:]])
+                summaries = list((root / 'reports').glob('sanitizers/thread/*/summary.json'))
+                self.assertEqual(len(summaries), 1)
+                summary = json.loads(summaries[0].read_text())
+                self.assertEqual(summary['current_head'], 'b' * 40)
+                self.assertEqual([batch['reused'] for batch in summary['batches']], [True, False])
+                self.assertEqual(summary['batches'][0]['tested_head'], 'a' * 40)
+                self.assertEqual(summary['batches'][1]['tested_head'], 'b' * 40)
+                self.assertEqual(summary['complete_inventory'], methods)
+                image.write_bytes(b'changed executable image')
+                runner.run_mode('thread', root / 'cache', target=1)
+                self.assertEqual(executions[-2:], [methods[:1], methods[1:]])
+                self.assertEqual(len(executions), 5)
+                self.assertEqual(len([path for path in (root / 'cache').iterdir() if path.is_dir()]), 2)
+
+
 class DeclaredOptInPolicyTests(unittest.TestCase):
     def setUp(self):
         import shutil
@@ -374,7 +491,7 @@ class DeclaredOptInPolicyTests(unittest.TestCase):
         self.identity.update(schema=2, opt_in_policy=self.policy, runner=runner.digest(Path(runner.__file__)))
         self.identity['inputs']['Tools/CI/sanitizer_checkpoints.py'] = self.identity['runner']
         self.identity['inputs']['Tools/CI/test_sanitizer_checkpoints.py'] = 'reviewed-policy-tests'
-        command = runner.batch_command('/swift', self.old_identity['flags'], 'thread', self.old, self.methods)
+        command = runner.batch_command('/swift', self.old_identity['flags'], 'thread', self.old, self.methods, True)
         start = {'head': 'a' * 40, 'identity': self.old_identity, 'methods': self.methods, 'command': command}
         self.result = {'tested_head': 'a' * 40, 'identity': self.old_identity, 'methods': self.methods,
                        'command': command, 'exit_code': 0, 'wall_seconds': 100,
@@ -535,9 +652,13 @@ class DeclaredOptInPolicyTests(unittest.TestCase):
             with (patch.dict(runner.os.environ, {'ELITE_TSAN_REQUALIFY_ATTEMPT': '/chosen/legacy'}),
                   patch('sys.argv', ['sanitizer_checkpoints.py', mode]),
                   patch.object(runner, 'run_mode') as execute):
-                runner.main()
-                self.assertEqual(execute.call_args.kwargs['requalify_attempt'],
-                                 Path('/chosen/legacy') if mode == 'thread' else None)
+                if mode == 'thread':
+                    with self.assertRaises(SystemExit):
+                        runner.main()
+                    execute.assert_not_called()
+                else:
+                    runner.main()
+                    self.assertFalse(execute.call_args.kwargs['full_concurrent'])
 
     def test_nonzero_execution_and_wrong_legacy_policy_are_never_requalified(self):
         for key, value in [('exit_code', 1), ('reason', 'Different failure'), ('status', 'passed')]:
