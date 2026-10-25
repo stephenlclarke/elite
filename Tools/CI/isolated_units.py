@@ -24,6 +24,13 @@ METHODS = {
         "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
         "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
     ),
+    "OriginalZebuUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalTraderMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "traderPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalEagleCruiserUnitTests": (
         "exactMetreContractRejectsForeignUnitsPathsAndFingerprints",
         "originalCapitalMechanicsPreserveAllHistoricalFieldsAndOtherHullBindings",
