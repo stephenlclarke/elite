@@ -18,6 +18,7 @@ enum OriginalPlayerHullActivation {
     case "SH031": return try OriginalKiteInterceptorActivation.resolve(retained)
     case "SH032", "SH033": return try OriginalPantherFamilyActivation.resolve(retained)
     case "SH035": return try OriginalStagLinerActivation.resolve(retained)
+    case "SH043": return try OriginalEagleCruiserActivation.resolve(retained)
     case "SH029": return try OriginalBurroActivation.resolve(retained)
     case "SH061": return try OriginalHaflingerActivation.resolve(retained)
     default: return retained
@@ -33,8 +34,8 @@ enum OriginalPlayerHullActivation {
       let role = ShipCatalogueRole(rawValue: definition.role),
       [ShipCatalogueRole.trader, .military, .leisure, .bountyHunter].contains(role),
       let type = ShipCatalogueType(rawValue: definition.role), definition.playerFlyable,
-      definition.purchasePolicy == "blueprintFabrication",
-      let performance = definition.nativePerformance
+      let policy = acquisitionPolicy(retained: retained, definition: definition),
+      let performance = definition.nativePerformance, performance.valid(purchasePolicy: policy)
     else { throw Failure.invalidCatalogue }
     guard let standard = retained.profiles.first(where: { $0.group == "project-refit-v1" }) else {
       throw Failure.missingStandardFit
@@ -62,7 +63,8 @@ enum OriginalPlayerHullActivation {
         standardProfile(from: standard, performance: performance, definition: definition)
       ],
       game: performance,
-      catalogue: metadata(from: retained.catalogue, definition: definition, role: role, type: type),
+      catalogue: metadata(
+        from: retained.catalogue, definition: definition, role: role, type: type, policy: policy),
       design: physical.model.nativeDesign, nativeHull: retained.nativeHull,
       nativeDesign: physical.model.nativeDesign, nativeCombat: retained.nativeCombat)
     guard
@@ -72,25 +74,47 @@ enum OriginalPlayerHullActivation {
     return ship
   }
 
+  private static func acquisitionPolicy(
+    retained: CatalogueShip, definition: OriginalFleetDefinition
+  ) -> ShipCataloguePurchasePolicy? {
+    switch definition.purchasePolicy {
+    case "blueprintFabrication": return .blueprintFabrication
+    case "never":
+      let metadata = retained.catalogue
+      guard definition.role == "military", metadata.purchasePolicy == .never,
+        metadata.isCapital, metadata.capitalSubtype == .vessel,
+        metadata.collectionMilestone == .destruction, metadata.damagePolicy == .destructible,
+        !metadata.normalPurchaseEligible
+      else { return nil }
+      return .never
+    default: return nil
+    }
+  }
+
   private static func metadata(
     from retained: ShipCatalogueMetadata, definition: OriginalFleetDefinition,
-    role: ShipCatalogueRole, type: ShipCatalogueType
+    role: ShipCatalogueRole, type: ShipCatalogueType, policy: ShipCataloguePurchasePolicy
   ) -> ShipCatalogueMetadata {
     .init(
       schemaVersion: retained.schemaVersion, family: definition.family, aliases: retained.aliases,
       objectKind: .ship, origin: .human, primaryType: type,
       primaryRole: role,
       roleWeights: [.init(role: role, weight: 1)], access: .normal, playerFlyable: true,
-      normalPurchaseEligible: true, purchasePolicy: .blueprintFabrication,
-      minimumBuildTechLevel: retained.minimumBuildTechLevel, isCapital: false, capitalSubtype: nil,
-      collectionMilestone: .blueprintAndFabrication, damagePolicy: .destructible,
+      normalPurchaseEligible: policy == .blueprintFabrication, purchasePolicy: policy,
+      minimumBuildTechLevel: policy == .never ? nil : retained.minimumBuildTechLevel,
+      isCapital: policy == .never && retained.isCapital,
+      capitalSubtype: policy == .never ? retained.capitalSubtype : nil,
+      collectionMilestone: policy == .never
+        ? retained.collectionMilestone : .blueprintAndFabrication,
+      damagePolicy: .destructible,
       habitat: retained.habitat, discoveryEligible: true, encounterMode: retained.encounterMode,
       mechanicsStatus: .ready, placementStatus: retained.placementStatus, rarity: retained.rarity,
       galaxies: retained.galaxies, regions: retained.regions,
       authoredSystems: retained.authoredSystems,
       basis:
         "Original " + definition.id + " " + definition.name
-        + " " + role.rawValue + " and blueprint-fabrication policy. "
+        + " " + role.rawValue
+        + (policy == .never ? " capital; not for sale. " : " and blueprint-fabrication policy. ")
         + "Existing project placement, rarity and fabrication technology policy retained; "
         + "catalogue eligibility does not grant discovery, a blueprint or a fabricated hull.")
   }
@@ -134,7 +158,7 @@ enum OriginalPlayerHullActivation {
       id: "L337-PLAYER-" + definition.id, title: definition.name + " original standard fit",
       group: "project-refit-v1",
       context:
-        "Original authored mechanics; retained common one-commander accommodation/fitting estimate. "
+        "Original authored mechanics; retained project accommodation/fitting estimate. "
         + "Actual carried fittings and cabin footprints remain inventory-owned.", fields: fields)
   }
 }

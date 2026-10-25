@@ -51,7 +51,21 @@ public struct NPCResources: Equatable, Codable, Sendable {
 
   public static func stock(_ performance: ShipPerformance) -> NPCResources? {
     guard performance.valid else { return nil }
-    return .init(
+    return stockProfile(performance)
+  }
+
+  /// Catalogue policy, not a fabricated positive price, authenticates unpriced native hulls.
+  static func stock(for ship: CatalogueShip) -> NPCResources? {
+    guard let performance = ship.game,
+      performance.valid(purchasePolicy: ship.catalogue.purchasePolicy),
+      ship.catalogue.valid(
+        shipID: ship.id, performance: performance, nativeCombat: ship.nativeCombat)
+    else { return nil }
+    return stockProfile(performance)
+  }
+
+  private static func stockProfile(_ performance: ShipPerformance) -> NPCResources {
+    .init(
       profile: .nativeHull, energyCapacity: performance.energy,
       energyRecharge: performance.recharge, frontCapacity: performance.shield,
       rearCapacity: performance.shield, shieldRecharge: performance.shieldRecharge,
