@@ -24,6 +24,21 @@ METHODS = {
         "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
         "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
     ),
+    "OriginalHarpyFamilyUnitTests": (
+        "perVariantPhysicalContractsRefuseForeignIdentityUnitsPathsAndFingerprints",
+        "originalMechanicsPreserveHistoricalFieldsAndEveryUnrelatedHullBinding",
+        "playerAndPhysicalMeshesKeepEveryApprovedVertexFaceMaterialAndTextureAssignment",
+        "perVariantMilitaryBlueprintTechnologyAndPlacementGrantNoDiscovery",
+        "e01ActualAccommodationUsesTwelveWithoutRewritingHistoryOrGrantingFittings",
+        "malformedRetainedInputsAndChangedDefinitionIdentityCannotActivateFamilyByName",
+    ),
+    "OriginalSakerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalServalFighterUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",

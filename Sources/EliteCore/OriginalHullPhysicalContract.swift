@@ -157,12 +157,44 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH041"))
   }
 
+  static let saker: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH042") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH042"))
+  }
+
   static let eagleCruiser: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH043") else {
       throw Failure.unsupportedSource
     }
     return try Self(
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH043"))
+  }
+
+  static let harpyAssault: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH044") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH044"))
+  }
+
+  static let harpyDropship: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH046") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH046"))
+  }
+
+  static let harpyGunship: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH047") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH047"))
   }
 
   static let burro: Result<Self, any Error> = Result {
@@ -315,6 +347,16 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH042":
+      guard definition.name == "Saker",
+        definition.sourceSHA256
+          == "6ec7baa6ca072273a2195afaa992512ca59aa9e176daead003112d025eba8c92",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH042-design.toml",
+        model.sourceSHA256 == "8b64ebb1529abe86018b7b2553c45f961c06f0e0a9182321ec1b528cb0a716c8"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH043":
       guard definition.name == "Eagle Cruiser",
         definition.sourceSHA256
@@ -322,6 +364,15 @@ struct OriginalHullPhysicalContract: Sendable {
         model.coordinateUnits == "metres",
         model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH043-design.toml",
         model.sourceSHA256 == "1c7a31a989c833da95651924fa5f44ce9d7fbb56be68b4b6cffe710b1c393216"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH044", "SH046", "SH047":
+      guard let approved = OriginalHarpyFamilyActivation.registration(for: definition.id),
+        definition.name == approved.name,
+        definition.sourceSHA256 == approved.specificationSHA256,
+        model.coordinateUnits == "metres", model.sourcePath == approved.modelPath,
+        model.sourceSHA256 == approved.modelSHA256
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
@@ -407,7 +458,11 @@ extension CatalogueShip {
     case "SH035": result = OriginalHullPhysicalContract.stagLiner
     case "SH036": result = OriginalHullPhysicalContract.zebu
     case "SH041": result = OriginalHullPhysicalContract.servalFighter
+    case "SH042": result = OriginalHullPhysicalContract.saker
     case "SH043": result = OriginalHullPhysicalContract.eagleCruiser
+    case "SH044": result = OriginalHullPhysicalContract.harpyAssault
+    case "SH046": result = OriginalHullPhysicalContract.harpyDropship
+    case "SH047": result = OriginalHullPhysicalContract.harpyGunship
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
