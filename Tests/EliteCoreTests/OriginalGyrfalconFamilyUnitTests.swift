@@ -87,7 +87,7 @@ struct OriginalGyrfalconFamilyUnitTests {
       OriginalFleetDefinitionData.staged.filter(\.runtimeReady).map(\.id)
         == [
           "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
-          "SH031", "SH032", "SH033", "SH035", "SH036", "SH043", "SH061",
+          "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH043", "SH061",
         ])
   }
 
