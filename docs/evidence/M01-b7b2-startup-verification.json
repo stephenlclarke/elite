@@ -1,0 +1,31 @@
+{
+  "run": 40156817571,
+  "requested_head": "b7b2026ed5baf0547d4deb24e75d587d82ee3b96",
+  "github_status": "failure",
+  "failing_step": "Verify physical source, toolchain and owned build cache",
+  "command": "python3 Tools/CI/native_runner.py --checkout",
+  "observed_error": "Native quality authorization failed: CalledProcessError",
+  "step_exit_code": 1,
+  "exact_subprocess_cause": "Not exposed by retained failed-step log; G1 investigating existing preflight exception.",
+  "setup_checkout_hostauth": "Passed per actual job step metadata",
+  "quality_coverage_sanitizer_leak_execution": "Not started; entire quality step skipped",
+  "uploaded_artifact": {
+    "id": 12585490726,
+    "size_in_bytes": 1022240,
+    "digest": "sha256:56e7106b19be925ae23ab8ee8caa09abd4960b1fbd2c97e5676c8305f07e1cc4"
+  },
+  "sole_artifact_path": "/tmp/elite-mba-b7b2-quality40156817571",
+  "uploaded_files_are_historical_parent_attempt": {
+    "reports/sanitizers/thread/a0347c1f-1bf3-4cb2-899d-1945aebbb06a/failed-batch-0/result.json": true,
+    "reports/sanitizers/thread/a0347c1f-1bf3-4cb2-899d-1945aebbb06a/failed-batch-0/test.log": true,
+    "reports/sanitizers/thread/a0347c1f-1bf3-4cb2-899d-1945aebbb06a/failed-batch-0/tests-swift-testing.xml": true,
+    "reports/sanitizers/thread/a0347c1f-1bf3-4cb2-899d-1945aebbb06a/failed-batch-0/start.json": true
+  },
+  "artifact_provenance": "Exactly four old c40ee failed-batch TSAN files, byte-identical to previously qualified18b6terminal evidence. Uploadsuccess is not new b7b2 execution or attestation outcome.",
+  "failed_log": {
+    "path": "/tmp/elite-mba-b7b2-startup40156817571-failed.log",
+    "sha256": "8c9282b587bf75c71343f5dad999c5a1eed848192eb6b84ee392de93e6ccf8cf"
+  },
+  "retained_attestation": "/tmp/elite-mba-b7b2-attestation-composition-verification.json remains valid within explicit historicalrequalification scope",
+  "qualification": "Startup/host-preflight failure only. No new normal/TSAN/ASAN/leak/fullquality pass or testfailure claim. Priorb7b2source/actualattestation retained. No sourceaudit/fix/test/rerun/service diagnostics; soleartifact downloaded once."
+}

@@ -192,6 +192,48 @@ class SanitizerCheckpointTests(unittest.TestCase):
         result.symlink_to(self.root / 'test.log')
         self.assertIsNone(successful_attempt(self.root, self.identity, self.methods))
 
+    def test_derived_reports_are_git_cleanup_safe_and_cache_permissions_stay_immutable(self):
+        import stat
+        import subprocess
+        from sanitizer_checkpoints import copy_report
+        source = self.root / 'persistent-cache/attempt'
+        nested = source / 'nested'
+        nested.mkdir(parents=True)
+        (nested / 'test.log').write_text('Retained original bytes')
+        (nested / 'test.log').chmod(0o400)
+        nested.chmod(0o500)
+        source.chmod(0o500)
+        repository = self.root / 'checkout'
+        repository.mkdir()
+        subprocess.run(['git', 'init', '-q', str(repository)], check=True)
+        build = repository / '.build'
+        build.mkdir()
+        (build / 'retained').write_text('owned build cache')
+        target = repository / 'reports/sanitizers/thread/failed-batch-0'
+        copy_report(source, target)
+        self.assertEqual(stat.S_IMODE(source.stat().st_mode), 0o500)
+        self.assertEqual(stat.S_IMODE(nested.stat().st_mode), 0o500)
+        self.assertEqual(stat.S_IMODE((nested / 'test.log').stat().st_mode), 0o400)
+        self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o700)
+        self.assertEqual(stat.S_IMODE((target / 'nested').stat().st_mode), 0o700)
+        self.assertEqual(stat.S_IMODE((target / 'nested/test.log').stat().st_mode), 0o600)
+        self.assertEqual((target / 'nested/test.log').read_bytes(), (nested / 'test.log').read_bytes())
+        result = subprocess.run(['git', 'clean', '-ffdx', '-e', '/.build/'], cwd=repository,
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse((repository / 'reports').exists())
+        self.assertEqual((build / 'retained').read_text(), 'owned build cache')
+        self.assertEqual((nested / 'test.log').read_text(), 'Retained original bytes')
+
+    def test_report_copy_refuses_linked_evidence_before_creating_output(self):
+        from sanitizer_checkpoints import copy_report
+        source = self.root / 'attempt'
+        source.mkdir()
+        (source / 'linked.log').symlink_to(self.root / 'outside.log')
+        with self.assertRaises(ValueError):
+            copy_report(source, self.root / 'report')
+        self.assertFalse((self.root / 'report').exists())
+
     def test_atomic_receipt_is_complete_and_cannot_overwrite_an_interrupted_temporary(self):
         path = self.root / 'receipt.json'
         atomic_json(path, {'complete': True})

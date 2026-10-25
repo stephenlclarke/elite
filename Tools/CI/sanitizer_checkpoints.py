@@ -220,6 +220,16 @@ def owned_evidence(path):
         raise ValueError('Qualification evidence must be physical, owned and protected')
 
 
+def copy_report(source, destination):
+    """Keep durable attempts immutable but make derived checkout reports disposable."""
+    for path in [source, *source.rglob('*')]:
+        owned_evidence(path)
+    shutil.copytree(source, destination, copy_function=shutil.copyfile)
+    destination.chmod(0o700)
+    for path in destination.rglob('*'):
+        path.chmod(0o700 if path.is_dir() else 0o600)
+
+
 def legacy_requalification(attempt, identity, methods):
     """Attest an exit-zero legacy run; never rewrite its failed validator receipt."""
     for path in [attempt, attempt / 'start.json', attempt / 'result.json', attempt / 'test.log']:
@@ -528,9 +538,9 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
                     file.chmod(0o400)
                 attempt.chmod(0o500)
                 if receipt['status'] != 'passed':
-                    shutil.copytree(attempt, report / ('failed-batch-' + str(index)))
+                    copy_report(attempt, report / ('failed-batch-' + str(index)))
                     raise ValueError('Sanitizer batch failed; original attempt retained: ' + str(attempt))
-            shutil.copytree(attempt, report / ('batch-' + str(index)))
+            copy_report(attempt, report / ('batch-' + str(index)))
             completed.append({'batch': index, 'tested_head': receipt['tested_head'],
                               'current_head': head, 'reused': reused is not None,
                               'attempt': str(attempt), 'methods': batch, 'outcome_status': receipt['status'],
