@@ -259,6 +259,14 @@ public enum PlayerHelp {
       ? "ALL PLANET DATA VISIBLE" : "UP / DOWN / SCROLL - PLANET DATA"
   }
 
+  private static func showroomArrowHint(_ game: borrowing Game) -> String {
+    guard game.showroom.detail && !game.showroom.searching else {
+      return "UP / DOWN - SELECT SHIP"
+    }
+    return Display.showroomWindow(game).last == 0
+      ? "ALL SPECIFICATIONS VISIBLE" : "UP / DOWN / SCROLL - MORE SPECS"
+  }
+
   private static func context(for screen: Screen, game: Game) -> HelpPage {
     switch screen {
     case .front, .rear, .left, .right:
@@ -415,10 +423,9 @@ public enum PlayerHelp {
       .init(
         title: "SHIP SHOWROOM",
         rows: [
-          "UP / DOWN - SELECT SHIP",
+          showroomArrowHint(game),
           "RETURN - SPECS, THEN REVIEW TRADE",
           "TAB - CHANGE SHIPS / SPECS PANE",
-          "ARROWS IN SPECS - SCROLL",
           "SLASH / CLICK SEARCH - FILTER SHIPS",
           "UP / DOWN IN SEARCH - SELECT RESULT",
           "RETURN - SPECS; ESC - FINISH SEARCH",
