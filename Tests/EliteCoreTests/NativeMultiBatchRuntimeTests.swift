@@ -54,13 +54,16 @@ struct NativeMultiBatchRuntimeTests {
     try await runtime.save(to: file)
     await runtime.setControls(NativePagedSalvageFixture.firingControls)
     var first = await runtime.snapshot()
+    var firstObservation = observeWork(
+      first, reference: imported.section,
+      baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
     for iteration in 0..<2500 {
-      let prior = observeWork(
-        first, reference: imported.section,
-        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
+      let prior = firstObservation
       let priorReadiness = observeWorkReadiness(
         first, iteration: iteration, enabled: traceStarted != nil)
-      first = await NativePagedSalvageFixture.advanceHeldWork(runtime, delta: 0.02)
+      first = await NativePagedSalvageFixture.advanceHeldWork(
+        runtime, delta: 0.02,
+        requiresFreshPress: first.workGuidance?.holding == true && first.workFireSuspended)
       let currentWork = observeWork(
         first, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
@@ -71,6 +74,7 @@ struct NativeMultiBatchRuntimeTests {
         afterReadiness: observeWorkReadiness(
           first, iteration: iteration, enabled: traceStarted != nil),
         required: section.workSeconds, delta: 0.02)
+      firstObservation = currentWork
       if first.commander.alienStorageState?.current.salvage.native.works[imported.section]?.releases
         == 1
       {
@@ -94,10 +98,11 @@ struct NativeMultiBatchRuntimeTests {
     #expect(first.commander.alienStorageState?.current.snapshot.world.contains(oldRecord) == true)
 
     var partial = first
+    var partialObservation = observeWork(
+      partial, reference: imported.section,
+      baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
     for iteration in 0..<2500 {
-      let prior = observeWork(
-        partial, reference: imported.section,
-        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
+      let prior = partialObservation
       let priorReadiness = observeWorkReadiness(
         partial, iteration: iteration, enabled: traceStarted != nil)
       partial = await runtime.advance(delta: 0.02)
@@ -111,6 +116,7 @@ struct NativeMultiBatchRuntimeTests {
         afterReadiness: observeWorkReadiness(
           partial, iteration: iteration, enabled: traceStarted != nil),
         required: section.workSeconds, delta: 0.02)
+      partialObservation = currentWork
       if (partial.nativeSalvageWork?.cycle.currentWorkSeconds ?? 0) > 0 { break }
     }
     let hot = try #require(partial.nativeSalvageWork)
@@ -162,13 +168,16 @@ struct NativeMultiBatchRuntimeTests {
     try await resumed.save(to: file)
     await resumed.setControls(NativePagedSalvageFixture.firingControls)
     var second = await resumed.snapshot()
+    var secondObservation = observeWork(
+      second, reference: imported.section,
+      baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
     for iteration in 0..<2500 {
-      let prior = observeWork(
-        second, reference: imported.section,
-        baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
+      let prior = secondObservation
       let priorReadiness = observeWorkReadiness(
         second, iteration: iteration, enabled: traceStarted != nil)
-      second = await NativePagedSalvageFixture.advanceHeldWork(resumed, delta: 0.02)
+      second = await NativePagedSalvageFixture.advanceHeldWork(
+        resumed, delta: 0.02,
+        requiresFreshPress: second.workGuidance?.holding == true && second.workFireSuspended)
       let currentWork = observeWork(
         second, reference: imported.section,
         baselineWork: original.partialWork ?? 0, baselineSerial: original.progress.nextLot)
@@ -179,6 +188,7 @@ struct NativeMultiBatchRuntimeTests {
         afterReadiness: observeWorkReadiness(
           second, iteration: iteration, enabled: traceStarted != nil),
         required: section.workSeconds, delta: 0.02)
+      secondObservation = currentWork
       let current = second.commander.alienStorageState?.current.salvage.native.works[
         imported.section]
       if current?.releases == 2 { break }
@@ -276,7 +286,7 @@ struct NativeMultiBatchRuntimeTests {
   }
 
   private func observeWork(
-    _ game: Game, reference: UUID, baselineWork: Double, baselineSerial: UInt32
+    _ game: borrowing Game, reference: UUID, baselineWork: Double, baselineSerial: UInt32
   ) -> WorkObservation {
     let cycle: NativeSalvageWorkCycle?
     if let hot = game.nativeSalvageWork, hot.cycle.inspection.id == reference {
