@@ -1078,22 +1078,22 @@ public struct Equipment: Sendable {
   public let technology: Int
   public static let base: [Equipment] =
     [
-      .init(name: "Fuel", price: 2, technology: 0),
-      .init(name: "Missile", price: 300, technology: 0),
+      .init(name: "Fuel", price: 18, technology: 0),
+      .init(name: "Missile", price: 1800, technology: 0),
       .init(
         name: AlienMissileDefinition.name, price: AlienMissileDefinition.repeatPriceTenths,
         technology: 0),
-      .init(name: "Large Cargo Bay", price: 4000, technology: 0),
-      .init(name: "E.C.M. System", price: 6000, technology: 2),
-      .init(name: "Pulse Laser", price: 4000, technology: 3),
-      .init(name: "Beam Laser", price: 10000, technology: 4),
-      .init(name: "Fuel Scoops", price: 5250, technology: 5),
-      .init(name: "Escape Pod", price: 10000, technology: 6),
-      .init(name: "Energy Bomb", price: 9000, technology: 7),
+      .init(name: "Large Cargo Bay", price: 28000, technology: 0),
+      .init(name: "E.C.M. System", price: 21000, technology: 2),
+      .init(name: "Pulse Laser", price: 14500, technology: 3),
+      .init(name: "Beam Laser", price: 47000, technology: 4),
+      .init(name: "Fuel Scoops", price: 19000, technology: 5),
+      .init(name: "Escape Pod", price: 36000, technology: 6),
+      .init(name: "Energy Bomb", price: 128000, technology: 7),
       .init(name: "Extra Energy Unit", price: 15000, technology: 8),
-      .init(name: "Galactic Hyperdrive", price: 50000, technology: 10),
-      .init(name: "Mining Laser", price: 8000, technology: 10),
-      .init(name: "Military Laser", price: 60000, technology: 10),
+      .init(name: "Galactic Hyperdrive", price: 285000, technology: 10),
+      .init(name: "Mining Laser", price: 33000, technology: 10),
+      .init(name: "Military Laser", price: 164000, technology: 10),
     ]
   public static let all =
     base

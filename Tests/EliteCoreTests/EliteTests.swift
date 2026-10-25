@@ -172,13 +172,13 @@ import Testing
 
 @Test func equipmentPurchases() throws {
   var game = Game(executive: false)
-  // This purchase sequence has a 70-unit tank, four pylons and an explicit 100 CR budget.
+  // This purchase sequence has a 70-unit tank, four pylons and an explicit 300 CR budget.
   game.commander.shipID = "SH023"
   game.commander.fuel = game.commander.fuelCapacity
   game.energy = game.commander.performance.energy
   game.frontShield = game.commander.shieldCapacity
   game.rearShield = game.commander.rearShieldCapacity
-  game.commander.credits = 1000
+  game.commander.credits = 3000
   let unavailableItem = try #require(Equipment.all.first { $0.name == "Extra Energy Unit" })
   game.commander.system = try #require(
     game.systems.first {
@@ -190,10 +190,10 @@ import Testing
   game.screen = .equipment
   game.commander.fuel = 60
   game.purchase()
-  #expect(game.commander.fuel == 70 && game.commander.credits == 980)
+  #expect(game.commander.fuel == 70 && game.commander.credits == 2820)
   game.selection = 1
   game.key("return")
-  #expect(game.commander.missiles == 4 && game.commander.credits == 680)
+  #expect(game.commander.missiles == 4 && game.commander.credits == 1020)
   game.purchase()
   #expect(game.message == "MISSILE RACK FULL")
   game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
@@ -205,7 +205,7 @@ import Testing
   game.purchase()
   #expect(
     game.commander.capacity == game.commander.nativePerformance.cargo
-      + game.commander.nativePerformance.cargoExpansion && game.commander.credits == 96000)
+      + game.commander.nativePerformance.cargoExpansion && game.commander.credits == 72000)
   let owned = game.commander
   game.purchase()
   #expect(game.message == "ALREADY OWNED" && game.commander == owned)
