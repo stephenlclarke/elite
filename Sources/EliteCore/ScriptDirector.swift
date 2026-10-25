@@ -635,10 +635,21 @@ extension Game {
   // Early acceptance values retire before full instance/native-contract construction begins.
   @inline(never)
   private mutating func validateScriptMissionAcceptance(
-    _ pack: ScriptPack, instanceID: UUID,
+    _ pack: borrowing ScriptPack, instanceID: UUID,
     contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
-    providerState: ScriptProviderContractState?, navigationBinding: ScriptNavigationTradeBinding?
+    providerState: ScriptProviderContractState?,
+    navigationBinding: ScriptNavigationTradeBinding?
   ) throws {
+    try validateScriptMissionProvider(pack)
+    try validateScriptMissionContext(
+      pack, instanceID: instanceID, contract: contract, campaignParent: campaignParent,
+      providerState: providerState, navigationBinding: navigationBinding)
+    try validateScriptMissionResources(pack)
+  }
+
+  // Native-provider guard buffers retire before availability and campaign validation begins.
+  @inline(never)
+  private func validateScriptMissionProvider(_ pack: borrowing ScriptPack) throws {
     guard pack.manifest.stateID != NativeInductionSeedPack.stateID,
       pack.digest != NativeInductionSeedPack.digest,
       pack.manifest.stateID != NativeInductionWorkshopPack.stateID,
@@ -675,6 +686,15 @@ extension Game {
     guard pack.manifest.fieldRelief == nil,
       pack.manifest.stateID != WayfarerFieldRelief.stateID
     else { throw MissionPackError("Use the actual native field-relief collection.") }
+  }
+
+  @inline(never)
+  private mutating func validateScriptMissionContext(
+    _ pack: borrowing ScriptPack, instanceID: UUID,
+    contract: ScriptContractJob?, campaignParent: ScriptChildBinding?,
+    providerState: ScriptProviderContractState?,
+    navigationBinding: ScriptNavigationTradeBinding?
+  ) throws {
     guard scriptUnavailable(pack, navigationBinding: navigationBinding) == nil,
       commander.scriptState.instances.count < 128,
       commander.scriptState.instances[instanceID] == nil,
@@ -700,6 +720,10 @@ extension Game {
     guard (pack.manifest.providerContract == nil) == (providerState == nil) else {
       throw MissionPackError("Ordinary provider acceptance requires fresh native authority.")
     }
+  }
+
+  @inline(never)
+  private func validateScriptMissionResources(_ pack: borrowing ScriptPack) throws {
     try ScriptPackLibrary.validateCourier(pack.manifest)
     try ScriptPackLibrary.validateProcurement(pack.manifest)
     if pack.manifest.courier != nil, scriptCourierAdmission == nil {

@@ -191,10 +191,7 @@ struct ScriptFreightPlan: Codable, Sendable, Equatable {
       items: [.init(commodity: commodity.rawValue, unit: "t", quantity: quantity)])
   }
   var parameters: ScriptValue? {
-    guard let bytes = try? JSONEncoder().encode(self),
-      let value = try? JSONDecoder().decode(ScriptValue.self, from: bytes)
-    else { return nil }
-    return .object(["freight": value])
+    ScriptFreightParameters.project(self)
   }
   static func read(_ parameters: ScriptValue) -> Self? {
     guard (try? ScriptWire.encode([parameters], limit: 4096)) != nil,

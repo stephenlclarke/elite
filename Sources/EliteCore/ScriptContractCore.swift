@@ -360,6 +360,17 @@ extension Game {
     else {
       throw MissionPackError("The contract board changed. Review its current offers.")
     }
+    return try prepareCurrentContractResources(
+      key: key, index: index, pack: pack, board: board, offer: offer, id: id,
+      confirmationToken: confirmationToken)
+  }
+
+  // Resource and pledge buffers are needed only after recursive board validation returns.
+  @inline(never)
+  private mutating func prepareCurrentContractResources(
+    key: String, index: Int, pack: borrowing ScriptPack, board: borrowing ScriptContractBoard,
+    offer: borrowing ScriptContractOffer, id: UUID, confirmationToken: UUID
+  ) throws -> ContractAcceptancePreflight {
     guard offer.status == .available else { throw MissionPackError("This offer was declined.") }
     if OriginalServiceReservationPolicy.isContractDefinition(pack.manifest.stateID) {
       // Leave room for both this reservation and its eventual native settlement.

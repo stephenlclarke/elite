@@ -11,6 +11,55 @@ private func acceptancePreparationPack() throws -> ScriptPack {
 }
 
 struct ScriptAcceptancePreparationTests {
+  @Test func nativeProviderExclusionsPrecedeGenericAcceptanceWithoutPublishingProperty() throws {
+    let original = try acceptancePreparationPack()
+    let clinic =
+      "Use the actual original clinic rebrief; generic consignment acceptance is refused."
+    let refusals: [(String, String)] = [
+      (NativeInductionSeedPack.stateID, clinic),
+      (NativeInductionWorkshopPack.stateID, clinic),
+      (NativeInductionClinicPack.stateID, clinic),
+      (NativeInductionUtilityPack.stateID, "Use the actual utility authorization at Enron."),
+      (NativeInductionCrewLogPack.stateID, "Continue the actual Exchange induction at Cevilis."),
+      (NativeInductionArkPack.stateID, "Use the original custodian launch review at Enlirin."),
+      (NativeWayfarerInduction.stateID, "Use Senn's actual induction commission review."),
+      (NativeGlassMeridian.stateID, "Use the actual Venn commission review."),
+      (NativeDefensiveFlight.stateID, "Use actual Avenor native defensive-flight consent."),
+      (NativeSafeGunnery.stateID, "Use actual Avenor native safe-gunnery consent."),
+      (NativeFlightReception.stateID, "Use the actual native training berth practice."),
+      (WayfarerFieldRelief.stateID, "Use the actual native field-relief collection."),
+    ]
+    for (stateID, reason) in refusals {
+      var fields = try #require(
+        JSONSerialization.jsonObject(with: JSONEncoder().encode(original.manifest))
+          as? [String: Any])
+      let identity = stateID.split(separator: "/", maxSplits: 1).map(String.init)
+      fields["id"] = identity[0]
+      var mission = try #require(fields["mission"] as? [String: Any])
+      mission["id"] = identity[1]
+      fields["mission"] = mission
+      let manifest = try JSONDecoder().decode(
+        ScriptManifest.self, from: JSONSerialization.data(withJSONObject: fields))
+      // These uninstalled inputs must refuse before generic eligibility or native authority.
+      let pack = ScriptPack(
+        manifest: manifest, source: original.source,
+        manifestBytes: original.manifestBytes, digest: original.digest)
+      var game = Game(executive: false)
+      let before = game.commander
+      let bodies = game.bodies
+      let revision = game.gameplayRevision
+      let nextBody = game.nextBodyID
+      do {
+        _ = try game.acceptScriptMission(pack, drainAccepted: false)
+        Issue.record("Native provider accepted through generic entry: \(stateID)")
+      } catch let error as MissionPackError {
+        #expect(error.errorDescription == reason)
+      }
+      #expect(game.commander == before && game.bodies == bodies)
+      #expect(game.gameplayRevision == revision && game.nextBodyID == nextBody)
+    }
+  }
+
   @Test func deferredAcceptanceRetainsIdentitySeedAndPendingHandlerWithoutIssuingCargo() throws {
     let pack = try acceptancePreparationPack()
     var game = Game(executive: false)

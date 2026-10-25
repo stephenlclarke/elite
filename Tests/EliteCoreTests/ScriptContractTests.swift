@@ -97,6 +97,99 @@ private struct ContractFixture {
   #expect(await restored.snapshot().commander.contracts == terms)
 }
 
+@Test func transientBoardCopiesRetainIndependentOffersMetadataAndReviews() async throws {
+  let fixture = try ContractFixture()
+  defer { fixture.clean() }
+  let runtime = GameRuntime(game: fixture.cashGame(), saveURL: fixture.save)
+  await runtime.key("contracts-open")
+  var game = await runtime.snapshot()
+  let original = try #require(game.contractBoard.selected)
+  let offer = try #require(original.offer)
+  let key = original.key
+  var copiedRow = original
+  copiedRow.utility = .collect
+  #expect(original.utility == nil && original.key == key)
+  #expect(copiedRow.key != key && copiedRow.offer == offer)
+  var detachedOffer = try #require(copiedRow.offer)
+  detachedOffer.status = .declined
+  #expect(copiedRow.offer == offer && original.offer == offer)
+  let replacement = ContractBoardRow(
+    board: original.board, offer: detachedOffer, title: original.title, reason: original.reason)
+  #expect(replacement.offer?.status == .declined && original.offer?.status == .available)
+  #expect(ContractBoardRow(board: "empty", offer: nil, title: "Empty", reason: nil).offer == nil)
+
+  game.contractBoardKey("return")
+  let retained = game.contractBoard
+  let quote = try #require(retained.quote)
+  var copied = retained
+  copied.rows[0].utility = .collect
+  copied.quote = nil
+  #expect(retained.rows[0].utility == nil && retained.quote?.offer == offer.id)
+  #expect(copied.quote == nil && copied.rows[0].offer == offer)
+  let provider = ProviderContractRow(
+    definition: "reference/disabled", digest: String(repeating: "0", count: 64),
+    instance: nil, request: .accept, label: "Disabled reference")
+  copied.providerQuote = .init(row: provider, issues: ["Unavailable"])
+  #expect(copied.quote == nil && retained.quote?.reviewToken == quote.reviewToken)
+  let retainedSpecialized = copied
+  copied.providerQuote = nil
+  #expect(copied.providerQuote == nil && retainedSpecialized.providerQuote?.row == provider)
+  var resources = quote.resources
+  resources.credits += 1
+  #expect(retained.quote?.resources == quote.resources && resources != quote.resources)
+}
+
+@Test func listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty() async throws {
+  let fixture = try ContractFixture()
+  defer { fixture.clean() }
+  let runtime = GameRuntime(game: fixture.cashGame(), saveURL: fixture.save)
+  await runtime.key("contracts-open")
+  var game = await runtime.snapshot()
+  let ordinary = try #require(game.contractBoard.selected?.offer)
+  let before = game.commander
+  let token = game.contractBoard.reviewToken
+  let generation = game.contractBoard.presentationGeneration
+  game.contractBoardKey("return")
+  #expect(game.contractBoard.detail && game.contractBoard.action == .back)
+  #expect(game.contractBoard.quote?.offer == ordinary.id)
+  #expect(game.contractBoard.reviewToken != token)
+  #expect(game.contractBoard.presentationGeneration != generation)
+  #expect(game.commander == before)
+  game.contractBoardKey("return")
+  #expect(!game.contractBoard.detail && game.contractBoard.quote == nil)
+
+  // A disabled reference row is presentation only and supplies no provider authority.
+  let reason = "Native provider authority unavailable."
+  let row = ProviderContractRow(
+    definition: "reference/disabled", digest: String(repeating: "0", count: 64),
+    instance: nil, request: .accept, label: "Disabled reference")
+  let index = game.contractBoard.rows.count
+  game.contractBoard.rows.append(
+    .init(board: "reference", offer: nil, title: row.label, reason: reason, provider: row))
+  game.contractBoard.selection = index
+  game.contractBoardKey("return")
+  let specializedToken = game.contractBoard.reviewToken
+  #expect(game.contractBoard.providerQuote?.row == row)
+  #expect(game.contractBoard.providerQuote?.issues == [reason])
+  #expect(game.contractBoard.quote == nil && game.commander == before)
+  game.contractBoardKey("escape")
+  #expect(!game.contractBoard.detail && game.contractBoard.providerQuote == nil)
+  game.contractBoard.selection = 0
+  game.contractBoardKey("return")
+  #expect(game.contractBoard.quote?.offer == ordinary.id)
+  #expect(game.contractBoard.providerQuote == nil)
+  #expect(game.contractBoard.reviewToken != specializedToken)
+  game.contractBoardKey("return")
+  game.contractBoard.selection = index
+  game.contractBoardKey("return")
+  game.contractBoardKey("right")
+  #expect(game.contractBoard.action == .accept)
+  game.contractBoardKey("return")
+  #expect(game.gallery.providerIntent == nil)
+  #expect(game.commander == before && game.commander.scriptState.instances.isEmpty)
+  #expect(!game.contractBoard.detail)
+}
+
 @Test func acceptanceAnchorsDeadlineOnceAndRepeatedConfirmationReturnsTheSameJobReceipt()
   async throws
 {

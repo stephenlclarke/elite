@@ -12,6 +12,7 @@ enum OriginalContractOfferPolicy {
     return revision + amount
   }
 
+  @inline(never)
   static func revision(
     pack: borrowing ScriptPack, station: ContractStationIdentity,
     commander: borrowing Commander
@@ -19,15 +20,37 @@ enum OriginalContractOfferPolicy {
     guard let definition = pack.manifest.board else { throw SaveError.invalidCommander }
     let key = pack.digest + "/" + definition.id + "/" + station.key
     let group = pack.manifest.id + "/" + (definition.exclusiveGroup ?? definition.id)
-    var floor: Int64 = 0
+    let floor = try cachedRevision(
+      key: key, group: group, definition: definition, pack: pack, station: station,
+      commander: commander)
+    return try retainedRevision(
+      floor: floor, key: key, group: group, definition: definition, pack: pack, station: station,
+      commander: commander)
+  }
+
+  // Keep retained-job buffers out of the frame that recursively validates cached offers.
+  @inline(never)
+  private static func cachedRevision(
+    key: String, group: String, definition: borrowing ScriptBoardDefinition,
+    pack: borrowing ScriptPack, station: ContractStationIdentity, commander: borrowing Commander
+  ) throws -> Int64 {
     if let board = commander.contracts.boards[key] {
       guard board.valid, board.provider == pack.manifest.id,
         board.version == pack.manifest.version, board.digest == pack.digest,
         board.station == station, board.id == definition.id, board.group == group,
         board.clock == definition.clock, board.period == definition.period
       else { throw SaveError.invalidCommander }
-      floor = board.revision
+      return board.revision
     }
+    return 0
+  }
+
+  @inline(never)
+  private static func retainedRevision(
+    floor: Int64, key: String, group: String, definition: borrowing ScriptBoardDefinition,
+    pack: borrowing ScriptPack, station: ContractStationIdentity, commander: borrowing Commander
+  ) throws -> Int64 {
+    var floor = floor
     for state in commander.scriptState.instances.values {
       guard let job = state.contract, job.boardKey == key,
         state.definition == pack.manifest.stateID, state.digest == pack.digest,

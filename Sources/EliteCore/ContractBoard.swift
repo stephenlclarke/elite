@@ -7,29 +7,82 @@ public enum ContractBoardAction: String, Codable, Sendable, CaseIterable {
 }
 public struct ContractBoardRow: Sendable {
   public let board: String
-  public let offer: ScriptContractOffer?
+  private let offerStorage: [ScriptContractOffer]
+  public var offer: ScriptContractOffer? { offerStorage.first }
   public let title: String
   public let reason: String?
-  var rrs: RRSCourierRow? = nil
-  var finance: ScriptFinanceRow? = nil
-  var people: NativePeopleStationRow? = nil
-  var provider: ProviderContractRow? = nil
-  var repairLoop: WayfarerRepairLoopBoardRow? = nil
-  var coldChain: WayfarerColdChainBoardRow? = nil
-  var survey: NativeOriginalSurveyAction? = nil
-  var glassMeridian: NativeGlassMeridianAction? = nil
-  var wayfarerInduction: NativeWayfarerInductionAction? = nil
-  var inductionCapacityUnit: UUID? = nil
-  var inductionClinicReference: UUID? = nil
-  var inductionWorkshopReference: UUID? = nil
-  var inductionSeedReference: UUID? = nil
-  var flightReception: NativeFlightReceptionAction? = nil
-  var defensiveFlight: NativeDefensiveFlightAction? = nil
-  var safeGunnery: NativeSafeGunneryAction? = nil
-  var measuredExtraction: NativeMeasuredExtractionAction? = nil
-  var recordRecovery: WayfarerRecordRecoveryAction? = nil
-  var identifiedSalvage: NativeIdentifiedSalvageAction? = nil
-  var utility: NativeUtilityAction? = nil
+  var rrs: RRSCourierRow?
+  var finance: ScriptFinanceRow?
+  var people: NativePeopleStationRow?
+  var provider: ProviderContractRow?
+  var repairLoop: WayfarerRepairLoopBoardRow?
+  var coldChain: WayfarerColdChainBoardRow?
+  var survey: NativeOriginalSurveyAction?
+  var glassMeridian: NativeGlassMeridianAction?
+  var wayfarerInduction: NativeWayfarerInductionAction?
+  var inductionCapacityUnit: UUID?
+  var inductionClinicReference: UUID?
+  var inductionWorkshopReference: UUID?
+  var inductionSeedReference: UUID?
+  var flightReception: NativeFlightReceptionAction?
+  var defensiveFlight: NativeDefensiveFlightAction?
+  var safeGunnery: NativeSafeGunneryAction?
+  var measuredExtraction: NativeMeasuredExtractionAction?
+  var recordRecovery: WayfarerRecordRecoveryAction?
+  var identifiedSalvage: NativeIdentifiedSalvageAction?
+  var utility: NativeUtilityAction?
+
+  init(
+    board: String,
+    offer: ScriptContractOffer?,
+    title: String,
+    reason: String?,
+    rrs: RRSCourierRow? = nil,
+    finance: ScriptFinanceRow? = nil,
+    people: NativePeopleStationRow? = nil,
+    provider: ProviderContractRow? = nil,
+    repairLoop: WayfarerRepairLoopBoardRow? = nil,
+    coldChain: WayfarerColdChainBoardRow? = nil,
+    survey: NativeOriginalSurveyAction? = nil,
+    glassMeridian: NativeGlassMeridianAction? = nil,
+    wayfarerInduction: NativeWayfarerInductionAction? = nil,
+    inductionCapacityUnit: UUID? = nil,
+    inductionClinicReference: UUID? = nil,
+    inductionWorkshopReference: UUID? = nil,
+    inductionSeedReference: UUID? = nil,
+    flightReception: NativeFlightReceptionAction? = nil,
+    defensiveFlight: NativeDefensiveFlightAction? = nil,
+    safeGunnery: NativeSafeGunneryAction? = nil,
+    measuredExtraction: NativeMeasuredExtractionAction? = nil,
+    recordRecovery: WayfarerRecordRecoveryAction? = nil,
+    identifiedSalvage: NativeIdentifiedSalvageAction? = nil,
+    utility: NativeUtilityAction? = nil
+  ) {
+    self.board = board
+    if let offer { offerStorage = [offer] } else { offerStorage = [] }
+    self.title = title
+    self.reason = reason
+    self.rrs = rrs
+    self.finance = finance
+    self.people = people
+    self.provider = provider
+    self.repairLoop = repairLoop
+    self.coldChain = coldChain
+    self.survey = survey
+    self.glassMeridian = glassMeridian
+    self.wayfarerInduction = wayfarerInduction
+    self.inductionCapacityUnit = inductionCapacityUnit
+    self.inductionClinicReference = inductionClinicReference
+    self.inductionWorkshopReference = inductionWorkshopReference
+    self.inductionSeedReference = inductionSeedReference
+    self.flightReception = flightReception
+    self.defensiveFlight = defensiveFlight
+    self.safeGunnery = safeGunnery
+    self.measuredExtraction = measuredExtraction
+    self.recordRecovery = recordRecovery
+    self.identifiedSalvage = identifiedSalvage
+    self.utility = utility
+  }
   public var key: String {
     if let utility { return utility.utilityKey }
     if let key = wayfarerInduction?.key {
@@ -65,7 +118,7 @@ public struct ContractScreenSave: Codable, Sendable {
     (selection?.count ?? 0) <= 512 && (0...100000).contains(scroll) && previous != .contracts
   }
 }
-private enum ContractBoardReview: Sendable {
+private indirect enum ContractBoardReview: Sendable {
   case contract(ContractAcceptanceQuote)
   case rrs(RRSCourierQuote)
   case finance(ScriptFinanceQuote)
@@ -442,46 +495,60 @@ extension Game {
       }
     }
   }
+  @inline(never)
   mutating func refreshSelectedContractQuote() {
     contractBoard.reviewToken = UUID()
+    if refreshSpecializedContractQuote() { return }
+    if let row = contractBoard.selected, let offer = row.offer {
+      let quote = withReadOnlyStoredGame {
+        $0.contractAcceptanceQuote(board: row.board, offer: offer.id)
+      }
+      contractBoard.quote = quote
+    } else {
+      contractBoard.quote = nil
+    }
+  }
+  // Specialized review buffers retire before the ordinary acceptance preview begins.
+  @inline(never)
+  private mutating func refreshSpecializedContractQuote() -> Bool {
     if let action = contractBoard.selected?.utility {
       contractBoard.utilityQuote = nativeUtilityReview(action)
-      return
+      return true
     }
     contractBoard.utilityQuote = nil
     if let action = contractBoard.selected?.wayfarerInduction {
       contractBoard.wayfarerInductionQuote = wayfarerInductionReview(
         action, prepareClinicQuote: true, prepareWorkshopQuote: true, prepareSeedQuote: true,
         prepareCharterAudit: true)
-      return
+      return true
     }
     if let action = contractBoard.selected?.glassMeridian {
       contractBoard.glassMeridianQuote = glassMeridianReview(action)
-      return
+      return true
     }
     if let action = contractBoard.selected?.defensiveFlight {
       contractBoard.defensiveFlightQuote = defensiveFlightReview(action)
-      return
+      return true
     }
     if let action = contractBoard.selected?.safeGunnery {
       contractBoard.safeGunneryQuote = safeGunneryReview(action)
-      return
+      return true
     }
     if let action = contractBoard.selected?.flightReception {
       contractBoard.flightReceptionQuote = flightReceptionReview(action)
-      return
+      return true
     }
     if let action = contractBoard.selected?.measuredExtraction {
       contractBoard.measuredExtractionQuote = measuredExtractionReview(action)
-      return
+      return true
     }
     if let action = contractBoard.selected?.recordRecovery {
       contractBoard.recordRecoveryQuote = recordRecoveryReview(action)
-      return
+      return true
     }
     if let action = contractBoard.selected?.identifiedSalvage {
       contractBoard.identifiedSalvageQuote = identifiedSalvageReview(action)
-      return
+      return true
     }
     contractBoard.wayfarerInductionQuote = nil
     contractBoard.glassMeridianQuote = nil
@@ -491,44 +558,37 @@ extension Game {
     contractBoard.identifiedSalvageQuote = nil
     if let action = contractBoard.selected?.survey {
       contractBoard.surveyQuote = originalSurveyReview(action)
-      return
+      return true
     }
     contractBoard.surveyQuote = nil
     if let row = contractBoard.selected?.repairLoop {
       contractBoard.repairLoopQuote = wayfarerRepairLoopReview(row)
-      return
+      return true
     }
     contractBoard.repairLoopQuote = nil
     if let row = contractBoard.selected?.coldChain {
       contractBoard.coldChainQuote = wayfarerColdChainReview(row)
-      return
+      return true
     }
     contractBoard.coldChainQuote = nil
     if let row = contractBoard.selected?.provider {
       contractBoard.providerQuote = .init(
         row: row, issues: contractBoard.selected?.reason.map { [$0] } ?? [])
-      return
+      return true
     }
     contractBoard.providerQuote = nil
     if let row = contractBoard.selected?.people {
       contractBoard.peopleQuote = nativePeopleQuote(row)
-      return
+      return true
     }
     contractBoard.peopleQuote = nil
     if let row = contractBoard.selected?.finance {
       contractBoard.financeQuote = financeQuote(for: row)
-      return
+      return true
     }
     contractBoard.financeQuote = nil
     contractBoard.rrsQuote = contractBoard.selected?.rrs.map { rrsCourierQuote(for: $0) }
-    if let row = contractBoard.selected, let offer = row.offer {
-      let quote = withReadOnlyStoredGame {
-        $0.contractAcceptanceQuote(board: row.board, offer: offer.id)
-      }
-      contractBoard.quote = quote
-    } else {
-      contractBoard.quote = nil
-    }
+    return false
   }
   mutating func contractBoardKey(_ key: String) {
     let previous = scriptContractPageIdentity
@@ -573,6 +633,12 @@ extension Game {
       }
       return
     }
+    applyContractDetailKey(key)
+  }
+
+  // Detail confirmation buffers are not needed while opening a review from the list.
+  @inline(never)
+  private mutating func applyContractDetailKey(_ key: String) {
     if ["left", "right", "tab"].contains(key) {
       let actions = ContractBoardAction.allCases
       let index = actions.firstIndex(of: contractBoard.action)!

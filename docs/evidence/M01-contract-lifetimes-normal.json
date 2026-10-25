@@ -1,0 +1,53 @@
+{
+  "command": [
+    "/Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/bin/swift",
+    "test",
+    "--xunit-output",
+    "/tmp/elite-m01-contract-lifetimes-v6-normal.xml",
+    "--filter",
+    "FreshMainStationStartTests|transientBoardCopiesRetainIndependentOffersMetadataAndReviews|listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty|nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline|nativeBoardReviewDefaultsBackAndRequiresSeparateConfirmedCollection|frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept"
+  ],
+  "ASAN_OPTIONS": "not overridden",
+  "source": {
+    "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+    "files": {
+      "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+      "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+      "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+      "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+      "Sources/EliteCore/ContractBoard.swift": "78305687d8f1ac60f8093db3861e377884f9fb39b7fe249e685da2ba99cc457e",
+      "Tests/EliteCoreTests/ScriptContractTests.swift": "1cfb5a446fe01365f0d785bab135204865503f72dc6b62148bf183d6814eb69c",
+      "Sources/EliteCore/ScriptFreightGeneration.swift": "5bbfb7acda7c9c194f0611d4f76891671b1144a70eadeca8b478efe55e7573f9",
+      "Sources/EliteCore/ScriptFreightParameters.swift": "fdd044bac994081ae52f2be1df3e53ddd1c7b2902e02ca42795fb660c4759e75",
+      "Tests/EliteCoreTests/ScriptFreightParametersTests.swift": "528ddd09ef89e4d60e3ed8e36c52fa8c011de5dc45e679cb3eef48f1d163b919"
+    },
+    "patch_sha256": "d7ed5da5ca244c48b62e226a7cc24b0e14a3236243f80183c4193c75cdfb5cf6",
+    "patch_command": "git diff HEAD -- <all nine manifest files>; new files staged so included",
+    "scope": "Approved direct closed-schema freight projection, scalar-only Double/Int64 codec normalisation; no nested typed-plan-to-ScriptValue JSON decode, stored representation, untrusted decoder or authority change.",
+    "size_limit_note": "Every projected string UTF8<=262144, each variable array count<=16384; no aggregate budget, fixed schema depth/key counts unchanged.",
+    "transient_representation_note": "Approved immutable zero/one-element typed Array row offer storage, read-only public getter, explicit equivalent initializer, indirect private review enum; saved/Codable representation and authority unchanged."
+  },
+  "exit_code": 0,
+  "wall_seconds": 162.68201370770112,
+  "outputs": {
+    "/tmp/elite-m01-contract-lifetimes-v6-normal.log": {
+      "bytes": 7332,
+      "sha256": "1f0b51090d440cbe042953251245b5757234eef6fadd29015e8c94fa22e2260e"
+    },
+    "/tmp/elite-m01-contract-lifetimes-v6-normal-swift-testing.xml": {
+      "bytes": 1936,
+      "sha256": "a43a06eac9478c6b4cde65fc9418e9a893eb94268df850083cb188a894404879"
+    }
+  },
+  "source_after": {
+    "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+    "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+    "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+    "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+    "Sources/EliteCore/ContractBoard.swift": "78305687d8f1ac60f8093db3861e377884f9fb39b7fe249e685da2ba99cc457e",
+    "Tests/EliteCoreTests/ScriptContractTests.swift": "1cfb5a446fe01365f0d785bab135204865503f72dc6b62148bf183d6814eb69c",
+    "Sources/EliteCore/ScriptFreightGeneration.swift": "5bbfb7acda7c9c194f0611d4f76891671b1144a70eadeca8b478efe55e7573f9",
+    "Sources/EliteCore/ScriptFreightParameters.swift": "fdd044bac994081ae52f2be1df3e53ddd1c7b2902e02ca42795fb660c4759e75",
+    "Tests/EliteCoreTests/ScriptFreightParametersTests.swift": "528ddd09ef89e4d60e3ed8e36c52fa8c011de5dc45e679cb3eef48f1d163b919"
+  }
+}
