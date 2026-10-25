@@ -277,6 +277,7 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
                   patch.object(runner, 'output', side_effect=fake_output),
                   patch.object(runner, 'executable_inputs', return_value={'Sources/game.swift': 'fixed'}),
                   patch.object(runner, 'ensure_no_live_tests'),
+                  patch.object(runner, 'opt_in_policy', return_value={'expected_skips': []}),
                   patch.object(runner.shutil, 'which', return_value='/toolchain/swift'),
                   patch.object(runner.subprocess, 'run', side_effect=fake_run)):
                 with self.assertRaisesRegex(ValueError, 'batch failed'):
@@ -299,6 +300,215 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
                 self.assertEqual(executions[-2:], [methods[:1], methods[1:]])
                 self.assertEqual(len(executions), 5)
                 self.assertEqual(len([path for path in (root / 'cache').iterdir() if path.is_dir()]), 2)
+
+
+class DeclaredOptInPolicyTests(unittest.TestCase):
+    def setUp(self):
+        import shutil
+        import sanitizer_checkpoints as runner
+        self.runner = runner
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name).resolve()
+        for name in ['PlanetGPUShaderTests.swift', 'NativeMultiBatchRuntimeTests.swift']:
+            target = self.root / 'Tests/EliteCoreTests' / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(runner.ROOT / 'Tests/EliteCoreTests' / name, target)
+        self.policy = runner.opt_in_policy(self.root, {})
+        self.methods = ['EliteCoreTests.Required/plain()'] + [
+            entry['classname'] + '/' + entry['name'] for entry in self.policy['expected_skips']]
+        self.old = self.root / 'legacy'
+        self.old.mkdir()
+        self.old_identity = {
+            'schema': 1, 'runner': runner.LEGACY_VALIDATION_INPUTS['Tools/CI/sanitizer_checkpoints.py'],
+            'inputs': {**runner.LEGACY_VALIDATION_INPUTS, **self.policy['declarations'],
+                       'Sources/game.swift': 'engine', 'Package.resolved': 'dependency'},
+            'mode': 'thread', 'flags': ['--scratch-path', '.build/tsan', '--sanitize=thread'],
+            'parallel': True, 'architecture': 'arm64', 'swift': 'Swift 6.4.1', 'sdk': '27',
+            'swift_executable': '/swift', 'image_sha256': 'image', 'image_uuid': 'uuid',
+            'environment': {'TSAN_OPTIONS': None}, 'inventory': self.methods,
+        }
+        self.identity = json.loads(json.dumps(self.old_identity))
+        self.identity.update(schema=2, opt_in_policy=self.policy, runner=runner.digest(Path(runner.__file__)))
+        self.identity['inputs']['Tools/CI/sanitizer_checkpoints.py'] = self.identity['runner']
+        self.identity['inputs']['Tools/CI/test_sanitizer_checkpoints.py'] = 'reviewed-policy-tests'
+        command = runner.batch_command('/swift', self.old_identity['flags'], 'thread', self.old, self.methods)
+        start = {'head': 'a' * 40, 'identity': self.old_identity, 'methods': self.methods, 'command': command}
+        self.result = {'tested_head': 'a' * 40, 'identity': self.old_identity, 'methods': self.methods,
+                       'command': command, 'exit_code': 0, 'wall_seconds': 100,
+                       'status': 'failed', 'reason': 'Batch XML contains unsuccessful outcomes',
+                       'report': 'tests-swift-testing.xml', 'outputs': {}}
+        (self.old / 'start.json').write_text(json.dumps(start))
+        (self.old / 'result.json').write_text(json.dumps(self.result))
+        (self.old / 'test.log').write_text('✔ Test run with 7 tests in 1 suite passed after 100 seconds.\n')
+        self.write_xml()
+
+    def write_xml(self, policy=None):
+        policy = self.policy if policy is None else policy
+        expected = self.runner.selected_opt_in_skips({'opt_in_policy': policy}, self.methods)
+        root = ET.Element('testsuites')
+        suite = ET.SubElement(root, 'testsuite', tests=str(len(self.methods) - len(expected)),
+                              failures='0', errors='0', skipped=str(len(expected)))
+        for method in self.methods:
+            classname, name = self.runner.xml_identity(method)
+            node = ET.SubElement(suite, 'testcase', classname=classname, name=name)
+            if (classname, name) in expected:
+                ET.SubElement(node, 'skipped').text = expected[classname, name]
+            else:
+                node.set('time', '1')
+        path = self.old / 'tests-swift-testing.xml'
+        ET.ElementTree(root).write(path)
+        return path
+
+    def test_only_six_exact_source_declared_inactive_opt_ins_are_expected(self):
+        runner = self.runner
+        self.assertEqual(len(self.policy['expected_skips']), 6)
+        self.assertEqual(len(runner.opt_in_policy(self.root, {'ELITE_PLANET_GPU_EXPERIMENT': '1'})['expected_skips']), 1)
+        enabled = {'ELITE_PLANET_GPU_EXPERIMENT': '1', 'ELITE_NATIVE_WORK_CONTINUATION': '1',
+                   'ELITE_NATIVE_WORK_CONTINUATION_SOURCE': '/private/source'}
+        policy = runner.opt_in_policy(self.root, enabled)
+        self.assertEqual(policy['expected_skips'], [])
+        self.assertNotIn('/private/source', json.dumps(policy))
+        self.assertTrue(policy['controls']['continuation_source_nonempty'])
+        path = self.old / 'tests-swift-testing.xml'
+        allowed = runner.selected_opt_in_skips(self.identity, self.methods)
+        self.assertEqual(runner.inspect_xml(path, self.methods, allowed), self.methods)
+
+    def test_source_guard_or_added_opt_in_method_requires_review(self):
+        path = self.root / 'Tests/EliteCoreTests/PlanetGPUShaderTests.swift'
+        original = path.read_text()
+        for changed in [original.replace('== "1"', '== "2"', 1),
+                        original + '\n@MainActor @Test func newOptionalTest() {}\n']:
+            path.write_text(changed)
+            with self.assertRaises(ValueError):
+                self.runner.opt_in_policy(self.root, {})
+        path.write_text(original)
+        path = self.root / 'Tests/EliteCoreTests/NativeMultiBatchRuntimeTests.swift'
+        path.write_text(path.read_text().replace('== false,', '== true,', 1))
+        with self.assertRaises(ValueError):
+            self.runner.opt_in_policy(self.root, {})
+
+    def test_enabled_or_unexpected_skip_and_changed_reason_are_refused(self):
+        runner = self.runner
+        enabled = runner.opt_in_policy(self.root, {'ELITE_PLANET_GPU_EXPERIMENT': '1'})
+        with self.assertRaises(ValueError):
+            runner.inspect_xml(self.old / 'tests-swift-testing.xml', self.methods,
+                               runner.selected_opt_in_skips({'opt_in_policy': enabled}, self.methods))
+        path = self.write_xml()
+        tree = ET.parse(path)
+        ET.SubElement(next(tree.getroot().iter('testcase')), 'skipped')
+        tree.write(path)
+        with self.assertRaises(ValueError):
+            runner.inspect_xml(path, self.methods, runner.selected_opt_in_skips(self.identity, self.methods))
+        path = self.write_xml()
+        path.write_text(path.read_text().replace(runner.DIAGNOSTIC_REASON, 'Different reason'))
+        with self.assertRaises(ValueError):
+            runner.inspect_xml(path, self.methods, runner.selected_opt_in_skips(self.identity, self.methods))
+
+    def test_requalification_preserves_old_failed_receipt_and_creates_separate_attestation(self):
+        runner = self.runner
+        before = runner.digest(self.old / 'result.json')
+        target = self.root / 'new-mode/0'
+        target.mkdir(parents=True)
+        with patch.object(runner.subprocess, 'run') as execute:
+            attempt = runner.requalify_completed(self.old, target, self.identity, self.methods, 'b' * 40)
+            execute.assert_not_called()
+        receipt = runner.successful_attempt(attempt, self.identity, self.methods)
+        self.assertIsNotNone(receipt)
+        self.assertEqual(receipt['status'], 'requalified')
+        self.assertEqual(receipt['tested_head'], 'a' * 40)
+        self.assertEqual(receipt['accepted_head'], 'b' * 40)
+        self.assertEqual(receipt['executed_methods'], 1)
+        self.assertEqual(receipt['source_declared_opt_in_skips'], 6)
+        self.assertIn('not captured', receipt['requalification']['original_opt_in_environment'])
+        self.assertEqual(runner.digest(self.old / 'result.json'), before)
+        self.assertEqual(json.loads((self.old / 'result.json').read_text())['status'], 'failed')
+
+    def test_source_dependency_image_flags_and_recorded_environment_drift_refuse_requalification(self):
+        for key, value in [('image_sha256', 'changed'), ('swift', 'changed'),
+                           ('flags', ['--sanitize=address']), ('environment', {'TSAN_OPTIONS': 'changed'})]:
+            changed = json.loads(json.dumps(self.identity))
+            changed[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.runner.legacy_requalification(self.old, changed, self.methods)
+        for key in ['Sources/game.swift', 'Package.resolved', 'Tests/EliteCoreTests/PlanetGPUShaderTests.swift']:
+            changed = json.loads(json.dumps(self.identity))
+            changed['inputs'][key] = 'changed'
+            with self.subTest(input=key), self.assertRaises(ValueError):
+                self.runner.legacy_requalification(self.old, changed, self.methods)
+        changed = json.loads(json.dumps(self.identity))
+        changed['opt_in_policy'] = self.runner.opt_in_policy(self.root, {'ELITE_PLANET_GPU_EXPERIMENT': '1'})
+        with self.assertRaises(ValueError):
+            self.runner.legacy_requalification(self.old, changed, self.methods)
+
+    def test_assertion_error_race_missing_or_duplicate_outcomes_never_requalify(self):
+        for tag in ['failure', 'error']:
+            path = self.write_xml()
+            tree = ET.parse(path)
+            ET.SubElement(next(tree.getroot().iter('testcase')), tag)
+            tree.write(path)
+            with self.subTest(tag=tag), self.assertRaises(ValueError):
+                self.runner.legacy_requalification(self.old, self.identity, self.methods)
+        self.write_xml()
+        log = self.old / 'test.log'
+        original = log.read_text()
+        log.write_text(original + 'WARNING: ThreadSanitizer: data race')
+        with self.assertRaises(ValueError):
+            self.runner.legacy_requalification(self.old, self.identity, self.methods)
+        log.write_text(original)
+        path = self.write_xml()
+        original_xml = path.read_text()
+        path.write_text('<testsuites>')
+        with self.assertRaises(ET.ParseError):
+            self.runner.legacy_requalification(self.old, self.identity, self.methods)
+        path.write_text(original_xml)
+        tree = ET.parse(path)
+        suite = next(tree.getroot().iter('testsuite'))
+        suite.remove(list(suite)[0])
+        tree.write(path)
+        with self.assertRaises(ValueError):
+            self.runner.legacy_requalification(self.old, self.identity, self.methods)
+        path.write_text(original_xml)
+        tree = ET.parse(path)
+        suite = next(tree.getroot().iter('testsuite'))
+        suite.append(list(suite)[0])
+        tree.write(path)
+        with self.assertRaises(ValueError):
+            self.runner.legacy_requalification(self.old, self.identity, self.methods)
+
+    def test_opt_in_env_change_invalidates_requalified_cache_and_legacy_evidence_is_retained(self):
+        runner = self.runner
+        target = self.root / 'new-mode/0'
+        target.mkdir(parents=True)
+        attempt = runner.requalify_completed(self.old, target, self.identity, self.methods, 'b' * 40)
+        changed = json.loads(json.dumps(self.identity))
+        changed['opt_in_policy'] = runner.opt_in_policy(self.root, {'ELITE_PLANET_GPU_EXPERIMENT': '1'})
+        self.assertIsNone(runner.successful_attempt(attempt, changed, self.methods))
+        (self.old / 'test.log').write_text('Changed historical evidence')
+        self.assertIsNone(runner.successful_attempt(attempt, self.identity, self.methods))
+
+    def test_explicit_requalification_control_cannot_leak_into_asan(self):
+        runner = self.runner
+        for mode in ['thread', 'address']:
+            with (patch.dict(runner.os.environ, {'ELITE_TSAN_REQUALIFY_ATTEMPT': '/chosen/legacy'}),
+                  patch('sys.argv', ['sanitizer_checkpoints.py', mode]),
+                  patch.object(runner, 'run_mode') as execute):
+                runner.main()
+                self.assertEqual(execute.call_args.kwargs['requalify_attempt'],
+                                 Path('/chosen/legacy') if mode == 'thread' else None)
+
+    def test_nonzero_execution_and_wrong_legacy_policy_are_never_requalified(self):
+        for key, value in [('exit_code', 1), ('reason', 'Different failure'), ('status', 'passed')]:
+            changed = {**self.result, key: value}
+            (self.old / 'result.json').write_text(json.dumps(changed))
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.runner.legacy_requalification(self.old, self.identity, self.methods)
+        (self.old / 'result.json').write_text(json.dumps(self.result))
+        changed = json.loads(json.dumps(self.result))
+        changed['identity']['runner'] = 'unreviewed producer'
+        (self.old / 'result.json').write_text(json.dumps(changed))
+        with self.assertRaises(ValueError):
+            self.runner.legacy_requalification(self.old, self.identity, self.methods)
 
 
 if __name__ == '__main__':

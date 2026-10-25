@@ -119,27 +119,194 @@ def partition(methods, mode, target=100):
     return batches
 
 
-def inspect_xml(path, expected):
-    """Refuse incomplete, missing, extra, duplicate, failed or skipped methods."""
+GPU_OPT_IN = (
+    'allPalettesMatchStableCPUReferenceIncludingWrappedLongitudeAndAlpha()',
+    'identityChangesAndOutputReuseCannotMutatePreviouslyPublishedImages()',
+    'nightEmissionAndMovingSunMatchCPUForEconomyGovernmentAndTechnology()',
+    'productionRendererUsesPreparedGPUWithIndependentReferenceAndCache()',
+    'invalidBoundsAndAnglesReturnCPUFallback()',
+)
+DIAGNOSTIC_METHOD = 'retained542SecondCycleContinuationDiagnostic()'
+DIAGNOSTIC_REASON = 'Requires explicit diagnostic opt-in and the private retained run 542 directory'
+LEGACY_VALIDATION_INPUTS = {
+    'Tools/CI/sanitizer_checkpoints.py': 'fd0ca74766dcaf0ff198ecd2416957befd73d198dc209b9ca6f25a5715de1a5b',
+    'Tools/CI/test_sanitizer_checkpoints.py': '2e5f1393c31672c3cf6f7802f5c3f4acfcf1798fa43cbc1b311644233e16de5d',
+}
+
+
+def opt_in_policy(root, environment):
+    """Bind only six existing, source-declared opt-ins; never allow a general skip."""
+    gpu_path = 'Tests/EliteCoreTests/PlanetGPUShaderTests.swift'
+    diagnostic_path = 'Tests/EliteCoreTests/NativeMultiBatchRuntimeTests.swift'
+    gpu = (root / gpu_path).read_text()
+    diagnostic = (root / diagnostic_path).read_text()
+    compact = lambda value: re.sub(r'\s+', '', value)
+    gpu_guard = '@Suite(\n  .enabled(if: ProcessInfo.processInfo.environment["ELITE_PLANET_GPU_EXPERIMENT"] == "1"),\n  .serialized)\nstruct PlanetGPUShaderTests'
+    diagnostic_guard = '@Test(\n    .enabled(\n      if: ProcessInfo.processInfo.environment["ELITE_NATIVE_WORK_CONTINUATION"] == "1"\n        && ProcessInfo.processInfo.environment["ELITE_NATIVE_WORK_CONTINUATION_SOURCE"]?.isEmpty\n          == false,\n      "Requires explicit diagnostic opt-in and the private retained run 542 directory")\n  )\n  func retained542SecondCycleContinuationDiagnostic()'
+    names = set(re.findall(r'@MainActor\s+@Test\s+func\s+(\w+)\s*\(', gpu))
+    if (compact(gpu_guard) not in compact(gpu) or names != {name[:-2] for name in GPU_OPT_IN}
+            or compact(diagnostic_guard) not in compact(diagnostic)
+            or DIAGNOSTIC_REASON not in diagnostic):
+        raise ValueError('Source-declared opt-in guards changed; policy review required')
+    source = environment.get('ELITE_NATIVE_WORK_CONTINUATION_SOURCE')
+    controls = {
+        'ELITE_PLANET_GPU_EXPERIMENT': environment.get('ELITE_PLANET_GPU_EXPERIMENT'),
+        'ELITE_NATIVE_WORK_CONTINUATION': environment.get('ELITE_NATIVE_WORK_CONTINUATION'),
+        'continuation_source_is_set': source is not None,
+        'continuation_source_nonempty': bool(source),
+        'continuation_source_sha256': hashlib.sha256(source.encode()).hexdigest() if source is not None else None,
+    }
+    skipped = []
+    if controls['ELITE_PLANET_GPU_EXPERIMENT'] != '1':
+        skipped.extend({'classname': 'EliteCoreTests.PlanetGPUShaderTests', 'name': name,
+                        'reason': None} for name in GPU_OPT_IN)
+    if not (controls['ELITE_NATIVE_WORK_CONTINUATION'] == '1' and bool(source)):
+        skipped.append({'classname': 'EliteCoreTests.NativeMultiBatchRuntimeTests',
+                        'name': DIAGNOSTIC_METHOD, 'reason': DIAGNOSTIC_REASON})
+    return {'controls': controls, 'declarations': {name: digest(root / name)
+            for name in (gpu_path, diagnostic_path)}, 'expected_skips': skipped}
+
+
+def selected_opt_in_skips(identity, methods):
+    selected = {xml_identity(method) for method in methods}
+    return {(entry['classname'], entry['name']): entry['reason']
+            for entry in identity.get('opt_in_policy', {}).get('expected_skips', [])
+            if (entry['classname'], entry['name']) in selected}
+
+
+def inspect_xml(path, expected, expected_skips=None):
+    """Reconcile every ID; allow only exact source-bound inactive opt-in outcomes."""
+    expected_skips = expected_skips or {}
     root = ET.parse(path).getroot()
     cases = list(root.iter('testcase'))
     actual = [(case.attrib.get('classname', ''), case.attrib.get('name', '')) for case in cases]
     if Counter(actual) != Counter(xml_identity(method) for method in expected) or len(set(actual)) != len(actual):
         raise ValueError('XML does not match the exact batch selection')
-    if any(list(root.iter(tag)) for tag in ('failure', 'error', 'skipped')):
+    if any(list(root.iter(tag)) for tag in ('failure', 'error')):
         raise ValueError('Batch XML contains unsuccessful outcomes')
-    for node in root.iter():
-        if node.tag in ('testsuite', 'testsuites') and 'tests' in node.attrib:
-            if int(node.attrib['tests']) != len(list(node.iter('testcase'))):
-                raise ValueError('XML test count is inconsistent')
-        if node.tag == 'testcase':
-            elapsed = float(node.attrib.get('time', 'nan'))
+    observed_skips = {}
+    for case, identifier in zip(cases, actual):
+        skipped = list(case.iter('skipped'))
+        if skipped:
+            if len(skipped) != 1:
+                raise ValueError('Duplicate skip outcome')
+            observed_skips[identifier] = skipped[0].text
+        else:
+            elapsed = float(case.attrib.get('time', 'nan'))
             if not math.isfinite(elapsed) or elapsed < 0:
                 raise ValueError('XML testcase has no finite completed duration')
-        for key in ('failures', 'errors', 'skipped', 'disabled'):
+    if observed_skips != expected_skips:
+        raise ValueError('Unexpected, enabled or missing source-declared opt-in skip')
+    for node in root.iter():
+        if node.tag in ('testsuite', 'testsuites'):
+            descendants = list(node.iter('testcase'))
+            skipped_count = sum(bool(list(case.iter('skipped'))) for case in descendants)
+            # Swift Testing versions count either all methods or only executed methods.
+            if 'tests' in node.attrib and int(node.attrib['tests']) not in (
+                    len(descendants), len(descendants) - skipped_count):
+                raise ValueError('XML test count is inconsistent')
+            if 'skipped' in node.attrib and int(node.attrib['skipped']) != skipped_count:
+                raise ValueError('XML skipped count is inconsistent')
+        for key in ('failures', 'errors', 'disabled'):
             if key in node.attrib and int(node.attrib[key]) != 0:
                 raise ValueError('Batch XML declares unsuccessful outcomes')
     return expected
+
+
+def owned_evidence(path):
+    """Read only physical, owned, non-publicly-writable qualification evidence."""
+    if (any(parent.is_symlink() for parent in (path, *path.parents))
+            or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o022):
+        raise ValueError('Qualification evidence must be physical, owned and protected')
+
+
+def legacy_requalification(attempt, identity, methods):
+    """Attest an exit-zero legacy run; never rewrite its failed validator receipt."""
+    for path in [attempt, attempt / 'start.json', attempt / 'result.json', attempt / 'test.log']:
+        owned_evidence(path)
+    prior = json.loads((attempt / 'result.json').read_text())
+    start = json.loads((attempt / 'start.json').read_text())
+    old = prior['identity']
+    if (identity['mode'] != 'thread' or old['schema'] != 1 or identity['schema'] != 2
+            or old['runner'] != LEGACY_VALIDATION_INPUTS['Tools/CI/sanitizer_checkpoints.py']
+            or prior['status'] != 'failed' or prior['exit_code'] != 0
+            or prior.get('reason') != 'Batch XML contains unsuccessful outcomes'
+            or start['identity'] != old or start['methods'] != methods or prior['methods'] != methods
+            or start['head'] != prior['tested_head'] or start['command'] != prior['command']
+            or not re.fullmatch(r'[0-9a-f]{40}', prior['tested_head'])
+            or methods != identity['inventory']):
+        raise ValueError('Not an eligible completed legacy validator-only rejection')
+    if set(identity) != set(old) | {'opt_in_policy'}:
+        raise ValueError('Legacy identity fields changed unexpectedly')
+    for key in set(old) - {'schema', 'runner', 'inputs'}:
+        if old[key] != identity[key]:
+            raise ValueError('Tested executable, environment, selection or toolchain changed: ' + key)
+    if prior['command'] != batch_command(old['swift_executable'], old['flags'], 'thread', attempt, methods):
+        raise ValueError('Legacy command is not the full original concurrent TSAN command')
+    changed = {name for name in set(old['inputs']) | set(identity['inputs'])
+               if old['inputs'].get(name) != identity['inputs'].get(name)}
+    if not changed <= set(LEGACY_VALIDATION_INPUTS):
+        raise ValueError('Executable inputs changed outside the validator-only repair')
+    if any(old['inputs'].get(name) != value for name, value in LEGACY_VALIDATION_INPUTS.items()):
+        raise ValueError('Legacy validator source identity is not the reviewed version')
+    if identity['inputs'].get('Tools/CI/sanitizer_checkpoints.py') != identity['runner']:
+        raise ValueError('Current validator identity is inconsistent')
+    if any(identity['inputs'].get(name) != value
+           for name, value in identity['opt_in_policy']['declarations'].items()):
+        raise ValueError('Opt-in declaration source identity changed')
+    controls = identity['opt_in_policy']['controls']
+    if (controls['ELITE_PLANET_GPU_EXPERIMENT'] == '1'
+            or (controls['ELITE_NATIVE_WORK_CONTINUATION'] == '1'
+                and controls['continuation_source_nonempty'])):
+        raise ValueError('Enabled opt-in requirements cannot reuse disabled outcomes')
+    expected = selected_opt_in_skips(identity, methods)
+    exact = {('EliteCoreTests.PlanetGPUShaderTests', name): None for name in GPU_OPT_IN}
+    exact[('EliteCoreTests.NativeMultiBatchRuntimeTests', DIAGNOSTIC_METHOD)] = DIAGNOSTIC_REASON
+    if expected != exact:
+        raise ValueError('Legacy requalification requires exactly the six declared opt-ins')
+    report = prior['report']
+    if report not in ('tests.xml', 'tests-swift-testing.xml'):
+        raise ValueError('Unexpected legacy XML path')
+    owned_evidence(attempt / report)
+    inspect_xml(attempt / report, methods, expected)
+    log = (attempt / 'test.log').read_text(errors='replace')
+    if (any(marker in log for marker in ERRORS)
+            or not re.search(r'Test run with ' + str(len(methods)) + r' tests in [0-9]+ suites? passed after ', log)):
+        raise ValueError('Legacy execution has no clean complete terminal log')
+    evidence = ['start.json', 'result.json', 'test.log', report]
+    return {'attempt': str(attempt), 'original_status': prior['status'],
+            'original_checker': old['runner'], 'original_reason': prior['reason'],
+            'tested_head': prior['tested_head'], 'tested_identity': old,
+            'evidence': {name: digest(attempt / name) for name in evidence},
+            'new_policy': identity['runner'], 'validator_only_changed_inputs': sorted(changed),
+            'original_opt_in_environment': 'Raw values were not captured and are not reconstructed.',
+            'applicability_proof': 'Exactly six source-declared framework skips prove the guards were inactive; their controls occur only in these gates and the unexecuted private diagnostic.',
+            'executed_methods': len(methods) - len(exact), 'source_declared_opt_in_skips': len(exact)}
+
+
+def requalify_completed(prior_attempt, batch_root, identity, methods, head):
+    """Create a separate reviewed-policy attestation; execute no test bodies."""
+    prior_attempt = Path(prior_attempt)
+    proof = legacy_requalification(prior_attempt, identity, methods)
+    prior = json.loads((prior_attempt / 'result.json').read_text())
+    attempt = batch_root / str(uuid.uuid4())
+    owned_directory(attempt)
+    for name in ['test.log', *sorted(path.name for path in prior_attempt.glob('*.xml'))]:
+        owned_evidence(prior_attempt / name)
+        shutil.copyfile(prior_attempt / name, attempt / name)
+    receipt = {'tested_head': proof['tested_head'], 'accepted_head': head,
+               'identity': identity, 'methods': methods, 'command': prior['command'],
+               'exit_code': prior['exit_code'], 'wall_seconds': prior['wall_seconds'],
+               'status': 'requalified', 'report': prior['report'], 'requalification': proof,
+               'executed_methods': proof['executed_methods'],
+               'source_declared_opt_in_skips': proof['source_declared_opt_in_skips'],
+               'outputs': {path.name: digest(path) for path in attempt.iterdir()},
+               'qualification': 'Existing exit-zero execution revalidated under the corrected opt-in policy; no new test execution and no relabelling of the original failed receipt.'}
+    atomic_json(attempt / 'result.json', receipt)
+    for path in attempt.iterdir():
+        path.chmod(0o400)
+    attempt.chmod(0o500)
+    return attempt
 
 
 def successful_attempt(path, identity, methods):
@@ -154,7 +321,7 @@ def successful_attempt(path, identity, methods):
             return None
         receipt = json.loads(result_path.read_text())
         if (receipt['identity'] != identity or receipt['methods'] != methods
-                or receipt['exit_code'] != 0 or receipt['status'] != 'passed'
+                or receipt['exit_code'] != 0 or receipt['status'] not in ('passed', 'requalified')
                 or not re.fullmatch(r'[0-9a-f]{40}', receipt['tested_head'])):
             return None
         for name, value in receipt['outputs'].items():
@@ -167,7 +334,11 @@ def successful_attempt(path, identity, methods):
                 or set(receipt['outputs']) != {'test.log'} | {file.name for file in path.glob('*.xml')}
                 or receipt['report'] not in receipt['outputs']):
             return None
-        inspect_xml(path / receipt['report'], methods)
+        inspect_xml(path / receipt['report'], methods, selected_opt_in_skips(identity, methods))
+        if receipt['status'] == 'requalified':
+            proof = legacy_requalification(Path(receipt['requalification']['attempt']), identity, methods)
+            if proof != receipt['requalification']:
+                return None
         if any(marker in (path / 'test.log').read_text(errors='replace') for marker in ERRORS):
             return None
         return receipt
@@ -240,7 +411,7 @@ def progress(message):
         sys.stdout = open(os.devnull, 'w')
 
 
-def run_mode(mode, cache, target=100):
+def run_mode(mode, cache, target=100, requalify_attempt=None):
     """Build/discover once, then execute or reuse each fully reconciled batch."""
     root = ROOT
     owned_directory(cache)
@@ -281,7 +452,7 @@ def run_mode(mode, cache, target=100):
         if len(images) != 1:
             raise ValueError('Expected one actual sanitizer test image')
         image = images[0]
-        identity = {'schema': 1, 'inputs': executable_inputs(root, scratch),
+        identity = {'schema': 2, 'opt_in_policy': opt_in_policy(root, environment), 'inputs': executable_inputs(root, scratch),
                     'runner': digest(Path(__file__)), 'mode': mode, 'flags': flags,
                     'parallel': mode == 'thread', 'architecture': platform.machine(),
                     'swift': output([swift, '--version'], root, environment, lock),
@@ -310,6 +481,14 @@ def run_mode(mode, cache, target=100):
             owned_directory(batch_root)
             reused = next(((attempt, receipt) for attempt in sorted(batch_root.iterdir())
                            if attempt.is_dir() and (receipt := successful_attempt(attempt, identity, batch))), None)
+            if reused is None and requalify_attempt is not None:
+                if mode != 'thread' or len(batches) != 1:
+                    raise ValueError('Explicit legacy requalification is limited to full TSAN mode')
+                attempt = requalify_completed(requalify_attempt, batch_root, identity, batch, head)
+                receipt = successful_attempt(attempt, identity, batch)
+                if receipt is None:
+                    raise ValueError('Requalification receipt could not be verified')
+                reused = (attempt, receipt)
             if reused is not None:
                 attempt, receipt = reused
             else:
@@ -333,12 +512,14 @@ def run_mode(mode, cache, target=100):
                 try:
                     if result.returncode:
                         raise ValueError('Sanitizer process did not exit successfully')
-                    inspect_xml(actual_xml, batch)
+                    inspect_xml(actual_xml, batch, selected_opt_in_skips(identity, batch))
                     if any(marker in (attempt / 'test.log').read_text(errors='replace') for marker in ERRORS):
                         raise ValueError('Sanitizer reported an error')
                     if executable_inputs(root, scratch) != identity['inputs'] or digest(image) != identity['image_sha256']:
                         raise ValueError('Executable inputs changed during test execution')
-                    receipt.update(status='passed', outputs={file.name: digest(file)
+                    receipt.update(executed_methods=len(batch) - len(selected_opt_in_skips(identity, batch)),
+                                   source_declared_opt_in_skips=len(selected_opt_in_skips(identity, batch)),
+                                   status='passed', outputs={file.name: digest(file)
                                    for file in [attempt / 'test.log', *sorted(attempt.glob('*.xml'))]})
                 except (ValueError, OSError, ET.ParseError) as error:
                     receipt['reason'] = str(error)
@@ -352,8 +533,14 @@ def run_mode(mode, cache, target=100):
             shutil.copytree(attempt, report / ('batch-' + str(index)))
             completed.append({'batch': index, 'tested_head': receipt['tested_head'],
                               'current_head': head, 'reused': reused is not None,
-                              'attempt': str(attempt), 'methods': batch, 'outputs': receipt['outputs']})
-            progress(f'{mode}: batch {index + 1}/{len(batches)} passed ({len(batch)} methods)')
+                              'attempt': str(attempt), 'methods': batch, 'outcome_status': receipt['status'],
+                              'executed_methods': receipt.get('executed_methods', len(batch)),
+                              'source_declared_opt_in_skips': receipt.get('source_declared_opt_in_skips', 0),
+                              'outputs': receipt['outputs']})
+            progress(f'{mode}: batch {index + 1}/{len(batches)} qualified '
+                     f'({receipt.get("executed_methods", len(batch))} executed; '
+                     f'{receipt.get("source_declared_opt_in_skips", 0)} declared opt-ins inactive; '
+                     f'{len(batch)} IDs accounted)')
         if (executable_inputs(root, scratch) != identity['inputs']
                 or digest(image) != identity['image_sha256']
                 or output(['git', 'rev-parse', 'HEAD'], root, environment, lock) != head
@@ -361,7 +548,10 @@ def run_mode(mode, cache, target=100):
             raise ValueError('Checkout or executable inputs changed before mode completion')
         summary = {'current_head': head, 'status': 'passed', 'identity': identity,
                    'complete_inventory': methods, 'batches': completed,
-                   'qualification': 'Complete sanitizer mode only; coverage, leaks, review and hosted checks remain separate.'}
+                   'executed_methods': sum(batch['executed_methods'] for batch in completed),
+                   'source_declared_opt_in_skips': sum(batch['source_declared_opt_in_skips'] for batch in completed),
+                   'unexpected_skips': 0,
+                   'qualification': 'All applicable methods completed; declared opt-ins are explicitly unexecuted. Coverage, leaks, review and hosted checks remain separate.'}
         (report / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
 
 
@@ -369,8 +559,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=['thread', 'address'])
     parser.add_argument('--cache', type=Path, default=Path.home() / 'Library/EliteNativeCI/sanitizer-checkpoints')
+    parser.add_argument('--requalify-attempt', type=Path,
+                        help='Explicitly attest a completed legacy process under the corrected opt-in policy')
     args = parser.parse_args()
-    run_mode(args.mode, args.cache)
+    if args.mode != 'thread' and args.requalify_attempt is not None:
+        parser.error('Legacy requalification is limited to full ThreadSanitizer mode')
+    prior = args.requalify_attempt
+    if args.mode == 'thread' and prior is None and os.environ.get('ELITE_TSAN_REQUALIFY_ATTEMPT'):
+        prior = Path(os.environ['ELITE_TSAN_REQUALIFY_ATTEMPT'])
+    run_mode(args.mode, args.cache, requalify_attempt=prior)
 
 
 if __name__ == '__main__':

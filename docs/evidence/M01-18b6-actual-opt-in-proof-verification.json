@@ -1,0 +1,36 @@
+{
+  "status": "PROOF QUALIFIED: metadata-only actual historical revalidation proof",
+  "reviewed_patch_sha256": "6f5da4384b53a1c7d47dd30fa82fd2bbba7283df5f0de1614512d819bf697463",
+  "proof_sha256": "90377dd4a1409838eac6f2421c8981067e6767c15d4080ada010056e02e06017",
+  "proposed_identity_sha256": "4fd64fd3f53545de28eef54338c46d813b2591e318e6d2916e89a09c7b3b8ef9",
+  "tested_head": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+  "current_accepted_head": null,
+  "actual_proof_result": "PROOF_VALIDATED",
+  "retained_inputs_verified": 2857,
+  "input_hash_mismatches": [],
+  "only_changed_inputs": [
+    "Tools/CI/sanitizer_checkpoints.py",
+    "Tools/CI/test_sanitizer_checkpoints.py"
+  ],
+  "new_validator_hashes_match_cleared_review": true,
+  "other_mode_image_toolchain_sdk_arch_flags_recorded_environment_inventory_fields_identical": true,
+  "image_sha256": "21e63d2429c0e1b14cab73835e7a135300fa48c850b31805ec88b56f9b3790e1",
+  "original_evidence_hashes_match": {
+    "start.json": true,
+    "result.json": true,
+    "test.log": true,
+    "tests-swift-testing.xml": true
+  },
+  "original_evidence_hashes_match_prior_independent_terminal_review": true,
+  "original_failed_receipt_sha256": "7711e3db2c00b84f512637bdc2428448422f0056c0f340565eb9da4e5adbe3d5",
+  "original_failed_status_unchanged": true,
+  "process_exit_code": 0,
+  "inventory": 3395,
+  "executed": 3389,
+  "inactive_exact_opt_ins": 6,
+  "failures": 0,
+  "errors": 0,
+  "sanitizer_reports": 0,
+  "historical_environment": "Raw opt-in values unknown and not reconstructed. Actualunchangedsource+frameworksixskips prove only inactivepredicates. Proposedcontrols describe futureidentity, nothistoricalcapture.",
+  "qualification": "Explicit proof eligible for separatelyauthorisedattestation underclearedpolicy; no acceptedcommit/cacheattestationexistsyet/nooriginalpromotion. Oldtestedsyntheticc40ee retained; hosteddisconnect remainsfailure; requiredformalASAN/leak/coverage/releasegates separate. No runtime/build/native/testbody/reviewerexecution or checkpointmutation."
+}

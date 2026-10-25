@@ -1,0 +1,51 @@
+{
+  "base": "18b6e91b41b4151395eb645318552d9c522772f9",
+  "patch_sha256": "6f5da4384b53a1c7d47dd30fa82fd2bbba7283df5f0de1614512d819bf697463",
+  "files": {
+    "README.md": "dbbcbe34f45e236b0714a61a2304fe45f1edec090cc93eeb26fdc350e2ffbafc",
+    "Tools/CI/sanitizer_checkpoints.py": "7de02a8ffa9df2c856d610df8982115ae61c9dc05da5678d5b498be70ee93411",
+    "Tools/CI/test_sanitizer_checkpoints.py": "039d2767ba43a0ea81a703dc5177c81450036a31eab9af1b6e2d525c60870058",
+    "docs/ISSUE-185-unfiltered-quality.md": "4b9e8516b5768f3e0b217a2d140045f2104cca43e348f958ec853fabf9d84309",
+    "docs/PR-185-unfiltered-quality.md": "2936417856c415ce7c47364dab181e53a63904b425843ed939b54e962f91e8e9"
+  },
+  "actual_file_hashes_match": {
+    "README.md": true,
+    "Tools/CI/sanitizer_checkpoints.py": true,
+    "Tools/CI/test_sanitizer_checkpoints.py": true,
+    "docs/ISSUE-185-unfiltered-quality.md": true,
+    "docs/PR-185-unfiltered-quality.md": true
+  },
+  "result": "CLEAR: narrow exact-opt-in validator and explicit legacy requalification, no actionable bugs/performance/style findings",
+  "assessment": [
+    "Only six exact existing source-guarded opt-ins qualify as inactive; full declared selection remains mandatory. Enabled, missing, unexpected, duplicate or reason-changed skips and any errors/failures/race diagnostics refuse.",
+    "Future identity schema2 binds all three opt-in controls with private source presence/nonempty/hash plus declaration digests. No fabricated historical environment values.",
+    "Legacy proof requires explicit selected attempt, reviewed schema1 producer/source hashes, exact original exit0 full unfiltered concurrent command and complete log/XML, unchanged runtime/test/resource/dependency/toolchain/SDK/flags/image/recorded environment, only two validator input changes.",
+    "Actual source search confirms three controls only influence those applicability guards and unexecuted private diagnostic. Existing exact six framework skips support inactive predicate inference only.",
+    "Original failed receipt remains unchanged. Separate requalified receipt retains originalSHA/identity/checker/reason/evidence hashes, currentpolicy/acceptedhead and explicitunknownhistoricalenv; cachedattestation rechecks originalproof everytime.",
+    "XML3389executed+6skipped accounting retains all3395 IDs; original compiler report count conventions reconciled without arbitrary drop.",
+    "No game/runtime/state/codec/test-source/Makefile/preflighttest change; TSAN staysfullconcurrentgroup,ASANnoparallelwholegroups and requiredquality/leak/coverage gates intact."
+  ],
+  "meaningful_fake_boundaries": [
+    "Exact6inactive/sourceguard/method/optinenv drift",
+    "Enabled/unknown/reasonchanged/missing/duplicate skips",
+    "Assertions/errors/races/incompleteXML/counts/missing/duplicateoutcomes",
+    "Wrongoldproducer/nonzeroexit/unrelatedsource/dependency/image/flags/recordedenvdrift",
+    "OriginalFAILEDreceiptimmutable/separateattestation/testedacceptedSHAprovenance",
+    "Changedhistoricalevidenceinvalidatescachedproof",
+    "Thread-onlyexplicitrequalificationcontrol cannotleakintoASAN"
+  ],
+  "saved_python_results": {
+    "command": [
+      "make",
+      "native-runner-check",
+      "sanitizer-checkpoints-check"
+    ],
+    "tests_native_runner": 15,
+    "tests_checkpoint": 27,
+    "wall_seconds": 1.4057978331111372,
+    "exit_code": 0,
+    "log_sha256": "3c415a5965e2d4dc2b2f6db09100976f9173fb884d5763276ead92f2951e34dd",
+    "input_hashes_match": true
+  },
+  "limits": "Source and retained fake-unit evidence only; no reviewer execution/fix/checkpoint mutation. Actual historical proof/attestation not yet qualified and old failed receipt remains ineligible until separate authorised proof review. No freshnative/fullTSAN replay/fullquality/release claim."
+}
