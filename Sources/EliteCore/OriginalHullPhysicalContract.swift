@@ -197,6 +197,14 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH047"))
   }
 
+  static let erneCorvette: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH045") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH045"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -376,6 +384,16 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH045":
+      guard definition.name == "Erne Corvette",
+        definition.sourceSHA256
+          == "9feca7316dcfb0350e65964177d4d6b7c739fbd08dbdbe7d139ed3b63a5b42bc",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH045-design.toml",
+        model.sourceSHA256 == "af9e790882ec54bdc368ba1adc7edd757a032c3557d381a50a109bff5abc1ca9"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -463,6 +481,7 @@ extension CatalogueShip {
     case "SH044": result = OriginalHullPhysicalContract.harpyAssault
     case "SH046": result = OriginalHullPhysicalContract.harpyDropship
     case "SH047": result = OriginalHullPhysicalContract.harpyGunship
+    case "SH045": result = OriginalHullPhysicalContract.erneCorvette
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
