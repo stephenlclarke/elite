@@ -16,6 +16,14 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "OriginalHarpyFamilyUnitTests": (
+        "perVariantPhysicalContractsRefuseForeignIdentityUnitsPathsAndFingerprints",
+        "originalMechanicsPreserveHistoricalFieldsAndEveryUnrelatedHullBinding",
+        "playerAndPhysicalMeshesKeepEveryApprovedVertexFaceMaterialAndTextureAssignment",
+        "perVariantMilitaryBlueprintTechnologyAndPlacementGrantNoDiscovery",
+        "e01ActualAccommodationUsesTwelveWithoutRewritingHistoryOrGrantingFittings",
+        "malformedRetainedInputsAndChangedDefinitionIdentityCannotActivateFamilyByName",
+    ),
     "OriginalSakerUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",

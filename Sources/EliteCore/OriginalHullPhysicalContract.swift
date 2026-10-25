@@ -173,6 +173,30 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH043"))
   }
 
+  static let harpyAssault: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH044") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH044"))
+  }
+
+  static let harpyDropship: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH046") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH046"))
+  }
+
+  static let harpyGunship: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH047") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH047"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -343,6 +367,15 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH044", "SH046", "SH047":
+      guard let approved = OriginalHarpyFamilyActivation.registration(for: definition.id),
+        definition.name == approved.name,
+        definition.sourceSHA256 == approved.specificationSHA256,
+        model.coordinateUnits == "metres", model.sourcePath == approved.modelPath,
+        model.sourceSHA256 == approved.modelSHA256
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -427,6 +460,9 @@ extension CatalogueShip {
     case "SH041": result = OriginalHullPhysicalContract.servalFighter
     case "SH042": result = OriginalHullPhysicalContract.saker
     case "SH043": result = OriginalHullPhysicalContract.eagleCruiser
+    case "SH044": result = OriginalHullPhysicalContract.harpyAssault
+    case "SH046": result = OriginalHullPhysicalContract.harpyDropship
+    case "SH047": result = OriginalHullPhysicalContract.harpyGunship
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil

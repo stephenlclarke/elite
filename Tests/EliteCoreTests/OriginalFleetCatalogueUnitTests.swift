@@ -24,7 +24,7 @@ struct OriginalFleetCatalogueUnitTests {
             == [
               "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029",
               "SH030", "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043",
-              "SH061",
+              "SH044", "SH046", "SH047", "SH061",
             ]
             .contains(
               record.id)
