@@ -30,7 +30,7 @@ The persistence definition is `pack.id/mission.id`. Each accepted assignment als
 
 ## Install and inspect
 
-Choose **Commander > Install Mission Pack...** and select the complete folder, with `manifest.toml` at its root. The same picker accepts legacy TOML files. The schema 2 installer retains immutable content versions in `~/.xyzzy/elite/script-packs/`, separate from the legacy file library. Manual copying of a complete folder into that directory is also supported after restarting; keep each content version separate. Up to 128 external library entries can be loaded. The app also loads the bundled [generated courier provider](../Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml); the other example folders linked here are authoring examples, not automatically installed packs.
+Choose **Commander > Install Mission Pack...** and select the complete folder, with `manifest.toml` at its root. The same picker accepts legacy TOML files. The schema 2 installer retains immutable content versions in `~/.xyzzy/l337/script-packs/`, separate from the legacy file library. Manual copying of a complete folder into that directory is also supported after restarting; keep each content version separate. Up to 128 external library entries can be loaded. The app also loads the bundled [generated courier provider](../Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml); the other example folders linked here are authoring examples, not automatically installed packs.
 
 Validate either a legacy file or a schema 2 folder with the same command:
 

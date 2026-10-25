@@ -39,6 +39,10 @@ METHODS = {
         "storageAndSeparateWorkToolsChargeExactlyWithoutRefillingOrReplacingCombatWeapons",
         "stockShieldPurchasesAreMonotonicAndPreserveBothCurrentFractions",
     ),
+    "ApplicationDataPathUnitTests": (
+        "freshCommanderAndPackLibrariesShareTheL337Root",
+        "explicitSaveDestinationAndRecoveryKeepTheirExistingPathPolicy",
+    ),
     "DockedChartHelpUnitTests": (
         "dockedChartHintsFollowActualWindowAndHelpReturnContext",
         "flightChartsKeepSeparatePlanetDataShortcutWithoutDockedScrollHints",

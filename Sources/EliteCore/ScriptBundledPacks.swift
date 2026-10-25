@@ -3,7 +3,7 @@ import Foundation
 extension ScriptPackLibrary {
   public static var userDirectory: URL {
     FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
-      ".xyzzy/elite/script-packs")
+      ".xyzzy/l337/script-packs")
   }
 
   static var bundledCourierDirectory: URL {
