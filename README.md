@@ -512,6 +512,8 @@ The original **SH041 Serval Fighter** uses its approved metre military hull, 18t
 
 The original **SH042 Saker** uses its approved metre military hull, 16t hold, 5t expansion, seven pylons, 14-LY tank and 10-LY drive. Its 12-unit equipment budget, one operating crew place and zero initial passenger cabins match Meridian E01. Technology-seven blueprint rules, existing uncommon placement and historical Falcon profiles remain intact.
 
+The original **SH044 Harpy Assault**, **SH046 Harpy Dropship** and **SH047 Harpy Gunship** use their distinct approved metre hulls with original military mechanics. Each has a 16t hold, seven pylons, 14-LY tank and 10-LY drive. Meridian E01 supplies a labelled 12-unit equipment budget and one operating crew place; historical Federal profiles retain their original estimates. Technology-eleven/ten/twelve blueprint rules and existing uncommon placement remain intact, with no free equipment or passenger cabins.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
