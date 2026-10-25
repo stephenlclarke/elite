@@ -1,0 +1,49 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "Tools/distribution",
+    "-p",
+    "test_*.py"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 3.941960415802896,
+  "framework_tests": 38,
+  "framework_seconds": 3.852,
+  "source_before": {
+    "Makefile": "2b5f94d0b5d88453363291b2c325faa85c945c0caba9ade984e76a7abb7b1de0",
+    "README.md": "a0c839169ed6abcc0c8d4869b2934b02f3316ab78bfe71c63271a33f534983bd",
+    "Tools/distribution/release_version.py": "8bc5a22b1efb7e83b6c0c0a8e01e0086ff64360b3bc78d4b8e51af41ec962601",
+    "Tools/distribution/release_macos.py": "35f8f5f3414e0769c958dfb8a3102ab9a7256302e4beb53b6266c485c6333a2d",
+    "Tools/distribution/package_macos.py": "be90a94398068e603e9792062105968977604e6cb31712912ca1fbd2a4bd1b79",
+    "Tools/distribution/homebrew_cask.py": "8b0e3e694cf28719956900b40f8b15007d2abaad22e06d5f608eb22cd3b490f7",
+    "Tools/distribution/test_release_version.py": "9676dc124b9e3182f97565cf5db8b8cdea2376b2f2dcd062922b8a27b93f8cfe",
+    "Tools/distribution/test_release_macos.py": "ba696e48fc8136c586c90796987c448cb87907c4c4b527a9d1f6fe91c167e8fa",
+    "Tools/distribution/test_homebrew_cask.py": "4ab9e1453072acb89321e0db2c3fc65d6d49dfbdad2975437cd9b0bfc69ba608",
+    "docs/MACOS-DISTRIBUTION.md": "ce0df8b77deeeea28a9192845681e16ff5d19d9c575c1f0a9fbd1414359d0b06",
+    "docs/HOMEBREW.md": "96861b80fcd175666b0fca1438730b41dae33ce21590108aa8370568ab03179b",
+    "docs/ISSUE-automated-release-version.md": "37716c7dd3f6c032a34672e3e8890b409279224a83191af7c5e40c967fd0d847",
+    "docs/PR-automated-release-version.md": "17d3bf6ada8b01043617049fa14f49739b9d830d3ef8dd36777217479dc4f3fe"
+  },
+  "source_after": {
+    "Makefile": "2b5f94d0b5d88453363291b2c325faa85c945c0caba9ade984e76a7abb7b1de0",
+    "README.md": "a0c839169ed6abcc0c8d4869b2934b02f3316ab78bfe71c63271a33f534983bd",
+    "Tools/distribution/release_version.py": "8bc5a22b1efb7e83b6c0c0a8e01e0086ff64360b3bc78d4b8e51af41ec962601",
+    "Tools/distribution/release_macos.py": "35f8f5f3414e0769c958dfb8a3102ab9a7256302e4beb53b6266c485c6333a2d",
+    "Tools/distribution/package_macos.py": "be90a94398068e603e9792062105968977604e6cb31712912ca1fbd2a4bd1b79",
+    "Tools/distribution/homebrew_cask.py": "8b0e3e694cf28719956900b40f8b15007d2abaad22e06d5f608eb22cd3b490f7",
+    "Tools/distribution/test_release_version.py": "9676dc124b9e3182f97565cf5db8b8cdea2376b2f2dcd062922b8a27b93f8cfe",
+    "Tools/distribution/test_release_macos.py": "ba696e48fc8136c586c90796987c448cb87907c4c4b527a9d1f6fe91c167e8fa",
+    "Tools/distribution/test_homebrew_cask.py": "4ab9e1453072acb89321e0db2c3fc65d6d49dfbdad2975437cd9b0bfc69ba608",
+    "docs/MACOS-DISTRIBUTION.md": "ce0df8b77deeeea28a9192845681e16ff5d19d9c575c1f0a9fbd1414359d0b06",
+    "docs/HOMEBREW.md": "96861b80fcd175666b0fca1438730b41dae33ce21590108aa8370568ab03179b",
+    "docs/ISSUE-automated-release-version.md": "37716c7dd3f6c032a34672e3e8890b409279224a83191af7c5e40c967fd0d847",
+    "docs/PR-automated-release-version.md": "17d3bf6ada8b01043617049fa14f49739b9d830d3ef8dd36777217479dc4f3fe"
+  },
+  "log": "/tmp/elite-release-automation-python.log",
+  "log_sha256": "40475e2c748463fcdf8903b7e76affcd01817d11eb8d7b6033c3e7335bfa6ac6",
+  "scope": "Python distribution units only; no Swift/native/signing/notary/publication commands. Earlier import-coupling/fixture failures corrected before this final frozen run."
+}

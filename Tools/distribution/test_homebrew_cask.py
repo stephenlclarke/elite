@@ -1,8 +1,15 @@
 """Guard the trust and version boundaries of Homebrew distribution metadata."""
 
 import copy
+import hashlib
+import io
+from pathlib import Path
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
+import homebrew_cask
+import release_version
 from homebrew_cask import existing_release, release_url, render_cask
 
 
@@ -55,6 +62,29 @@ class HomebrewCaskTests(unittest.TestCase):
             render_cask(self.manifest, "main")
         with self.assertRaises(ValueError):
             existing_release('version "latest"')
+
+    def test_new_cask_uses_the_same_public_generated_plan_and_verified_archive(self):
+        plan = release_version.make_plan("v1.4.0", "a" * 40, self.revision,
+                                         [{"impact": "minor"}], True)
+        archive = b"public archive fixture"
+        manifest = {**self.manifest, "appVersion": plan["version"],
+                    "archive": release_version.artifact_prefix(plan) + ".zip",
+                    "sourceRevision": self.revision, "releasePlanSha256": release_version.plan_digest(plan),
+                    "archiveBytes": len(archive), "sha256": hashlib.sha256(archive).hexdigest()}
+        options = SimpleNamespace(release_plan=Path("plan.json"), check=False, verify_download=False)
+        with patch.object(homebrew_cask, "load_plan", return_value=plan), \
+             patch.object(homebrew_cask, "public_json", side_effect=[plan, manifest]), \
+             patch.object(release_version, "validate_plan", return_value=plan), \
+             patch.object(homebrew_cask, "published_plan"), \
+             patch.object(homebrew_cask.urllib.request, "urlopen", return_value=io.BytesIO(archive)):
+            version, source, cask = homebrew_cask.planned_release(options, Path("unused"))
+        self.assertEqual((version, source), (plan["version"], self.revision))
+        self.assertIn('# Source commit: ' + self.revision, cask)
+        self.assertIn('version "1.5.0"', cask)
+        with patch.object(homebrew_cask, "load_plan", return_value=plan), \
+             patch.object(homebrew_cask, "public_json", return_value={**plan, "version": "9.0.0"}), \
+             self.assertRaisesRegex(ValueError, "differs"):
+            homebrew_cask.planned_release(options, Path("unused"))
 
 
 if __name__ == "__main__":

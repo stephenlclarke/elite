@@ -123,7 +123,11 @@ def verify_resources(app):
 
 def package(options):
     """Build, sign, optionally notarize, then verify the extracted deliverable."""
+    from release_version import artifact_prefix, load_plan, plan_digest
+
     revision = source_checkpoint()
+    plan = load_plan(options.release_plan, current=True, root=ROOT)
+    version = plan["version"]
     scratch = ROOT / ".build/distribution"
     build = [
         "swift",
@@ -139,15 +143,15 @@ def package(options):
     ]
     run(*build)
     binary_directory = Path(run(*build, "--show-bin-path", capture=True).stdout.strip())
-    output = ROOT / "releases/macos"
+    output = ROOT / "dist/macos"
     output.mkdir(parents=True, exist_ok=True)
-    name = f"Elite-{options.version}-universal"
+    name = artifact_prefix(plan)
     archive = output / (name + ".zip")
     with tempfile.TemporaryDirectory(
         prefix="elite-package-", dir=ROOT / ".build"
     ) as temporary:
         directory = Path(temporary)
-        app = create_bundle(directory, binary_directory, options.version, revision)
+        app = create_bundle(directory, binary_directory, version, revision)
         verify_resources(app)
         run(
             "codesign",
@@ -179,7 +183,7 @@ def package(options):
                 str(app),
                 str(submission),
             )
-            run(
+            accepted = run(
                 "xcrun",
                 "notarytool",
                 "submit",
@@ -187,7 +191,19 @@ def package(options):
                 "--keychain-profile",
                 options.notary_profile,
                 "--wait",
+                "--output-format", "json",
+                capture=True,
             )
+            submission_result = json.loads(accepted.stdout)
+            if submission_result.get("status") != "Accepted":
+                raise RuntimeError("Apple did not accept the notarization submission.")
+            report = run("xcrun", "notarytool", "log", submission_result["id"],
+                         "--keychain-profile", options.notary_profile,
+                         "--output-format", "json", capture=True)
+            apple_log = json.loads(report.stdout)
+            if apple_log.get("status") != "Accepted":
+                raise RuntimeError("Apple's notarization log did not confirm acceptance.")
+            (output / (name + "-notarization.json")).write_text(json.dumps(apple_log, indent=2) + "\n")
             run("xcrun", "stapler", "staple", str(app))
             notarized = True
         run(
@@ -252,8 +268,9 @@ def package(options):
         digest = hashlib.sha256(archive.read_bytes()).hexdigest()
         (output / (name + ".sha256")).write_text(digest + "  " + archive.name + "\n")
         manifest = {
-            "appVersion": options.version,
+            "appVersion": version,
             "sourceRevision": revision,
+            "releasePlanSha256": plan_digest(plan),
             "builtAtUTC": datetime.datetime.now(datetime.UTC).isoformat(),
             "minimumMacOS": "14.0",
             "verifiedMachOMinimums": minimums,
@@ -278,6 +295,7 @@ def package(options):
             "verification": "Extracted ZIP: strict deep signature, architectures, exact resources and diagnostics passed.",
         }
         (output / (name + ".json")).write_text(json.dumps(manifest, indent=2) + "\n")
+        (output / (name + "-release-plan.json")).write_text(json.dumps(plan, indent=2) + "\n")
         print(
             f"Signed package: {archive.relative_to(ROOT)} ({archive.stat().st_size:,} bytes)"
         )
@@ -288,7 +306,7 @@ def package(options):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", default="1.4.0")
+    parser.add_argument("--release-plan", type=Path, default=ROOT / "dist/release-plan.json")
     parser.add_argument(
         "--identity",
         default=os.environ.get(
@@ -300,11 +318,9 @@ def main():
         "--notary-profile", default=os.environ.get("ELITE_NOTARY_PROFILE")
     )
     options = parser.parse_args()
-    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", options.version):
-        parser.error("--version must have three numeric components")
     try:
         package(options)
-    except (RuntimeError, OSError) as error:
+    except (RuntimeError, OSError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"Packaging failed: {error}\n")
 
 

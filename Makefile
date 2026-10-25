@@ -1,8 +1,10 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
+RELEASE_PLAN ?= dist/release-plan.json
+.PHONY: release-plan publish-release release-readme release
 .PHONY: sanitizer-checkpoints-check native-runner-check instance-equality-check ci-capture-check help build run test unit-ci local-runner-check coverage coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check release-plan package-macos publish-release release-readme release homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -55,10 +57,19 @@ mission-packs-check:
 flight-controls-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 Tools/generate-flight-controls.py --repo-root . --check
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/tests -p 'test_flight_controls.py'
+release-plan:
+	python3 Tools/distribution/release_version.py --output "$(RELEASE_PLAN)"
 package-macos:
-	python3 Tools/distribution/package_macos.py
+	python3 Tools/distribution/package_macos.py --release-plan "$(RELEASE_PLAN)"
+publish-release:
+	python3 Tools/distribution/release_macos.py publish --release-plan "$(RELEASE_PLAN)"
+release-readme:
+	python3 Tools/distribution/release_macos.py readme --release-plan "$(RELEASE_PLAN)"
+release: release-plan
+	$(MAKE) package-macos
+	$(MAKE) publish-release
 homebrew-cask:
-	python3 Tools/distribution/homebrew_cask.py --version "$(ELITE_HOMEBREW_VERSION)" --asset-commit "$(ELITE_HOMEBREW_COMMIT)" $(if $(ELITE_HOMEBREW_TAP),--tap "$(ELITE_HOMEBREW_TAP)")
+	python3 Tools/distribution/homebrew_cask.py --release-plan "$(RELEASE_PLAN)" $(if $(ELITE_HOMEBREW_TAP),--tap "$(ELITE_HOMEBREW_TAP)")
 homebrew-cask-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/distribution -p 'test_*.py'
 	python3 Tools/distribution/homebrew_cask.py --check

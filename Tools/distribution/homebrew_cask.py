@@ -9,6 +9,8 @@ import subprocess
 import urllib.request
 from pathlib import Path
 
+from release_version import (artifact_prefix, load_plan, plan_digest, published_plan,
+                             validate_artifact)
 ROOT = Path(__file__).resolve().parents[2]
 REPOSITORY = "https://raw.githubusercontent.com/stephenlclarke/elite"
 RELEASES = "https://github.com/stephenlclarke/elite/releases/download"
@@ -47,14 +49,14 @@ def release_url(version):
     return f"{RELEASES}/v{version}/Elite-{version}-universal.zip"
 
 
-def render_cask(manifest, revision, release_assets=True):
-    """Render the maintained cask from the committed release manifest."""
+def render_cask(manifest, revision, release_assets=True, source_revision=False):
+    """Render the maintained cask from its verified release manifest."""
     validate_manifest(manifest)
     if not re.fullmatch(r"[a-f0-9]{40}", revision):
-        raise ValueError("Use the exact commit containing the published ZIP.")
+        raise ValueError("Use the exact protected-main source/artifact commit.")
     if release_assets:
         archive_url = f"{RELEASES}/v#{{version}}/Elite-#{{version}}-universal.zip"
-        provenance = f"  # Artifact commit: {revision}\n"
+        provenance = f"  # {'Source' if source_revision else 'Artifact'} commit: {revision}\n"
         livecheck = '    url :homepage\n    strategy :github_latest'
     else:
         archive_url = f"{REPOSITORY}/{revision}/releases/macos/Elite-#{{version}}-universal.zip"
@@ -83,7 +85,7 @@ end
 def existing_release(cask):
     """Recover the version and immutable asset commit for a check-only run."""
     version = re.search(r'^  version "([0-9.]+)"$', cask, re.MULTILINE)
-    revision = re.search(r"^  # Artifact commit: ([a-f0-9]{40})$", cask, re.MULTILINE)
+    revision = re.search(r"^  # (?:Artifact|Source) commit: ([a-f0-9]{40})$", cask, re.MULTILINE)
     if not revision:
         revision = re.search(re.escape(REPOSITORY) + r"/([a-f0-9]{40})/", cask)
     if not version or not revision:
@@ -91,16 +93,78 @@ def existing_release(cask):
     return version[1], revision[1]
 
 
+def public_json(version: str, suffix: str) -> dict:
+    url = f"{RELEASES}/v{version}/Elite-{version}-universal{suffix}"
+    with urllib.request.urlopen(url, timeout=60) as response:
+        data = response.read(2 * 1024 * 1024 + 1)
+    if len(data) > 2 * 1024 * 1024:
+        raise ValueError("Release metadata exceeds its bounded size")
+    return json.loads(data)
+
+
+def planned_release(options: argparse.Namespace, cask: Path) -> tuple[str, str, str]:
+    """New updates consume the generated public plan, never an independent version."""
+    if options.release_plan:
+        local = load_plan(options.release_plan)
+        version, revision = local["version"], local["sourceRevision"]
+    else:
+        version, revision = existing_release(cask.read_text())
+        local = None
+    plan = public_json(version, "-release-plan.json")
+    if local is not None and plan_digest(local) != plan_digest(plan):
+        raise ValueError("Public release plan differs from the generated plan")
+    # Validate a downloaded plan by the same source/history policy as packaging.
+    from release_version import validate_plan
+    validate_plan(plan)
+    published_plan(plan)
+    manifest = public_json(version, ".json")
+    validate_manifest(manifest)
+    validate_artifact(plan, manifest)
+    if plan["version"] != version or plan["sourceRevision"] != revision:
+        raise ValueError("Cask and public release identify different source")
+    if not options.check or options.verify_download:
+        size = manifest["archiveBytes"]
+        if type(size) is not int or not 0 < size < 95 * 1024 * 1024:
+            raise ValueError("Invalid public archive size")
+        with urllib.request.urlopen(release_url(version), timeout=60) as response:
+            archive = response.read(size + 1)
+        if len(archive) != size or hashlib.sha256(archive).hexdigest() != manifest["sha256"]:
+            raise ValueError("Public archive differs from the release plan and manifest")
+    return version, revision, render_cask(manifest, revision, source_revision=True)
+
+
 def main():
     """Check or synchronize the repo/tap copies after verifying their archive."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", help="Already published archive version")
-    parser.add_argument("--asset-commit", help="Exact commit containing its ZIP")
+    parser.add_argument("--version", help="Historical check only; updates require --release-plan")
+    parser.add_argument("--asset-commit", help="Historical check-only artifact commit")
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--verify-download", action="store_true")
     parser.add_argument("--tap", type=Path, help="Existing homebrew-tap checkout")
+    parser.add_argument("--release-plan", type=Path, help="Generated authoritative release plan")
     options = parser.parse_args()
     cask = ROOT / "Casks/elite.rb"
+    planned = options.release_plan or (options.check and "# Source commit:" in cask.read_text())
+    if not options.check and not planned:
+        parser.error("Cask updates require --release-plan; manual versions are not release inputs.")
+    if planned:
+        if options.version or options.asset_commit:
+            parser.error("Do not mix a generated release plan with manual version inputs.")
+        version, revision, expected = planned_release(options, cask)
+        paths = [cask]
+        if options.tap:
+            if not (options.tap / ".git").exists():
+                parser.error("--tap must name an existing Git checkout.")
+            paths.append(options.tap / "Casks/elite.rb")
+        for path in paths:
+            if options.check:
+                if not path.is_file() or path.read_text() != expected:
+                    raise ValueError(f"Cask is out of sync: {path}")
+            else:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(expected)
+        print(f"Elite {version} cask {'verified' if options.check else 'synchronized'} at {revision}.")
+        return
     version, revision = options.version, options.asset_commit
     if options.check and version is None and revision is None:
         version, revision = existing_release(cask.read_text())
