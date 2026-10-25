@@ -170,7 +170,11 @@ def run_phase(phase, cache):
         owned_directory(storage)
         reused = next(((attempt, result) for attempt in sorted(storage.iterdir())
                        if attempt.is_dir() and (result := successful_phase(attempt, identity))), None)
-        if reused:
+        from m01_normal_attestation import qualify
+        attested = qualify(root, head, identity, environment, cache, successful_phase) if phase == 'normal' else None
+        if attested:
+            attempt, result, attestation = attested
+        elif reused:
             attempt, result = reused
         else:
             attempt = storage / str(uuid.uuid4())
@@ -240,7 +244,10 @@ def run_phase(phase, cache):
                 or output(['git', 'rev-parse', 'HEAD'], root, environment, lock) != head
                 or output(['git', 'status', '--porcelain'], root, environment, lock)):
             raise ValueError('Checkout changed before phase qualification')
-        copy_report(attempt, report / 'completed')
+        if attested:
+            atomic_json(report / 'attestation.json', attestation)
+        else:
+            copy_report(attempt, report / 'completed')
         if phase == 'normal':
             for name in ('coverage.xml', 'coverage.lcov'):
                 shutil.copyfile(attempt / name, root / name)
@@ -249,12 +256,16 @@ def run_phase(phase, cache):
             shutil.copyfile(attempt / 'phase.log', root / 'reports/leaks.txt')
         atomic_json(report / 'summary.json', {'status': 'passed', 'current_head': head,
                     'tested_head': result['tested_head'], 'identity': identity, 'attempt': str(attempt),
-                    'reused': bool(reused), 'build_wall_seconds': build_wall,
-                    'executed_test_wall_seconds': 0 if reused else result['test_wall_seconds'],
-                    'reused_original_test_wall_seconds': result['test_wall_seconds'] if reused else 0,
+                    'reused': bool(reused) and not bool(attested), 'attested': bool(attested),
+                    'build_wall_seconds': build_wall,
+                    'executed_test_wall_seconds': 0 if reused or attested else result['test_wall_seconds'],
+                    'reused_original_test_wall_seconds': result['test_wall_seconds'] if reused or attested else 0,
                     'outputs': result['outputs'], 'validation': result['validation'],
-                    'qualification': 'This phase only; aggregate make ci requires every other gate.'})
-        print(phase + ': complete identity-bound phase ' + ('reused' if reused else 'executed'), flush=True)
+                    'qualification': ('M01 normal attested from prior execution; see attestation.json. '
+                                      if attested else '')
+                    + 'This phase only; aggregate make ci requires every other gate.'})
+        outcome = 'attested from prior execution' if attested else ('reused' if reused else 'executed')
+        print(phase + ': complete phase ' + outcome, flush=True)
 
 
 def digest_identity(identity):

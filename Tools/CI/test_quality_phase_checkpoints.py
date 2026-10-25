@@ -101,6 +101,75 @@ class QualityPhaseTests(unittest.TestCase):
         self.assertTrue((self.root / 'coverage.xml').exists())
         self.assertIn('0 leaks', (self.root / 'reports/leaks.txt').read_text())
 
+    def test_generated_root_profile_is_clean_but_maintained_source_is_rejected(self):
+        real_run = subprocess.run
+
+        def git(*arguments):
+            return real_run(['git', *arguments], cwd=self.root, check=True,
+                            capture_output=True, text=True).stdout.strip()
+
+        (self.root / '.gitignore').write_text(
+            (Path(__file__).resolve().parents[2] / '.gitignore').read_text()
+            + '\n/bin/\n/cache/\n')
+        source = self.root / 'Sources/fake.swift'
+        source.parent.mkdir()
+        source.write_text('// maintained source\n')
+        git('init', '-q')
+        git('add', '.gitignore', 'Sources/fake.swift')
+        git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
+            '-c', 'commit.gpgsign=false', 'commit', '-qm', 'test: create fixture')
+
+        def output(command, *arguments):
+            if command[0] == 'git':
+                return git(*command[1:])
+            return self.output(command, *arguments)
+
+        def native_with_profile(command, **options):
+            result = self.fake_run(command, **options)
+            if command[1] == 'test':
+                (self.root / 'default.profraw').write_bytes(b'generated LLVM profile')
+            return result
+
+        with self.context(), patch.object(runner, 'output', side_effect=output), \
+                patch.object(runner.subprocess, 'run', side_effect=native_with_profile):
+            runner.run_phase('normal', self.root / 'cache')
+            self.assertEqual(git('status', '--porcelain'), '')
+            for name in ('Sources/fake.swift', 'Sources/untracked.swift', 'Sources/default.profraw'):
+                with self.subTest(path=name):
+                    path = self.root / name
+                    original = path.read_bytes() if path.exists() else None
+                    path.write_bytes(b'changed maintained input')
+                    self.assertTrue(git('status', '--porcelain'))
+                    with self.assertRaisesRegex(ValueError, 'clean committed checkout'):
+                        runner.run_phase('normal', self.root / 'cache')
+                    if original is None:
+                        path.unlink()
+                    else:
+                        path.write_bytes(original)
+        self.assertEqual(sum(command[1] == 'test' for command in self.calls), 1)
+
+    def test_one_off_attestation_exports_coverage_without_copying_or_reexecuting_prior_pass(self):
+        with self.context():
+            runner.run_phase('normal', self.root / 'cache')
+            attempt = next((self.root / 'cache/phases').glob('*/*/result.json')).parent
+            result = json.loads((attempt / 'result.json').read_text())
+            original = (attempt / 'result.json').read_bytes()
+            self.head = 'b' * 40
+            attestation = {'status': 'attested-from-prior-execution', 'tested_head': result['tested_head'],
+                           'qualified_head': self.head, 'new_test_execution_seconds': 0}
+            with patch('m01_normal_attestation.qualify', return_value=(attempt, result, attestation)):
+                runner.run_phase('normal', self.root / 'cache')
+        report = next(path.parent for path in self.root.glob('reports/quality-phases/normal/*/attestation.json'))
+        summary = json.loads((report / 'summary.json').read_text())
+        self.assertTrue(summary['attested'])
+        self.assertFalse(summary['reused'])
+        self.assertEqual(summary['executed_test_wall_seconds'], 0)
+        self.assertEqual((summary['tested_head'], summary['current_head']), ('a' * 40, 'b' * 40))
+        self.assertFalse((report / 'completed').exists())
+        self.assertEqual((attempt / 'result.json').read_bytes(), original)
+        self.assertEqual(sum(command[1] == 'test' for command in self.calls), 1)
+        self.assertTrue((self.root / 'coverage.xml').is_file())
+
     def test_changed_image_environment_and_tampered_output_refuse_reuse(self):
         with self.context():
             runner.run_phase('normal', self.root / 'cache')

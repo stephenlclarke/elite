@@ -20,6 +20,7 @@ coverage coverage-check: sanitizer-checkpoints-check
 sanitizer-checkpoints-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_sanitizer_checkpoints.py'
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_quality_phase_checkpoints.py'
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_m01_normal_attestation.py'
 threads: sanitizer-checkpoints-check
 	python3 Tools/CI/sanitizer_checkpoints.py thread
 address: sanitizer-checkpoints-check

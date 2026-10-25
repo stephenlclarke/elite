@@ -9,3 +9,6 @@ reports/
 .vscode/
 
 __pycache__/
+
+# LLVM may emit this fallback profile while discovering coverage tests.
+/default.profraw
