@@ -201,7 +201,8 @@ struct OriginalEagleCruiserUnitTests {
     let ship = try #require(ShipCatalogue.ship("SH043"))
     let stock = try #require(NPCResources.stock(for: ship))
     let native = try #require(ShipCatalogue.nativeShip(.cobra))
-    let nativeStock = try #require(NPCResources.stock(try #require(native.game)))
+    let nativeGame = try #require(native.game)
+    let nativeStock = try #require(NPCResources.stock(nativeGame))
     let displayOnly = try #require(ShipCatalogue.all.first { $0.game == nil })
     var spent = stock
     spent.frontShield = 12
