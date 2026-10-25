@@ -522,6 +522,8 @@ The original **SH055 Condor** uses its approved metre pirate hull, 28t hold, 10t
 
 The original **SH057 Falconet** uses its approved metre military hull, 18t hold, 5t expansion, seven pylons, 12-LY tank and 8-LY drive. Meridian E01 supplies one operating crew place and one reserved place; historical Harris Fighter profiles retain 3/3. Its 12-unit equipment budget, technology-eight blueprint rule and existing uncommon placement remain, with no people or equipment issued. The retained SH056 Harrier adapter remains unchanged.
 
+The original **SH059 Barbary** uses its approved metre military hull, 22t hold, 10t expansion, seven pylons, 12-LY tank and 8-LY drive. Its live equipment budget follows the labelled 13-unit Meridian E01 estimate; historical Hawk Airfighter profiles retain 12. Technology-eight blueprint rules and existing uncommon placement remain, with no people or equipment issued.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
