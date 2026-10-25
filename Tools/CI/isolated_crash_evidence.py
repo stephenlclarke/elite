@@ -75,7 +75,7 @@ class IsolatedCrashEvidence:
                 lexer.whitespace_split = True
                 executable = Path(next(lexer, '')).name
                 if pid == root or executable in {
-                        'swiftpm-testing-helper', 'ElitePackageTests', 'dsymutil'}:
+                        'swiftpm-testing-helper', 'L337PackageTests', 'dsymutil'}:
                     kept.append(record)
             if kept:
                 self.history[pid] = kept

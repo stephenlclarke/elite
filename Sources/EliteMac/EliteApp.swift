@@ -782,7 +782,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     menu.addItem(app)
     app.submenu = NSMenu()
     app.submenu?.addItem(
-      withTitle: "Quit Elite", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+      withTitle: "Quit \(NewCommanderDefaults.title)",
+      action: #selector(NSApplication.terminate(_:)),
+      keyEquivalent: "q")
     let commander = NSMenuItem()
     commander.title = "Commander"
     menu.addItem(commander)
@@ -1010,7 +1012,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
 }
 
 @main
-struct EliteApp {
+struct L337App {
   @MainActor static func main() async throws {
     if let index = CommandLine.arguments.firstIndex(of: "--validate-commander-save") {
       do {

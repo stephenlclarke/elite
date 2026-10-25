@@ -222,7 +222,7 @@ public struct OriginalMarketCatalogue: Sendable {
   private static func resourceDirectory() throws -> URL {
     let resources =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     guard let root = resources.resourceURL else {
       throw OriginalMarketCatalogueError.missingResource("OriginalMarkets")

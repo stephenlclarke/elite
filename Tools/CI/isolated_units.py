@@ -39,6 +39,15 @@ METHODS = {
         "storageAndSeparateWorkToolsChargeExactlyWithoutRefillingOrReplacingCombatWeapons",
         "stockShieldPurchasesAreMonotonicAndPreserveBothCurrentFractions",
     ),
+    "DockedChartHelpUnitTests": (
+        "dockedChartHintsFollowActualWindowAndHelpReturnContext",
+        "flightChartsKeepSeparatePlanetDataShortcutWithoutDockedScrollHints",
+    ),
+    "ShowroomProfileGuideUnitTests": (
+        "carriedFitHelpDoesNotAdvertiseDisabledProfileButtons",
+        "sourceProfileHelpRetainsRealCyclingControlsAndCompactPaging",
+        "noFilteredProfileDoesNotInventCyclingInEitherValueMode",
+    ),
     "NativeTrainingReservationCodecUnitTests": (
         "reservationAndTrainingArchivesRetainClosedNamespacesAndValueSemantics",
     ),
