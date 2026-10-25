@@ -1,5 +1,6 @@
 """Fake-process phase recovery: never launch native code from these unit cases."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -73,6 +74,8 @@ class QualityPhaseTests(unittest.TestCase):
     def context(self):
         from contextlib import ExitStack
         stack = ExitStack()
+        # Fake phases must not consume the physical runner's one-off authorization.
+        stack.enter_context(patch.dict(os.environ, {'ELITE_NATIVE_POLICY': ''}))
         stack.enter_context(patch.object(runner, 'ROOT', self.root))
         stack.enter_context(patch.object(runner, 'output', side_effect=self.output))
         stack.enter_context(patch.object(runner, 'executable_inputs', return_value={'Sources/fake.swift': 'fixed'}))
