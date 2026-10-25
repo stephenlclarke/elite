@@ -51,7 +51,9 @@ public struct CatalogueShip: Codable, Sendable, Equatable, Identifiable {
   }
   public var previewMesh: Mesh? { ShipCatalogue.meshes[id] }
   public var availability: String {
-    game == nil ? "Display object; not a flyable ship" : "Available for exchange at a main station"
+    guard game != nil else { return "Display object; not a flyable ship" }
+    return catalogue.purchasePolicy == .never
+      ? "Not for sale" : "Available for exchange at a main station"
   }
 }
 public struct ShipDesign: Codable, Sendable, Equatable {

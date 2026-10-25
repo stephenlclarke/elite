@@ -88,10 +88,10 @@ extension Game {
     }
     var npc = request.npc
     if npc != nil, npc?.resources == nil, request.priority != .mission,
-      let performance = request.catalogueShipID.flatMap({ ShipCatalogue.ship($0)?.game })
-        ?? ShipCatalogue.nativeShip(request.hull)?.game
+      let ship = request.catalogueShipID.flatMap({ ShipCatalogue.ship($0) })
+        .flatMap({ $0.game == nil ? nil : $0 }) ?? ShipCatalogue.nativeShip(request.hull)
     {
-      npc?.resources = NPCResources.stock(performance)
+      npc?.resources = NPCResources.stock(for: ship)
     }
     if let resources = npc?.resources {
       body.energy = request.energy ?? resources.energyCapacity
