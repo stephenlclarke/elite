@@ -1,0 +1,69 @@
+---
+name: Recoverable quality contracts (HELD)
+
+# Physical activation needs a separate reviewed change.
+'on':
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recoverable-quality-fakes-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fake-contracts:
+    name: Fake ${{ matrix.suite }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        suite:
+          - PlanningTests
+          - CheckpointTests
+          - AdmissionTests
+          - PhaseTests
+          - ProcessTests
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      # checkout v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Exercise fake-only contracts
+        working-directory: Tools/CI
+        env:
+          SUITE: ${{ matrix.suite }}
+        run: |
+          umask 077
+          python3 -m unittest -v "test_recoverable_shards.$SUITE" \
+            > fake-contract.log 2>&1
+      - name: Retain this independent contract result
+        if: always()
+        # upload-artifact v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: fake-recoverable-${{ matrix.suite }}-${{ github.sha }}
+          path: Tools/CI/fake-contract.log
+          if-no-files-found: error
+          retention-days: 14
+
+  fake-aggregate:
+    name: Fake contracts aggregate (physical execution HELD)
+    needs: fake-contracts
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every fake contract result
+        env:
+          CONTRACT_RESULT: ${{ needs.fake-contracts.result }}
+        run: |
+          test "$CONTRACT_RESULT" = success
+          echo 'Fake contract validation only.' \
+            'Physical quality and release gates remain HELD.' \
+            >> "$GITHUB_STEP_SUMMARY"
