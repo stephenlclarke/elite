@@ -10,7 +10,9 @@ import sys
 import tempfile
 import threading
 import time
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 import recoverable_shards as shards
@@ -53,19 +55,25 @@ class FakeExecutor:
     def owner_identity(self):
         return {"pid": os.getpid(), "start": "fake-process-start", "image": "fake-python"}
 
+    def phase_origin(self, attempt, identity):
+        return dict(schema=1, host=self.current["host"], phase=identity["phase"], tested_head=HEAD,
+                    receipt_sha256=shards.legacy.digest(attempt / "result.json"), exit_code=0)
+
     def execute(self, shard, attempt, timeout, descriptors):
         self.calls += 1
+        shards.child_environment(attempt, {"LANG": "C"})
+        shards.durable_json(attempt / "child.json", {"pid": 4242, "command": ["fake"], "started": 1})
         for descriptor in descriptors:
             os.fstat(descriptor)
         xml(attempt / "tests.xml", shard["methods"],
             shards.legacy.selected_opt_in_skips(self.current, shard["methods"]))
         (attempt / "test.log").write_text("fake completed\n")
-        (attempt / "profiles").mkdir(mode=0o700)
         (attempt / "profiles" / "fake.profraw").write_bytes(b"fake profile")
         if self.damage:
             self.damage(attempt)
         if self.pause:
             self.pause()
+        shards.durable_json(attempt / "child-exit.json", {"pid": 4242, "exit_code": self.exit_code})
         return self.exit_code
 
 
@@ -81,7 +89,8 @@ class Fixture(unittest.TestCase):
             sdk=shards.fingerprint({"version": "fake-sdk", "path": "/fake/sdk"}), host="fake-host-A",
             os=shards.fingerprint({"release": "fake-os", "version": "fake-version"}),
             architecture="fake-arm64", image_sha256=shards.legacy.digest(self.image),
-            image_uuid="fake-image-uuid", environment={"LANG": "2" * 64},
+            image_uuid="fake-image-uuid", environment=shards.legacy.runtime_identity({"LANG": "C"}),
+            phase_environment=shards.legacy.runtime_identity({"LANG": "C"}),
             flags=["--sanitize=" + mode], policy=shards.POLICY, opt_in_policy={})
             for mode in shards.MODES}
         self.store = shards.Store(self.root / "durable-cache")
@@ -338,6 +347,34 @@ class CheckpointTests(Fixture):
 
 
 class AdmissionTests(Fixture):
+    def test_unequal_mode_peaks_and_reserve_disk_host_policy_changes_are_rejected(self):
+        budget = {**ADMISSION, "ram_available": 16, "ram_reserve": 4, "peak_per_worker": 10}
+        plan = self.audited("thread", claim=None)
+        other = self.audited("address", claim=None)
+        entered, release = threading.Event(), threading.Event()
+        self.executor.pause = lambda: (entered.set(), release.wait(3))
+        second = FakeExecutor(self.root / "worker-2", self.runtimes)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(shards.run_shard, plan, plan["shards"][0]["id"], self.store,
+                                 self.executor, HEAD, 5, budget)
+            self.assertTrue(entered.wait(2))
+            try:
+                for difference in ({"peak_per_worker": 6}, {"ram_reserve": 2},
+                                   {"disk_reserve": 10}, {"disk_per_worker": 10}, {"cpu_budget": 1}):
+                    with self.assertRaisesRegex(ValueError, "policy changed"):
+                        shards.run_shard(other, other["shards"][0]["id"], self.store, second,
+                                         HEAD, 5, {**budget, **difference})
+            finally:
+                release.set()
+            future.result()
+        self.assertEqual(second.calls, 0)
+        changed = deepcopy(other)
+        changed["runtime"]["host"] = "host-B"
+        second.runtimes = {**self.runtimes, "address": changed["runtime"]}
+        changed = shards.make_plan(changed["runtime"], METHODS)
+        with self.assertRaisesRegex(ValueError, "policy changed"):
+            shards.run_shard(changed, changed["shards"][0]["id"], self.store, second, HEAD, 5, budget)
+
     def audited(self, mode, methods=METHODS, claim="shared-save"):
         resources = {shards.fingerprint(unit): {"sources": self.runtimes[mode]["inputs"],
                                                "claims": [claim] if claim else [], "reviewed": True}
@@ -459,7 +496,7 @@ class PhaseTests(Fixture):
     def test_phase_cross_host_source_env_policy_inventory_and_coverage_tamper_are_rejected(self):
         normal, checksum = self.full_phase("normal")
         for key, value in (("host", "other-host"), ("inputs", {"Sources/Game.swift": "f" * 64}),
-                           ("environment", {}), ("toolchain", "other-swift")):
+                           ("phase_environment", {}), ("toolchain", "other-swift")):
             with self.assertRaises(ValueError):
                 shards.validate_phase(normal, checksum, "normal",
                                       {**self.runtimes["thread"], key: value}, METHODS)
@@ -471,6 +508,40 @@ class PhaseTests(Fixture):
 
 
 class ProcessTests(Fixture):
+    def test_child_temp_leftovers_qualify_and_unexpected_proof_or_environment_still_fails(self):
+        class PythonExecutor(FakeExecutor):
+            def execute(inner, shard, attempt, timeout, descriptors):
+                inner.calls += 1
+                report = attempt / "tests.xml"
+                script = ("import os,pathlib; "
+                          "pathlib.Path(os.environ['TMPDIR'],'leftover').write_text('temp'); "
+                          + "pathlib.Path(" + repr(str(report)) + ").write_text(" + repr(
+                              '<testsuites><testcase classname="EliteCoreTests.A" name="one()" time="1"/>'
+                              '</testsuites>') + ")")
+                return shards.execute_process([sys.executable, "-c", script], self.root, attempt,
+                                               timeout, descriptors, {"LANG": "C"})
+        plan = shards.make_plan(self.runtimes["thread"], METHODS[:1])
+        executor = PythonExecutor(self.root / "python-worker", self.runtimes)
+        outcome = self.run_one(plan, executor)
+        attempt = Path(outcome["attempt"])
+        self.assertFalse((attempt / "tmp").exists())
+        record = shards.load_json(attempt / "environment.json")
+        self.assertNotEqual(record["base"]["TMPDIR"], record["actual"]["TMPDIR"])
+        self.assertFalse(Path(record["bindings"]["TMPDIR"]["path"]).exists())
+        attempt.chmod(0o700)
+        (attempt / "unexpected").write_text("must reject")
+        with self.assertRaises(ValueError):
+            shards.evidence_outputs(attempt, plan["runtime"], plan["inventory"])
+        (attempt / "unexpected").unlink()
+        for change in (lambda value: value["actual"].update(LANG="f" * 64),
+                       lambda value: value["bindings"]["TMPDIR"].update(kind="ignored"),
+                       lambda value: value["base"].update(PATH="f" * 64)):
+            damaged = deepcopy(record)
+            change(damaged)
+            self.change(attempt / "environment.json", json.dumps(damaged))
+            with self.assertRaises(ValueError):
+                shards.evidence_outputs(attempt, plan["runtime"], plan["inventory"])
+
     def test_hard_killed_python_controller_recovers_only_durable_success(self):
         script = """
 import json, os, pathlib, sys
@@ -527,11 +598,263 @@ shards.run_shard(plan, plan['shards'][0]['id'], shards.Store(cache), executor,
             pass
 
     def test_physical_cli_fails_before_any_execution(self):
-        for command in ("prepare", "worker"):
+        for command in ("prepare", "worker", "pool", "export", "restore", "phase", "aggregate"):
             result = subprocess.run([sys.executable, str(Path(shards.__file__)), command],
                                     text=True, capture_output=True)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("HELD", result.stderr)
+
+
+class NativeAdapterTests(Fixture):
+    def authority(self):
+        controller = self.root / "controller"
+        controller.mkdir(mode=0o700)
+        policy = self.root / "host-policy.json"
+        host = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+        config = dict(schema=1, host=host, cache=str(self.store.root), legacy_cache=str(self.root / "legacy"),
+                      workers={"one": str(self.root / "native-worker-one"),
+                               "two": str(self.root / "native-worker-two")},
+                      admission={key: value for key, value in ADMISSION.items()
+                                 if key not in ("ram_available", "disk_available")})
+        shards.durable_json(policy, {"approved_head": HEAD, "recoverable_shards": config})
+        calls = []
+        def read(command, workspace, environment, descriptors):
+            calls.append((command, workspace, environment))
+            if command[:3] == ["git", "rev-parse", "HEAD"]:
+                return HEAD
+            if command[:2] == ["git", "clone"]:
+                Path(command[-1]).mkdir(mode=0o700)
+            if command[0] == "ioreg":
+                return '"IOPlatformUUID" = "' + host + '"'
+            if command == ["sysctl", "-n", "hw.logicalcpu"]:
+                return "2"
+            if command == ["vm_stat"]:
+                return ("Mach Virtual Memory Statistics: (page size of 4096 bytes)\n"
+                        "Pages free: 100.\nPages inactive: 100.\nPages speculative: 100.\n")
+            if command[0] == "fake-swift":
+                return "fake Swift 6"
+            if command == ["xcrun", "--show-sdk-version"]:
+                return "fake-sdk"
+            if command == ["xcrun", "--show-sdk-path"]:
+                return "/fake/sdk"
+            return ""
+        with patch.object(shards, "PHYSICAL_EXECUTION_ENABLED", True), patch.object(
+                shards.native_runner, "validate", return_value=controller) as validate:
+            authority = shards.NativeAuthority(policy, {"LANG": "C"}, read)
+            validate.assert_called_once()
+        authority.calls = calls
+        return authority
+
+    def prepared(self):
+        authority = self.authority()
+        calls = []
+        def build(root, swift, flags, environment, lock, report):
+            mode = flags[-1].split("=")[1]
+            calls.append(mode)
+            image = root / flags[1] / "fake.xctest/Contents/MacOS/EliteCoreTests"
+            image.parent.mkdir(parents=True, mode=0o700)
+            image.write_bytes(self.image.read_bytes())
+            return image, METHODS, 0.001
+        def runtime(workspace, mode, image, flags):
+            return {**self.runtimes[mode], "flags": flags, "image_sha256": shards.legacy.digest(image)}
+        patches = [patch.object(shards.legacy, "ensure_no_live_tests"),
+                   patch.object(shards.shutil, "which", return_value="/fake/swift"),
+                   patch.object(shards.legacy, "executable_inputs", return_value=self.runtimes["thread"]["inputs"]),
+                   patch.object(shards.legacy, "build_and_discover", side_effect=build),
+                   patch.object(shards.legacy, "grouping_policy", return_value={"shared_groups": [METHODS[:2]]}),
+                   patch.object(authority, "runtime", side_effect=runtime),
+                   patch.object(authority, "admission", return_value=ADMISSION)]
+        for item in patches:
+            item.start()
+            self.addCleanup(item.stop)
+        builder = shards.NativeBuilder(authority)
+        builds = {mode: builder.prepare(mode, self.root / ("frozen-" + mode)) for mode in shards.MODES}
+        return authority, builder, builds, calls
+
+    def test_preprobe_authorization_holds_before_policy_io_or_native_commands(self):
+        with patch.object(shards.native_runner, "validate") as validate, patch.object(
+                shards, "native_output") as read:
+            with self.assertRaisesRegex(ValueError, "HELD"):
+                shards.NativeAuthority(self.root / "does-not-exist", read=read)
+            read.assert_not_called()
+            validate.assert_not_called()
+
+    def test_actual_runtime_uses_mocked_compiler_sdk_host_inputs_image_and_mode_environment(self):
+        authority = self.authority()
+        with patch.object(shards.shutil, "which", return_value="fake-swift"), patch.object(
+                shards, "image_uuids", return_value={"uuids": {"arm64": "fake-uuid"}}), patch.object(
+                shards.legacy, "executable_inputs", return_value=self.runtimes["thread"]["inputs"]), patch.object(
+                shards.legacy, "opt_in_policy", return_value={}), patch.object(
+                shards.os, "uname", return_value=SimpleNamespace(release="fake-os", version="fake-version")), patch.object(
+                shards.platform, "machine", return_value="fake-arm64"):
+            runtime = authority.runtime(authority.root, "address", self.image,
+                                        ["--scratch-path", ".build/asan", "--sanitize=address"])
+        self.assertEqual(runtime["environment"]["ASAN_OPTIONS"],
+                         shards.legacy.runtime_identity({"ASAN_OPTIONS": "detect_leaks=0"})["ASAN_OPTIONS"])
+        self.assertIsNone(runtime["phase_environment"]["ASAN_OPTIONS"])
+        self.assertEqual(runtime["image_sha256"], shards.legacy.digest(self.image))
+        self.assertEqual(runtime["host"], authority.config["host"])
+        shards.validate_runtime(runtime)
+        with patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=100)):
+            self.assertEqual(authority.admission()["explicit"], 2)
+
+    def test_native_preparation_reuses_one_build_per_mode_and_private_scratch_and_commands(self):
+        authority, builder, builds, calls = self.prepared()
+        builder.prepare("thread", self.root / "frozen-thread")
+        self.assertEqual(calls, ["thread", "address"])
+        clones = [command for command, _, _ in authority.calls if command[:2] == ["git", "clone"]]
+        self.assertEqual(len(clones), 4)  # Two frozen modes in two private workers, once each.
+        one, two = shards.NativeExecutor(authority, "one"), shards.NativeExecutor(authority, "two")
+        for mode in shards.MODES:
+            runtime = builds[mode]["runtime"]
+            one.verify(runtime)
+            two.verify(runtime)
+            self.assertNotEqual(one.active_workspace, two.active_workspace)
+            plan = shards.make_plan(runtime, METHODS)
+            attempt = self.root / ("native-execution-" + mode)
+            attempt.mkdir(mode=0o700)
+            with patch.object(shards, "execute_process", return_value=0) as execute, patch.object(
+                    one, "unknown_live_helpers", return_value=False):
+                one.execute(plan["shards"][0], attempt, 5, [])
+            command, workspace = execute.call_args.args[:2]
+            self.assertEqual(workspace, one.active_workspace)
+            self.assertIn("--skip-build", command)
+            self.assertEqual("--no-parallel" in command, mode == "address")
+            self.assertEqual(command[command.index("--scratch-path") + 1], runtime["flags"][1])
+        image = one.active_workspace / Path(builds["address"]["image"]).relative_to(authority.root)
+        image.write_bytes(b"tampered image")
+        with self.assertRaises(ValueError):
+            one.verify(builds["address"]["runtime"])
+
+    def test_copy_refuses_external_build_links_and_executor_refuses_controller_source_drift(self):
+        authority, _, builds, _ = self.prepared()
+        source = self.root / "unsafe-build"
+        source.mkdir(mode=0o700)
+        (source / "external").symlink_to(self.image)
+        with self.assertRaises(ValueError):
+            shards.copy_build_tree(source, self.root / "unsafe-copy")
+        executor = shards.NativeExecutor(authority, "one")
+        with patch.object(shards.legacy, "executable_inputs", return_value={"Sources/Game.swift": "f" * 64}):
+            with self.assertRaises(ValueError):
+                executor.verify(builds["thread"]["runtime"])
+
+    def test_descendant_tracking_includes_separate_groups_and_cleanup_never_owns_reused_pid(self):
+        authority = self.authority()
+        root = dict(parent=1, group=10, state="S", start="fake-start", command="owned swift")
+        helper = dict(parent=10, group=20, state="S", start="helper-start", command="swiftpm-testing-helper")
+        rows = {10: root, 20: helper}
+        authority.snapshot = lambda: dict(rows)
+        attempt = self.root / "monitor"
+        attempt.mkdir(mode=0o700)
+        monitor = shards.NativeMonitor(authority, attempt, self.root / "worker")
+        monitor.known[10] = root
+        self.assertEqual(set(monitor.observe()), {10, 20})
+        rows[10] = {**root, "start": "reused-pid", "command": "unrelated"}
+        cleaned = []
+        def cleanup(identity, snapshot):
+            self.assertTrue(shards.same_process(identity, snapshot()[identity["pid"]]))
+            cleaned.append(identity["pid"])
+            rows.pop(identity["pid"])
+        with patch.object(shards, "cleanup_owned_identity", side_effect=cleanup):
+            self.assertFalse(monitor.finish(True))
+        self.assertEqual(cleaned, [20])
+        self.assertIn(10, rows)
+
+    def test_cli_worker_uses_trusted_plan_and_actual_executor_contract(self):
+        authority, _, builds, _ = self.prepared()
+        plan = shards.make_plan(builds["thread"]["runtime"], METHODS)
+        path = self.root / "native-plan.json"
+        shards.durable_json(path, plan)
+        args = ["recoverable_shards.py", "worker", "--input", str(path), "--digest", shards.legacy.digest(path),
+                "--policy", str(self.root / "host-policy.json"), "--worker", "one", "--shard", plan["shards"][0]["id"]]
+        with patch.object(shards, "PHYSICAL_EXECUTION_ENABLED", True), patch.object(
+                shards, "NativeAuthority", return_value=authority), patch.object(
+                shards, "run_shard", return_value={"fake-command-contract": "passed"}) as run, patch.object(
+                shards.legacy, "progress"), patch.object(sys, "argv", args):
+            shards.main()
+            self.assertIsInstance(run.call_args.args[3], shards.NativeExecutor)
+        with self.assertRaises(ValueError):
+            shards.trusted_json(path, "0" * 64)
+
+    def test_cli_export_restore_and_pool_resume_transport_per_shard_without_execution(self):
+        authority, _, builds, _ = self.prepared()
+        plan = shards.make_plan(builds["thread"]["runtime"], METHODS)
+        executor = FakeExecutor(self.root / "transport-worker", {"thread": plan["runtime"]})
+        self.run_one(plan, executor)
+        plan_path, artifact = self.root / "transport-plan.json", self.root / "transport-artifact"
+        shards.durable_json(plan_path, plan)
+        common = ["--input", str(plan_path), "--digest", shards.legacy.digest(plan_path),
+                  "--policy", str(self.root / "host-policy.json"), "--shard", plan["shards"][0]["id"]]
+        def invoke(arguments):
+            with patch.object(shards, "PHYSICAL_EXECUTION_ENABLED", True), patch.object(
+                    shards, "NativeAuthority", return_value=authority), patch.object(
+                    shards.legacy, "progress") as output, patch.object(sys, "argv", ["shards.py", *arguments]):
+                shards.main()
+                return json.loads(output.call_args.args[0])
+        exported = invoke(["export", *common, "--output", str(artifact)])
+        authority.cache = self.root / "restored-cli-cache"
+        restored = invoke(["restore", *common, "--artifact", str(artifact),
+                           "--artifact-digest", exported["index_sha256"]])
+        self.assertTrue(Path(restored["restored"]).is_dir())
+        matrix = self.root / "pool-manifest.json"
+        shards.durable_json(matrix, {"plans": [{"path": str(plan_path), "sha256": shards.legacy.digest(plan_path)}]})
+        with patch.object(shards, "NativeExecutor", return_value=executor):
+            # Admit one fake worker to avoid aliasing the same fake workspace into two workers.
+            with patch.object(authority, "admission", return_value={**ADMISSION, "explicit": 1}):
+                outcome = invoke(["pool", "--input", str(matrix), "--digest", shards.legacy.digest(matrix),
+                                  "--policy", str(self.root / "host-policy.json")])
+        self.assertTrue(outcome[0]["reused"])
+        self.assertEqual(executor.calls, 1)
+
+    def test_disconnected_or_unregistered_helpers_block_even_with_a_saved_owned_ledger(self):
+        authority = self.authority()
+        executor = shards.NativeExecutor(authority, "one")
+        attempt = authority.cache / "attempts" / ("a" * 64) / "fake-attempt"
+        attempt.mkdir(parents=True, mode=0o700)
+        controller = dict(pid=10, parent=1, group=10, state="S", start="controller", command="owned python")
+        child = dict(pid=20, parent=10, group=20, state="S", start="swift", command="owned swift test")
+        helper = dict(parent=20, group=30, state="S", start="helper", command="swiftpm-testing-helper")
+        rows = {10: controller, 20: child, 30: helper}
+        authority.snapshot = lambda: dict(rows)
+        record = dict(schema=1, workspace=str(executor.workspace / "thread"), controller=controller,
+                      root=child, running=True, processes={"20": child, "30": helper})
+        shards.durable_json(attempt / "processes.json", record)
+        shards.durable_json(attempt / "start.json", {"owner": controller})
+        self.assertFalse(executor.unknown_live_helpers())
+        self.assertFalse(executor.proven_exited(attempt))
+        rows.pop(10)
+        self.assertTrue(executor.unknown_live_helpers())
+        rows[10] = controller
+        rows.pop(20)
+        self.assertTrue(executor.unknown_live_helpers())
+        rows.pop(30)
+        self.assertFalse(executor.proven_exited(attempt))  # Controller still live, no terminal proof.
+        rows.pop(10)
+        self.assertTrue(executor.proven_exited(attempt))
+
+    def test_fresh_full_phase_executes_legacy_helper_and_records_preexecution_host_origin(self):
+        authority, _, builds, _ = self.prepared()
+        PhaseTests.full_phase(self, "normal")
+        executor = shards.NativeExecutor(authority, "one")
+        plan = shards.make_plan(builds["thread"]["runtime"], METHODS)
+        def execute(command, workspace, attempt, timeout, descriptors, environment, monitor,
+                    isolate_environment):
+            self.assertFalse(isolate_environment)
+            self.assertTrue((attempt / "launch.json").exists())
+            self.assertEqual(command[2], "normal")
+            fresh = Path(command[-1]) / "phases/fake/attempt"
+            fresh.parent.mkdir(parents=True, mode=0o700)
+            import shutil
+            shutil.copytree(self.root / "normal", fresh)
+            return 0
+        with patch.object(shards, "execute_process", side_effect=execute), patch.object(
+                executor, "unknown_live_helpers", return_value=False), patch.object(
+                authority, "host", return_value=self.runtimes["thread"]["host"]):
+            checksum = shards.NativePhaseRunner(authority, executor).run(
+                "normal", plan, self.root / "fresh-normal-proof", 5)
+        shards.validate_phase(self.root / "fresh-normal-proof", checksum, "normal", plan["runtime"], METHODS)
+        with self.assertRaises(ValueError):
+            shards.NativePhaseRunner(authority, executor).phase_origin(self.root / "normal", {})
 
 
 if __name__ == "__main__":

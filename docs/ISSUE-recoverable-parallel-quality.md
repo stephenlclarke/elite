@@ -17,7 +17,7 @@ The reviewed planning sample contained 3,403 methods in 36 groups. Twelve comple
 
 ## Scope and current hold
 
-This packet adds a protocol implementation and fake-only acceptance tests in five new reserved files. Existing helpers, runner authorization, CI jobs, Makefile, host variables, branch protection and the active M01 run remain unchanged. Physical preparation and worker commands fail before native work. The draft targets `release/m01` and must remain unmerged until the current G1 run is terminal and an independent activation review is complete.
+This packet adds the protocol, native builder/executor/command adapters and fake-only acceptance tests in five new reserved files. Existing helpers, runner authorization, CI jobs, Makefile, host variables, branch protection and the active M01 run remain unchanged. Every native command fails before file inspection or probes while the activation guard is disabled. The draft targets `release/m01` and must remain unmerged until the current G1 run is terminal and an independent activation review is complete.
 
 The existing host policy authorizes one exact checkout and workflow. A GitHub matrix alone cannot create additional authorized physical workers. Source validation does not establish resource independence, native descendant ownership, host capacity or sanitizer equivalence. Those remain activation prerequisites, detailed in [the PR handoff](PR-recoverable-parallel-quality.md).
 

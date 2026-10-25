@@ -27,6 +27,7 @@ jobs:
           - AdmissionTests
           - PhaseTests
           - ProcessTests
+          - NativeAdapterTests
     env:
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
