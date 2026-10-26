@@ -528,6 +528,8 @@ The original **SH062 Moose Clipper** uses its approved metre transporter hull, 3
 
 The original **SH064 Arna Cutter** uses its approved metre transporter hull, 396t hold, 160t expansion, six pylons, 13-LY tank and 8-LY drive. Live Meridian E01 estimates use 88 equipment units, five operating crew and five intrinsic crew places; historical Imperial Cutter fields retain 40/1/1. Technology-thirteen blueprint rules, common placement across all eight galaxies and existing large-combat salvage eligibility remain. No people, cabins or equipment are issued.
 
+The original **SH065 Vulture Raider** uses its approved metre pirate hull, 14t hold, 5t expansion, four pylons, 11-LY tank and 8-LY drive. Its live Meridian E01 equipment budget is eleven units; historical Imperial Eagle fields retain eight. Crew and intrinsic places remain one each, with no initial passenger cabins or equipment grants. Technology-eight blueprint rules, common placement across all eight galaxies and its existing pirate preference of eight remain.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
