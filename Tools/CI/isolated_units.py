@@ -16,6 +16,13 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "OriginalBadgerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMinerMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "minerPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalVultureRaiderUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalPirateMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",

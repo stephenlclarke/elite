@@ -530,6 +530,8 @@ The original **SH064 Arna Cutter** uses its approved metre transporter hull, 396
 
 The original **SH065 Vulture Raider** uses its approved metre pirate hull, 14t hold, 5t expansion, four pylons, 11-LY tank and 8-LY drive. Its live Meridian E01 equipment budget is eleven units; historical Imperial Eagle fields retain eight. Crew and intrinsic places remain one each, with no initial passenger cabins or equipment grants. Technology-eight blueprint rules, common placement across all eight galaxies and its existing pirate preference of eight remain.
 
+The original **SH068 Badger** uses its approved metre miner hull, 108t hold, 45t expansion, five pylons, 12-LY tank and 8-LY drive. Live Meridian E01 estimates use 30 equipment units, two operating crew and two intrinsic crew places; historical Keelback fields retain 16/1/1. Technology-seven blueprint rules, common placement across all eight galaxies and mining-band regions remain. The hull grants no mining work tool, people, cabins or equipment.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
