@@ -325,6 +325,14 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH079"))
   }
 
+  static let carabaoHighliner: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH080") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH080"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -664,6 +672,16 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH080":
+      guard definition.name == "Carabao Highliner",
+        definition.sourceSHA256
+          == "c10e2aeffd4ba7315a5e11aff81662dfaf4a36dc976fb3a2e44a670f5f460ce3",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH080-design.toml",
+        model.sourceSHA256 == "e853662580668e4a89c37f46ffd6a49c69aee98b3f324dd0bc77acce960ea009"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -767,6 +785,7 @@ extension CatalogueShip {
     case "SH077": result = OriginalHullPhysicalContract.tamaraw
     case "SH078": result = OriginalHullPhysicalContract.oryxVoyager
     case "SH079": result = OriginalHullPhysicalContract.carabaoCarrier
+    case "SH080": result = OriginalHullPhysicalContract.carabaoHighliner
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil

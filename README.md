@@ -546,6 +546,8 @@ The original **SH078 Oryx Voyager** uses its approved metre leisure hull, 32t ho
 
 The original **SH079 Carabao Carrier** uses its approved metre transporter hull, 786t hold, 315t expansion, seven pylons, 13-LY tank and 7-LY drive. Live E01 estimates use 166 equipment units, nine operating crew and nine intrinsic crew places; historical Lynx Bulk Carrier fields retain 608/20/20. Technology-twelve blueprint rules and rare placement in galaxy four remain. It stays non-capital with existing carrier salvage rules; no fighters, people, cabins or equipment are issued.
 
+The original **SH080 Carabao Highliner** uses its own approved metre transporter hull, 786t hold, 315t expansion, seven pylons, 13-LY tank and 7-LY drive. Live E01 estimates use 166 equipment units, nine operating crew and nine intrinsic crew places; historical Lynx Highliner fields retain 12/1/1. Technology-thirteen blueprint rules and rare placement in galaxy four remain. Its liner salvage role stays separate from Carrier, with no cabins, passengers or equipment granted.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
