@@ -106,8 +106,12 @@ struct NativeCrewLogHistoricalGeometryUnitTests {
           definition: source.recorder,
           models: [source.recorder.model: String(repeating: "0", count: 64)]),
         recorder: true))
-    var changed = source.recorder
-    changed.scale = 0.21
+    var changedFields = try #require(
+      JSONSerialization.jsonObject(with: JSONEncoder().encode(source.recorder)) as? [String: Any])
+    changedFields["scale"] = 0.21
+    let changed = try JSONDecoder().decode(
+      ScriptNPCDefinition.self, from: JSONSerialization.data(withJSONObject: changedFields))
+    #expect(changed.scale == 0.21 && source.recorder.scale == 0.2)
     #expect(!source.matchesFit(.init(definition: changed, models: fit.models), recorder: true))
     #expect(manifest.occupants(of: manifest.recorder).isEmpty && manifest.massTonnes == 1)
     #expect(manifest.occupants(of: manifest.launch) == manifest.crew && manifest.crew.count == 2)
