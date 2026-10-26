@@ -195,7 +195,7 @@ struct OriginalLlamaUnitTests {
     game.speed = 0
     game.bodies = []
     var npc = NPCState(
-      role: .bountyHunter, origin: game.systemIdentity, destination: .init(galaxy: 1, system: 0))
+      role: .escort, origin: game.systemIdentity, destination: .init(galaxy: 1, system: 0))
     npc.legal.value = 7
     npc.legal.bountyTenths = 30
     npc.legalProvenance = .recorded
@@ -220,7 +220,7 @@ struct OriginalLlamaUnitTests {
     #expect(receipt.refusal == nil && receipt.actor != nil)
     let body = try #require(game.bodies.first)
     #expect(body.physical?.catalogueShipID == ship.id && !body.hostile)
-    #expect(body.physical?.npc?.role == .bountyHunter && body.physical?.population == .civilian)
+    #expect(body.physical?.npc?.role == .escort && body.physical?.population == .civilian)
     #expect(
       body.physical?.npc?.legal == npc.legal && body.physical?.npc?.intention == npc.intention)
     #expect(body.physical?.npc?.resources?.energyCapacity == 230)
