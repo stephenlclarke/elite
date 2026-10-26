@@ -552,6 +552,8 @@ The original **SH081 Jaguar** uses its approved metre military capital hull, 144
 
 The original **SH083 Hare Explorer** uses its approved metre leisure hull, 32t hold, 15t expansion, five pylons, 14-LY tank and 10-LY drive. Its live E01 equipment budget is fifteen units; historical Mandalay fields retain sixteen. Crew and intrinsic places remain one each, with zero initial passenger cabins. Technology-twelve blueprint rules and uncommon placement in galaxies four through six remain. It grants no discovery, people, cabins or equipment.
 
+The original **SH084 Llama** uses its approved metre trader hull, 56t hold, 20t expansion, five pylons, 13-LY tank and 9-LY drive. Live E01 estimates use 20 equipment units, one operating crew and one intrinsic crew place; historical Mantis fields retain 12/8/8. Technology-five blueprint rules, common placement across all eight galaxies and the existing 25t trader minimum remain. No people, cabins or equipment are issued.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
