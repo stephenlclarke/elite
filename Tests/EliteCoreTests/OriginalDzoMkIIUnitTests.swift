@@ -109,7 +109,7 @@ struct OriginalDzoMkIIUnitTests {
       "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
       "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
       "SH046", "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
-      "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078",
+      "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079",
     ]
     .contains(
       other.id)
@@ -185,7 +185,7 @@ struct OriginalDzoMkIIUnitTests {
           "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
           "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
           "SH046", "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
-          "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078",
+          "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079",
         ])
     var game = Game(executive: false)
     game.docked = false

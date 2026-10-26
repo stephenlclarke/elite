@@ -8,7 +8,7 @@ import Testing
       "SH043": "Eagle Cruiser", "SH081": "Majestic-class Interdictor",
       "SH161": "Military Fiasco Leviathan", "SH155": "Ionics Funnelweb",
       "SH123": "Thargoid Titan", "SH171": "Liberator DSV2",
-      "SH078": "Oryx Voyager", "SH079": "Lynx Bulk Carrier", "SH080": "Lynx Highliner",
+      "SH078": "Oryx Voyager", "SH079": "Carabao Carrier", "SH080": "Lynx Highliner",
     ]
     #expect(SalvageCatalogue.all.count == 37)
     #expect(Set(SalvageCatalogue.all.map(\.catalogueShipID)).count == SalvageCatalogue.all.count)
