@@ -1,0 +1,25 @@
+# Bind original Tamaraw while preserving bulk-freighter salvage rules
+
+SH077 resolves to original Tamaraw mechanics and approved metre geometry. This M04.H077 packet starts from published, source-reviewed Dzo Mk II `cc642af6b61aff358571d65858a1b6e3905f6478` (PR252). Parent qualification/integration and pending review gates remain separate. Elite Coder3 owns this bounded packet; no canonical recomposition is included.
+
+Specification fingerprint `b358d2934911dcdad4d3684ec6adc9b370ea19bffa32165fbfcf59c33e4b02bd` and model `fleet-completion-20261019/batch-03/SH077-design.toml`, fingerprint `9d21c021df62f73a9f15b11455f88439fd178cca60ac72d99e1253f0339ac441`, authenticate only SH077. The model explicitly declares metres;124 vertices,212 faces, eight materials and full texture assignments supply raw physical/player/salvage geometry. Bounds are35.192 x19.59 x39.59 metres. Display normalization sets no physical scale. Raw resources remain unchanged.
+
+Native values use396t cargo,160t expansion, speed21.9, acceleration5.6, energy710/recharge5.23, shield470/recharge1.7, roll0.43, pitch0.38, yaw0.35, fuel150, jump10, spool14, six pylons, four laser facings and424,000CR. Transporter classification, technology-nine blueprint rules, uncommon natural placement in zero-based galaxies0/1/7 and retained tradeLane/deepSpace regions remain. Shared constructor/transport guard and metadata remain unchanged.
+
+The SH077-only typed live profile applies E01 equipment88, crew5 and intrinsic places5 while historical Lion fields retain158/4/4. Initial passenger cabins remain zero. All17 catalogue properties are forwarded. No inventory, cargo, people, cabins, equipment, blueprint or hull is granted. AI/legal/ownership/salvage and mission implementations remain unchanged. Catalogue role does not replace explicit NPC actor intent.
+
+Five meaningful methods cover strict role/policy/flyability/source/model/unit/path/hash refusals; mechanics/history and unrelated identities; full physical/player/salvage vertices/faces/materials/UVs, exact bounds and actual salvage sections; transporter policy/placement, earlier roles and explicit NPC trader/civilian/legal/navigation authority with source resources; actual accommodation88/5/5 versus history158/4/4, hold396+160, six pylons, fuel150, no grants and malformed retained loader. The actual unchanged SalvageCatalogue consumer retains bulkFreighter classification, exactly commercialTrader source roles, abandoned allowance and occupied/claimed/mission-protected/station refusals. Existing34 oracle files add onlySH077. All648 parent selections remain; five Tamaraw methods produce653. Unregistered005/006, display028, blocked056/58 and unitless076 remain unchanged and not runtime-ready. Closed readiness and unrelated-binding oracles retain all earlier identities.
+
+Strict Swift formatting, Markdown/whitespace and20 Python report-helper fixtures are the local validation scope. Swift methods are authored and UNRUN at freeze; independent source review and exact-head hosted qualification remain pending. No local compiler, native/GUI, broad integration, performance or release work ran. [M04.H077](ISSUE-m04-tamaraw.md) source/component acceptance does not establish flight/docking, M14 anchors, actual salvage operation, visual/performance acceptance or release.
+
+## Meridian acceptance mapping
+
+Current design branch `docs/final-game-review` remains pinned to `8c899a7e0d351551498b05a7b371b84758575085`. Prerequisite check used ledger `80617e9df31a6e0151a1dd1a6a9f31c73ac79290`; Root approved this bounded packet and actual salvage regression coverage on published Dzo Mk II. Root owns ledger updates and independent MBA dispatch. The design snapshot is read-only.
+
+| Design path | SHA256 | Packet mapping |
+| --- | --- | --- |
+| `docs/meridian/missions/gameplay/ships/SH077.json` | `8a4026c659573dcfab5c0b89ef538bc07aa5a188a8fda47f67fae9ec855a3569` | Exact Tamaraw/tamaraw/transporter/flyable/blueprint identity and all17 native values match packaged data. |
+| `docs/meridian/missions/gameplay/models/SH077.json` | `79093725df95252a42f2880e202989e0af5fbfc3d1557bef503bdf13ba1f9fc1` | Entire parsed model equals packaged geometry, metre units, path/hash, materials and UVs. |
+| `docs/meridian/SHIP-REFERENCE.md` | `6a3688bf28f9251e58853990bfd5c76334c7e514b05d36ba4fc145c1a03ce4af` | E01 equipment88, crew5, reserved5, initial cabins0; historical158/4/4 retained. |
+
+The only direct non-generated Swift SH077 reference is the existing SalvageCatalogue bulkFreighter entry. Its actual makeProfile derives the raw catalogue mesh, extents, center/radius and face sections without a fixed historical name/hash guard. Exact Lion/Tamaraw name scans found no additional fixed consumer. No SH077 negative control or weight invariant was identified. The corrected Haflinger control stays SH058. Concrete SH056/58 M01 dependencies remain blocked; no name/hash/calibration guard is relaxed. Unitless SH076 receives no inferred scale. No shared role expansion or unrelated source audit is included.
