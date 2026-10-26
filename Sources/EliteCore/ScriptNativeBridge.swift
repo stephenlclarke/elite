@@ -132,9 +132,18 @@ extension Game {
     _ weapon: ScriptNPCWeapon, source: SpaceBody, component: UUID?, muzzle: Vector3,
     direction: Vector3
   ) -> MissionWeaponDescriptor? {
-    guard currentMissionActorDescriptor(bodyID: source.id)?.body == source,
-      let npc = source.scriptNPC, weapon.valid
-    else { return nil }
+    guard currentMissionActorDescriptor(bodyID: source.id)?.body == source else { return nil }
+    return Self.makeMissionWeaponDescriptor(
+      weapon, source: source, component: component, muzzle: muzzle, direction: direction)
+  }
+
+  // Complete retained-owner validation before allocating the descriptor-construction frame.
+  @inline(never)
+  private static func makeMissionWeaponDescriptor(
+    _ weapon: ScriptNPCWeapon, source: SpaceBody, component: UUID?, muzzle: Vector3,
+    direction: Vector3
+  ) -> MissionWeaponDescriptor? {
+    guard let npc = source.scriptNPC, weapon.valid else { return nil }
     let expectedMuzzle: Vector3
     if let component {
       guard let entry = npc.components.first(where: { $0.value.identity == component }),

@@ -57,6 +57,21 @@ struct NativeMissionRuntimeFrameTests {
     #expect((body.position - (muzzle + shot.velocity * 0.1)).length < 1e-6)
     #expect(shot.damage == weapon.damage && shot.lifetime == weapon.lifetime)
     #expect(shot.radius == weapon.collisionRadius && shot.collisionDelay == weapon.collisionDelay)
+
+    // A subsequent frame inside every authored cooldown must move the same shot once without
+    // allocating another emission or charging either gun again.
+    let next = await runtime.advance(delta: 0.001)
+    let nextSource = try #require(next.bodies.first { $0.missionActorID == identity })
+    #expect(nextSource.scriptNPC?.shots == npc.shots)
+    #expect(next.nextBodyID == frame.nextBodyID)
+    #expect(
+      next.commander.flightSimulation.nextEmission == frame.commander.flightSimulation.nextEmission)
+    let moved = try #require(next.bodies.first { $0.scriptShot?.identity == shot.identity })
+    let movedShot = try #require(moved.scriptShot)
+    #expect(abs(movedShot.age - shot.age - 0.001) < 1e-9)
+    #expect((moved.position - body.position - shot.velocity * 0.001).length < 1e-6)
+    #expect(
+      next.commander.scriptState.projectiles[shot.identity]?.body.scriptShot?.age == movedShot.age)
   }
 
   @Test func actualRuntimeGivesANativelyAdmittedProfileOneMovementOwnerAndCurrentWorldVelocity()
