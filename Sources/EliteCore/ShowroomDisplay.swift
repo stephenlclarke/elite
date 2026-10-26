@@ -3,6 +3,7 @@ import Foundation
 public struct ShowroomLayout: Sendable {
   public static let actionKeys = [
     "b", "r", "c", "v", ",", ".", " ", "showroom-sort",
+    "showroom-axis", "showroom-minus", "showroom-plus", "showroom-reset-view",
   ]
   public let wide: Bool
   public let listVisible: Bool
@@ -32,12 +33,12 @@ public struct ShowroomLayout: Sendable {
         x: left + Double(index % 4) * available / 4, y: 72 + Double(index / 4) * 28,
         width: available / 4 - 4, height: 24)
     }
-    trade = .init(x: left, y: 132, width: available * 0.68 - 8, height: 32)
-    pane = .init(x: trade.maxX + 16, y: 132, width: available - trade.width - 16, height: 32)
+    trade = .init(x: left, y: 160, width: available * 0.68 - 8, height: 32)
+    pane = .init(x: trade.maxX + 16, y: 160, width: available - trade.width - 16, height: 32)
     list = .init(
-      x: 16, y: 222, width: wide ? 240 : width - 32,
-      height: wide ? height - 282 : min(160, height * 0.25))
-    let modelTop = wide || detail ? 222 : list.maxY + 14
+      x: 16, y: 250, width: wide ? 240 : width - 32,
+      height: wide ? height - 310 : min(160, height * 0.25))
+    let modelTop = wide || detail ? 250 : list.maxY + 14
     let modelHeight = wide || detail ? min(240, height * 0.24) : max(80, height - modelTop - 60)
     model = .init(x: left, y: modelTop, width: available, height: modelHeight)
     details = .init(
@@ -134,6 +135,7 @@ extension Display {
       game.showroomProfiles.count > 1 ? "Next profile" : "Single profile",
       game.showroom.rotationPaused ? "Rotate model" : "Pause model",
       "Sort: " + game.showroom.sort.rawValue,
+      "A: " + game.showroom.viewAxis.rawValue, "J: Turn -", "L: Turn +", "0: Reset view",
     ]
     for (index, bounds) in layout.buttons.enumerated() {
       frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, .blue)
@@ -182,18 +184,18 @@ extension Display {
             width: half, height: layout.model.height),
           title: game.showroom.baselineUsesCurrent
             ? "CURRENT SHIP" : "PINNED BASELINE",
-          into: &frame)
+          comparedWith: selected, into: &frame)
         showroomModel(
           selected, game: game,
           bounds: .init(
             x: layout.selectedModelX,
             y: layout.model.y, width: half, height: layout.model.height),
           title: "SELECTED SHIP",
-          into: &frame)
+          comparedWith: baseline, into: &frame)
       } else {
         showroomModel(
           selected, game: game, bounds: layout.model, title: "Browsing: " + selected.name,
-          into: &frame)
+          comparedWith: nil, into: &frame)
       }
       if layout.wide || game.showroom.detail {
         showroomDetails(game, bounds: layout.details, modelAligned: layout.wide, into: &frame)
@@ -276,7 +278,7 @@ extension Display {
 
   private static func showroomModel(
     _ ship: CatalogueShip, game: Game, bounds: CanvasRect,
-    title: String, into frame: inout Frame
+    title: String, comparedWith other: CatalogueShip?, into frame: inout Frame
   ) {
     let font = GameTypography.scale
     let columns = max(10, Int(bounds.width / (6 * font)))
@@ -302,10 +304,11 @@ extension Display {
       discovery: game.commander.scriptState.savedFleetDiscovery)
     preview.commander.shipDisplayStyle =
       mode == .recordedWireframe ? .whiteWireframe : .shadedPanels
-    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400))
-    body.orientation.rotate(
-      pitch: 0.25 + game.showroom.angle * 0.3,
-      roll: game.showroom.angle * 0.15, yaw: game.showroom.angle)
+    let scale = ShowroomPreviewScale(
+      ship: ship, comparedWith: other, physicalSource: physicalSource)
+    // Moving the normalized mesh back is perspective-equivalent to scaling all three axes.
+    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400 / scale.factor))
+    body.orientation = game.showroom.viewOrientation
     let clip = frame.flightClip
     frame.flightClip = .init(
       x: bounds.x, y: bounds.y + 28, width: bounds.width,
@@ -322,9 +325,10 @@ extension Display {
     frame.flightClip = clip
     let modelName = physicalSource ? ship.originalDefinition?.name ?? ship.name : ship.name
     let caption = mode.caption.map { $0 + " / " + modelName } ?? modelName
-    for (index, line) in ShowroomText.wrap(caption, width: columns).prefix(2).enumerated() {
-      frame.label(line, bounds.x, bounds.maxY - 28 + Double(index) * 14, scale: font, ink: .cyan)
-    }
+    frame.label(
+      String(caption.prefix(columns)), bounds.x, bounds.maxY - 28, scale: font, ink: .cyan)
+    frame.label(
+      String(scale.caption.prefix(columns)), bounds.x, bounds.maxY - 14, scale: font, ink: .orange)
   }
 
   static func showroomWindow(_ game: Game) -> ScrollWindow {

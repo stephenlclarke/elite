@@ -434,7 +434,10 @@ public enum PlayerHelp {
           "CLICK PIN BASE / YOUR SHIP / COMPARE",
         ] + ShowroomProfileGuide.rows(profileCount: game.showroomProfiles.count) + [
           "CLICK SOURCE NOTES / GAME VALUES",
-          "CLICK PAUSE / ROTATE TO STOP MOTION",
+          "DRAG MODEL - PITCH / YAW; SHIFT - ROLL",
+          "A - VIEW AXIS; J / L - ROTATE AXIS",
+          "0 - RESET VIEW; R - YOUR SHIP BASELINE",
+          "SPACE / CLICK PAUSE - AUTO ROTATION",
           "OPTION-UP/DOWN - PAGE ACTIVE PANE",
           "ESC - SEARCH, THEN LIST, THEN STATION",
           "CLICK SWITCH SHIP - REVIEW EXCHANGE",
