@@ -24,6 +24,13 @@ METHODS = {
         "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
         "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
     ),
+    "OriginalCondorUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalPirateMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "piratePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalHobbyFighterUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",

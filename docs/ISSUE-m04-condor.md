@@ -1,0 +1,7 @@
+# M04.H055: bind the original Condor with bounded pirate-role support
+
+Current source retains the historical Gyr refit at SH055. Meridian defines the original Condor pirate hull with authenticated mechanics and an approved metre model. Pirate role/type already exists in the typed catalogue, but the common original projection omits it from its allowed-role guard. Add only that role case while retaining closed registration, source/physical identity and acquisition/performance validation. Unregistered pirate and display-only records must remain unchanged.
+
+Meridian E01 requires14 equipment-budget units, crew1, reserved1 and initial cabins0. The retained Gyr equipment estimate is12. Override only the new Condor live field, retain historical12 and assert the actual accommodation consumer reads14 without inventory or people grants. The hull classification must not dictate actor role, hostility, legal record, intention or discovery.
+
+Acceptance requires meaningful source/model authentication and refusals, full appearance, mechanics/history, exact pirate/blueprint/placement policy, negative unregistered/display-only/foreign-role regressions, actual fitting/accommodation and a bounded actor-admission authority case, independent changed-hunk review and exact-head hosted qualification. No shared profile/consumer, other hull, raw asset, physical scale, showroom control, main/release or native journey change is included. Flight/docking, M14 anchors, visual/performance and release remain separate.
