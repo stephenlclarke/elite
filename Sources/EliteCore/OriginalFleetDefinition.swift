@@ -25,7 +25,8 @@ public struct OriginalFleetDefinition: Sendable {
   public let approvedMeshAvailable: Bool
   public let integrationBlockers: [String]
   public var runtimeReady: Bool {
-    OriginalDzoActivation.supports(self) || OriginalBazaMkIIActivation.supports(self)
+    OriginalDzoMkIIActivation.supports(self) || OriginalDzoActivation.supports(self)
+      || OriginalBazaMkIIActivation.supports(self)
       || OriginalBazaFighterActivation.supports(self)
       || OriginalBadgerActivation.supports(self)
       || OriginalVultureRaiderActivation.supports(self)
