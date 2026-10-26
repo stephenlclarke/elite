@@ -16,14 +16,6 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
-    "ShowroomManualViewUnitTests": (
-        "modelDragRotatesBothRenderedPreviewsTogetherAndPausesAutomaticMotion",
-        "everyAxisTurnsThroughAFullCircleAndViewResetPreservesPinnedBaseline",
-        "calibratedPairsUseOneMetreScaleInTheActualRenderedPreview",
-        "unknownScaleIsDisclosedAndViewChangesCannotUnlockOrPurchaseACapital",
-        "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
-        "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
-    ),
     "OriginalLaggarUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalBountyHunterMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
@@ -46,6 +38,14 @@ METHODS = {
         "neverPurchaseCapitalRefusesActualExchangeDespitePositiveBalance",
         "destructionRecordsOnlyCapitalMilestoneAndKeepsBlueprintsIndependent",
         "invalidCapitalPolicyAndMalformedLoaderCannotSilentlyActivate",
+    ),
+    "ShowroomManualViewUnitTests": (
+        "modelDragRotatesBothRenderedPreviewsTogetherAndPausesAutomaticMotion",
+        "everyAxisTurnsThroughAFullCircleAndViewResetPreservesPinnedBaseline",
+        "calibratedPairsUseOneMetreScaleInTheActualRenderedPreview",
+        "unknownScaleIsDisclosedAndViewChangesCannotUnlockOrPurchaseACapital",
+        "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
+        "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
     ),
     "OriginalHareExplorerUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
