@@ -91,7 +91,7 @@ struct NativeC01HistoricalHarrierUnitTests {
     let mission = UUID()
     let profile = NativeC01Surveyor.profile(recorder: false)
     let hashes = try NativeC01Surveyor.modelHashes.get()
-    var body = SpaceBody(id: 1, hull: .cobra, position: .init(), hostile: false)
+    var body = SpaceBody(id: 1, hull: .cobra, position: .init(0, 0, 0), hostile: false)
     body.missionInstanceID = mission
     body.missionActorID = NativeC01Surveyor.actor(
       mission: mission, alias: NativeC01Surveyor.aliases[0])

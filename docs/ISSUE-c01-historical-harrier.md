@@ -16,6 +16,8 @@ Four new pure component methods cover complete design/appearance and canonical m
 
 ## Limits
 
+Hosted run 40399461150 on `395a97e3` failed compilation before tests: the new fixture used an unavailable zero-argument `Vector3` initializer. The intended zero position is now explicit as `.init(0, 0, 0)`. All production, test assertions and selection remain unchanged; corrected-head qualification is pending.
+
 This is an isolated prerequisite for future M04.H056, not SH056 activation or a mission/release completion. The existing C01 surveyor fixture still names live SH056 Harrier; the future activation owner must update that explicitly bounded fixture when activation occurs. No shared catalogue API, generated/raw asset, fleet registry, C08 recorder source, mission permission/authentication/schema, current M01/release or main changes are included. Root owns integration timing and the completion ledger.
 
 See [implementation and validation](PR-c01-historical-harrier.md).

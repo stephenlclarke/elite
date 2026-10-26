@@ -19,6 +19,8 @@ Four new non-parameterized `NativeC01HistoricalHarrierUnitTests` methods are add
 
 ## Validation and remaining gates
 
+The first hosted run [40399461150](https://github.com/stephenlclarke/elite/actions/runs/40399461150) failed compilation on `395a97e3` before any tests or XML report. The new test supplied a zero-argument position initializer, but `Vector3` requires three coordinates. The correction supplies the intended zero position as `.init(0, 0, 0)`. Subsequent contextual initializer diagnostics follow that invalid body declaration. This is one test-construction line only; production, assertions and the 680-method selection remain unchanged. Corrected-head source review and hosted qualification are pending.
+
 Local work uses only standalone formatting, source/fixture/selector checks, Python report-helper fixtures, Markdown and whitespace. The four Swift methods are authored and UNRUN at source freeze. Independent MBA source review precedes one ordinary automatic hosted 680-method run after publication. No local compiler, native/GUI, probe, performance, broad integration or manual duplicate test job is run.
 
 This packet is an isolated future prerequisite. Its integration stays outside current M01 and the release candidate. Parent/composition/final-head review and required checks remain separate. The future activation owner must explicitly correct the existing C01 test's live-SH056 historical-name fixture when that activation is assigned. No fleet registry, role/capital/acquisition/cargo, mission permission/save schema or G3/G4-owned file is changed. [Motivation](ISSUE-c01-historical-harrier.md).
