@@ -542,6 +542,8 @@ The original **SH075 Dzo Mk II** uses its approved metre transporter hull, 436t 
 
 The original **SH077 Tamaraw** uses its approved metre transporter hull, 396t hold, 160t expansion, six pylons, 15-LY tank and 10-LY drive. Live E01 estimates use 88 equipment units, five operating crew and five intrinsic crew places; historical Lion fields retain 158/4/4. Technology-nine blueprint rules, uncommon placement in galaxies one, two and eight, and existing bulk-freighter salvage eligibility remain. No people, cabins or equipment are issued.
 
+The original **SH078 Oryx Voyager** uses its approved metre leisure hull, 32t hold, 15t expansion, five pylons, 14-LY tank and 10-LY drive. Live E01 estimates use 15 equipment units, one operating crew and one intrinsic crew place; historical Long Range Cruiser fields retain 608/100/100. Technology-thirteen blueprint rules and rare placement in galaxy three remain. It remains non-capital with the existing cruiser salvage eligibility; no people, cabins or equipment are issued.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
