@@ -776,8 +776,12 @@ class NativeAdapterTests(Fixture):
                 return "/fake/sdk"
             return ""
         with patch.object(shards, "PHYSICAL_EXECUTION_ENABLED", True), patch.object(
-                shards.native_runner, "validate", return_value=controller) as validate:
-            authority = shards.NativeAuthority(policy, {"LANG": "C"}, read)
+                shards.native_runner, "validate", return_value=controller) as validate, patch.object(
+                shards.native_runner, "require_recoverable_checkout"):
+            authority = shards.NativeAuthority(policy, {"LANG": "C", "GITHUB_JOB": "prepare_native",
+                "ELITE_RECOVERABLE_CODE_ENABLED": "true", "ELITE_NATIVE_APPROVED_HEAD": HEAD,
+                "ELITE_NATIVE_POLICY": str(policy)}, read)
+            authority.environment = {"LANG": "C"}
             validate.assert_called_once()
         authority.calls = calls
         return authority
@@ -1137,6 +1141,8 @@ class WorkflowTests(Fixture):
         authority.environment["GITHUB_RUN_ID"] = "123"
         authority.environment["GITHUB_RUN_ATTEMPT"] = "1"
         authority.environment["GITHUB_REF"] = "refs/heads/approved"
+        authority.environment["GITHUB_EVENT_NAME"] = "workflow_dispatch"
+        authority.environment["GITHUB_WORKFLOW_REF"] = "stephenlclarke/elite/.github/workflows/recoverable-quality.yml@refs/heads/approved"
         authority.config["admission"]["disk_per_worker"] = 2 * 1024 * 1024
         artifact = dict(id=1, name=name, expired=False, digest="sha256:" + hashlib.sha256(payload).hexdigest(),
                         size_in_bytes=len(payload), workflow_run={"id": 123, "head_sha": HEAD})
@@ -1209,7 +1215,7 @@ class WorkflowTests(Fixture):
     def test_physical_guard_requires_separate_host_hook_before_any_checkout_and_cancelled_never_passes(self):
         source = self.workflow_script("Require host hook and exact instance")
         activation = dict(schema=1, enabled=True, revoked=False, expires_at=time.time() + 60,
-                          head=HEAD, ref="refs/heads/approved", workflow_sha256="a" * 64,
+                          head=HEAD, ref="refs/heads/approved", workflow_file="recoverable-quality.yml", workflow_sha256="a" * 64,
                           assignment_root=str(self.root / "owned-assignments"),
                           runners={"owned-one": {"workspace": "/fixture/runner/_work/elite/elite", "jobs": ["native_shards"]}})
         env = dict(ACTIVATION=json.dumps(activation), POLICY_DIGESTS=json.dumps({"owned-one": "b" * 64}),
@@ -1246,13 +1252,158 @@ class WorkflowTests(Fixture):
             with patch.dict(os.environ, {**env, **change}, clear=True), self.assertRaises((AssertionError, KeyError)):
                 exec(compile(source, "fake-precheckout-guard", "exec"), {})
         gate = self.workflow_script("Held, failed or cancelled execution")
-        passed = dict(AUTHORIZED="true", PREPARE="success", PHASES="success", AGGREGATE="success", SHARDS="skipped", PENDING="false")
+        passed = dict(AUTHORIZED="true", CHECKS="success", THREAD_PREPARE="success", ADDRESS_PREPARE="success",
+                      PHASES="success", AGGREGATE="success", THREAD_SHARDS="skipped", THREAD_PENDING="false",
+                      ADDRESS_SHARDS="skipped", ADDRESS_PENDING="false", GITHUB_STEP_SUMMARY=str(self.root / "gate-summary"))
         with patch.dict(os.environ, passed, clear=True):
             exec(compile(gate, "fake-final-gate", "exec"), {})
-        for change in ({"SHARDS": "failed"}, {"SHARDS": "cancelled"}, {"AGGREGATE": "skipped"},
-                       {"AUTHORIZED": "false"}, {"PENDING": "true"}):
+        for change in ({"THREAD_SHARDS": "failed"}, {"ADDRESS_SHARDS": "cancelled"}, {"AGGREGATE": "skipped"},
+                       {"AUTHORIZED": "false"}, {"THREAD_PENDING": "true"}, {"CHECKS": "skipped"}):
             with patch.dict(os.environ, {**passed, **change}, clear=True), self.assertRaises(AssertionError):
                 exec(compile(gate, "fake-final-gate", "exec"), {})
+
+
+class GranularityTests(Fixture):
+    authority = NativeAdapterTests.authority
+    prepared = NativeAdapterTests.prepared
+    workflow_script = WorkflowTests.workflow_script
+
+    def test_bounded_packing_breaks_96_id_collection_but_preserves_whole_shared_cohort(self):
+        counts = [4, 5, 4, 2, 9, 5, 5, 10, 3, 4, 4, 5, 3, 2, 3, 2, 1, 8, 10, 7]
+        self.assertEqual(sum(counts), 96)
+        methods = [f"EliteCoreTests.Cohort{i}/case{j}()" for i, count in enumerate(counts) for j in range(count)]
+        # Cohort8 is the three-case AppKit consumer; its actual shared-process contract is retained.
+        appkit = [m for m in methods if m.startswith("EliteCoreTests.Cohort8/")]
+        appkit += [f"EliteCoreTests.SharedAppKit/case{j}()" for j in range(167)]
+        full = sorted(set(methods + appkit))
+        plan = shards.make_plan(self.runtimes["address"], full, [appkit], max_methods=shards.PACKED_ID_TARGET)
+        reverse = shards.make_plan(self.runtimes["address"], list(reversed(full)), [appkit], max_methods=shards.PACKED_ID_TARGET)
+        self.assertEqual(plan, reverse)
+        self.assertEqual(sorted(m for row in plan["shards"] for m in row["methods"]), full)
+        self.assertIn(sorted(appkit), [row["methods"] for row in plan["shards"]])
+        self.assertTrue(all(len(row["methods"]) <= shards.PACKED_ID_TARGET or len(row["atoms"]) == 1 for row in plan["shards"]))
+        self.assertTrue(all(row["methods"] != sorted(methods) for row in plan["shards"]))
+        complete = shards.workflow_manifest([plan], ["one"], self.store, HEAD)
+        self.assertTrue(all(entry["label"].endswith(entry["shard"][:8]) for entry in complete["matrix"]["include"]))
+
+    def test_indivisible_timeout_is_explicit_blocker_instead_of_automatic_replay(self):
+        methods = [f"EliteCoreTests.Indivisible/case{i}()" for i in range(3)]
+        plan = shards.make_plan(self.runtimes["thread"], methods)
+        self.executor.exit_code = 124
+        self.executor.damage = lambda attempt: shards.durable_json(attempt / "timeout.json", {
+            "schema": shards.SCHEMA, "seconds": 5, "reason": "process wait deadline"})
+        with self.assertRaises(ValueError):
+            self.run_one(plan)
+        self.assertEqual(self.executor.calls, 1)
+        self.executor.exit_code = 0
+        with self.assertRaisesRegex(ValueError, "Indivisible cohort.*no automatic replay"):
+            self.run_one(plan)
+        self.assertEqual(self.executor.calls, 1)
+        self.assertTrue(list((self.store.root / "attempts").glob("*/*/failure.json")))
+
+    def test_each_mode_prepares_and_loads_without_other_mode_and_aggregate_requires_both(self):
+        authority, builder, builds, calls = self.prepared()
+        for mode in shards.MODES:
+            destination = authority.cache / "builds" / HEAD / mode
+            destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            shutil.copytree(self.root / ("frozen-" + mode), destination)
+        class Remote:
+            def artifacts(self, prefix):
+                raise AssertionError("Already prepared mode must not request another mode")
+        workflow = shards.NativeWorkflow(authority, Remote())
+        output = self.root / "thread-only"
+        result = workflow.prepare(output, ("thread",))
+        plans, manifest = workflow.plans(output, result["manifest_sha256"])
+        self.assertEqual(set(manifest["plans"]), {"thread"})
+        self.assertTrue(all(row["mode"] == "thread" for row in manifest["pending"]))
+        self.assertEqual(calls, ["thread", "address"])
+        with self.assertRaises(ValueError):
+            workflow.aggregate(plans)
+
+    def test_split_build_discovery_reuses_verified_build_and_retains_timeout_raw_data(self):
+        authority, builder, builds, calls = self.prepared()
+        original_output = authority.output
+        def output(command, *args, **kwargs):
+            if "--show-bin-path" in command:
+                return str(Path(builds["thread"]["image"]).parents[3])
+            return original_output(command, *args, **kwargs)
+        commands = []
+        def execute(command, workspace, attempt, *args, **kwargs):
+            commands.append(command)
+            (attempt / "test.log").write_text("\n".join(METHODS) if "list" in command else "build completed")
+            return 124 if "--sanitize=address" in command else 0
+        with patch.object(authority, "output", side_effect=output), patch.object(shards, "execute_process", side_effect=execute):
+            self.assertFalse(builder.build_only("thread", 5)["reused"])
+            self.assertTrue(builder.build_only("thread", 5)["reused"])
+            with builder.preparation_claim():
+                discovered = builder.build_and_discover("thread")
+            self.assertEqual(discovered[1], METHODS)
+            self.assertEqual(sum("--build-tests" in command for command in commands), 1)
+            self.assertTrue(all("--skip-build" in command for command in commands if "list" in command))
+            with self.assertRaises(ValueError):
+                builder.build_only("address", 5)
+        self.assertFalse((authority.cache / "build-stage" / HEAD / "address/ready.json").exists())
+        target = self.root / "preparation-failure-export"
+        shards.NativeWorkflow(authority).export_preparation("address", target)
+        self.assertTrue(list(target.glob("*/test.log")))
+        shards.require_sealed(target)
+        self.assertEqual(calls, ["thread", "address"])
+
+    def test_progress_counts_only_valid_complete_receipts_and_reports_oversized_limit(self):
+        path = self.root / "step-summary"
+        with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(path)}), patch.object(shards.legacy, "progress"):
+            before = shards.report_progress(self.plan, self.store, "starting", self.plan["shards"][0])
+            self.assertEqual(before["completed"], 0)
+            self.run_one()
+            after = shards.report_progress(self.plan, self.store, "completed", self.plan["shards"][0])
+            self.assertEqual(after["completed"], 1)
+            methods = [f"EliteCoreTests.Huge/case{i}()" for i in range(70)]
+            huge = shards.make_plan(self.runtimes["thread"], methods, max_methods=shards.PACKED_ID_TARGET)
+            record = shards.report_progress(huge, self.store, "timed out", huge["shards"][0])
+            self.assertTrue(record["indivisible_over_target_ids"])
+            self.assertEqual(record["completed"], 0)
+        self.assertIn("No method split", path.read_text())
+        self.assertIn("1/1 complete", path.read_text())
+
+    def test_future_ci_preserves_required_name_all_make_gates_and_independent_mode_prerequisites(self):
+        root = Path(__file__).resolve().parents[2]
+        ci = (root / ".github/workflows/ci.yml").read_text()
+        workflow = (root / ".github/workflows/recoverable-quality.yml").read_text()
+        self.assertIn("uses: ./.github/workflows/recoverable-quality.yml", ci)
+        self.assertIn("name: quality", ci)
+        self.assertIn('test "$COMPONENTS" = success', ci)
+        for mode in shards.MODES:
+            job = workflow.split("  " + mode + "_shards:", 1)[1]
+            prefix = job.split("    env:", 1)[0]
+            self.assertIn("needs: [authorize_native, prepare_" + mode + "]", prefix)
+            self.assertIn("max-parallel: 1", prefix)
+            self.assertIn("fail-fast: false", prefix)
+            self.assertIn("timeout-minutes: 130", prefix)
+        self.assertIn("--timeout 7200", workflow)
+        authority, _, _, _ = self.prepared()
+        output = self.root / "required-gates"
+        def run(command, workspace, attempt, *args, **kwargs):
+            (attempt / "test.log").write_text("fake prerequisites exited zero")
+            expected = (root / "Makefile").read_text().split("\nci: ", 1)[1].split("\n", 1)[0].split()
+            self.assertTrue(set(expected) - {"coverage-check", "threads", "address", "leaks"} <= set(command[1:]))
+            return 0
+        with patch.object(shards, "execute_process", side_effect=run):
+            self.assertEqual(shards.NativeWorkflow(authority).checks(output, 5)["checks_exit_code"], 0)
+        shards.require_sealed(output)
+        self.assertIn("make sonar", workflow)
+        self.assertLess(workflow.index("Require every job outcome before authoritative main analysis"), workflow.index("make sonar"))
+        self.assertIn("--other-digest", workflow)
+
+    def test_aggregate_failure_is_retained_without_fabricated_pass_or_missing_mode_acceptance(self):
+        authority = self.authority()
+        workflow = shards.NativeWorkflow(authority)
+        output = self.root / "aggregate-failed"
+        with self.assertRaises(ValueError):
+            workflow.aggregate_report([], output)
+        receipt = shards.load_json(output / "result.json")
+        self.assertEqual(receipt["status"], "failed")
+        self.assertNotIn("result", receipt)
+        shards.require_sealed(output)
 
 
 if __name__ == "__main__":

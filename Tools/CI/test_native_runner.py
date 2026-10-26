@@ -282,6 +282,110 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         with self.assertRaises(OSError):
             require_recoverable_job(policy, env, event, now=100)
 
+    def test_ci_push_and_internal_pr_merge_require_exact_execution_and_source_approvals(self):
+        from copy import deepcopy
+        from native_runner import require_recoverable_job, policy_digest
+        policy, env, event = self.contract()
+        activation = policy["recoverable_activation"]
+        env.update(GITHUB_JOB="prepare_thread", ELITE_RECOVERABLE_REQUEST_MODE="thread",
+                   GITHUB_EVENT_NAME="push", GITHUB_REF="refs/heads/main",
+                   GITHUB_WORKFLOW_REF=REPO["full_name"] + "/.github/workflows/ci.yml@refs/heads/main")
+        for name in ("PLAN_DIGEST", "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_REQUEST_SHARD", "ELITE_RECOVERABLE_REQUEST_WORKER"):
+            env.pop(name, None)
+        activation["workflow_ref"] = env["GITHUB_WORKFLOW_REF"]
+        activation["runners"]["owned-one"]["jobs"] = ["prepare_thread"]
+        event.update(ref="refs/heads/main", after=SHA, deleted=False, forced=False)
+        env["ELITE_RECOVERABLE_POLICY_SHA256"] = policy_digest(policy)
+        require_recoverable_job(policy, env, event, now=100, verify_assignment=False)
+        for changes in ({"forced": True}, {"deleted": True}, {"after": "f" * 40}):
+            with self.assertRaises(ValueError):
+                require_recoverable_job(policy, env, {**event, **changes}, now=100, verify_assignment=False)
+        activation["pr_head"] = "b" * 40
+        env.update(GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/7/merge",
+                   GITHUB_WORKFLOW_REF=REPO["full_name"] + "/.github/workflows/ci.yml@refs/pull/7/merge")
+        activation["workflow_ref"] = env["GITHUB_WORKFLOW_REF"]
+        env["ELITE_RECOVERABLE_POLICY_SHA256"] = policy_digest(policy)
+        event.update(number=7, pull_request={"head": {"sha": "b" * 40, "repo": REPO},
+                     "base": {"ref": "main", "repo": REPO}, "user": {"id": 22142777}, "merge_commit_sha": SHA})
+        require_recoverable_job(policy, env, event, now=100, verify_assignment=False)
+        for mutate in (lambda p: p["head"].update(sha="c" * 40),
+                       lambda p: p["head"].update(repo={**REPO, "fork": True}),
+                       lambda p: p.update(merge_commit_sha="c" * 40)):
+            bad = deepcopy(event)
+            mutate(bad["pull_request"])
+            with self.assertRaises(ValueError):
+                require_recoverable_job(policy, env, bad, now=100, verify_assignment=False)
+
+    def test_ci_prejob_authorizer_pins_caller_and_called_workflow_before_owned_issuance(self):
+        import base64
+        import hashlib
+        import json
+        from pathlib import Path
+        from types import SimpleNamespace
+        from native_runner import authorize_recoverable, policy_digest
+        policy, env, event = self.contract()
+        source, called = b"pinned ci workflow", b"pinned recoverable workflow"
+        a = policy["recoverable_activation"]
+        a.update(workflow_sha256=hashlib.sha256(source).hexdigest(),
+                 reusable_workflow_sha256=hashlib.sha256(called).hexdigest(),
+                 workflow_ref=REPO["full_name"] + "/.github/workflows/ci.yml@refs/heads/main")
+        a["runners"]["owned-one"]["jobs"] = ["prepare_thread"]
+        env.update(GITHUB_JOB="prepare_thread", ELITE_RECOVERABLE_REQUEST_MODE="thread", GITHUB_EVENT_NAME="push",
+                   GITHUB_REF="refs/heads/main", GITHUB_WORKFLOW_REF=a["workflow_ref"], GITHUB_TOKEN="fake-private-read-token")
+        for name in ("PLAN_DIGEST", "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_REQUEST_SHARD", "ELITE_RECOVERABLE_REQUEST_WORKER"):
+            env.pop(name, None)
+        event.update(ref="refs/heads/main", after=SHA, deleted=False, forced=False)
+        cache = Path(a["assignment_root"]).with_name(Path(a["assignment_root"]).name + "-not-created-cache")
+        policy["recoverable_shards"].update(cache=str(cache), workers={"one": "/fixture/private-worker"}, admission={})
+        manifest = {name: a[name] for name in ("schema", "enabled", "revoked", "expires_at", "head", "workflow_sha256",
+                                               "reusable_workflow_sha256", "runners", "assignment_root")}
+        manifest.update(ref=env["GITHUB_REF"], workflow_file="ci.yml")
+        a["manifest_sha256"] = policy_digest(manifest)
+        env.update(ACTIVATION=json.dumps(manifest), POLICY_DIGESTS=json.dumps({"owned-one": policy_digest(policy)}))
+        bad_called = False
+        def api(path):
+            if "/contents/Tools/CI?" in path:
+                entries = []
+                for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py", "quality_phase_checkpoints.py", "crash_artifacts.py"):
+                    raw = (Path(__file__).resolve().parent / name).read_bytes()
+                    sha = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw, usedforsecurity=False).hexdigest()
+                    entries.append({"name": name, "type": "file", "sha": sha})
+                return entries
+            raw = (b"changed called workflow" if bad_called else called) if "recoverable-quality.yml" in path else source
+            return {"encoding": "base64", "content": base64.b64encode(raw).decode()}
+        class Remote:
+            def __init__(self, authority, api):
+                # Preparation does not consume an existing plan or artifact.
+                pass
+        guard = SimpleNamespace(PHYSICAL_EXECUTION_ENABLED=True, GitHubArtifacts=Remote)
+        approved = authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+        path = Path(approved["ELITE_RECOVERABLE_ASSIGNMENT_PATH"])
+        original = path.read_bytes()
+        bad_called = True
+        with self.assertRaises(ValueError):
+            authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+        self.assertEqual(path.read_bytes(), original)
+
+    def test_aggregate_owned_assignment_binds_both_independent_plan_digests(self):
+        from pathlib import Path
+        import json
+        from native_runner import assignment_payload, assignment_digest, policy_digest, require_recoverable_job
+        policy, env, event = self.contract()
+        env.update(GITHUB_JOB="native_aggregate", OTHER_PLAN_DIGEST="a" * 64)
+        for name in ("ELITE_RECOVERABLE_REQUEST_MODE", "ELITE_RECOVERABLE_REQUEST_SHARD", "ELITE_RECOVERABLE_REQUEST_WORKER"):
+            env.pop(name, None)
+        policy["recoverable_activation"]["runners"]["owned-one"]["jobs"] = ["native_aggregate"]
+        env["ELITE_RECOVERABLE_POLICY_SHA256"] = policy_digest(policy)
+        payload = {**assignment_payload(policy, env), "expires_at": 190, "revoked": False}
+        path = Path(policy["recoverable_activation"]["assignment_root"]) / (assignment_digest(env) + ".json")
+        path.write_text(json.dumps(payload))
+        path.chmod(0o400)
+        env.update(ELITE_RECOVERABLE_ASSIGNMENT_PATH=str(path), ELITE_RECOVERABLE_ASSIGNMENT_SHA256=policy_digest(payload))
+        require_recoverable_job(policy, env, event, now=100)
+        for value in ("", "b" * 64):
+            with self.assertRaises(ValueError):
+                require_recoverable_job(policy, {**env, "OTHER_PLAN_DIGEST": value}, event, now=100)
+
 
 class PhysicalIdentityTests(unittest.TestCase):
     def policy(self):

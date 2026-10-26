@@ -14,7 +14,42 @@ import time
 
 REPOSITORY = "stephenlclarke/elite"
 ACTOR = "22142777"
-RECOVERABLE_JOBS = {"prepare_native", "native_phase", "native_shards", "native_aggregate"}
+RECOVERABLE_JOBS = {"prepare_native", "prepare_thread", "prepare_address", "native_checks", "native_phase",
+                    "native_shards", "thread_shards", "address_shards", "native_aggregate"}
+PREPARE_JOBS = {"prepare_native", "prepare_thread", "prepare_address", "native_checks"}
+SHARD_JOBS = {"native_shards", "thread_shards", "address_shards"}
+
+
+def workflow_path(environment: dict) -> str:
+    """The reusable workflow's caller is the actual CI event/workflow authority."""
+    return (".github/workflows/recoverable-quality.yml" if environment.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+            and "/recoverable-quality.yml@" in environment.get("GITHUB_WORKFLOW_REF", "")
+            else ".github/workflows/ci.yml")
+
+
+def require_recoverable_event(activation: dict, environment: dict, event: dict) -> None:
+    """Approve the exact execution commit, including a separately pinned internal PR merge."""
+    name, ref, head = (environment.get(key, "") for key in ("GITHUB_EVENT_NAME", "GITHUB_REF", "GITHUB_SHA"))
+    if name == "pull_request":
+        pull = event.get("pull_request", {})
+        source, base = pull.get("head", {}), pull.get("base", {})
+        valid = (source.get("sha") == activation.get("pr_head")
+                 and re.fullmatch(r"[0-9a-f]{40}", activation.get("pr_head", ""))
+                 and source.get("repo", {}).get("full_name") == REPOSITORY
+                 and source.get("repo", {}).get("fork") is False
+                 and base.get("repo", {}).get("full_name") == REPOSITORY and base.get("ref") == "main"
+                 and str(pull.get("user", {}).get("id")) == ACTOR
+                 and pull.get("merge_commit_sha") == head
+                 and ref == "refs/pull/" + str(event.get("number")) + "/merge")
+    elif name == "push":
+        valid = (ref == "refs/heads/main" and event.get("ref") == ref and event.get("after") == head
+                 and event.get("deleted") is False and event.get("forced") is False)
+    elif name == "workflow_dispatch":
+        valid = ref.startswith("refs/heads/")
+    else:
+        valid = False
+    if not valid:
+        raise ValueError("Recoverable execution event/source is not approved.")
 
 
 def assignment_digest(environment: dict) -> str:
@@ -26,7 +61,7 @@ def assignment_digest(environment: dict) -> str:
 
 def assignment_payload(policy: dict, environment: dict) -> dict:
     activation = policy["recoverable_activation"]
-    return {"schema": 1, "head": policy["approved_head"], "workflow_sha256": activation["workflow_sha256"],
+    payload = {"schema": 1, "head": policy["approved_head"], "workflow_sha256": activation["workflow_sha256"],
             "activation_sha256": activation["manifest_sha256"], "policy_sha256": policy_digest(policy),
             "run_id": environment["GITHUB_RUN_ID"], "run_attempt": environment["GITHUB_RUN_ATTEMPT"],
             "job": environment["GITHUB_JOB"], "runner": environment["RUNNER_NAME"],
@@ -36,6 +71,9 @@ def assignment_payload(policy: dict, environment: dict) -> dict:
             "worker": environment.get("ELITE_RECOVERABLE_REQUEST_WORKER", ""),
             "phase": environment.get("ELITE_RECOVERABLE_REQUEST_PHASE", ""),
             "plan_sha256": environment.get("PLAN_DIGEST") or None}
+    if environment.get("GITHUB_JOB") == "native_aggregate":
+        payload["other_plan_sha256"] = environment.get("OTHER_PLAN_DIGEST") or None
+    return payload
 
 
 def require_owned_assignment(policy: dict, environment: dict, current: float) -> None:
@@ -72,7 +110,7 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
     """An optional host-owned contract grants only this reviewed manual workflow and instance."""
     activation = policy.get("recoverable_activation", {})
     approved = policy.get("approved_head", "")
-    workflow = REPOSITORY + "/.github/workflows/recoverable-quality.yml@" + environment.get("GITHUB_REF", "")
+    workflow = REPOSITORY + "/" + workflow_path(environment) + "@" + environment.get("GITHUB_REF", "")
     current = time.time() if now is None else now
     if (type(activation.get("schema")) is not int or activation.get("schema") != 1 or activation.get("enabled") is not True
             or activation.get("revoked") is not False
@@ -82,8 +120,6 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
             or not re.fullmatch(r"[0-9a-f]{40}", approved)
             or activation.get("head") != approved
             or environment.get("GITHUB_SHA") != approved
-            or environment.get("GITHUB_EVENT_NAME") != "workflow_dispatch"
-            or not environment.get("GITHUB_REF", "").startswith("refs/heads/")
             or activation.get("workflow_ref") != workflow
             or environment.get("GITHUB_WORKFLOW_REF") != workflow
             or environment.get("GITHUB_REPOSITORY") != REPOSITORY
@@ -93,6 +129,7 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
             or str(event.get("sender", {}).get("id")) != ACTOR
             or environment.get("GITHUB_JOB") not in RECOVERABLE_JOBS):
         raise ValueError("Recoverable native job is not explicitly activated.")
+    require_recoverable_event(activation, environment, event)
     for name, field in (("ELITE_RECOVERABLE_WORKFLOW_SHA256", "workflow_sha256"),
                         ("ELITE_RECOVERABLE_ACTIVATION_SHA256", "manifest_sha256")):
         expected = activation.get(field, "")
@@ -108,12 +145,16 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
     mode, shard, worker, phase = (environment.get("ELITE_RECOVERABLE_REQUEST_" + name, "")
                                   for name in ("MODE", "SHARD", "WORKER", "PHASE"))
     job = environment["GITHUB_JOB"]
-    if ((job in ("prepare_native", "native_aggregate") and any((mode, shard, worker, phase)))
+    if job == "native_aggregate" and not re.fullmatch(r"[0-9a-f]{64}", environment.get("OTHER_PLAN_DIGEST", "")):
+        raise ValueError("The independently prepared address plan is mandatory")
+    if ((job in ("prepare_native", "native_aggregate", "native_checks") and any((mode, shard, worker, phase)))
             or (job == "native_phase" and (phase not in ("normal", "leaks") or any((mode, shard, worker))))
-            or (job == "native_shards" and (mode not in ("thread", "address")
-                or not re.fullmatch(r"[0-9a-f]{64}", shard) or worker not in ("one", "two") or phase))):
+            or (job in ("prepare_thread", "prepare_address") and (mode != job.removeprefix("prepare_") or any((shard, worker, phase))))
+            or (job in SHARD_JOBS and (mode not in ("thread", "address")
+                or not re.fullmatch(r"[0-9a-f]{64}", shard) or worker not in ("one", "two") or phase
+                or (job == "thread_shards" and mode != "thread") or (job == "address_shards" and mode != "address")))):
         raise ValueError("Recoverable role does not match its exact request type.")
-    if environment["GITHUB_JOB"] != "prepare_native":
+    if environment["GITHUB_JOB"] not in PREPARE_JOBS:
         plan = environment.get("PLAN_DIGEST", "")
         if (not re.fullmatch(r"[0-9a-f]{64}", plan)
                 or (verify_assignment and (environment.get("ELITE_RECOVERABLE_PLAN_SHA256") != plan
@@ -182,6 +223,9 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
             or any(manifest[name] != activation[name] for name in (
                 "schema", "enabled", "revoked", "expires_at", "head", "workflow_sha256", "runners", "assignment_root"))):
         raise ValueError("Job activation variables differ from the host-owned approval.")
+    for name in ("pr_head", "reusable_workflow_sha256"):
+        if manifest.get(name) != activation.get(name):
+            raise ValueError("Owned caller/PR activation facts differ.")
     guard = load_recoverable_guard(policy) if guard is None else guard
     if not guard.PHYSICAL_EXECUTION_ENABLED:
         raise ValueError("Recoverable native execution HELD by the installed guard.")
@@ -191,10 +235,14 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
     value["GITHUB_TOKEN"], value["GH_TOKEN"] = token, token
     api = api or (lambda path: json.loads(subprocess.check_output(
         ["gh", "api", path], env=value, stderr=subprocess.PIPE, timeout=60)))
-    source = api(f"repos/{REPOSITORY}/contents/.github/workflows/recoverable-quality.yml?ref={policy['approved_head']}")
+    source = api(f"repos/{REPOSITORY}/contents/{workflow_path(value)}?ref={policy['approved_head']}")
     if (source["encoding"] != "base64" or hashlib.sha256(base64.b64decode(source["content"])).hexdigest()
             != activation["workflow_sha256"]):
         raise ValueError("GitHub workflow bytes differ from host approval.")
+    if workflow_path(value).endswith("ci.yml"):
+        called = api(f"repos/{REPOSITORY}/contents/.github/workflows/recoverable-quality.yml?ref={policy['approved_head']}")
+        if hashlib.sha256(base64.b64decode(called["content"])).hexdigest() != activation.get("reusable_workflow_sha256"):
+            raise ValueError("Called quality workflow differs from host approval.")
     entries = api(f"repos/{REPOSITORY}/contents/Tools/CI?ref={policy['approved_head']}")
     blobs = {entry["name"]: entry["sha"] for entry in entries if entry["type"] == "file"}
     for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
@@ -209,7 +257,7 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
     authority = SimpleNamespace(environment=value, policy=policy, config=config, cache=Path(config["cache"]),
                                 workers={name: Path(path) for name, path in config["workers"].items()})
     remote = guard.GitHubArtifacts(authority, api=api)
-    if value["GITHUB_JOB"] != "prepare_native":
+    if value["GITHUB_JOB"] not in PREPARE_JOBS:
         artifact_id = value.get("PLAN_ID", "")
         if not re.fullmatch(r"[1-9][0-9]*", artifact_id):
             raise ValueError("No trusted prepared artifact identity.")
@@ -220,7 +268,7 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
         plans, manifest = guard.NativeWorkflow(authority, remote).plans(bundle, value["PLAN_DIGEST"])
         if manifest["host"] != config["host"]:
             raise ValueError("Prepared plan belongs to another physical host.")
-        if value["GITHUB_JOB"] == "native_shards":
+        if value["GITHUB_JOB"] in SHARD_JOBS:
             assignment = {"mode": value.get("ELITE_RECOVERABLE_REQUEST_MODE"),
                           "shard": value.get("ELITE_RECOVERABLE_REQUEST_SHARD"),
                           "worker": value.get("ELITE_RECOVERABLE_REQUEST_WORKER")}
@@ -228,6 +276,18 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
                 raise ValueError("This worker/shard is not in the authenticated frozen plan.")
         if value["GITHUB_JOB"] == "native_phase" and value.get("ELITE_RECOVERABLE_REQUEST_PHASE") not in manifest["phases"]:
             raise ValueError("This phase is not in the authenticated frozen plan.")
+        if value["GITHUB_JOB"] == "native_aggregate":
+            other_id = value.get("OTHER_PLAN_ID", "")
+            if not re.fullmatch(r"[1-9][0-9]*", other_id):
+                raise ValueError("Aggregate requires the independent address plan artifact.")
+            other_artifact = api(f"repos/{REPOSITORY}/actions/artifacts/{other_id}")
+            if not other_artifact["name"].startswith("native-plan-"):
+                raise ValueError("Aggregate second artifact is not a mode plan.")
+            other_bundle = remote.fetch(other_artifact, value.get("OTHER_PLAN_ARCHIVE"))
+            other_plans, _ = guard.NativeWorkflow(authority, remote).plans(other_bundle, value["OTHER_PLAN_DIGEST"])
+            if ({p["runtime"]["mode"] for p in plans} != {"thread"}
+                    or {p["runtime"]["mode"] for p in other_plans} != {"address"}):
+                raise ValueError("Aggregate mode prerequisites differ.")
         value["ELITE_RECOVERABLE_PLAN_SHA256"] = value["PLAN_DIGEST"]
     root = Path(activation["assignment_root"])
     workspace = Path(value["GITHUB_WORKSPACE"])
@@ -363,10 +423,14 @@ def validate(policy: dict, environment: dict) -> Path:
 
 def require_recoverable_checkout(policy: dict, environment: dict, workspace: Path) -> None:
     if environment.get("GITHUB_JOB") in RECOVERABLE_JOBS:
-        path = workspace / ".github/workflows/recoverable-quality.yml"
+        path = workspace / workflow_path(environment)
         if (path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest()
                 != policy["recoverable_activation"]["workflow_sha256"]):
             raise ValueError("Checked-out recoverable workflow bytes changed.")
+        if workflow_path(environment).endswith("ci.yml"):
+            called = workspace / ".github/workflows/recoverable-quality.yml"
+            if called.is_symlink() or hashlib.sha256(called.read_bytes()).hexdigest() != policy["recoverable_activation"].get("reusable_workflow_sha256"):
+                raise ValueError("Checked-out called quality workflow bytes changed.")
 
 
 def main() -> None:

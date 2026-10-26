@@ -1,29 +1,29 @@
-# Recoverable parallel quality execution
+# Granular native quality and durable recovery
 
 ## Motivation
 
-The existing sanitizer helper executes packing-index batches serially under one global executor lock. A long failed campaign leaves later work unexecuted, and GitHub retries operate at the campaign job boundary. Passed work needs stable, independently recoverable proofs rather than a batch number tied to packing order.
-
-Retained G2 planning evidence describes 3,403 methods in 36 serial groups. One indivisible consumer took about 5,099 seconds; another retained 98-ID batch took about 8,966 seconds. These are planning hints from the existing run, not performance results for this change. More workers cannot make one indivisible consumer finish sooner.
+The required CI quality job executes one opaque `make ci`. A timeout late in that job hides independent phase progress and consumes the same job limit across normal coverage, TSAN, ASAN and leaks. The preserved M01 ASAN group 11 selected 96 IDs and remained incomplete after 9,789 seconds. The current M01 attempt must continue unchanged while the next workflow is prepared.
 
 ## Required behavior
 
-- Pack whole suites and unchanged audited process groups against a soft 300-600 second target, longest first. Keep oversized units intact.
-- Build/discover once per mode and host; retain a complete durable scratch bundle and restore private worker copies without recompiling completed preparation.
-- Preserve internal TSAN concurrency, ASAN ordering, the 170-method/32-source AppKit group and the 13-method/two-source salvage group.
-- Reuse only exact, immutable, exit-zero successes bound to actual inputs, host, toolchain, SDK, OS, image, controls, selection and relevant policies. Retry only missing, failed or incomplete work and retain original evidence.
-- Bound both modes and all controllers through one host pool. Serialize unknown or conflicting external resources. Treat timing hints and worker placement as planning metadata.
-- Bind physical admission to a separately reviewed manual workflow, exact source and workflow bytes, owned host policy and exact run-attempt assignment before checkout.
-- Retain independent per-shard artifacts through an external trusted digest, and require exact both-mode inventory plus full normal coverage at the existing 80% gate and zero leaks. Cancelled or missing work cannot become a physical pass.
+- Expose separate build/discovery steps, full normal coverage, each TSAN/ASAN shard, zero leaks and final aggregate in actual required CI.
+- Give TSAN and ASAN independent prerequisites, job limits, results and immutable raw uploads. Keep healthy shards running after another failure.
+- Retry only missing/failed exact-identity work and retain completed durable proof after timeout/cancellation. Never promote statuses or partial XML.
+- Preserve every original `make ci` prerequisite, exact full inventory, opt-in/diagnostic policy, the 80% coverage gate and zero leaks.
+- Use useful stable job names and validated completed/total/current summaries. Bound individual executions without pretending that a hard limit checkpoints inside a test.
+- Keep whole suites and reviewed shared-process dependencies. Limit packed units without creating hundreds of unnecessary jobs on one physical runner.
+- Fail closed without installed exact-head host/event/assignment approval. Keep current M01, branch protections and actual-main requirements intact.
 
-## Implemented scope and hold
+## Bounded implementation
 
-[PR #242](https://github.com/stephenlclarke/elite/pull/242) implements the planner, durable receipts/builds/phases, bounded workers, actual native adapters, pre-job authorizer, artifact transport and manual workflow routing. Changes are limited to the five original reserved new files plus the separately reserved `native_runner.py` policy extension and its tests. Legacy CI authorization remains the default.
+[PR #242](https://github.com/stephenlclarke/elite/pull/242) reuses its reviewed native adapters, durable build/phase/shard proof, private copies, resource admission and trusted artifact transport. The additional CI caller wiring preserves the required job named `quality`; the reusable workflow provides independent mode preparation/shards, normal coverage, leaks, all other prerequisites and strict aggregate/Sonar handling.
 
-Physical execution remains disabled in code and defaults off in the workflow. No host provisioning, routing-variable edit, workflow dispatch, native build, test, sanitizer, leak probe, GUI or performance measurement is part of this packet. The existing M01 checkout, helper bytes, policy and qualified receipts remain untouched. This PR targets `release/m01` and stays draft/unmerged pending independent review and a separate safe activation.
+The default 64-ID count cap with deterministic count-only planning weights produces 52 shards per mode for the retained 3,403-ID inventory. This is a source-only projection, not a performance measurement. The old 96-ID group contains 20 suites: its three menu cases remain with the complete 170-ID AppKit shared-process cohort; all other suites retain their boundaries. The 13-ID salvage shared-release cohort remains whole. Each native shard has a two-hour execution bound and upload margin. A proven repeated indivisible-cohort timeout stops before another automatic replay and reports the exact decomposition/bound contract that needs review.
 
-## Acceptance evidence
+The source route supports real CI events, but installation and execution remain G1-owned at a reviewed quiescent boundary. There is one physical runner/private worker and no competing native execution. Old f9/7eb evidence is not promoted across changed workflow/helper inputs. Current M01 is not a dependency of this packet and must not wait for it.
 
-The focused local packet has 64 passing fake-only test methods: 50 recovery/native-adapter/workflow tests plus 14 selected existing/new authorization tests. Faults cover controller loss, timeout, duplicate/inherited claims, unknown children, invalid XML and exits, diagnostic logs, output/path/permission tampering, failed-only resume, durable mode restoration, phase retry with zero execution, observed helper image mismatch, growing-worker headroom, stale assignments and held/cancelled final gates. Exact receipts and hashes accompany the frozen Orchestrator handoff.
+## Acceptance and limits
 
-See [the implementation handoff](PR-recoverable-parallel-quality.md) for protocol details, operational prerequisites and remaining validation.
+Retain the prior 64 fake-test pass records and review of their unchanged scope. Run only new/affected fake workflow, authorization and recovery cases plus lint, then obtain independent MBA review of the frozen delta. Actual native qualification, copied-build/helper lifecycle, pre-job credentials, job registration lifecycle and throughput remain unverified. No local native run, probe, benchmark, host installation, workflow dispatch or live policy/routing change is part of this packet.
+
+See [the PR handoff](PR-recoverable-parallel-quality.md) for exact file/role ownership, recovery contracts and the concrete G1 installation/required-check transition.
