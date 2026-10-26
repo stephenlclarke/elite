@@ -16,6 +16,15 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "OriginalJaguarUnitTests": (
+        "exactCapitalAuthenticationRejectsForeignDefinitionModelAndUnits",
+        "originalCapitalMechanicsPreserveFullHistoryAndOtherHullBindings",
+        "rawPhysicalPlayerAndMilitaryCapitalSalvageKeepCompleteApprovedGeometry",
+        "liveAccommodationAndHoldMountTankLimitsIssueNoPeopleOrFittings",
+        "neverPurchaseCapitalRefusesActualExchangeDespitePositiveBalance",
+        "destructionRecordsOnlyCapitalMilestoneAndKeepsBlueprintsIndependent",
+        "invalidCapitalPolicyAndMalformedLoaderCannotSilentlyActivate",
+    ),
     "OriginalHareExplorerUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",

@@ -103,7 +103,8 @@ struct OriginalHareExplorerUnitTests {
       "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
       "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
       "SH046", "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
-      "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH083",
+      "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH081",
+      "SH083",
     ]
     .contains(
       other.id)
@@ -172,6 +173,7 @@ struct OriginalHareExplorerUnitTests {
       ("SH074", .transporter, .transporter), ("SH075", .transporter, .transporter),
       ("SH077", .transporter, .transporter), ("SH078", .leisure, .leisure),
       ("SH079", .transporter, .transporter), ("SH080", .transporter, .transporter),
+      ("SH081", .military, .military),
     ] {
       let earlier = try #require(ShipCatalogue.ship(id))
       #expect(earlier.catalogue.primaryRole == role && earlier.catalogue.primaryType == type)
@@ -182,7 +184,8 @@ struct OriginalHareExplorerUnitTests {
           "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
           "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
           "SH046", "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
-          "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH083",
+          "SH068", "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH081",
+          "SH083",
         ])
     var game = Game(executive: false)
     game.docked = false
