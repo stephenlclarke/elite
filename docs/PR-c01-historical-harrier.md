@@ -1,0 +1,24 @@
+# Keep C01 Harrier on its historical retained source
+
+The future original SH056 Aplomado activation changes the live fleet record that C01 currently looks up as Harrier. C01 now decodes its existing retained packaged SH056 record directly through `TOMLDecoder<CatalogueShip>`, using the existing resource-folder locator. It does not traverse live activation or introduce a shared archival API. This packet is based on published Jaguar `bb3c437945d5b650e84adaa077e6c5c240ef9d93` on `feat/c01-historical-harrier`.
+
+The unchanged resource is `Sources/EliteCore/Resources/Ships/SH056.toml`, SHA256 `06f2f19f731014a2df41122b2669a0919af1535acd7fc9baa595789a7233825d`. It retains SH056 / Harrier / ROC-SH056, all 1,426 vertices and 1,065 faces, materials and appearance. Bounds remain minimum(-21.02621,-7.79609,-32.5) and maximum(21.02621,7.79609,32.5). The existing uniform 65-metre fore-aft calibration therefore remains scale one. No geometry, resource or hash is regenerated.
+
+The small C01-local builder keeps the existing name/model/design guards and checks the historical ID that the old ID lookup supplied. All statements after those guards, including source suffix, every optional appearance/UV field, calibration and convex collision, remain byte-identical. Missing or malformed packaged input fails the existing cached `Result`; there is no fallback to the live catalogue. Collision triangulation and conservative half-space validation are unchanged.
+
+Mission model tokens `asset:c01-harrier-65m` and `asset:c01-recorder-8kg`, canonical geometry hashing, actual fit authentication, save formats, actor/permission/custody semantics and recorder geometry remain unchanged. No C08 `NativeWayfarerInductionCrewLogSource` or shared helper is touched. Aplomado remains unactivated. Existing C01 methods and their assertions remain unchanged.
+
+## Focused coverage
+
+Four new non-parameterized `NativeC01HistoricalHarrierUnitTests` methods are added to the existing maintained selector, retaining the full 676-method parent selection for 680 methods total:
+
+1. `historicalHarrierKeepsCompleteDesignAppearanceAndCanonicalModelHash`: whole historical design equality including provenance and all optional appearance/UV fields; unchanged canonical bytes, model token and model hash; independent recorder remains.
+2. `calibratedBoundsAndClosedConvexCollisionContainEveryHistoricalPoint`: exact historical bounds, unchanged uniform 65-metre coordinates, closed triangular convex collision, containment of every visual point and deterministic rebuilt geometry.
+3. `aplomadoGeometryCannotReplaceHistoricalSourceOrAuthenticateAsC01Harrier`: actual approved original SH056 Aplomado model differs and is refused as a historical record; existing actual C01 passive-fit validator accepts the historical hash and refuses the Aplomado hash without changing mission or authentication code.
+4. `foreignAndMalformedHistoricalRecordsCannotSupplyGeometry`: wrong source ID, name, model, vertices, face indices and material assignments fail the guarded builder; a valid historical record still succeeds.
+
+## Validation and remaining gates
+
+Local work uses only standalone formatting, source/fixture/selector checks, Python report-helper fixtures, Markdown and whitespace. The four Swift methods are authored and UNRUN at source freeze. Independent MBA source review precedes one ordinary automatic hosted 680-method run after publication. No local compiler, native/GUI, probe, performance, broad integration or manual duplicate test job is run.
+
+This packet is an isolated future prerequisite. Its integration stays outside current M01 and the release candidate. Parent/composition/final-head review and required checks remain separate. The future activation owner must explicitly correct the existing C01 test's live-SH056 historical-name fixture when that activation is assigned. No fleet registry, role/capital/acquisition/cargo, mission permission/save schema or G3/G4-owned file is changed. [Motivation](ISSUE-c01-historical-harrier.md).
