@@ -32,6 +32,7 @@ enum OriginalPlayerHullActivation {
     case "SH064": return try OriginalArnaCutterActivation.resolve(retained)
     case "SH065": return try OriginalVultureRaiderActivation.resolve(retained)
     case "SH068": return try OriginalBadgerActivation.resolve(retained)
+    case "SH069": return try OriginalBazaFighterActivation.resolve(retained)
     case "SH029": return try OriginalBurroActivation.resolve(retained)
     case "SH061": return try OriginalHaflingerActivation.resolve(retained)
     default: return retained

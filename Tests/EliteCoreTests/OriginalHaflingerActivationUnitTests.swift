@@ -35,6 +35,7 @@ struct OriginalHaflingerActivationUnitTests {
       "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
       "SH046",
       "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065", "SH068",
+      "SH069",
     ]
     .contains(
       other.id)
@@ -112,6 +113,7 @@ struct OriginalHaflingerActivationUnitTests {
         "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
         "SH046",
         "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065", "SH068",
+        "SH069",
       ])
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
