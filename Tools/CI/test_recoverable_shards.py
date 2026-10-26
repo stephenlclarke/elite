@@ -1301,6 +1301,57 @@ class GranularityTests(Fixture):
         self.assertEqual(self.executor.calls, 1)
         self.assertTrue(list((self.store.root / "attempts").glob("*/*/failure.json")))
 
+    def test_authenticated_timeout_survives_cache_loss_and_blocks_only_same_identity_and_bound(self):
+        methods = [f"EliteCoreTests.Indivisible/case{i}()" for i in range(3)]
+        plan = shards.make_plan(self.runtimes["thread"], methods)
+        identity = shards.shard_identity(plan["runtime"], plan["shards"][0])
+        self.executor.exit_code = 124
+        self.executor.damage = lambda attempt: shards.durable_json(attempt / "timeout.json", {
+            "schema": shards.SCHEMA, "seconds": 5, "reason": "process wait deadline"})
+        with self.assertRaises(ValueError):
+            self.run_one(plan)
+        exported = self.root / "timeout-export"
+        self.store.export_outcome(identity, exported)
+        payload = WorkflowTests.archive(self, {p.relative_to(exported).as_posix(): p.read_bytes() for p in exported.rglob("*") if p.is_file()})
+        authority = self.authority()
+        remote, _ = WorkflowTests.remote(self, authority, payload, "native-shard-thread-" + plan["shards"][0]["id"] + "-1")
+        fresh = shards.Store(self.root / "fresh-after-cache-loss")
+        self.assertFalse(remote.restore_shard(plan, plan["shards"][0], fresh))
+        executor = FakeExecutor(self.root / "fresh-worker", self.runtimes)
+        with self.assertRaisesRegex(ValueError, "Indivisible cohort.*no automatic replay"):
+            shards.run_shard(plan, plan["shards"][0]["id"], fresh, executor, HEAD, 5, ADMISSION)
+        self.assertEqual(executor.calls, 0)
+        self.assertIsNone(fresh.matching(identity))
+        # A second cache loss still has the blocker, not a passed receipt.
+        again = self.root / "timeout-reexport"
+        fresh.export_outcome(identity, again)
+        self.assertTrue((again / "last-attempt/timeout.json").is_file())
+        self.assertFalse((again / "index.json").exists())
+        changed_bound = shards.run_shard(plan, plan["shards"][0]["id"], fresh, executor, HEAD, 6, ADMISSION)
+        self.assertFalse(changed_bound["reused"])
+        self.assertEqual(executor.calls, 1)
+        changed = shards.make_plan({**plan["runtime"], "image_sha256": "f" * 64}, methods)
+        wrong = shards.Store(self.root / "wrong-identity")
+        self.assertFalse(remote.restore_shard(changed, changed["shards"][0], wrong))
+        changed_identity = shards.shard_identity(changed["runtime"], changed["shards"][0])
+        with self.assertRaises(ValueError):
+            wrong.restore_failure(exported, changed_identity)
+        self.assertFalse((wrong.root / "timeout-blockers").exists())
+        ordinary = shards.Store(self.root / "ordinary-failure")
+        failed = FakeExecutor(self.root / "ordinary-worker", self.runtimes)
+        failed.exit_code = 1
+        with self.assertRaises(ValueError):
+            shards.run_shard(plan, plan["shards"][0]["id"], ordinary, failed, HEAD, 5, ADMISSION)
+        raw = self.root / "ordinary-export"
+        ordinary.export_outcome(identity, raw)
+        other_payload = WorkflowTests.archive(self, {p.relative_to(raw).as_posix(): p.read_bytes() for p in raw.rglob("*") if p.is_file()})
+        other_remote, _ = WorkflowTests.remote(self, authority, other_payload, "native-shard-thread-" + plan["shards"][0]["id"] + "-2")
+        retry = shards.Store(self.root / "ordinary-retry")
+        self.assertFalse(other_remote.restore_shard(plan, plan["shards"][0], retry))
+        normal_executor = FakeExecutor(self.root / "ordinary-retry-worker", self.runtimes)
+        shards.run_shard(plan, plan["shards"][0]["id"], retry, normal_executor, HEAD, 5, ADMISSION)
+        self.assertEqual(normal_executor.calls, 1)
+
     def test_each_mode_prepares_and_loads_without_other_mode_and_aggregate_requires_both(self):
         authority, builder, builds, calls = self.prepared()
         for mode in shards.MODES:

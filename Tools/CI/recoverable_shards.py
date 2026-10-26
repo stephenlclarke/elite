@@ -538,6 +538,30 @@ class Store:
             raise ValueError("Artifact contains unaccounted entries")
         return self.restore(bundle / "attempt", index["receipt_sha256"], identity)
 
+    def restore_failure(self, bundle, identity):
+        """Called only after external archive authentication; retain exact timeout stops."""
+        files = physical_tree(bundle)
+        failure = load_json(bundle / "failure.json")
+        require_fields(failure, ("schema", "status", "identity", "outputs"))
+        if (failure["schema"] != SCHEMA or failure["identity"] != identity
+                or failure["status"] not in ("failed", "missing")
+                or failure["outputs"] != {name: digest for name, digest in files.items() if name != "failure.json"}
+                or set(path.name for path in bundle.iterdir()) - {"failure.json", "last-attempt"}):
+            raise ValueError("Authenticated failure bundle has changed identity/outputs")
+        attempt = bundle / "last-attempt"
+        if not attempt.is_dir() or not proved_timeout(attempt, identity):
+            return False
+        root = self.root / "timeout-blockers" / fingerprint(identity)
+        legacy.owned_directory(root)
+        with claim(self.root / "claims", "shard:" + fingerprint(identity)):
+            destination = root / fingerprint(physical_tree(attempt))
+            if not destination.exists():
+                atomic_copy(attempt, destination)
+            require_sealed(destination)
+            if physical_tree(destination) != physical_tree(attempt) or not proved_timeout(destination, identity):
+                raise ValueError("Restored timeout evidence changed")
+        return True
+
     def export_outcome(self, identity, destination):
         if self.matching(identity):
             return {"status": "passed", "index_sha256": self.export(identity, destination)}
@@ -547,6 +571,9 @@ class Store:
         legacy.owned_directory(destination)
         parent = self.root / "attempts" / fingerprint(identity)
         attempts = sorted(parent.iterdir(), key=lambda path: path.stat().st_mtime_ns) if parent.exists() else []
+        if not attempts:
+            attempts = [path for path in sorted((self.root / "timeout-blockers" / fingerprint(identity)).glob("*"))
+                        if path.is_dir() and proved_timeout(path, identity)]
         if attempts:
             physical_tree(attempts[-1])
             shutil.copytree(attempts[-1], destination / "last-attempt")
@@ -750,6 +777,22 @@ def reserve_worker(store, executor, runtime, admission, timeout):
             reservation_update(store, reservation, state="released" if safe else "unknown")
 
 
+
+def proved_timeout(attempt, identity, bound=None):
+    """A failed artifact may preserve a stop condition, never a successful outcome."""
+    physical_tree(attempt)
+    required = ("start.json", "failure.json", "timeout.json", "child.json", "child-exit.json")
+    if any(not (attempt / name).is_file() for name in required):
+        return False
+    start, failure, timeout, child, terminal = (load_json(attempt / name) for name in required)
+    seconds = start.get("timeout_seconds")
+    return (start.get("identity") == identity and type(seconds) in (int, float) and math.isfinite(seconds) and seconds > 0
+            and (bound is None or seconds == bound) and type(failure.get("exit_code")) is int
+            and failure == {"status": "failed", "exit_code": 124}
+            and timeout == {"schema": SCHEMA, "seconds": seconds, "reason": "process wait deadline"}
+            and type(child.get("pid")) is int and child["pid"] > 0
+            and type(terminal.get("exit_code")) is int and terminal == {"pid": child["pid"], "exit_code": 124})
+
 def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
               fault=lambda stage: None):
     """The injected executor owns a private prepared workspace and verifies runtime facts."""
@@ -781,19 +824,15 @@ def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
             return {"id": shard_id, "reused": True, "attempt": str(found[0]),
                     "tested_head": found[1]["tested_head"], "current_head": current_head}
         parent = store.root / "attempts" / shard_id
-        if len(shard["atoms"]) == 1 and parent.exists():
-            for failure in parent.glob("*/failure.json"):
-                if not (failure.parent / "start.json").exists() or not (failure.parent / "timeout.json").exists():
-                    continue
-                physical_tree(failure.parent)
-                start = load_json(failure.parent / "start.json")
-                if (load_json(failure).get("exit_code") == 124 and start.get("identity") == identity
-                        and start.get("timeout_seconds") == timeout
-                        and load_json(failure.parent / "timeout.json") == {"schema": SCHEMA, "seconds": timeout, "reason": "process wait deadline"}):
+        if len(shard["atoms"]) == 1:
+            candidates = list(parent.glob("*")) if parent.exists() else []
+            candidates += list((store.root / "timeout-blockers" / shard_id).glob("*"))
+            for attempt in candidates:
+                if attempt.is_dir() and proved_timeout(attempt, identity, timeout):
                     cohorts = sorted({".".join(legacy.group_key(method)) for method in shard["methods"]})
                     raise ValueError("Indivisible cohort hit its hard runtime bound; no automatic replay: "
                                      + ", ".join(cohorts) + ". Review shared-state/test decomposition or the execution bound; retained "
-                                     + str(failure.parent))
+                                     + str(attempt))
         reservation = stack.enter_context(reserve_worker(store, executor, plan["runtime"], admission, timeout))
         locks.append(reservation["lock"])
         parent = store.root / "attempts" / shard_id
@@ -1843,9 +1882,7 @@ class GitHubArtifacts:
         for artifact in self.artifacts(prefix):
             bundle = self.fetch(artifact)
             if (bundle / "failure.json").exists():
-                failed = load_json(bundle / "failure.json")
-                if failed["identity"] != identity or failed["status"] not in ("failed", "missing"):
-                    raise ValueError("Failure artifact identity changed")
+                store.restore_failure(bundle, identity)
                 continue
             # The index is trusted only after the entire archive matched an external API digest.
             store.restore_artifact(bundle, legacy.digest(bundle / "index.json"), identity)

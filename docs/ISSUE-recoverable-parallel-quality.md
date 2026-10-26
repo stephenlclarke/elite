@@ -22,6 +22,12 @@ The default 64-ID count cap with deterministic count-only planning weights produ
 
 The source route supports real CI events, but installation and execution remain G1-owned at a reviewed quiescent boundary. There is one physical runner/private worker and no competing native execution. Old f9/7eb evidence is not promoted across changed workflow/helper inputs. Current M01 is not a dependency of this packet and must not wait for it.
 
+## Installer and timeout follow-up
+
+The legacy installer could install only one guard and listen for one ephemeral job. The explicit reviewed-policy extension now installs all five pinned Python files plus both workflow identities in a separate immutable authorization generation. It supports a single exact-run/attempt serial session with a durable consumed-job budget and finite expiry. Its default legacy behavior remains; active/uncertain ownership and mismatched immutable bytes refuse renewal. Actual installation, credentials, listener lifecycle and activation remain G1-owned and unverified by these fakes.
+
+[Issue #254](https://github.com/stephenlclarke/elite/issues/254) records the independent review finding that an authenticated timeout failure was ignored after cache loss. The correction retains that exact failed timeout proof as a separate sealed blocker, including re-export, without qualifying it as a pass. One focused fresh-store test verifies zero executor calls for the same identity/bound and the changed-bound/identity/ordinary-failure negatives.
+
 ## Acceptance and limits
 
 Retain the prior 64 fake-test pass records and review of their unchanged scope. Run only new/affected fake workflow, authorization and recovery cases plus lint, then obtain independent MBA review of the frozen delta. Actual native qualification, copied-build/helper lifecycle, pre-job credentials, job registration lifecycle and throughput remain unverified. No local native run, probe, benchmark, host installation, workflow dispatch or live policy/routing change is part of this packet.

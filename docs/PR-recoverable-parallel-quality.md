@@ -45,17 +45,62 @@ The existing installed guard package is reused with narrow explicit roles for mo
 G1 owns this concrete transition after independent review at a quiescent boundary:
 
 1. Preserve the current M01 run/policies/cache unchanged. Compose the reviewed workflow source into the future candidate; rebase/source-audit as required. The source change invalidates old executable-input keys. Required checks must qualify the actual candidate and actual main independently.
-2. Prepare the owned policy at `~/Library/EliteNativeAuthorization/<execution-head>/policy.json` using the existing verified runner archive, exact physical workspace and current approved compiler/SDK. Do not mutate an existing authorization. Retain one runner instance, private worker `one`, the actual legacy `executor.lock` location and reviewed static capacities/reserves.
-3. Install the five pinned Python guard/helper files outside mutable checkout/cache. The guard SHA, four helper SHA-256 pins, exact `ci.yml` caller SHA and separate `reusable_workflow_sha256` must match the approved commit. Configure the owned pre-job hook to invoke that installed `native_runner.py --policy <owned-policy>` before any checkout.
+2. Author/review the complete owned policy JSON and its raw SHA-256 using the existing verified runner archive, exact physical workspace, approved compiler/SDK and five source pins. The explicit installer mode below writes a separate immutable `~/Library/EliteNativeAuthorization/<execution-head>/recoverable-<reviewed-input-sha256>/policy.json`; the legacy policy/hook are preserved. Retain one runner instance, private worker `one`, the actual existing legacy `executor.lock` location and reviewed static capacities/reserves.
+3. Use the explicit reviewed-policy installer mode below. It checks and installs `native_runner.py` plus the four helper SHA-256 pins, verifies both workflow identities, and generates the owned session hook before selecting it in the runner environment. The legacy installer default alone cannot perform this installation.
 4. The owned `recoverable_activation` must pin schema/enabled/revoked/expiry, execution `head`, actual caller `workflow_ref`, caller `workflow_sha256`, `reusable_workflow_sha256`, reviewed manifest digest, physical host and assignment root. For PRs also pin `pr_head`. The trusted `ELITE_RECOVERABLE_ACTIVATION` JSON carries the same facts plus exact `ref` and `workflow_file` (`ci.yml` for CI); `ELITE_RECOVERABLE_POLICY_DIGESTS` maps the one runner name to the full owned policy digest. The existing authorizer authenticates GitHub source/tool blobs and both workflow files before issuing immutable run-attempt assignments. Aggregate assignments additionally bind the independent address-plan digest.
-5. Allow only `native_checks`, `prepare_thread`, `prepare_address`, `native_phase`, `thread_shards`, `address_shards` and `native_aggregate` on that exact runner/workspace. Register/listen serially under G1's existing lease; an ephemeral `--once` runner needs renewed registration between jobs, never concurrent instances. The hook must have scoped read access to the actual run/artifacts before checkout; missing credentials fail closed.
+5. Allow only `native_checks`, `prepare_thread`, `prepare_address`, `native_phase`, `thread_shards`, `address_shards` and `native_aggregate` on that exact runner/workspace. Use the bounded serial renewal mode below under G1's existing lease. It registers one ephemeral `--once` instance at a time, never concurrent instances. The hook must have scoped read access to the actual run/artifacts before checkout; missing credentials fail closed.
 6. Trigger only the separately authorized exact-head future CI event. Confirm all prerequisite, phase, shard, artifact and aggregate outcomes in the ordinary required `quality` route. Keep branch protections intact; do not replace required checks with a manual demonstration. Native copied-build/helper lifecycle and packaging/release remain independently validated work. Only G1 installs policies, changes routing variables or starts physical execution.
 
 No installation, variable change, workflow dispatch, native build/test/probe, benchmark or current-run mutation is performed by this source packet. The new delta needs independent MBA review before activation. Earlier source clearance for `febc2c78` applies only to its retained scope, not automatically to this delta.
 
+## Explicit installer mode and bounded renewal
+
+`prepare_native_runner.py` now has a separate `--recoverable-policy` mode. The reviewed JSON must be an owned physical `0400` file outside the checkout. Its raw hash is supplied separately with `--recoverable-policy-sha256`. It contains the full existing exact-head/runner/archive/developer/compiler/SDK fields plus the complete `recoverable_activation` and `recoverable_shards` contracts above. The installer checks all five Python file pins, both workflow hashes, the published manifest digest, exact roles/workspace, one worker, disjoint paths, finite expiry and static admission. It does not generate an unreviewed approval. Activation and session expiry are finite and cannot exceed seven days from installation.
+
+From the exact clean approved source, G1 uses the following concrete entrypoint after independent source and host-feasibility review. All variables denote the reviewed non-secret identities/paths. The first invocation only installs; it does not request a token, register or listen.
+
+```sh
+installer=(python3 Tools/CI/prepare_native_runner.py
+  --approved-head "$EXECUTION_HEAD"
+  --runner-archive "$RUNNER_ARCHIVE"
+  --archive-sha256 "$RUNNER_ARCHIVE_SHA256"
+  --recoverable-policy "$REVIEWED_POLICY"
+  --recoverable-policy-sha256 "$REVIEWED_POLICY_SHA256")
+"${installer[@]}"
+```
+
+The installer refuses an active old registration or a held existing physical executor lock. It preserves the verified archive and every old authorization. Same-input installation is idempotent; changed installed files, modes, source pins, policy bytes or a substituted path fail closed rather than being overwritten. Policy generations are separate directories; the legacy default remains unchanged.
+
+G1 then publishes the separately reviewed activation/policy-digest variables and starts the authorized actual CI event. The run ID is selected from that event while native jobs are queued. Session identity is separate from the immutable policy, so the policy can be installed before the run exists without a circular hash. Renew only that exact run and attempt:
+
+```sh
+"${installer[@]}" --register --run \
+  --session-run-id "$WORKFLOW_RUN_ID" \
+  --session-run-attempt "$WORKFLOW_RUN_ATTEMPT" \
+  --max-jobs 128 --session-expires-at "$SESSION_EXPIRES_AT"
+```
+
+`SESSION_EXPIRES_AT` is a reviewed Unix timestamp no later than the activation expiry. The job budget is a positive integer at most 256; 128 permits the projected 110 native jobs plus a bounded retry allowance, not unlimited renewal. The exact run/attempt, head, policy digest, budget and expiry become an immutable binding under `~/Library/EliteNativeCI/recoverable-sessions/`. A durable `.state` counter consumes a slot **before** any registration-token request. A `0400` ticket binds the next hook to that session/ordinal. The hook rejects a different run/attempt, expired ticket or out-of-budget ordinal before the installed exact-head native guard. Registration calls have at most 60 seconds, further bounded by session expiry. Tokens are never written to the session records or printed. Parent `GH_TOKEN`/`GITHUB_TOKEN` credentials are excluded from the listener environment; workflow-scoped credentials remain a separate pre-job requirement.
+
+One controller lock serializes installation/renewal and is inherited by each listener. The existing physical executor lock must be free before installation and each registration. The loop authenticates the exact GitHub run/attempt/source/actor/workflow, registers one ephemeral instance, waits for it, and renews only while that run is active, time remains and budget remains. It stops on terminal workflow status, exhausted budget, expiry, API/registration failure or uncertain listener state. It does not infer that a native test passed from runner exit or registration count. A completed run may stop only the controller's own unreaped listener with SIGINT; no native helper, foreign PID or process group is signalled. Expiry with an active/uncertain listener sends no signal and authorizes no replacement.
+
+For registration-only, use the same session flags with `--register` and omit `--run`. To consume that issued slot later, use those exact same bounds with `--run` and omit `--register`; no second token is requested. Adding both flags resumes the issued slot and then serial renewal within the remaining budget. A failed token/configuration request consumes its slot; retrying the exact same binding uses only the remaining budget. Bounds cannot be enlarged in place.
+
+To stop renewal, interrupt the controller. An active listener retains the inherited control lease and the recorded `running` state; it is not killed or silently replaced. Missing metadata, an ambiguous registration, incomplete installation or an unresolved listener stops recovery. G1 must establish terminal listener/native ownership and use the existing vendor registration lifecycle before another session or rollback. There is no force-unlock, automatic credential deletion or automatic native cleanup flag. A new workflow attempt uses a new explicit session binding; changed policy/path/source still invalidates old runtime identity. An expired policy needs a separately reviewed authorization, never an in-place expiry extension.
+
+For rollback, first finish/deregister the owned listener at a quiescent boundary. From the exact preserved old clean source and matching approved archive/compiler/SDK, invoke the original installer without any recoverable/session flags; its unchanged default reselects the preserved legacy hook and refuses mismatches. Keep all recoverable policy generations, session counters, durable proof and failure evidence. Do not delete them to make a retry appear fresh. No install, registration, token request or rollback is performed by this source handoff.
+
+## Authenticated timeout recovery correction
+
+MBA finding RQ-8AB0-1 is tracked in [issue #254](https://github.com/stephenlclarke/elite/issues/254). The earlier blocker inspected only local attempts. A fresh cache could authenticate a failed shard artifact, skip its failure bundle and launch the same indivisible timeout again.
+
+The artifact adapter now validates the failure bundle's exact identity and output hashes after external ZIP authentication. It retains a complete matching start/failure/child-terminal/timeout proof in a separate sealed `timeout-blockers/<identity>/` store. The normal launch check reads local and restored blockers for the same identity and execution bound. Re-export preserves that blocker across another cache loss. No failed artifact becomes a successful receipt or index entry. Changed bounds/identity do not inherit the stop condition, and ordinary failed work remains retryable.
+
+The focused regression covers timeout, export, authenticated restore into a fresh store and **zero executor calls** for the same indivisible identity/bound. It also checks re-export, changed-bound execution, changed-identity rejection and ordinary-failure retry.
+
 ## Focused validation and limits
 
-The earlier 64 fake-only pass records remain retained. 28 current affected fake-only tests pass, including ten new cases. They cover the changed mode-plan routing, build/discovery recovery, actual CI authorization, both-plan assignment binding, whole-unit bounded packing, immutable failure export, progress and strict final gate. Only affected fake cases and workflow/YAML/paired Markdown/whitespace checks run locally. Raw counts and exact hashes accompany the frozen Orchestrator handoff. No broad or native test result is claimed.
+The earlier 64 fake-only pass records remain retained. The `8ab0a941` packet has 28 affected fake-only passes, including ten new cases. Its unchanged proof is retained. The installer/issue-254 append has 16 focused fake-only passes, including eight new cases; legacy preparation/refusal and the existing local-timeout case are retained in that focused check. They cover the changed mode-plan routing, build/discovery recovery, actual CI authorization, both-plan assignment binding, whole-unit bounded packing, immutable failure export, progress and strict final gate. Only affected fake cases and workflow/YAML/paired Markdown/whitespace checks run locally. Raw counts and exact hashes accompany the frozen Orchestrator handoff. No broad or native test result is claimed.
 
 Actual copied SwiftPM relocation, installed pre-job credentials, runner lifecycle across jobs, full native gates and speed remain unverified. A source-only count projection is not evidence of faster completion. Any changed source, dependency, environment, generated version/resource, image, UUID or authorization refuses old proof. Actual-main Sonar and signed/notarized release stages retain their existing requirements.
 
