@@ -156,6 +156,7 @@ struct NativeWormholeTransitTests {
     let fixture = try NativeWormholeTransitFixture()
     defer { fixture.storage.clean() }
     var (game, id, context) = try fixture.game()
+    #expect(game.wayfarerInductionMission == nil && game.inductionCrewLogChild == nil)
     let legID = try fixture.request(&game, instance: id)
     for _ in 0..<100 {
       if game.commander.scriptState.wormholeTransit?.legs[legID]?.opening != nil { break }
@@ -175,13 +176,11 @@ struct NativeWormholeTransitTests {
         opening: hole,
         from: sample.pose.systemPoint(previous.position),
         to: game.commander.flightSimulation.pose.systemPoint(body.position), hullRadius: radius)
-      let before = game.commander
-      let physical = game.bodies
-      game.advanceNativeNPCTransit(from: sample, publish: fixture.publisher)
-      #expect(game.commander == before && game.bodies == physical)
+      verifyRefusedTransit(&game, sample: sample, fixture: fixture)
       if crossed { break }
     }
     try #require(crossed)
+    #expect(game.wayfarerInductionMission == nil && game.inductionCrewLogChild == nil)
     #expect(try ScriptFinanceTestFixture.files(fixture.storage.backup) == files)
     try fixture.storage.restoreWriter()
     // A later accepted departure must come from new actual motion, not a forged removal.
@@ -189,10 +188,32 @@ struct NativeWormholeTransitTests {
       if game.commander.scriptState.wormholeTransit?.legs[legID]?.departure != nil { break }
       try fixture.step(&game, context: context)
     }
+    try verifyAcceptedDepartureAndPendingSave(
+      &game, instance: id, legID: legID, distanceLightYears: context.route.distanceLightYears,
+      fixture: fixture)
+  }
+
+  // The comparison owns its Commander snapshot only after this frame's physical step returns.
+  @inline(never)
+  private func verifyRefusedTransit(
+    _ game: inout Game, sample: NativeWormholeMotionSample, fixture: NativeWormholeTransitFixture
+  ) {
+    let before = game.commander
+    let physical = game.bodies
+    game.advanceNativeNPCTransit(from: sample, publish: fixture.publisher)
+    #expect(game.commander == before && game.bodies == physical)
+  }
+
+  // Keep later readback values out of the stack used for actual physical motion.
+  @inline(never)
+  private func verifyAcceptedDepartureAndPendingSave(
+    _ game: inout Game, instance id: UUID, legID: UUID, distanceLightYears: Double,
+    fixture: NativeWormholeTransitFixture
+  ) throws {
     let departed = try #require(game.commander.scriptState.wormholeTransit?.legs[legID])
     let receipt = try #require(departed.departure)
     #expect(
-      departed.phase == .inTransit && receipt.fuelAfter == 7 - context.route.distanceLightYears)
+      departed.phase == .inTransit && receipt.fuelAfter == 7 - distanceLightYears)
     #expect(!game.bodies.contains { $0.missionActorID == departed.actor })
     let retained = try #require(
       game.commander.scriptState.instances[id]?.ownedEncounters["opponents"]?.actors["lead"])
