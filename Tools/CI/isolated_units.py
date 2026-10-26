@@ -25,6 +25,14 @@ METHODS = {
         "destructionRecordsOnlyCapitalMilestoneAndKeepsBlueprintsIndependent",
         "invalidCapitalPolicyAndMalformedLoaderCannotSilentlyActivate",
     ),
+    "ShowroomManualViewUnitTests": (
+        "modelDragRotatesBothRenderedPreviewsTogetherAndPausesAutomaticMotion",
+        "everyAxisTurnsThroughAFullCircleAndViewResetPreservesPinnedBaseline",
+        "calibratedPairsUseOneMetreScaleInTheActualRenderedPreview",
+        "unknownScaleIsDisclosedAndViewChangesCannotUnlockOrPurchaseACapital",
+        "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
+        "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
+    ),
     "OriginalCarabaoHighlinerUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalTransporterMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",

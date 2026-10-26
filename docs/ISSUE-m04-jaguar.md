@@ -18,6 +18,8 @@ Thirty-eight existing closed readiness oracles add SH081 membership only. Root s
 
 ## Limits
 
-Local checks cover formatting, source/fixture consistency and Python report helpers. The seven Swift methods are authored and UNRUN at freeze. Independent MBA source review precedes one ordinary automatic hosted676-method qualification on publication. Parent gates, actual runtime/flight/docking, M14 anchors, full hull acceptance, integration and release remain separate. No local compiler, native/GUI, broad integration, M01/main/G4 or PR242 work is included.
+For integration, the qualified Jaguar component is composed with actual canonical Highliner `55697c8db48b4a6464a2f39c0d32da26e72daf86`. Its six M02 showroom-view methods stay selected: the exact 675-method parent plus seven Jaguar methods gives 682. Existing source and 676-method component evidence are retained; the final composition still needs narrow independent review and final-head hosted qualification. No C01 prerequisite, main or M01 source is imported.
+
+Local checks cover formatting, source/fixture consistency and Python report helpers. The original seven Swift methods passed with the full 676-method component selection. That source review and result remain qualified; the composed final head requires independent review and one automatic hosted682-method qualification. Parent gates, actual runtime/flight/docking, M14 anchors, full hull acceptance, integration and release remain separate. No local compiler, native/GUI, broad integration, M01/main/G4 or PR242 work is included.
 
 See [implementation and validation](PR-m04-jaguar.md).
