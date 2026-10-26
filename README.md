@@ -536,6 +536,8 @@ The original **SH069 Baza Fighter** uses its approved metre military hull, 16t h
 
 The original **SH070 Baza Mk II** uses its approved metre bounty-hunter hull, 20t hold, 10t expansion, six pylons, 13-LY tank and 9-LY drive. Its live E01 equipment budget is twelve units; historical Kestrel Mk II fields retain eight. Crew and intrinsic places remain one each, with zero initial passenger cabins. Technology-nine blueprint rules and uncommon placement in galaxies two through four remain. Its military Baza Fighter sibling keeps its separate identity; no people or equipment are issued.
 
+The original **SH074 Dzo** uses its approved metre transporter hull, 396t hold, 160t expansion, six pylons, 15-LY tank and 10-LY drive. Live Meridian E01 estimates use 88 equipment units, five operating crew and five intrinsic crew places; historical Lanner fields retain 28/3/3. Technology-seven blueprint rules and common placement across all eight galaxies remain. No people, cabins or equipment are issued.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
