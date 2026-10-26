@@ -24,6 +24,20 @@ METHODS = {
         "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
         "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
     ),
+    "OriginalHobbyFighterUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
+    "OriginalErneCorvetteUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyKeepsNaturalPlacementAndBlueprintWithoutChangingEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalHarpyFamilyUnitTests": (
         "perVariantPhysicalContractsRefuseForeignIdentityUnitsPathsAndFingerprints",
         "originalMechanicsPreserveHistoricalFieldsAndEveryUnrelatedHullBinding",
