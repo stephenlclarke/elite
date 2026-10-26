@@ -28,18 +28,35 @@ struct NativeC01HistoricalHarrierUnitTests {
     #expect(record.id == "SH056" && record.name == "Harrier" && record.model == "ROC-SH056")
     #expect(geometry.design.vertices == record.design.vertices)
     #expect(geometry.design.vertices.count == 1426 && geometry.design.faces.count == 1065)
-    var object = try #require(
-      JSONSerialization.jsonObject(with: JSONEncoder().encode(record.design)) as? [String: Any])
-    object["source"] =
-      record.design.source + "; C01 mission-only 65m fore-aft uniform calibration"
-    let expected = try JSONDecoder().decode(
-      ShipDesign.self, from: JSONSerialization.data(withJSONObject: object))
+    let source = record.design
+    // NSNumber round-tripping erases signed zero and changes the saved canonical model hash.
+    let expected = ShipDesign(
+      vertices: source.vertices, faces: source.faces, license: source.license,
+      source: source.source + "; C01 mission-only 65m fore-aft uniform calibration",
+      details: source.details, materials: source.materials, faceMaterials: source.faceMaterials,
+      paletteName: source.paletteName, appearanceSource: source.appearanceSource,
+      appearanceLicense: source.appearanceLicense, appearanceBasis: source.appearanceBasis,
+      sourceFaceColours: source.sourceFaceColours, sourceTextures: source.sourceTextures,
+      sourceFaceTextures: source.sourceFaceTextures, resolvedTextures: source.resolvedTextures,
+      textures: source.textures, faceTextures: source.faceTextures)
     // Full equality covers faces, provenance and every optional appearance/UV field.
     #expect(geometry.design == expected)
     #expect(geometry.design.rawMesh.materials == record.design.rawMesh.materials)
     #expect(geometry.design.rawMesh.faceMaterials == record.design.rawMesh.faceMaterials)
     #expect(geometry.design.rawMesh.faceTextures == record.design.rawMesh.faceTextures)
+    var negativeZeros = 0
+    for (vertex, coordinates) in source.vertices.enumerated() {
+      for (axis, value) in coordinates.enumerated() where value == 0 && value.sign == .minus {
+        negativeZeros += 1
+        #expect(geometry.design.vertices[vertex][axis].bitPattern == value.bitPattern)
+      }
+    }
+    #expect(negativeZeros == 14)
     let canonical = try ScriptPackLibrary.canonicalGeometry(expected)
+    // Derived independently from the unchanged packaged ROC source and the original 65m builder.
+    #expect(
+      ScriptPackLibrary.hash(canonical)
+        == "18708f6f3b4f6078bf28c1db9bc30c07f3fc32df76b4beabd6df06d3fa10515a")
     #expect(try ScriptPackLibrary.canonicalGeometry(geometry.design) == canonical)
     let models = try NativeC01Surveyor.models.get()
     let hashes = try NativeC01Surveyor.modelHashes.get()
@@ -80,7 +97,10 @@ struct NativeC01HistoricalHarrierUnitTests {
     let before = try NativeC01SurveyorGeometry.harrier.get()
     let original = try #require(OriginalFleetDefinitionData.definition(for: "SH056"))
     let aplomado = try OriginalFleetShowroomModels.model(for: "SH056").nativeDesign
-    #expect(original.name == "Aplomado" && aplomado.valid)
+    #expect(
+      original.name == "Aplomado Interceptor" && original.family == "aplomado" && aplomado.valid)
+    #expect(
+      original.sourceSHA256 == "92bb47688401917bfafd91820264e5f6a20387a5d5a0b44ad7efeaeb939bd786")
     #expect(aplomado != record.design && aplomado.vertices != before.design.vertices)
     let designObject = try JSONSerialization.jsonObject(with: JSONEncoder().encode(aplomado))
     let replacement = try replacing(

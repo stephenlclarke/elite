@@ -16,6 +16,8 @@ Four new pure component methods cover complete design/appearance and canonical m
 
 ## Limits
 
+Run 40412598379 compiled and executed 680 cases but failed three assertions in two new methods. One test oracle erased the retained model's 14 signed-zero coordinates during a JSONSerialization round trip; the other used a shortened foreign hull name instead of the authored Aplomado Interceptor. Source reconstruction reproduces both the actual and normalized hashes exactly. Only those test oracles and these notes change; byte/hash assertions are retained and strengthened with signed-zero checks. Production and the 680-method selection remain unchanged.
+
 Hosted run 40399461150 on `395a97e3` failed compilation before tests: the new fixture used an unavailable zero-argument `Vector3` initializer. The intended zero position is now explicit as `.init(0, 0, 0)`. All production, test assertions and selection remain unchanged; corrected-head qualification is pending.
 
 This is an isolated prerequisite for future M04.H056, not SH056 activation or a mission/release completion. The existing C01 surveyor fixture still names live SH056 Harrier; the future activation owner must update that explicitly bounded fixture when activation occurs. No shared catalogue API, generated/raw asset, fleet registry, C08 recorder source, mission permission/authentication/schema, current M01/release or main changes are included. Root owns integration timing and the completion ledger.
