@@ -25,6 +25,25 @@ enum OriginalPlayerHullActivation {
     case "SH044", "SH046", "SH047": return try OriginalHarpyFamilyActivation.resolve(retained)
     case "SH045": return try OriginalErneCorvetteActivation.resolve(retained)
     case "SH054": return try OriginalHobbyFighterActivation.resolve(retained)
+    case "SH055": return try OriginalCondorActivation.resolve(retained)
+    case "SH057": return try OriginalFalconetActivation.resolve(retained)
+    case "SH059": return try OriginalBarbaryActivation.resolve(retained)
+    case "SH062": return try OriginalMooseClipperActivation.resolve(retained)
+    case "SH064": return try OriginalArnaCutterActivation.resolve(retained)
+    case "SH065": return try OriginalVultureRaiderActivation.resolve(retained)
+    case "SH068": return try OriginalBadgerActivation.resolve(retained)
+    case "SH069": return try OriginalBazaFighterActivation.resolve(retained)
+    case "SH070": return try OriginalBazaMkIIActivation.resolve(retained)
+    case "SH074": return try OriginalDzoActivation.resolve(retained)
+    case "SH075": return try OriginalDzoMkIIActivation.resolve(retained)
+    case "SH077": return try OriginalTamarawActivation.resolve(retained)
+    case "SH078": return try OriginalOryxVoyagerActivation.resolve(retained)
+    case "SH079": return try OriginalCarabaoCarrierActivation.resolve(retained)
+    case "SH080": return try OriginalCarabaoHighlinerActivation.resolve(retained)
+    case "SH081": return try OriginalJaguarActivation.resolve(retained)
+    case "SH083": return try OriginalHareExplorerActivation.resolve(retained)
+    case "SH084": return try OriginalLlamaActivation.resolve(retained)
+    case "SH085": return try OriginalLaggarActivation.resolve(retained)
     case "SH029": return try OriginalBurroActivation.resolve(retained)
     case "SH061": return try OriginalHaflingerActivation.resolve(retained)
     default: return retained
@@ -38,7 +57,8 @@ enum OriginalPlayerHullActivation {
     guard retained.id == definition.id, physical.id == definition.id,
       physical.specificationSHA256 == definition.sourceSHA256,
       let role = ShipCatalogueRole(rawValue: definition.role),
-      [ShipCatalogueRole.trader, .military, .leisure, .bountyHunter].contains(role),
+      [ShipCatalogueRole.trader, .military, .leisure, .bountyHunter, .pirate, .transporter, .miner]
+        .contains(role),
       let type = ShipCatalogueType(rawValue: definition.role), definition.playerFlyable,
       let policy = acquisitionPolicy(retained: retained, definition: definition),
       let performance = definition.nativePerformance, performance.valid(purchasePolicy: policy)

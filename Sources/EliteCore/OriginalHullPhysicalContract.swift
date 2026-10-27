@@ -213,6 +213,158 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH054"))
   }
 
+  static let condor: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH055") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH055"))
+  }
+
+  static let falconet: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH057") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH057"))
+  }
+
+  static let barbary: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH059") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH059"))
+  }
+
+  static let mooseClipper: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH062") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH062"))
+  }
+
+  static let arnaCutter: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH064") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH064"))
+  }
+
+  static let vultureRaider: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH065") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH065"))
+  }
+
+  static let badger: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH068") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH068"))
+  }
+
+  static let bazaFighter: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH069") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH069"))
+  }
+
+  static let bazaMkII: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH070") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH070"))
+  }
+
+  static let dzo: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH074") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH074"))
+  }
+
+  static let dzoMkII: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH075") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH075"))
+  }
+
+  static let tamaraw: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH077") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH077"))
+  }
+
+  static let oryxVoyager: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH078") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH078"))
+  }
+
+  static let carabaoCarrier: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH079") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH079"))
+  }
+
+  static let carabaoHighliner: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH080") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH080"))
+  }
+
+  static let jaguar: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH081") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH081"))
+  }
+
+  static let hareExplorer: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH083") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH083"))
+  }
+
+  static let llama: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH084") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH084"))
+  }
+
+  static let laggar: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH085") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH085"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -412,6 +564,196 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH055":
+      guard definition.name == "Condor",
+        definition.sourceSHA256
+          == "4042afa6a7081598eb33637ce2a1002776c354d88cc99986ca8fab0d9197a2cc",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH055-design.toml",
+        model.sourceSHA256 == "770a05d0e3faacffb915e1bc5ccfc3bb0e5142d940132843e182ca0b71d9752f"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH057":
+      guard definition.name == "Falconet",
+        definition.sourceSHA256
+          == "96e8038ebb2a3545c430869bfd9d76acfafe0c772275a89f9e448780d76cf482",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH057-design.toml",
+        model.sourceSHA256 == "08f2a4ceeb05e5ba652c2691301d17a285ec99de0c4f79d9fcdcdaec18bb5fa9"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH059":
+      guard definition.name == "Barbary",
+        definition.sourceSHA256
+          == "da1a6cf678ebe36676dcf76706067c36a6c26cf6d869f931b33dc5ab841c1c52",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-02-native-lod/SH059-design.toml",
+        model.sourceSHA256 == "1c642950f8d6c5ef773cc36b9c73c249e87e582de19d412e62e4e76e8f7b8b14"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH062":
+      guard definition.name == "Moose Clipper",
+        definition.sourceSHA256
+          == "39fc71f28c9597a79b7f06ab1d1e578703bc77ff9cb9e1d2f2b823504e224833",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH062-design.toml",
+        model.sourceSHA256 == "ec91173e7ff65ed64271fabdae0c237519774c07d5ef6a97a2e21c36287324f0"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH064":
+      guard definition.name == "Arna Cutter",
+        definition.sourceSHA256
+          == "38d6360e261ce6fa95abdd0a79b8fd284c7ec15b01d0473151f80137be870777",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH064-design.toml",
+        model.sourceSHA256 == "470c4f3530d75eb55cd74e896922e26b26df6771b65af04112639db4209d5c80"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH065":
+      guard definition.name == "Vulture Raider",
+        definition.sourceSHA256
+          == "24bd731a4b4e35b11e20b541d6159cc98cdd79658a7cd7c45c290570f5206ff9",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH065-design.toml",
+        model.sourceSHA256 == "b29e5447be715c56e804b43d4ef5b71ecad354d18c48cf7e6e16d2aac78771af"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH068":
+      guard definition.name == "Badger",
+        definition.sourceSHA256
+          == "53d9e1b1a354a02f096792d93f576c3ec8a347b4e21d2531383144491f021840",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH068-design.toml",
+        model.sourceSHA256 == "9a793c007844bbb9fe72ebc51cfe0e5d671739ac087b63628a3d91857e868fe5"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH069":
+      guard definition.name == "Baza Fighter",
+        definition.sourceSHA256
+          == "25c5ec42383b56910654e79f1f6d07fb219fbd8792dc80724c5e2f74c942d366",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH069-design.toml",
+        model.sourceSHA256 == "02c42c3c40b2a4542db58570f3b689c31dcaa49503c9b8d930f3aae52e1a6bb4"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH070":
+      guard definition.name == "Baza Mk II",
+        definition.sourceSHA256
+          == "54d7ba9ab091c2c04bf5dcda32ac844dd3d2ce1ffe6c1e99209838de5e577ed6",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH070-design.toml",
+        model.sourceSHA256 == "25c56839704deba785e7c381a9db70ddc7e225d94ca37d144a4becb150f7c4fd"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH074":
+      guard definition.name == "Dzo",
+        definition.sourceSHA256
+          == "c33d9fcaf2fbe90dc3bc5e313dde7882b592c3890fa6aa04b95711866adf8ff7",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH074-design.toml",
+        model.sourceSHA256 == "85d5ac77d76ea8543428b015aca6c8a0025e332ca69f5f6900f83092cda40459"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH075":
+      guard definition.name == "Dzo Mk II",
+        definition.sourceSHA256
+          == "f7bb2a71e6ae22a0c69550951d1cc98fce020d7f5037622b7ce5c907ca935858",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH075-design.toml",
+        model.sourceSHA256 == "6f88aa80d06f3d269d925fde3ad1add3eaa655a64df229e30c0af37bff39397d"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH077":
+      guard definition.name == "Tamaraw",
+        definition.sourceSHA256
+          == "b358d2934911dcdad4d3684ec6adc9b370ea19bffa32165fbfcf59c33e4b02bd",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH077-design.toml",
+        model.sourceSHA256 == "9d21c021df62f73a9f15b11455f88439fd178cca60ac72d99e1253f0339ac441"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH078":
+      guard definition.name == "Oryx Voyager",
+        definition.sourceSHA256
+          == "153f946f4ea7d6693debc9b892ac8457e7a40b2a0e2c68d672f386a4c3b587a4",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH078-design.toml",
+        model.sourceSHA256 == "ca5f64a1c396f81cc062345f1659e36113ee6c81a127ac7d7dad872452184e6c"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH079":
+      guard definition.name == "Carabao Carrier",
+        definition.sourceSHA256
+          == "49d022ddd07f1698f106d5524c679cda7ddf93de2e7a4e1dc3480ecb19ad6b6e",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH079-design.toml",
+        model.sourceSHA256 == "5c3b5974e095cfe792ce8b518267cd5d848b4a36ec9ef37e04dabaacddea6c79"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH080":
+      guard definition.name == "Carabao Highliner",
+        definition.sourceSHA256
+          == "c10e2aeffd4ba7315a5e11aff81662dfaf4a36dc976fb3a2e44a670f5f460ce3",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH080-design.toml",
+        model.sourceSHA256 == "e853662580668e4a89c37f46ffd6a49c69aee98b3f324dd0bc77acce960ea009"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH081":
+      guard definition.name == "Jaguar",
+        definition.sourceSHA256
+          == "5e326c8f2b7f67e55a3575a3144043de71b7a6c07e3939342a047a02c9efb82e",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH081-design.toml",
+        model.sourceSHA256 == "22f8667772b9461bdd59bb7f6d9ef26bf49303cf174ab1ef5415f34277d72b0d"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH083":
+      guard definition.name == "Hare Explorer",
+        definition.sourceSHA256
+          == "60807b83beb4d8539b6ceb5f1846a31f842860fdd3036f3cd1b5873562669cc7",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH083-design.toml",
+        model.sourceSHA256 == "aa694d328600f03ee21f7f9c8496b229347e2e6c1c4d0f5d1da250aa9392ac0e"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH084":
+      guard definition.name == "Llama",
+        definition.sourceSHA256
+          == "edced23c24b68e9c988e528243aa7949bad29df3c5427f0b4a3c7f67912e617a",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH084-design.toml",
+        model.sourceSHA256 == "63e88e1098ea8b59080a254675819a1330bf1ce9a274e2df28be4ca48d2a716d"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH085":
+      guard definition.name == "Laggar",
+        definition.sourceSHA256
+          == "cd0ffa2da2d0e57449852f3739424f509c9bdf6b529122d215a579652b3d3a77",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH085-design.toml",
+        model.sourceSHA256 == "1e1fad73a50483702f87fcbb64839d8954604b0751dcf4cede6283bb6197a85c"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -501,6 +843,25 @@ extension CatalogueShip {
     case "SH047": result = OriginalHullPhysicalContract.harpyGunship
     case "SH045": result = OriginalHullPhysicalContract.erneCorvette
     case "SH054": result = OriginalHullPhysicalContract.hobbyFighter
+    case "SH055": result = OriginalHullPhysicalContract.condor
+    case "SH057": result = OriginalHullPhysicalContract.falconet
+    case "SH059": result = OriginalHullPhysicalContract.barbary
+    case "SH062": result = OriginalHullPhysicalContract.mooseClipper
+    case "SH064": result = OriginalHullPhysicalContract.arnaCutter
+    case "SH065": result = OriginalHullPhysicalContract.vultureRaider
+    case "SH068": result = OriginalHullPhysicalContract.badger
+    case "SH069": result = OriginalHullPhysicalContract.bazaFighter
+    case "SH070": result = OriginalHullPhysicalContract.bazaMkII
+    case "SH074": result = OriginalHullPhysicalContract.dzo
+    case "SH075": result = OriginalHullPhysicalContract.dzoMkII
+    case "SH077": result = OriginalHullPhysicalContract.tamaraw
+    case "SH078": result = OriginalHullPhysicalContract.oryxVoyager
+    case "SH079": result = OriginalHullPhysicalContract.carabaoCarrier
+    case "SH080": result = OriginalHullPhysicalContract.carabaoHighliner
+    case "SH081": result = OriginalHullPhysicalContract.jaguar
+    case "SH083": result = OriginalHullPhysicalContract.hareExplorer
+    case "SH084": result = OriginalHullPhysicalContract.llama
+    case "SH085": result = OriginalHullPhysicalContract.laggar
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil

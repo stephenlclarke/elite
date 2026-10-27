@@ -24,7 +24,9 @@ struct OriginalFleetCatalogueUnitTests {
             == [
               "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029",
               "SH030", "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043",
-              "SH044", "SH045", "SH046", "SH047", "SH054", "SH061",
+              "SH044", "SH045", "SH046", "SH047", "SH054", "SH055", "SH057", "SH059", "SH061",
+              "SH062", "SH064", "SH065", "SH068", "SH069", "SH070", "SH074", "SH075", "SH077",
+              "SH078", "SH079", "SH080", "SH081", "SH083", "SH084", "SH085",
             ]
             .contains(
               record.id)
@@ -78,8 +80,8 @@ struct OriginalFleetCatalogueUnitTests {
     for id in conflicts {
       let original = try #require(ShipCatalogue.originalDefinition(for: id))
       #expect(original.nativePerformance?.valid == false && !original.integrationBlockers.isEmpty)
-      #expect(original.runtimeReady == (id == "SH043"))
-      if id == "SH043" {
+      #expect(original.runtimeReady == ["SH043", "SH081"].contains(id))
+      if ["SH043", "SH081"].contains(id) {
         #expect(original.purchasePolicy == "never")
         #expect(original.nativePerformance?.valid(purchasePolicy: .never) == true)
       }

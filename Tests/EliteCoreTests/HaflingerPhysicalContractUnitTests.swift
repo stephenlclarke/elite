@@ -50,7 +50,7 @@ struct HaflingerPhysicalContractUnitTests {
     #expect(throws: (any Error).self) {
       try OriginalHullPhysicalContract(definition: other, model: model)
     }
-    let untouched = try #require(ShipCatalogue.ship("SH062"))
+    let untouched = try #require(ShipCatalogue.ship("SH058"))
     #expect(untouched.physicalSourceContract == nil)
   }
 

@@ -1,4 +1,5 @@
 import Foundation
+import TOMLDecoder
 
 /// C01-only authoring: the full ROC Harrier remains visual; its convex envelope is collision.
 /// Concave recesses are deliberately filled. This never activates original SH026 fleet physics.
@@ -8,7 +9,15 @@ enum NativeC01SurveyorGeometry {
     let collision: Mesh
   }
   static let harrier: Result<Geometry, any Error> = Result {
-    guard let record = ShipCatalogue.ship("SH056"), record.name == "Harrier",
+    let record = try TOMLDecoder().decode(
+      CatalogueShip.self,
+      from: Data(contentsOf: ShipCatalogue.folder.appendingPathComponent("SH056.toml")))
+    return try historicalHarrier(record)
+  }
+
+  /// C01 keeps the packaged ROC record even when the live SH056 slot activates Aplomado.
+  static func historicalHarrier(_ record: CatalogueShip) throws -> Geometry {
+    guard record.id == "SH056", record.name == "Harrier",
       record.model == "ROC-SH056", record.design.valid
     else { throw SaveError.invalidCommander }
     let original = record.design

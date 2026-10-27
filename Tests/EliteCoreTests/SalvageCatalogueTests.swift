@@ -5,10 +5,10 @@ import Testing
 @Suite struct SalvageCatalogueTests {
   @Test func reviewedCapitalCarrierAndLargeHullProfilesUseActualCatalogueRecords() throws {
     let expected: [String: String] = [
-      "SH043": "Farragut-class Battle Cruiser", "SH081": "Majestic-class Interdictor",
+      "SH043": "Eagle Cruiser", "SH081": "Jaguar",
       "SH161": "Military Fiasco Leviathan", "SH155": "Ionics Funnelweb",
       "SH123": "Thargoid Titan", "SH171": "Liberator DSV2",
-      "SH078": "Long Range Cruiser", "SH079": "Lynx Bulk Carrier", "SH080": "Lynx Highliner",
+      "SH078": "Oryx Voyager", "SH079": "Carabao Carrier", "SH080": "Carabao Highliner",
     ]
     #expect(SalvageCatalogue.all.count == 37)
     #expect(Set(SalvageCatalogue.all.map(\.catalogueShipID)).count == SalvageCatalogue.all.count)
