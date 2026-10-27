@@ -1,6 +1,6 @@
 # Activate SH091 Gopher using its approved original miner model
 
-SH091 now resolves to original Gopher through one authenticated adapter. This M04.H091 packet starts from actual qualified canonical `e464a990ed4421452f33aa5845dcca46b5f466c4`, selector701, on `feat/m04-gopher`. Root assigned the exact 53-path readiness proposal; G3 SH056 and G4 SH058 remain separately owned. Any newer actual qualified parent must be composed narrowly with the complete selector union before publication.
+SH091 now resolves to original Gopher through one authenticated adapter. The original M04.H091 packet passed all706 selected methods. Its final composition binds actual qualified Aplomado canonical `dc9452c6466eaf5ad44aebca1b6f50bb6ea993ea` on `feat/m04-gopher`, retaining all706 parent methods and adding five Gopher methods for711. Both per-ID bindings and the historical C01 fixture correction remain intact. G4 SH058/C08 remains separately owned.
 
 ## Exact source and mechanics
 
@@ -20,7 +20,7 @@ Normal access, miner type/role, noncapital/destructible policy, blueprint fabric
 4. `minerPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles`: noncapital miner/blueprintTL6/natural-placement policy, previous roles, unearned discovery readout and actual admitted miner preserving legal/navigation/scoop facts with the original resource capacities.
 5. `originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings`: typed live versus history, empty berths, hold/pylons/tank/mount limits, actual absent mining work tool, unchanged people/cargo/inventory/equipment, explicit cargo expansion, successful retained-input load and malformed-name refusal.
 
-All701 parent methods remain selected, with five added for706. The42 existing Original oracle files change only closed readiness/exclusion-list membership by appending091. Existing capital conflicts, earlier roles, G3/G4 controls and the selected salvage fixture remain unchanged. There is no new fixture expansion or generic readiness bypass.
+All706 actual parent methods remain selected, with five added for711. The42 existing Original oracle files change only closed readiness/exclusion-list membership by appending091. Existing capital conflicts, earlier roles, unrelated refusal controls and the selected salvage fixture remain unchanged. Each new hull suite admits the other qualified hull in its two closed membership lists; all test bodies and source guards are retained. There is no new fixture expansion or generic readiness bypass.
 
 ## Meridian pins and validation
 
@@ -32,4 +32,4 @@ The authoritative design snapshot remains `8c899a7e0d351551498b05a7b371b84758575
 | `docs/meridian/missions/gameplay/models/SH091.json` | `abe94c225194c86f78b64011b4de7218f5213639602cacbfd65b96d3bc1ad796` |
 | `docs/meridian/SHIP-REFERENCE.md` | `6a3688bf28f9251e58853990bfd5c76334c7e514b05d36ba4fc145c1a03ce4af` |
 
-Local validation is standalone Swift formatting, exact reserved-path/oracle/source/fixture/selector checks, six Python report-helper fixtures, Markdown and whitespace. The five Swift methods are authored and UNRUN at source freeze. One independent MBA review precedes ordinary publication/current-head review and the existing automatic focused-unit workflow. No compiler, native/GUI/probe/performance/broad integration or duplicate dispatch is run locally. Source review, authored tests and metadata are not a full hull, flight/docking, M14, integration or release PASS. [Motivation](ISSUE-m04-gopher.md).
+Local validation is standalone Swift formatting, exact reserved-path/oracle/source/fixture/selector checks, six Python report-helper fixtures, Markdown and whitespace. MBA independently verified the original Gopher706 and Aplomado706 hosted runs with zero missing, extra, duplicate, failed, errored or skipped cases. The composed711 revision is UNRUN at this freeze. Narrow composition review precedes one updated publication/current-head review and the existing automatic focused-unit workflow. No compiler, native/GUI/probe/performance/broad integration or duplicate dispatch is run locally. Source review, authored tests and metadata are not a full hull, flight/docking, M14, integration or release PASS. [Motivation](ISSUE-m04-gopher.md).

@@ -1,0 +1,9 @@
+# M04.H056: activate Aplomado without changing historical C01 Harrier authority
+
+SH056 retains the packaged historical Harrier record, while Meridian supplies the original Aplomado Interceptor military hull and an explicit metre model. The C01 prerequisite decouples its historical Harrier lookup from the live catalogue. Once that prerequisite is qualified and merged into canonical, activate only the exact original SH056 identity.
+
+E01 uses twelve equipment units, one operating crew and one intrinsic crew place. Historical Harrier fields retain twelve units and two crew/places. Override only the two live crew fields, retain zero initial charter cabins, and issue no people, equipment, cargo, cabins, blueprint or hull.
+
+Existing closed fleet memberships must gain SH056. Fifteen refusal loops must keep their assertions and case counts while substituting the existing unitless SH086 blocked control. Falconet's separate blocked-control fixture must use SH086 while retaining the raw Harrier identity and foreign-resolver checks. The already-selected older C01 geometry test must acquire raw SH056 TOML instead of a live catalogue record, preserving all geometry, collision, mass, refusal and retained-authority assertions. No C01 production code, historical source, hash, calibration, token, save/custody authority, loader or schema changes are included.
+
+Acceptance requires five meaningful activation methods covering strict authority/refusals, complete mechanics/history, full geometry/appearance and live-Aplomado/historical-C01 coexistence, policy/explicit actor authority, and actual fitting/capacity/no-grant behavior. Independent review and the actual exact-head hosted result remain required. Publication is blocked until the actual qualified C01 701 canonical merge is verified; source preparation does not establish integration, native journey or playable completion. [Implementation and validation](PR-m04-aplomado.md).
