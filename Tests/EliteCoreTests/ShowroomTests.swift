@@ -3,25 +3,36 @@ import Testing
 
 @testable import EliteCore
 
-private func showroomGame() -> Game {
+private func showroomGame(ownedShip: String? = nil) -> Game {
   var game = Game(executive: false)
+  if let ownedShip {
+    game.commander.shipID = ownedShip
+    game.commander.fuel = game.commander.fuelCapacity
+    game.energy = game.commander.performance.energy
+    game.frontShield = game.commander.shieldCapacity
+    game.rearShield = game.commander.rearShieldCapacity
+  }
   game.screen = .equipment
   game.selection = Equipment.all.count - 1
-  game.key("w")
+  game.key("6")
   return game
 }
 
 @Test func showroomCataloguePreservesEveryCanonicalShipRefitAndSourceUnit() throws {
-  #expect(ShipCatalogue.all.count == 168)
-  #expect(Set(ShipCatalogue.all.map(\.id)).count == 168)
-  #expect(ShipCatalogue.all.filter(\.refit).count == 159)
-  #expect(ShipCatalogue.modelCount == 168)
+  #expect(ShipCatalogue.all.count == 171)
+  #expect(Set(ShipCatalogue.all.map(\.id)).count == 171)
+  #expect(ShipCatalogue.all.filter(\.refit).count == 162)
+  #expect(ShipCatalogue.modelCount == 171)
   #expect(ShipCatalogue.all.contains { $0.name == "Eagle Mk I" && $0.appearances.contains("FE2") })
   #expect(
     ShipCatalogue.all.contains { $0.id == "SH165" && $0.modelSource?.contains("Vector") == true })
   let cobra = try #require(ShipCatalogue.ship("SH023"))
   let project = try #require(cobra.profiles.first { $0.group == "project-refit-v1" })
-  #expect(project.fields.contains { $0.key == "cargo_tonnes" && $0.number == 20 && $0.unit == "t" })
+  let performance = try #require(cobra.game)
+  #expect(
+    project.fields.contains {
+      $0.key == "cargo_tonnes" && $0.number == Double(performance.cargo) && $0.unit == "t"
+    })
   #expect(
     project.fields.contains {
       $0.key == "maximum_speed_project_units" && $0.unit == "project units/s"
@@ -48,14 +59,14 @@ private func showroomGame() -> Game {
   var game = Game(executive: false)
   game.launch()
   let commander = game.commander
-  game.key("w")
+  game.key("showroom-open")
   #expect(game.screen == .front && game.message == "DOCK TO VISIT THE SHIP SHOWROOM")
   #expect(game.commander == commander)
   game.dock()
   game.screen = .equipment
   game.selection = 12
   game.equipmentMount = .rear
-  game.key("w")
+  game.key("6")
   #expect(game.screen == .showroom)
   game.key("return")
   #expect(game.showroom.detail)
@@ -64,7 +75,7 @@ private func showroomGame() -> Game {
   game.key("k")
   #expect(game.screen == .help && game.helpReturn == .showroom)
   game.key("k")
-  game.key("w")
+  game.key("escape")
   #expect(game.screen == .equipment && game.selection == 12 && game.equipmentMount == .rear)
   for screen in [Screen.secret, .mission, .handoff, .gallery, .help, .demo, .title, .gameOver] {
     game.screen = screen
@@ -84,9 +95,10 @@ private func showroomGame() -> Game {
   }
   game.showroom.query = "FE2"
   #expect(
-    !game.showroomShips.isEmpty && game.showroomShips.allSatisfy { $0.appearances.contains("FE2") })
+    !game.showroomShips.isEmpty
+      && game.showroomShips.allSatisfy { $0.searchText.localizedCaseInsensitiveContains("FE2") })
   game.showroom.query = "alien"
-  #expect(game.showroomShips.allSatisfy { $0.shipClass.localizedCaseInsensitiveContains("alien") })
+  #expect(game.showroomShips.allSatisfy { $0.searchText.localizedCaseInsensitiveContains("alien") })
   game.showroom.query = ""
   game.key("/")
   for key in "vector" { game.key(String(key)) }
@@ -128,12 +140,14 @@ private func showroomGame() -> Game {
   var game = showroomGame()
   game.showroom.selection = "SH001"
   let row = try #require(game.showroomComparison.first { $0.label == "Cargo" })
-  #expect(row.difference == "Diff -18 t")
+  let selectedCargo = try #require(ShipCatalogue.ship("SH001")?.game?.cargo)
+  let cargoDifference = Double(selectedCargo - game.commander.nativePerformance.cargo)
+  #expect(row.difference == String(format: "Diff %+.3g t", cargoDifference))
   game.key("b")
   game.key("down")
   #expect(game.showroom.baseline == "SH001" && game.showroom.selection != "SH001")
   game.key("r")
-  #expect(game.showroom.baseline == "SH023")
+  #expect(game.showroom.baseline == game.commander.shipID && game.showroom.baselineUsesCurrent)
   game.key("v")
   #expect(game.showroom.sourceProfiles)
   game.key(".")
@@ -201,7 +215,8 @@ private func showroomGame() -> Game {
     game.showroom.compare = false
     game.showroom.detail = true
     let frame = Display.presentation(game, width: 1512, height: 982)
-    #expect(!frame.shipPanels.isEmpty, "\(ship.name)")
+    #expect(frame.flightClip == frame.canvas)
+    #expect(frame.hasShipSurfaces, "\(ship.name)")
     #expect(frame.shipLines.isEmpty)
   }
   game.showroom.selection = "SH002"
@@ -222,16 +237,24 @@ private func showroomGame() -> Game {
 }
 
 @Test func showroomActorSavingAndConcurrentBrowsingKeepCommanderUnchanged() async throws {
-  let game = showroomGame()
+  var game = showroomGame()
+  try NativeSaveTestFixture.prepareCurrentPolicy(&game)
   let runtime = GameRuntime(game: game)
+  let ready = await runtime.snapshot()
+  #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+  #expect(ready.commander.credits == game.commander.credits)
+  #expect(
+    ready.commander.cargo == game.commander.cargo && ready.commander.shipID == game.commander.shipID
+  )
   let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: url) }
   await withTaskGroup(of: Void.self) { tasks in
     for _ in 0..<10 { tasks.addTask { _ = await runtime.advance(delta: 0.02) } }
   }
   try await runtime.save(to: url)
-  let saved = try JSONDecoder().decode(Commander.self, from: Data(contentsOf: url))
-  #expect(saved == game.commander)
+  let saved = try NativeSaveTestFixture.readVersionedCommander(from: url)
+  #expect(saved == ready.commander)
+  #expect(await runtime.snapshot().commander == ready.commander)
   #expect(await runtime.snapshot().time == game.time)
   try await runtime.load(from: url)
   #expect(await runtime.snapshot().screen == .status)
@@ -271,7 +294,10 @@ private func showroomGame() -> Game {
       #expect(cells.allSatisfy { $0.scale == GameTypography.scale && $0.bounds.maxX <= width - 16 })
       if width >= 1800, let label = cells.first(where: { $0.text == "Required crew" }) {
         let field = try #require(game.showroomComparison.first { $0.label == "Required crew" })
-        let expected = field.selected + (field.difference.isEmpty ? "" : " / " + field.difference)
+        let suffix =
+          game.showroom.sourceProfiles
+          ? (field.difference.isEmpty ? "" : " / " + field.difference) : " " + field.rating.rawValue
+        let expected = field.selected + suffix
         #expect(
           cells.contains { $0.x == outer.selectedModelX && $0.y == label.y && $0.text == expected })
       }
@@ -318,14 +344,14 @@ private func showroomGame() -> Game {
     })
   let missingModel = try #require(ShipCatalogue.ship("SH002"))
   #expect(missingModel.previewMesh != nil && missingModel.dimensions != nil)
-  #expect(missingModel.design.source.contains("original"))
+  #expect(missingModel.design.source.localizedCaseInsensitiveContains("original"))
   let transporter = try #require(ShipCatalogue.ship("SH128"))
   let passengerFact = try #require(
     transporter.profiles.first { $0.group.contains("passengeruppercapacity") })
   #expect(
     passengerFact.fields.count == 1
       && passengerFact.fields[0].label == "Documented passenger capacity")
-  var game = showroomGame()
+  var game = showroomGame(ownedShip: "SH023")
   game.commander.equipment.insert(Equipment.navalEnergyUnit)
   #expect(
     game.currentShowroomProfile.fields.contains {
@@ -365,6 +391,7 @@ private func showroomGame() -> Game {
   #expect(ShipCatalogue.all.allSatisfy { !$0.profiles.isEmpty })
   for ship in ShipCatalogue.all.filter({ $0.model?.hasPrefix("xyzzy-showroom-") == true }) {
     var game = showroomGame()
+    let commander = game.commander
     game.showroom.selection = ship.id
     game.showroom.detail = true
     for width in [512.0, 1000, 1512] {
@@ -372,38 +399,38 @@ private func showroomGame() -> Game {
       #expect(!frame.shipPanels.isEmpty)
       #expect(frame.labels.allSatisfy { $0.bounds.x >= 0 && $0.bounds.maxX <= width })
     }
-    #expect(game.commander.name == "JAMESON")
+    #expect(game.commander == commander)
   }
 }
 
 @Test func showroomFiltersAreVisibleClearableAndNeverChangeTheOwnedCobra() throws {
-  var game = showroomGame()
+  var game = showroomGame(ownedShip: "SH023")
   let commander = game.commander
   game.showroom.query = "SH063"
   for width in [512.0, 768, 1512] {
     let frame = Display.presentation(game, width: width, height: 768)
     #expect(
       frame.labels.contains {
-        $0.text.contains("FILTER ACTIVE: 1/168 ships") && $0.text.contains("You own: Cobra Mk III")
+        $0.text.contains("FILTER ACTIVE: 1/171 ships") && $0.text.contains("You own: Cobra Mk III")
       })
     #expect(frame.labels.contains { $0.text == "Clear filter" })
   }
   game.key("x")
-  #expect(game.showroomShips.count == 168)
+  #expect(game.showroomShips.count == 171)
   game.key("/")
   for key in "SH063" { game.key(String(key)) }
   game.key("delete")
-  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 168)
+  #expect(game.showroom.query.isEmpty && game.showroomShips.count == 171)
   game.showroom.query = "SH063"
   game.showroom.selection = "SH063"
   game.viewportWidth = 1512
   game.viewportHeight = 982
   let layout = ShowroomLayout(width: 1512, height: 982, detail: false)
   game.showroomClick(x: layout.clearSearch.x + 5, y: layout.clearSearch.y + 5)
-  #expect(game.showroomShips.count == 168 && game.showroom.selection == "SH063")
+  #expect(game.showroomShips.count == 171 && game.showroom.selection == "SH063")
   game.showroom.query = "SH063"
-  game.key("w")
-  game.key("w")
+  game.key("escape")
+  game.key("6")
   #expect(game.showroom.query.isEmpty && game.showroom.selection == "SH023")
   let frame = Display.presentation(game, width: 1512, height: 982)
   #expect(frame.labels.contains { $0.text == "CURRENT SHIP" })

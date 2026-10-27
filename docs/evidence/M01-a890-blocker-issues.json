@@ -1,0 +1,184 @@
+[
+  {
+    "key": "combat",
+    "url": "https://github.com/stephenlclarke/elite/issues/193",
+    "methods": [
+      "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice()",
+      "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit()",
+      "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder()",
+      "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty()",
+      "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+      "interceptedOrdnanceNeverBecomesAShipKillOrBounty()",
+      "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm()",
+      "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact()",
+      "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents(_:)",
+      "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty()",
+      "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock(_:)"
+    ]
+  },
+  {
+    "key": "shop",
+    "url": "https://github.com/stephenlclarke/elite/issues/194",
+    "methods": [
+      "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+      "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor()",
+      "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()"
+    ]
+  },
+  {
+    "key": "selection",
+    "url": "https://github.com/stephenlclarke/elite/issues/195",
+    "methods": [
+      "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+      "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width:)"
+    ]
+  },
+  {
+    "key": "native_fit",
+    "url": "https://github.com/stephenlclarke/elite/issues/196",
+    "methods": [
+      "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce()",
+      "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing()",
+      "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts()",
+      "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography()",
+      "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn()",
+      "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext()",
+      "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction()",
+      "nativeSalvageApproachDrawAndQPreserveFiniteCustody()",
+      "nativeMilitaryCoreCannotSubstituteForMiningModule()",
+      "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap()",
+      "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise()"
+    ]
+  },
+  {
+    "key": "raw_save",
+    "url": "https://github.com/stephenlclarke/elite/issues/197",
+    "methods": [
+      "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame()",
+      "nativeSaveIncludesEarlierQueuedCobraRestore()"
+    ]
+  },
+  {
+    "key": "loan",
+    "url": "https://github.com/stephenlclarke/elite/issues/198",
+    "methods": [
+      "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser()"
+    ]
+  },
+  {
+    "key": "stations",
+    "url": "https://github.com/stephenlclarke/elite/issues/199",
+    "methods": [
+      "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+      "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority()",
+      "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()"
+    ]
+  },
+  {
+    "key": "world",
+    "url": "https://github.com/stephenlclarke/elite/issues/200",
+    "methods": [
+      "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement(guided:)",
+      "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(shipID:)",
+      "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource()"
+    ]
+  },
+  {
+    "key": "chart",
+    "url": "https://github.com/stephenlclarke/elite/issues/201",
+    "methods": [
+      "actorPersistenceAndConcurrentCommands()"
+    ]
+  },
+  {
+    "key": "schema",
+    "url": "https://github.com/stephenlclarke/elite/issues/202",
+    "methods": [
+      "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()"
+    ]
+  },
+  {
+    "key": "ordnance",
+    "url": "https://github.com/stephenlclarke/elite/issues/203",
+    "methods": [
+      "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID()",
+      "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam()"
+    ]
+  },
+  {
+    "key": "g12_negative",
+    "url": "https://github.com/stephenlclarke/elite/issues/204",
+    "methods": [
+      "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction(reason:)"
+    ]
+  },
+  {
+    "key": "g12_rehash",
+    "url": "https://github.com/stephenlclarke/elite/issues/205",
+    "methods": [
+      "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)"
+    ]
+  },
+  {
+    "key": "reload",
+    "url": "https://github.com/stephenlclarke/elite/issues/206",
+    "methods": [
+      "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh()",
+      "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast()"
+    ]
+  },
+  {
+    "key": "native_projection",
+    "url": "https://github.com/stephenlclarke/elite/issues/207",
+    "methods": [
+      "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+      "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()"
+    ]
+  },
+  {
+    "key": "bounds",
+    "url": "https://github.com/stephenlclarke/elite/issues/208",
+    "methods": [
+      "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople()",
+      "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()"
+    ]
+  },
+  {
+    "key": "fire",
+    "url": "https://github.com/stephenlclarke/elite/issues/209",
+    "methods": [
+      "nativeFrameConversionAndInput()"
+    ]
+  },
+  {
+    "key": "textures",
+    "url": "https://github.com/stephenlclarke/elite/issues/210",
+    "methods": [
+      "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes()"
+    ]
+  },
+  {
+    "key": "gpu",
+    "url": "https://github.com/stephenlclarke/elite/issues/211",
+    "methods": [
+      "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer()",
+      "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages()"
+    ]
+  },
+  {
+    "key": "campaign",
+    "url": "https://github.com/stephenlclarke/elite/issues/212",
+    "methods": [
+      "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs()"
+    ]
+  },
+  {
+    "key": "courier",
+    "url": "https://github.com/stephenlclarke/elite/issues/213",
+    "methods": [
+      "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+      "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState()",
+      "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem()"
+    ]
+  }
+]

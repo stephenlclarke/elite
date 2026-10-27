@@ -1,0 +1,1100 @@
+{
+  "head": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+  "assertionRecords": 99,
+  "uniqueMethods": 55,
+  "packets": [
+    {
+      "key": "combat",
+      "title": "Make combat fixture cash and resource baselines explicit",
+      "causeAndDirection": "combatGame constructs current Game without setting the1000 cash baseline assumed by11methods. Current approved fresh cash differs. Explicitly select the intended compatible hull, valid fuel/fit, cash and shield/energy baseline in this helper, or derive independent pre-action values where the contract is relative. Police test314 specifically assumes250/256 after5damage. Preserve legal, bounty, victim, shield order and kill assertions; do not alter approved fresh defaults.",
+      "records": [
+        {
+          "logLine": 7750,
+          "test": "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice()",
+          "file": "GameplayCombatTests.swift",
+          "line": 314,
+          "detail": "Expectation failed: (game.frontShield == 250 \u2192 false) && (game.energy == 256 \u2192 <not evaluated>)",
+          "rawLength": 230
+        },
+        {
+          "logLine": 7751,
+          "test": "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit()",
+          "file": "GameplayCombatTests.swift",
+          "line": 299,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.kills == 0 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 268
+        },
+        {
+          "logLine": 7752,
+          "test": "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder()",
+          "file": "GameplayCombatTests.swift",
+          "line": 266,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.kills == 0 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 265
+        },
+        {
+          "logLine": 7753,
+          "test": "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty()",
+          "file": "GameplayCombatTests.swift",
+          "line": 161,
+          "detail": "Expectation failed: (game.commander.legal == 40 && game.commander.kills == 1 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 255
+        },
+        {
+          "logLine": 7754,
+          "test": "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty()",
+          "file": "GameplayCombatTests.swift",
+          "line": 169,
+          "detail": "Expectation failed: (game.commander.kills == 1 && game.commander.credits == 1000 \u2192 false) && (game.commander.legal == 40 \u2192 <not evaluated>)",
+          "rawLength": 266
+        },
+        {
+          "logLine": 7756,
+          "test": "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 190,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.credits == 1750 \u2192 false) && (game.commander.kills == 8 \u2192 <not evaluated>)",
+          "rawLength": 295
+        },
+        {
+          "logLine": 7757,
+          "test": "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 196,
+          "detail": "Expectation failed: (game.commander.credits == 1750 \u2192 false) && (game.commander.kills == 8 \u2192 <not evaluated>)",
+          "rawLength": 266
+        },
+        {
+          "logLine": 7759,
+          "test": "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 190,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.credits == 1750 \u2192 false) && (game.commander.kills == 8 \u2192 <not evaluated>)",
+          "rawLength": 294
+        },
+        {
+          "logLine": 7760,
+          "test": "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 196,
+          "detail": "Expectation failed: (game.commander.credits == 1750 \u2192 false) && (game.commander.kills == 8 \u2192 <not evaluated>)",
+          "rawLength": 265
+        },
+        {
+          "logLine": 7761,
+          "test": "interceptedOrdnanceNeverBecomesAShipKillOrBounty()",
+          "file": "GameplayCombatTests.swift",
+          "line": 282,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.credits == 1000 \u2192 false) && (game.commander.kills == 0 \u2192 <not evaluated>)",
+          "rawLength": 250
+        },
+        {
+          "logLine": 7762,
+          "test": "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm()",
+          "file": "GameplayCombatTests.swift",
+          "line": 204,
+          "detail": "Expectation failed: (game.commander.legal == 96 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 230
+        },
+        {
+          "logLine": 7763,
+          "test": "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact()",
+          "file": "GameplayCombatTests.swift",
+          "line": 242,
+          "detail": "Expectation failed: (game.commander.legal == 40 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 241
+        },
+        {
+          "logLine": 7765,
+          "test": "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 398,
+          "detail": "Expectation failed: (game.commander.credits == 1000 + role.bountyCredits * 10 \u2192 false) && (game.commander.kills == 1 \u2192 <not evaluated>)",
+          "rawLength": 301
+        },
+        {
+          "logLine": 7767,
+          "test": "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 398,
+          "detail": "Expectation failed: (game.commander.credits == 1000 + role.bountyCredits * 10 \u2192 false) && (game.commander.kills == 1 \u2192 <not evaluated>)",
+          "rawLength": 303
+        },
+        {
+          "logLine": 7768,
+          "test": "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty()",
+          "file": "GameplayCombatTests.swift",
+          "line": 412,
+          "detail": "Expectation failed: (game.commander.legal == 0 \u2192 true) && (game.commander.credits == 1000 + (Hull.constrictor.navalBounty ?? 0) \u2192 false)",
+          "rawLength": 269
+        },
+        {
+          "logLine": 7769,
+          "test": "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty()",
+          "file": "GameplayCombatTests.swift",
+          "line": 421,
+          "detail": "Expectation failed: (ordinary.commander.legal == 40 \u2192 true) && (ordinary.commander.credits == 1000 \u2192 false)",
+          "rawLength": 240
+        },
+        {
+          "logLine": 7773,
+          "test": "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 340,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.kills == 0 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 284
+        },
+        {
+          "logLine": 7775,
+          "test": "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock(_:)",
+          "file": "GameplayCombatTests.swift",
+          "line": 340,
+          "detail": "Expectation failed: (game.commander.legal == 0 && game.commander.kills == 0 \u2192 true) && (game.commander.credits == 1000 \u2192 false)",
+          "rawLength": 283
+        }
+      ],
+      "methods": [
+        "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice()",
+        "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit()",
+        "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder()",
+        "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty()",
+        "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+        "interceptedOrdnanceNeverBecomesAShipKillOrBounty()",
+        "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm()",
+        "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact()",
+        "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents(_:)",
+        "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty()",
+        "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock(_:)"
+      ]
+    },
+    {
+      "key": "shop",
+      "title": "Establish authentic shop availability before eligibility and purchase fixtures",
+      "causeAndDirection": "Requirement test chooses technology>=10 but military returns Requires TL11 before predecessor logic. Drive/EMP shop fixtures assign commander.system without establishing current authenticated market/stock. EMP transaction explicitly refuses unavailable; missing saved file is downstream. Prepare actual source station services/current stock and adequate technology for intended items before testing predecessor/debit/finite fitting. Do not bypass availability or insert paid history.",
+      "records": [
+        {
+          "logLine": 7367,
+          "test": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+          "file": "EquipmentOwnershipDisplayTests.swift",
+          "line": 73,
+          "detail": "Expectation failed: (game.equipmentPurchaseRequirement(military) \u2192 \"Requires TL11\") == (\"Buy \" + basic.name + \" first\" \u2192 \"Buy Targeting: Basic first\")",
+          "rawLength": 296
+        },
+        {
+          "logLine": 7368,
+          "test": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+          "file": "EquipmentOwnershipDisplayTests.swift",
+          "line": 82,
+          "detail": "Expectation failed: prerequisite.labels.contains { $0.text.contains(\"Buy \" + label + \" first\") }",
+          "rawLength": 242
+        },
+        {
+          "logLine": 7369,
+          "test": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+          "file": "EquipmentOwnershipDisplayTests.swift",
+          "line": 73,
+          "detail": "Expectation failed: (game.equipmentPurchaseRequirement(military) \u2192 \"Requires TL11\") == (\"Buy \" + basic.name + \" first\" \u2192 \"Buy Targeting: Basic first\")",
+          "rawLength": 296
+        },
+        {
+          "logLine": 7370,
+          "test": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+          "file": "EquipmentOwnershipDisplayTests.swift",
+          "line": 82,
+          "detail": "Expectation failed: prerequisite.labels.contains { $0.text.contains(\"Buy \" + label + \" first\") }",
+          "rawLength": 242
+        },
+        {
+          "logLine": 7371,
+          "test": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+          "file": "EquipmentOwnershipDisplayTests.swift",
+          "line": 73,
+          "detail": "Expectation failed: (game.equipmentPurchaseRequirement(military) \u2192 \"Requires TL11\") == (\"Buy \" + basic.name + \" first\" \u2192 \"Buy Targeting: Basic first\")",
+          "rawLength": 296
+        },
+        {
+          "logLine": 7372,
+          "test": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+          "file": "EquipmentOwnershipDisplayTests.swift",
+          "line": 82,
+          "detail": "Expectation failed: prerequisite.labels.contains { $0.text.contains(\"Buy \" + label + \" first\") }",
+          "rawLength": 242
+        },
+        {
+          "logLine": 8031,
+          "test": "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor()",
+          "file": "HyperspaceDriveRuntimeTests.swift",
+          "line": 17,
+          "detail": "Expectation failed: (game.commander.fittedEquipment(at: .drive)?.node \u2192 EquipmentNodeID(family: EliteCore.EquipmentFamilyID(rawValue: \"hyperspace-drive\"), key: \"Intermediate Hyperspace Drive\")) == (HyperspaceDriveDefinition.node(for: tier) \u2192 EquipmentNodeID(family: EliteCore.EquipmentFamilyID(rawValue: \"hyperspace-drive\"), key: \"Advanced Hyperspace Drive\"))",
+          "rawLength": 497
+        },
+        {
+          "logLine": 9424,
+          "test": "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()",
+          "file": "EMPPersistenceAndEquipmentTests.swift",
+          "line": 155,
+          "detail": "Expectation failed: (result \u2192 .refused(EliteCore.EquipmentMutationRefusal.unavailable)).applied \u2192 false",
+          "rawLength": 235
+        },
+        {
+          "logLine": 9425,
+          "test": "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()",
+          "file": "EMPPersistenceAndEquipmentTests.swift",
+          "line": 157,
+          "detail": "Expectation failed: (after.commander.credits \u2192 100000) == (before.commander.credits - before.shopPrice(item) \u2192 70000)",
+          "rawLength": 249
+        },
+        {
+          "logLine": 9426,
+          "test": "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()",
+          "file": "EMPPersistenceAndEquipmentTests.swift",
+          "line": 158,
+          "detail": "Expectation failed: (after.commander.fittedEquipment(at: .utility(.empPirateBlaster))?.node.key \u2192 nil) == (Equipment.empPirateBlaster \u2192 \"EMP Pirate Blaster\")",
+          "rawLength": 289
+        },
+        {
+          "logLine": 9427,
+          "test": "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()",
+          "file": "EMPPersistenceAndEquipmentTests.swift",
+          "line": 161,
+          "detail": "Expectation failed: (after.commander.equipmentPurchaseHistory?.paid.count \u2192 0) == 1",
+          "rawLength": 215
+        },
+        {
+          "logLine": 9428,
+          "test": "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()",
+          "file": "EMPPersistenceAndEquipmentTests.swift",
+          "line": 138,
+          "detail": "Caught error: Error Domain=NSCocoaErrorDomain Code=260 \"The file \u201ccommander.json\u201d couldn\u2019t be opened because there is no such file.\" UserInfo={NSFilePath=/var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/1585713E-34D6-4222-8E39-D5EE41F603B6/commander.json, NSURL=file:///var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T/1585713E-34D6-4222-8E39-D5EE41F603B6/commander.json, NSUnderlyingError=0x60005692c090 {Error Domain=NSPOSIXErrorDomain Code=2 \"No such file or directory\"}}",
+          "rawLength": 605
+        }
+      ],
+      "methods": [
+        "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+        "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor()",
+        "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()"
+      ]
+    },
+    {
+      "key": "selection",
+      "title": "Use a supported native work-tool hull in equipment selection fixtures",
+      "causeAndDirection": "These fixtures inherit current default hull but require nonnil workToolBounds and four mounts plus separate tool destination. Explicitly prepare a hull that declares the expected hardware and valid native stock; retain rendered hit bounds, exact destination cycle, paid purchase and untouched combat-facing assertions.",
+      "records": [
+        {
+          "logLine": 8704,
+          "test": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 32,
+          "detail": "Expectation failed: (game.equipmentWorkTool \u2192 false) && (game.equipmentMount == .rear \u2192 <not evaluated>)",
+          "rawLength": 227
+        },
+        {
+          "logLine": 8705,
+          "test": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 36,
+          "detail": "Expectation failed: (game.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: nil, savedEquipmentInventory: Optional(EliteCore.OwnedEquipmentInventory(owner: 75C470E4-76DD-4F72-A9A1-92313F3B5633, activeHull: FA02EC94-DAB6-4BFC-A520-48F6203A6FA3, revision: 0, items: [EliteCore.OwnedEquipmentItem(id: 519AA578-08BE-433B-8E7B-C0444D26BBB7, node: EliteCore.EquipmentNodeID(family: EliteCore.EquipmentFamilyID(rawValue: \"shields\"), key: \"Basic Shield\"), provenance: EliteCore.EquipmentAcquisitionProvenance.standard, component: Optional(EliteC",
+          "rawLength": 9315
+        },
+        {
+          "logLine": 8706,
+          "test": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 38,
+          "detail": "Expectation failed: (game.commander.credits \u2192 100000) == 92000",
+          "rawLength": 185
+        },
+        {
+          "logLine": 8707,
+          "test": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 40,
+          "detail": "Expectation failed: (!game.equipmentWorkTool \u2192 true) && (game.equipmentMount == .front \u2192 false)",
+          "rawLength": 218
+        },
+        {
+          "logLine": 8708,
+          "test": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 42,
+          "detail": "Expectation failed: (game \u2192 Game(valueStorage: [EliteCore.Game.(unknown context at $11b27438c).Values(commanderStorage: [EliteCore.Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: nil, savedEquipmentInventory: Optional(EliteCore.OwnedEquipmentInventory(owner: 75C470E4-76DD-4F72-A9A1-92313F3B5633, activeHull: FA02EC94-DAB6-4BFC-A520-48F6203A6FA3, revision: 0, items: [EliteCore.OwnedEquipmentItem(id: 519AA578-08BE-433B-8E7B-C0444D26BBB7, node: EliteCore.EquipmentNodeID(family: EliteCore.EquipmentFamilyID(rawValue: \"shields\"), key: \"Basic Shield",
+          "rawLength": 339164
+        },
+        {
+          "logLine": 8710,
+          "test": "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width:)",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 13,
+          "detail": "Expectation failed: (layout \u2192 EquipmentLayout(contentWidth: 464.0, left: 24.0, listTop: 198.0, buyingTop: 146.0, workToolBounds: nil, mounts: [(mount: EliteCore.LaserMount.front, bounds: EliteCore.CanvasRect(x: 24.0, y: 36.0, width: 224.0, height: 44.0)), (mount: EliteCore.LaserMount.left, bounds: EliteCore.CanvasRect(x: 256.0, y: 36.0, width: 224.0, height: 44.0)), (mount: EliteCore.LaserMount.right, bounds: EliteCore.CanvasRect(x: 24.0, y: 88.0, width: 224.0, height: 44.0)), (mount: EliteCore.LaserMount.rear, bounds: EliteCore.CanvasRect(x: 256.0, y: 88.0, width: 224.0, height: 44.0))], font",
+          "rawLength": 859
+        },
+        {
+          "logLine": 8712,
+          "test": "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width:)",
+          "file": "EquipmentSelectionTests.swift",
+          "line": 13,
+          "detail": "Expectation failed: (layout \u2192 EquipmentLayout(contentWidth: 680.0, left: 300.0, listTop: 146.0, buyingTop: 94.0, workToolBounds: nil, mounts: [(mount: EliteCore.LaserMount.front, bounds: EliteCore.CanvasRect(x: 300.0, y: 36.0, width: 162.0, height: 44.0)), (mount: EliteCore.LaserMount.left, bounds: EliteCore.CanvasRect(x: 470.0, y: 36.0, width: 162.0, height: 44.0)), (mount: EliteCore.LaserMount.right, bounds: EliteCore.CanvasRect(x: 640.0, y: 36.0, width: 162.0, height: 44.0)), (mount: EliteCore.LaserMount.rear, bounds: EliteCore.CanvasRect(x: 810.0, y: 36.0, width: 162.0, height: 44.0))], fo",
+          "rawLength": 863
+        }
+      ],
+      "methods": [
+        "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+        "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width:)"
+      ]
+    },
+    {
+      "key": "native_fit",
+      "title": "Prepare valid selected-hull stock before native equipment and work fitting",
+      "causeAndDirection": "nativeWorkScene and nativeEquipmentCommander change shipID toSH023 then call prepareEquipment before resetting inherited fresh fuel to selected-hull capacity; all five work methods and six equipment setup methods throw incompatibleFit before intended behavior. Prepare explicit valid hull fuel/missiles/owned stock before equipment transactions, then preserve real fitting, controls and paint checks.",
+      "records": [
+        {
+          "logLine": 12417,
+          "test": "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 301,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 164
+        },
+        {
+          "logLine": 12420,
+          "test": "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 428,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 158
+        },
+        {
+          "logLine": 12423,
+          "test": "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 464,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 168
+        },
+        {
+          "logLine": 12426,
+          "test": "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 524,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 165
+        },
+        {
+          "logLine": 12429,
+          "test": "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 609,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 164
+        },
+        {
+          "logLine": 12432,
+          "test": "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 667,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 159
+        },
+        {
+          "logLine": 12511,
+          "test": "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction()",
+          "file": "NativeWorkGuidanceTests.swift",
+          "line": 307,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 155
+        },
+        {
+          "logLine": 12514,
+          "test": "nativeSalvageApproachDrawAndQPreserveFiniteCustody()",
+          "file": "NativeWorkGuidanceTests.swift",
+          "line": 333,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 148
+        },
+        {
+          "logLine": 12517,
+          "test": "nativeMilitaryCoreCannotSubstituteForMiningModule()",
+          "file": "NativeWorkGuidanceTests.swift",
+          "line": 389,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 147
+        },
+        {
+          "logLine": 12520,
+          "test": "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap()",
+          "file": "NativeWorkGuidanceTests.swift",
+          "line": 415,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 161
+        },
+        {
+          "logLine": 12523,
+          "test": "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise()",
+          "file": "NativeWorkGuidanceTests.swift",
+          "line": 444,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 155
+        }
+      ],
+      "methods": [
+        "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce()",
+        "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing()",
+        "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts()",
+        "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography()",
+        "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn()",
+        "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext()",
+        "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction()",
+        "nativeSalvageApproachDrawAndQPreserveFiniteCustody()",
+        "nativeMilitaryCoreCannotSubstituteForMiningModule()",
+        "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap()",
+        "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise()"
+      ]
+    },
+    {
+      "key": "raw_save",
+      "title": "Keep raw legacy save fixtures valid after selecting SH013",
+      "causeAndDirection": "Both fixtures change Commander.shipID toSH013 while retaining current default stock, then legacy load rejects invalidCommander. Normalize fuel/missiles to the intended historical hull before encoding. Preserve in-memory migration, unchanged original bytes, invalid-save rollback and queued Cobra restore order.",
+      "records": [
+        {
+          "logLine": 12285,
+          "test": "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame()",
+          "file": "StartupSaveTests.swift",
+          "line": 85,
+          "detail": "Caught error: invalidCommander",
+          "rawLength": 161
+        },
+        {
+          "logLine": 12471,
+          "test": "nativeSaveIncludesEarlierQueuedCobraRestore()",
+          "file": "NativeViewTests.swift",
+          "line": 76,
+          "detail": "Caught error: invalidCommander",
+          "rawLength": 133
+        }
+      ],
+      "methods": [
+        "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame()",
+        "nativeSaveIncludesEarlierQueuedCobraRestore()"
+      ]
+    },
+    {
+      "key": "loan",
+      "title": "Use a compatible destination for actual loan-preserving hull transfer",
+      "causeAndDirection": "Exact test transfers actual fitted beam loan toSH043 and gets incompatibleFit. Verify current destination hull fitting support and native carried stock, select an explicit compatible destination or correct source preparation. Preserve loan record identity, personal laser displacement/restoration and historical provenance; do not weaken transfer policy.",
+      "records": [
+        {
+          "logLine": 9018,
+          "test": "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser()",
+          "file": "NativeLoanFittingTests.swift",
+          "line": 119,
+          "detail": "Caught error: incompatibleFit",
+          "rawLength": 180
+        }
+      ],
+      "methods": [
+        "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser()"
+      ]
+    },
+    {
+      "key": "stations",
+      "title": "Update station census fixtures to the current authored registry",
+      "causeAndDirection": "Three methods retain372 and old per-galaxy/headquarters-waystation assumptions; actual binding count382. Read exact approved retained source definitions and derive a separately pinned updated census including changed headquarters co-location. Retain independent kind/identity/rotation/persistence and actual doorway authority checks.",
+      "records": [
+        {
+          "logLine": 8682,
+          "test": "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 561,
+          "detail": "Expectation failed: (game.commander.nativeStations?.ledger.records.count \u2192 382) == 372",
+          "rawLength": 251
+        },
+        {
+          "logLine": 8684,
+          "test": "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 561,
+          "detail": "Expectation failed: (game.commander.nativeStations?.ledger.records.count \u2192 382) == 372",
+          "rawLength": 252
+        },
+        {
+          "logLine": 8686,
+          "test": "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 561,
+          "detail": "Expectation failed: (game.commander.nativeStations?.ledger.records.count \u2192 382) == 372",
+          "rawLength": 253
+        },
+        {
+          "logLine": 8687,
+          "test": "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority()",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 30,
+          "detail": "Expectation failed: (world.valid && world.ledger.world == owner \u2192 true) && (world.ledger.records.count == 372 \u2192 false)",
+          "rawLength": 257
+        },
+        {
+          "logLine": 8696,
+          "test": "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 10,
+          "detail": "Expectation failed: (NativeStationSource.bindings.count \u2192 382) == 372",
+          "rawLength": 220
+        },
+        {
+          "logLine": 8697,
+          "test": "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 13,
+          "detail": "Expectation failed: (bindings.filter { $0.kind == .waystation }.count \u2192 45) == (expected[galaxy] \u2192 47)",
+          "rawLength": 253
+        },
+        {
+          "logLine": 8698,
+          "test": "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 16,
+          "detail": "Expectation failed: bindings.first { $0.system == hq.system && $0.kind == .waystation } \u2192 nil",
+          "rawLength": 245
+        }
+      ],
+      "methods": [
+        "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+        "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority()",
+        "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()"
+      ]
+    },
+    {
+      "key": "world",
+      "title": "Choose authored worlds with the properties required by native flight fixtures",
+      "causeAndDirection": "Guided recharge assumes miningFields.first exists; cruise assumes a reachable government7 neighbor from current starter; anarchy hardcodes system27 yet government is not0. Choose actual authored source worlds/routes with required ring/fit/reach/government and consistent station/market state. Preserve real arrival, speed/thrust budgets, actual damage recharge and police ownership.",
+      "records": [
+        {
+          "logLine": 8695,
+          "test": "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement(guided:)",
+          "file": "NativeStationIntegrationTests.swift",
+          "line": 372,
+          "detail": "Expectation failed: (game.miningFields.first?.rocks \u2192 nil).first \u2192 nil \u2192 nil",
+          "rawLength": 256
+        },
+        {
+          "logLine": 9139,
+          "test": "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(shipID:)",
+          "file": "AutoTargetCruiseTests.swift",
+          "line": 17,
+          "detail": "Expectation failed: game.knownSystems.first {",
+          "rawLength": 233
+        },
+        {
+          "logLine": 9145,
+          "test": "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(shipID:)",
+          "file": "AutoTargetCruiseTests.swift",
+          "line": 17,
+          "detail": "Expectation failed: game.knownSystems.first {",
+          "rawLength": 233
+        },
+        {
+          "logLine": 9391,
+          "test": "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource()",
+          "file": "StationSecurityTests.swift",
+          "line": 303,
+          "detail": "Expectation failed: (game.currentSystem.government == 0 \u2192 false) && (game.commander.legal == 0 \u2192 <not evaluated>)",
+          "rawLength": 254
+        }
+      ],
+      "methods": [
+        "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement(guided:)",
+        "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(shipID:)",
+        "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource()"
+      ]
+    },
+    {
+      "key": "chart",
+      "title": "Use current authored chart geometry in the persistence pointer fixture",
+      "causeAndDirection": "actorPersistenceAndConcurrentCommands hardcodes pointer20,173 selecting system7. Persistence/equality and2seconds checks passed; only final selectedSystem7 fails. Base pointer on current rendered target coordinates/viewport, retaining actual selectSystem hit testing and intended system identity.",
+      "records": [
+        {
+          "logLine": 11649,
+          "test": "actorPersistenceAndConcurrentCommands()",
+          "file": "EliteTests.swift",
+          "line": 600,
+          "detail": "Expectation failed: await restored.snapshot().selectedSystem == 7",
+          "rawLength": 157
+        }
+      ],
+      "methods": [
+        "actorPersistenceAndConcurrentCommands()"
+      ]
+    },
+    {
+      "key": "schema",
+      "title": "Update field-relief lower-envelope expectations to measured extraction",
+      "causeAndDirection": "Production lowerSchema deliberately maps57/58 through NativeMeasuredExtractionSave55/56; test expects obsolete53/54. Update independent expected envelope chain, preserving exact leaf/schema refusal and custody checks.",
+      "records": [
+        {
+          "logLine": 9779,
+          "test": "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()",
+          "file": "WayfarerFieldReliefTests.swift",
+          "line": 176,
+          "detail": "Expectation failed: (WayfarerFieldReliefSave.lowerSchema(57) \u2192 55) == 53",
+          "rawLength": 205
+        },
+        {
+          "logLine": 9780,
+          "test": "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()",
+          "file": "WayfarerFieldReliefTests.swift",
+          "line": 177,
+          "detail": "Expectation failed: (WayfarerFieldReliefSave.lowerSchema(58) \u2192 56) == 54",
+          "rawLength": 205
+        }
+      ],
+      "methods": [
+        "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()"
+      ]
+    },
+    {
+      "key": "ordnance",
+      "title": "Correct ordnance fixtures to query exact actors and actual beam geometry",
+      "causeAndDirection": "lostTarget fixture uses bodies.first for missile after ensurePhysicalActors restores station cohort; use exact captured missile identity. Tick interception method assumes a fixed beam hits the current default player/occluding missile; qualify compatible explicit native geometry and source identity. Preserve targetLost, victim telemetry, no ship kill/bounty and no retarget assertions; exact interception blocker remains source-triage pending.",
+      "records": [
+        {
+          "logLine": 8060,
+          "test": "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID()",
+          "file": "GameplayOrdnanceRuntimeTests.swift",
+          "line": 127,
+          "detail": "Expectation failed: (game.bodies.first?.physical?.ordnance?.termination \u2192 nil) == .targetLost",
+          "rawLength": 224
+        },
+        {
+          "logLine": 8061,
+          "test": "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam()",
+          "file": "GameplayOrdnanceRuntimeTests.swift",
+          "line": 56,
+          "detail": "Expectation failed: !(game.bodies.contains { $0.id == missile.id } \u2192 <not evaluated>)",
+          "rawLength": 228
+        }
+      ],
+      "methods": [
+        "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID()",
+        "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam()"
+      ]
+    },
+    {
+      "key": "g12_negative",
+      "title": "Make the unselected mining refusal fixture truly release native work selection",
+      "causeAndDirection": "Only unselected argument fails outcome.failed and empty mission payloads; combat branch passed. Test cancels autoTarget and weaponsTargetID after native aim/hold, but current information/work selection may remain authoritative. Establish actual intended unselected state through real controls and assert premise before genuine firing, or fix a demonstrated production ownership gap; do not fabricate source failure or loosen extraction permission.",
+      "records": [
+        {
+          "logLine": 7466,
+          "test": "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction(reason:)",
+          "file": "NativeMeasuredExtractionAcquisitionTests.swift",
+          "line": 258,
+          "detail": "Expectation failed: (game.commander.scriptState.instances[state.permission.mission]?.outcome \u2192 .active) == .failed",
+          "rawLength": 318
+        },
+        {
+          "logLine": 7467,
+          "test": "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction(reason:)",
+          "file": "NativeMeasuredExtractionAcquisitionTests.swift",
+          "line": 259,
+          "detail": "Expectation failed: (game.commander.scriptState.instances[state.permission.mission]?.payloads.isEmpty \u2192 false) == true",
+          "rawLength": 322
+        }
+      ],
+      "methods": [
+        "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction(reason:)"
+      ]
+    },
+    {
+      "key": "g12_rehash",
+      "title": "Preserve genuine measured provenance through the positive rehash fixture",
+      "causeAndDirection": "normalizedPositiveSaveAndRehashedMutation fails invalidCommander for held/processed/received, while allocated passes. Existing helper reserializes missions via JSONSerialization and preserves only savedGeometry through JSONEncoder. Identify exact failing call and source witness/authority numeric representation before correction. Preserve complete positive control and rejection of each forged own provenance; no validator/hash/schema weakening. Raw parameterized error line does not locate throwing subcall.",
+      "records": [
+        {
+          "logLine": 8405,
+          "test": "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)",
+          "file": "NativeMeasuredExtractionSaveTests.swift",
+          "line": 107,
+          "detail": "Caught error: invalidCommander",
+          "rawLength": 211
+        },
+        {
+          "logLine": 8425,
+          "test": "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)",
+          "file": "NativeMeasuredExtractionSaveTests.swift",
+          "line": 107,
+          "detail": "Caught error: invalidCommander",
+          "rawLength": 216
+        },
+        {
+          "logLine": 8563,
+          "test": "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)",
+          "file": "NativeMeasuredExtractionSaveTests.swift",
+          "line": 107,
+          "detail": "Caught error: invalidCommander",
+          "rawLength": 215
+        }
+      ],
+      "methods": [
+        "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)"
+      ]
+    },
+    {
+      "key": "reload",
+      "title": "Attribute retained native snapshot differences after legitimate cold load",
+      "causeAndDirection": "Asteroid migration asserts exact flightSimulation and importedEMP asserts full commander/bodies equality after load. All preceding mining/EMP identity and motion checks survive. Inspect actual normal save/load adoption/migration diffs and establish expected legitimate projections independently; do not drop snapshot checks or claim the differing field without evidence. Exact delta remains pending source attribution.",
+      "records": [
+        {
+          "logLine": 7591,
+          "test": "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh()",
+          "file": "AsteroidPresenceRuntimeTests.swift",
+          "line": 98,
+          "detail": "Expectation failed: (restored.commander.flightSimulation \u2192 FlightSimulationState(physicalTime: 0.0, visit: 1, nextActor: 6, nextEmission: 1, nextIncident: 1, nextSpawn: 3, system: Optional(EliteCore.SystemIdentity(galaxy: 0, system: 4)), pose: EliteCore.ShipPose(position: EliteCore.Vector3(x: 0.0, y: 0.0, z: 500.0), orientation: EliteCore.Basis3(x: EliteCore.Vector3(x: 1.0, y: 0.0, z: 0.0), y: EliteCore.Vector3(x: 0.0, y: 1.0, z: 0.0), z: EliteCore.Vector3(x: 0.0, y: 0.0, z: 1.0))), anchors: Optional(EliteCore.SystemAnchors(system: EliteCore.SystemIdentity(galaxy: 0, system: 4), station: Elite",
+          "rawLength": 2820
+        },
+        {
+          "logLine": 9206,
+          "test": "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast()",
+          "file": "NativeImportedEMPCompatibilityTests.swift",
+          "line": 128,
+          "detail": "Expectation failed: (loaded.commander == saved.commander \u2192 false) && (loaded.bodies == saved.bodies \u2192 <not evaluated>)",
+          "rawLength": 276
+        }
+      ],
+      "methods": [
+        "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh()",
+        "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast()"
+      ]
+    },
+    {
+      "key": "native_projection",
+      "title": "Match native recovered-equipment save expectations to current market publication",
+      "causeAndDirection": "Recovered upgrade/feature helpers expect full commander equality at writer, cold read and native reload; log exposes originalMarkets changed G01-S007 stock in actual versus empty expected. Helper creates bootstrap.market but does not mirror expected originalMarkets. Derive expected current authenticated market publication before equality, preserving all ownership/credits/cargo/inventory/retained-files checks.",
+      "records": [
+        {
+          "logLine": 12435,
+          "test": "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: (published.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 24790
+        },
+        {
+          "logLine": 12436,
+          "test": "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 113,
+          "detail": "Expectation failed: (stored == expected && world.valid \u2192 false) && (world.consistent(with: stored) \u2192 <not evaluated>)",
+          "rawLength": 248
+        },
+        {
+          "logLine": 12437,
+          "test": "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 132,
+          "detail": "Expectation failed: (view.game.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 24791
+        },
+        {
+          "logLine": 12440,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: (published.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25966
+        },
+        {
+          "logLine": 12441,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 113,
+          "detail": "Expectation failed: (stored == expected && world.valid \u2192 false) && (world.consistent(with: stored) \u2192 <not evaluated>)",
+          "rawLength": 248
+        },
+        {
+          "logLine": 12442,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 132,
+          "detail": "Expectation failed: (view.game.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25967
+        },
+        {
+          "logLine": 12443,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: (published.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25960
+        },
+        {
+          "logLine": 12444,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 113,
+          "detail": "Expectation failed: (stored == expected && world.valid \u2192 false) && (world.consistent(with: stored) \u2192 <not evaluated>)",
+          "rawLength": 248
+        },
+        {
+          "logLine": 12445,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 132,
+          "detail": "Expectation failed: (view.game.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25961
+        },
+        {
+          "logLine": 12446,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 148,
+          "detail": "Expectation failed: (view.bounds.width == Double(width) \u2192 true) && (view.bounds.height == Double(height) \u2192 false)",
+          "rawLength": 244
+        }
+      ],
+      "methods": [
+        "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+        "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()"
+      ]
+    },
+    {
+      "key": "bounds",
+      "title": "Use actual AppKit content bounds in native capture fixtures",
+      "causeAndDirection": "Actual native content height differs from768/requested height in EMP and recovered-feature setup. AppDelegate creates decorated NSWindow with minSize512x540; platform chrome/visible screen constrains content. Establish actual supported content size/viewport before paint/capture and assert it consistently. Preserve paint provenance, click mapping and immutable saves; do not simply remove size checks.",
+      "records": [
+        {
+          "logLine": 12414,
+          "test": "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople()",
+          "file": "NativeEMPViewTests.swift",
+          "line": 30,
+          "detail": "Expectation failed: (view.bounds.width == 768 \u2192 true) && (view.bounds.height == 768 \u2192 false)",
+          "rawLength": 211
+        },
+        {
+          "logLine": 12440,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: (published.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25966
+        },
+        {
+          "logLine": 12441,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 113,
+          "detail": "Expectation failed: (stored == expected && world.valid \u2192 false) && (world.consistent(with: stored) \u2192 <not evaluated>)",
+          "rawLength": 248
+        },
+        {
+          "logLine": 12442,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 132,
+          "detail": "Expectation failed: (view.game.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25967
+        },
+        {
+          "logLine": 12443,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: (published.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25960
+        },
+        {
+          "logLine": 12444,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 113,
+          "detail": "Expectation failed: (stored == expected && world.valid \u2192 false) && (world.consistent(with: stored) \u2192 <not evaluated>)",
+          "rawLength": 248
+        },
+        {
+          "logLine": 12445,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 132,
+          "detail": "Expectation failed: (view.game.commander \u2192 Commander(savedContracts: nil, legacyOwnedEquipment: nil, savedAccommodation: nil, savedScriptState: Optional(EliteCore.(unknown context at $11b274298).CommanderScriptStateStorage(values: [EliteCore.ScriptEngineState(savedMeasuredExtractionSource: nil, savedRecordRecoverySource: nil, savedIdentifiedSalvageSource: nil, savedOriginalConsentedFreightSupply: nil, savedWayfarerColdChainStock: nil, savedWayfarerRepairLoopStock: nil, savedFleetDiscovery: nil, firstNativeCommoditySale: nil, savedClueJournal: nil, financeLedger: nil, wormholeTransit: nil, miss",
+          "rawLength": 25961
+        },
+        {
+          "logLine": 12446,
+          "test": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+          "file": "NativeEquipmentViewTests.swift",
+          "line": 148,
+          "detail": "Expectation failed: (view.bounds.width == Double(width) \u2192 true) && (view.bounds.height == Double(height) \u2192 false)",
+          "rawLength": 244
+        }
+      ],
+      "methods": [
+        "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople()",
+        "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()"
+      ]
+    },
+    {
+      "key": "fire",
+      "title": "Use the generated native fire binding in held-input fixture",
+      "causeAndDirection": "GameView.controls delegates fire to FlightControlInput.fireIsHeld using generated authority. Test still holds a alongside steering/throttle; steering passes but firefalse. Use the authoritative current fire token for the actual event/control test; retain press/release and steering assertions.",
+      "records": [
+        {
+          "logLine": 12480,
+          "test": "nativeFrameConversionAndInput()",
+          "file": "NativeViewTests.swift",
+          "line": 256,
+          "detail": "Expectation failed: (view.controls.pitch == 1 && view.controls.roll == 1 && view.controls.throttle == 1 \u2192 true) && (view.controls.fire \u2192 false)",
+          "rawLength": 232
+        }
+      ],
+      "methods": [
+        "nativeFrameConversionAndInput()"
+      ]
+    },
+    {
+      "key": "textures",
+      "title": "Keep both selected showroom textures visible at actual native sizes",
+      "causeAndDirection": "SH169/SH170 showroom test sees empty textured triangle list in two width/height cases. Renderer images still proceed; identify which selected craft/viewport lacks visible textured faces, check current selection/detail/layout and material mapping. Preserve real textured rendering at both sizes and bitmap assertions; do not replace with nonempty unrelated graphics. Exact geometry/culling cause pending.",
+      "records": [
+        {
+          "logLine": 12321,
+          "test": "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes()",
+          "file": "NativeShipTextureTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: !((triangles \u2192 []).isEmpty \u2192 true \u2192 true)",
+          "rawLength": 192
+        },
+        {
+          "logLine": 12322,
+          "test": "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes()",
+          "file": "NativeShipTextureTests.swift",
+          "line": 87,
+          "detail": "Expectation failed: !((triangles \u2192 []).isEmpty \u2192 true \u2192 true)",
+          "rawLength": 192
+        }
+      ],
+      "methods": [
+        "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes()"
+      ]
+    },
+    {
+      "key": "gpu",
+      "title": "Run mandatory Metal renderer assertions on a capable native runner",
+      "causeAndDirection": "Both actual Metal tests fail device!=nil with retained diagnostic Metal device, eight-sample rendering or queue unavailable. This is a real unmet runner/render capability prerequisite, not proven renderer raster mismatch. Use capable actual macOS environment or repair genuine device initialization. Retain required actual GPU parity assertions; no silent skip, CPU-only replacement or capability claim.",
+      "records": [
+        {
+          "logLine": 12317,
+          "test": "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer()",
+          "file": "ShipPanelRendererTests.swift",
+          "line": 97,
+          "detail": "Expectation failed: (device \u2192 nil) != nil",
+          "rawLength": 179
+        },
+        {
+          "logLine": 12340,
+          "test": "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages()",
+          "file": "ShipPanelRendererTests.swift",
+          "line": 217,
+          "detail": "Expectation failed: (device \u2192 nil) != nil",
+          "rawLength": 180
+        }
+      ],
+      "methods": [
+        "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer()",
+        "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages()"
+      ]
+    },
+    {
+      "key": "campaign",
+      "title": "Make campaign working-capital retry premise explicit",
+      "causeAndDirection": "Retry fixture expects contact suspension containing working capital then credits3000 enabling Retry. Current fresh balance may already satisfy campaign action; source still inherits fresh defaults. Explicitly prepare insufficient cash in initial valid fixture, then real top-up and retry if that is proven cause; preserve painted menu proofs, same child identity and duplicate retry behavior.",
+      "records": [
+        {
+          "logLine": 12386,
+          "test": "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs()",
+          "file": "NativeCampaignGalleryTests.swift",
+          "line": 476,
+          "detail": "Expectation failed: (fault.commander.scriptState.instances[harness.first.1]?.suspension?.contains(",
+          "rawLength": 231
+        },
+        {
+          "logLine": 12388,
+          "test": "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs()",
+          "file": "NativeCampaignGalleryTests.swift",
+          "line": 483,
+          "detail": "Expectation failed: (retryTarget \u2192 <EliteMac.NativeMissionMenu: 0x600017ddffc0>).validateMenuItem(retryMenu.items[retryIndex] \u2192 <NSMenuItem: 0x600000c61ab0 Retry Selected Mission>)",
+          "rawLength": 313
+        }
+      ],
+      "methods": [
+        "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs()"
+      ]
+    },
+    {
+      "key": "courier",
+      "title": "Align painted courier harness with its independent stock navigation witness",
+      "causeAndDirection": "Independent CourierNativeFixture.game explicitly pins SH023/sevenLY stock, but CourierInputHarness constructs fixture.game current starter directly and may add docking targeting. Actual path/lowerBound diverge, quote.allowedfalse and no mission accepted. Use consistent explicitly intended compatible hull/fuel/navigation and authentic source market; account separately for docking fit effects on independent witness. Preserve all six rows, actual travel/docking, painted authority, once-only delivery, trial/save/reload/abandonment. Do not rewrite expected routes to whatever an unintended hull produces.",
+      "records": [
+        {
+          "logLine": 12526,
+          "test": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+          "file": "ScriptCourierGenerationTests.swift",
+          "line": 140,
+          "detail": "Expectation failed: (board.valid && terms.valid \u2192 true) && (terms.path == path \u2192 false)",
+          "rawLength": 212
+        },
+        {
+          "logLine": 12527,
+          "test": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+          "file": "ScriptCourierGenerationTests.swift",
+          "line": 143,
+          "detail": "Expectation failed: (abs(terms.calendarLowerBoundSeconds - lowerBound) \u2192 431963.37016799994) < (0.000001 \u2192 1e-06)",
+          "rawLength": 238
+        },
+        {
+          "logLine": 12530,
+          "test": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+          "file": "ScriptCourierGalleryTests.swift",
+          "line": 414,
+          "detail": "Expectation failed: (quote.allowed \u2192 false) && (harness.view.game.contractBoard.action == .back \u2192 <not evaluated>)",
+          "rawLength": 236
+        },
+        {
+          "logLine": 12531,
+          "test": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+          "file": "ScriptCourierGalleryTests.swift",
+          "line": 438,
+          "detail": "Expectation failed: (accepted.commander.scriptState.instances.count \u2192 0) == 1",
+          "rawLength": 199
+        },
+        {
+          "logLine": 12532,
+          "test": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+          "file": "ScriptCourierGalleryTests.swift",
+          "line": 322,
+          "detail": "Expectation failed: (accepted.commander.scriptState.instances[id] \u2192 nil).contract \u2192 nil \u2192 nil",
+          "rawLength": 216
+        },
+        {
+          "logLine": 12537,
+          "test": "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState()",
+          "file": "ScriptCourierGalleryTests.swift",
+          "line": 552,
+          "detail": "Expectation failed: (held.commander.scriptState.instances.count \u2192 0) == 1",
+          "rawLength": 207
+        },
+        {
+          "logLine": 12540,
+          "test": "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem()",
+          "file": "ScriptCourierGalleryTests.swift",
+          "line": 620,
+          "detail": "Expectation failed: (accepted.commander.scriptState.instances.keys \u2192 []).first \u2192 nil \u2192 nil",
+          "rawLength": 221
+        }
+      ],
+      "methods": [
+        "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+        "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState()",
+        "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem()"
+      ]
+    }
+  ]
+}

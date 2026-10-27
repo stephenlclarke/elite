@@ -25,8 +25,9 @@ import Testing
   #expect(game.screen == .equipment)
   game.key("escape")
   #expect(game.screen == .status)
-  game.key("0")
   game.commander.equipment.insert("Escape Pod")
+  game.key("0")
+  #expect(game.commander.fittedEquipment(at: .utility(.escapePod)) != nil)
   game.key("1")
   game.key("6")
   #expect(game.screen == .system)
@@ -38,8 +39,9 @@ import Testing
   #expect(game.docked && !game.commander.equipment.contains("Escape Pod"))
   for docked in [false, true] {
     for number in 0...9 {
-      #expect(Game.numberedScreen(number, docked: docked) != nil)
-      #expect(!Game.screenTitle(number, docked: docked).isEmpty)
+      let retired = docked && [1, 2].contains(number)
+      #expect((Game.numberedScreen(number, docked: docked) == nil) == retired)
+      #expect(Game.screenTitle(number, docked: docked).isEmpty == retired)
     }
   }
   #expect(Game.numberedScreen(11, docked: true) == nil)
@@ -48,12 +50,13 @@ import Testing
 
 @Test func searchConsumesNavigationLettersNumbersAndGalaxyBracketsUntilExplicitlyFinished() {
   var game = Game(executive: false)
+  let initialName = game.commander.name
   game.screen = .status
   game.key("4")
   game.key("/")
   for character in "klnwu6[]xyzzy" { game.key(String(character)) }
   #expect(game.screen == .chart && game.acceptsTextInput && game.viewedGalaxy == 0)
-  #expect(game.mapSearch.query == "klnwu6[]xyzzy" && game.commander.name == "JAMESON")
+  #expect(game.mapSearch.query == "klnwu6[]xyzzy" && game.commander.name == initialName)
   game.key("help-open")
   game.key("escape")
   #expect(game.screen == .chart && game.mapSearch.active)
@@ -81,7 +84,12 @@ import Testing
   #expect(frame.shipPanels.isEmpty && frame.labels.contains { $0.text.contains("No matches") })
   game.key("escape")
   game.key("x")
-  #expect(game.showroomShips.count == 168)
+  #expect(ShipCatalogue.all.count == 171 && game.showroomShips.count == 171)
+  #expect(Set(game.showroomShips.map(\.id)) == Set(ShipCatalogue.all.map(\.id)))
+  #expect(
+    ["SH168", "SH169", "SH170"].allSatisfy { id in
+      game.showroomShips.contains { $0.id == id }
+    })
   game.key("return")
   for _ in 0..<200 { game.key("pagedown") }
   let bottom = game.showroom.scroll
@@ -192,12 +200,19 @@ import Testing
   game.fitMaximumHardware()
   game.viewportHeight = 518
   game.screen = .inventory
+  let inventoryNeedsScroll = game.informationWindow.hint != nil
   game.key("k")
-  #expect(PlayerHelp.pages(for: game).first!.rows.contains("ALL ROWS VISIBLE"))
+  #expect(
+    PlayerHelp.pages(for: game).filter { $0.title == "INVENTORY" }.flatMap(\.rows).contains(
+      inventoryNeedsScroll ? "UP / DOWN / SCROLL - MORE ROWS" : "ALL ROWS VISIBLE"))
   game.key("escape")
   game.key("8")
+  let statusNeedsScroll = game.informationWindow.last > 0
   game.key("k")
-  #expect(PlayerHelp.pages(for: game).first!.rows.contains("UP / DOWN / SCROLL - MORE ROWS"))
+  let statusHelp = PlayerHelp.pages(for: game).first!
+  #expect(statusHelp.title == "COMMANDER STATUS")
+  #expect(statusHelp.rows.contains("ALL ROWS VISIBLE") == !statusNeedsScroll)
+  #expect(statusHelp.rows.contains("UP / DOWN / SCROLL - MORE ROWS") == statusNeedsScroll)
   game.key("escape")
   game.key("6")
   game.showroom.selection = "SH013"
@@ -205,4 +220,57 @@ import Testing
   game.key("k")
   #expect(PlayerHelp.pages(for: game).first!.title == "SHIP EXCHANGE")
   #expect(!PlayerHelp.pages(for: game).contains { $0.title == "STATION SCREENS" })
+}
+
+@Test func retiredDockedMarketAliasesDoNotDismissBrowsersOrChangeState() {
+  for screen in [
+    Screen.status, .buy, .sell, .chart, .shortChart, .showroom, .gallery, .rumour, .navigation,
+  ] {
+    for key in ["1", "2", "screen:1", "screen:2"] {
+      var game = Game(executive: false)
+      game.screen = screen
+      game.selection = 5
+      game.screenHistory = [.status, .equipment]
+      game.showroom.query = "cobra"
+      let before = game.commander
+      let history = game.screenHistory
+      let showroom = game.showroom
+      game.key(key)
+      #expect(game.screen == screen && game.selection == 5)
+      #expect(game.commander == before && game.screenHistory == history)
+      #expect(
+        game.showroom.query == showroom.query && game.showroom.selection == showroom.selection)
+      #expect(
+        game.showroom.detail == showroom.detail && game.showroom.searching == showroom.searching)
+    }
+  }
+}
+
+@Test func showroomHasOneNumberedShortcutAndRetiredWLeavesNestedDetailsIntact() {
+  var game = Game(executive: false)
+  game.screen = .status
+  game.key("w")
+  #expect(game.screen == .status)
+  game.key("6")
+  #expect(game.screen == .showroom)
+  game.key("return")
+  let before = game.commander
+  game.key("w")
+  #expect(game.screen == .showroom && game.showroom.detail && game.commander == before)
+  game.key("escape")
+  game.key("/")
+  for letter in "wnu612" { game.key(String(letter)) }
+  #expect(game.showroom.query == "wnu612" && game.acceptsTextInput)
+  game.key("escape")
+  game.key("escape")
+  #expect(game.screen == .status)
+  game.key("7")
+  #expect(game.screen == .buy)
+  game.key("tab")
+  #expect(game.screen == .sell)
+  game.launch()
+  game.key("1")
+  #expect(game.screen == .rear)
+  game.key("2")
+  #expect(game.screen == .left)
 }

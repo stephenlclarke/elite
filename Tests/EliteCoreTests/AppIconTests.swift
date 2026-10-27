@@ -5,12 +5,16 @@ import Testing
 @testable import EliteCore
 @testable import EliteMac
 
-@Test func appIconUsesTheDetailedCobraWithLegibleShadedPanels() {
+@Test func appIconUsesApprovedLarvaalSovereignWithLegibleShadedPanels() {
   let icon = Display.appIcon()
   #expect(!icon.rasterizeGraphics)
   #expect(icon.shipPanels.count > 200 && icon.shipLines.isEmpty)
   #expect(icon.shipPanels.flatMap(\.vertices).allSatisfy { icon.canvas.contains($0) })
   #expect(icon.graphics == Display.appIcon().graphics)
+  #expect(L337Branding.shipID == "SH123")
+  #expect(L337Branding.iconMesh.faces.count == 99648)
+  #expect(L337Branding.iconMesh.materials.contains { $0.colour == 0x5D95_72FF })
+  #expect(L337Branding.iconMesh.materials.contains { $0.emissive && $0.colour == 0xFFD5_5BFF })
 }
 
 @MainActor @Test func appIconExportContainsEveryStandardAndRetinaRepresentation() throws {

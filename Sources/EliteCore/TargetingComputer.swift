@@ -22,7 +22,11 @@ public enum TargetingTier: Int, Sendable, Codable, CaseIterable, Comparable {
 }
 extension Commander {
   public var targetingTier: TargetingTier? {
-    (equipment.compactMap(TargetingTier.from)
+    if equipmentInventory != nil {
+      return fittedEquipment(at: .targetingCore).flatMap { TargetingTier.from($0.node.key) }
+    }
+    return
+      (equipment.compactMap(TargetingTier.from)
       + (equipment.contains(Equipment.legacyDockingComputer) ? [.docking] : [])).max()
   }
   public var hasAutomaticDocking: Bool { targetingTier.map { $0 >= .docking } ?? false }
@@ -53,15 +57,22 @@ extension Hull {
 
 extension Display {
   /// Use the identical projection, hidden-face and clipping path as front-view rendering.
-  static func visibleInFront(_ body: SpaceBody, game: Game, layout: CockpitLayout) -> Bool {
-    var front = game
-    front.screen = .front
+  static func visibleInFront(_ body: SpaceBody, game: borrowing Game, layout: CockpitLayout) -> Bool
+  {
+    // Front visibility uses the normal renderer without copying simulation state.
+    let mesh: Mesh
+    if let scripted = game.scriptNPCMesh(body) {
+      mesh = scripted
+    } else {
+      mesh = game.gameplayMesh(for: body)
+    }
     var frame = Frame()
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: layout.width, height: layout.height)
     frame.flightClip = layout.flightClip
-    draw(body, game: front, into: &frame, projection: layout.projection)
-    return !frame.shipLines.isEmpty || !frame.shipPanels.isEmpty
+    draw(
+      body, game: game, into: &frame, projection: layout.projection, mesh: mesh, screen: .front)
+    return !frame.shipLines.isEmpty || frame.hasShipSurfaces
   }
 }
 
@@ -98,10 +109,19 @@ extension Game {
     guard let tier = commander.targetingTier else { return nil }
     guard body.hull != .station || tier >= .docking else { return nil }
     guard tier >= .identification else {
-      return .init(id: body.id, model: nil, status: nil, fields: [])
+      return .init(id: body.id, model: nil, status: empTargetStatus(body), fields: [])
     }
     let shipStatus = body.hostile ? "Hostile" : "Neutral"
-    let status = body.hull == .station ? autoPilot.status : shipStatus
+    let status: String
+    if let electronic = empTargetStatus(body) {
+      status = electronic
+    } else if let work = workGuidance, let identity = body.physical?.identity,
+      work.parent == identity
+    {
+      status = work.status
+    } else {
+      status = body.hull == .station ? autoPilot.status : shipStatus
+    }
     var fields: [TargetField] = []
     if body.hull == .station {
       fields = [
@@ -111,17 +131,11 @@ extension Game {
         .init(label: "Range", value: String(format: "%.0f units", body.position.length)),
       ]
     } else {
-      if tier >= .pirate {
+      fields += TargetTelemetry.fields(
+        facts: telemetryFacts(for: body), tier: tier, targetIsShip: body.hull.isTargetShip,
+        observerGalaxy: commander.galaxy, discloseLegal: true)
+      if tier >= .military, body.hull.isTargetShip {
         fields += [
-          .init(label: "Cargo", value: "Unavailable"), .init(label: "Origin", value: "Unknown"),
-          .init(label: "Destination", value: "Unknown"),
-        ]
-      }
-      if tier >= .military {
-        fields += [
-          .init(label: "Shields", value: "Unavailable"),
-          .init(label: "Laser heat", value: "Unavailable"),
-          .init(label: "Fuel", value: "Unavailable"),
           .init(label: "Missiles", value: String(body.missiles)),
           .init(label: "ECM equipped", value: body.ecmEnabled ? "Yes" : "No"),
           .init(
@@ -129,8 +143,27 @@ extension Game {
         ]
       }
     }
+    if let context = gameplayContext(),
+      let metadata = recoverableMetadata(for: body, context: context)
+    {
+      fields += [
+        .init(label: "Type", value: metadata.category.rawValue),
+        .init(label: "Custody", value: metadata.ownership.rawValue),
+      ]
+      if let work = workGuidance, work.parent == body.physical?.identity,
+        let section = work.surface.section
+      {
+        fields.append(
+          .init(
+            label: "Section",
+            value: salvageSectionIsDepleted(section) ? "Exhausted" : "Available"))
+      }
+    }
     return .init(
-      id: body.id, model: body.blackjackRole?.name ?? body.hull.modelName, status: status,
+      id: body.id,
+      model: TargetTelemetry.modelName(
+        catalogueShipID: body.physical?.catalogueShipID, missionName: body.blackjackRole?.name,
+        fallbackHull: body.hull), status: status,
       fields: fields)
   }
 }

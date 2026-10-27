@@ -1,0 +1,90 @@
+import Foundation
+
+struct PreparedSalvageAdmissionHull: Sendable {
+  let mesh: Mesh
+  let hull: PreparedHull
+}
+
+extension Game {
+  /// Immutable source geometry only: no pose, query result, custody or actor authority is cached.
+  mutating func preparedSalvageAdmissionHull(mesh: Mesh, catalogue: String) -> PreparedHull? {
+    if salvageAdmissionGeometry.count > 128 {
+      salvageAdmissionGeometry.removeAll(keepingCapacity: true)
+    }
+    if let cached = salvageAdmissionGeometry[catalogue],
+      cached.mesh.vertices == mesh.vertices, cached.mesh.faces == mesh.faces
+    {
+      return cached.hull
+    }
+    guard let hull = try? PreparedHull(mesh: mesh) else { return nil }
+    if salvageAdmissionGeometry.count >= 128 {
+      salvageAdmissionGeometry.removeAll(keepingCapacity: true)
+    }
+    salvageAdmissionGeometry[catalogue] = .init(mesh: mesh, hull: hull)
+    return hull
+  }
+
+  /// The broad sphere stays authoritative for unrelated actors. Only an exactly offered
+  /// fragment may replace its own live parent's sphere with an actual-mesh proof.
+  mutating func releasedFragmentClearsParent(
+    _ request: SpawnRequest, parent: ActorSnapshot, context: EncounterContext
+  ) -> Bool {
+    let nativeClaim: Bool
+    if let payload = request.payload, case .salvage(let identity) = payload {
+      nativeClaim =
+        commander.alienStorageState?.current.salvage.sections.contains(identity.section) == true
+        || commander.salvageLedger.nativeTransferredSectionIdentities.contains(identity.section)
+    } else {
+      nativeClaim = false
+    }
+    // Once native custody owns the section, a retired ordinary offer cannot regain
+    // authority. Both paths still pass the identical live-parent and mesh checks.
+    let offered =
+      nativeClaim
+      ? nativeOfferedSalvageLot(for: request, context: context)
+      : commander.salvageLedger.offeredLot(for: request.identity)
+    guard request.identity.producer == .salvage,
+      request.identity.system == context.system, request.identity.visit == context.visit,
+      let lot = offered,
+      lot.identity.section.wreck.system == context.system,
+      commander.salvageLedger.boundActor(for: lot.identity) == nil,
+      !context.protection.protectedPayloads.contains(.salvage(lot.identity)),
+      parent.identity.system == context.system, parent.identity.visit == context.visit,
+      !context.protection.protectedActors.contains(parent.identity),
+      let metadata = parent.salvage,
+      [.wreck, .section].contains(metadata.category),
+      metadata.ownership == .abandoned, metadata.claimant == nil,
+      metadata.wreck == lot.identity.section.wreck,
+      metadata.section == nil || metadata.section == lot.identity.section,
+      let body = bodies.first(where: { $0.physical?.identity == parent.identity && $0.energy > 0 }),
+      let physical = body.physical, physical.npc == nil,
+      physical.salvage == metadata, physical.catalogueShipID == parent.catalogueShipID,
+      commander.flightSimulation.pose.systemPoint(body.position) == parent.position,
+      physical.velocity == parent.velocity,
+      let catalogue = physical.catalogueShipID,
+      let profile = salvageProfile(for: body),
+      profile.sections.contains(where: { $0.index == lot.identity.section.section }),
+      salvageCuttingIsAllowed(body, metadata: metadata, context: context),
+      !nativeClaim || nativeSalvageOfferParentMatches(body, lot: lot)
+    else { return false }
+    let fragmentMetadata = SalvageTargetMetadata(
+      category: lot.category, ownership: lot.loot?.legality.ownership ?? .abandoned,
+      claimant: nil, wreck: lot.identity.section.wreck, section: lot.identity.section,
+      lot: lot.identity, bounds: .init(center: .init(0, 0, 0), radius: lot.halfExtents.length),
+      workSurfaces: [])
+    let expected = SpawnRequest(
+      identity: request.identity, population: .cargo, hull: .cargo,
+      position: lot.position, orientation: .init(), velocity: lot.velocity, npc: nil,
+      rock: nil, payload: .salvage(lot.identity), priority: .ordinary,
+      salvage: fragmentMetadata)
+    guard request == expected else { return false }
+    let mesh = gameplayMesh(for: body)
+    guard let prepared = preparedSalvageAdmissionHull(mesh: mesh, catalogue: catalogue) else {
+      return false
+    }
+    return HullSweepSafety.validatePlacement(
+      center: lot.position, radius: lot.halfExtents.length,
+      hull: prepared, pose: modelPose(of: body), requiredClearance: 8
+    ).safe
+  }
+}

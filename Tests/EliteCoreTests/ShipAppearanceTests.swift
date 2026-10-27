@@ -7,6 +7,9 @@ import Testing
   let base = try #require(ShipCatalogue.ship("SH002"))
   var object = try #require(
     JSONSerialization.jsonObject(with: JSONEncoder().encode(base.design)) as? [String: Any])
+  // Archival metadata is a separate dialect from authored rendered texture assets.
+  object.removeValue(forKey: "textures")
+  object.removeValue(forKey: "faceTextures")
   object["sourceFaceColours"] = base.design.faces.map { _ in [1.0, 0, 0] }
   object["sourceTextures"] = [
     [

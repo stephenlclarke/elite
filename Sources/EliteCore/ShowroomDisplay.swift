@@ -3,6 +3,7 @@ import Foundation
 public struct ShowroomLayout: Sendable {
   public static let actionKeys = [
     "b", "r", "c", "v", ",", ".", " ", "showroom-sort",
+    "showroom-axis", "showroom-minus", "showroom-plus", "showroom-reset-view",
   ]
   public let wide: Bool
   public let listVisible: Bool
@@ -32,12 +33,12 @@ public struct ShowroomLayout: Sendable {
         x: left + Double(index % 4) * available / 4, y: 72 + Double(index / 4) * 28,
         width: available / 4 - 4, height: 24)
     }
-    trade = .init(x: left, y: 132, width: available * 0.68 - 8, height: 32)
-    pane = .init(x: trade.maxX + 16, y: 132, width: available - trade.width - 16, height: 32)
+    trade = .init(x: left, y: 160, width: available * 0.68 - 8, height: 32)
+    pane = .init(x: trade.maxX + 16, y: 160, width: available - trade.width - 16, height: 32)
     list = .init(
-      x: 16, y: 222, width: wide ? 240 : width - 32,
-      height: wide ? height - 282 : min(160, height * 0.25))
-    let modelTop = wide || detail ? 222 : list.maxY + 14
+      x: 16, y: 250, width: wide ? 240 : width - 32,
+      height: wide ? height - 310 : min(160, height * 0.25))
+    let modelTop = wide || detail ? 250 : list.maxY + 14
     let modelHeight = wide || detail ? min(240, height * 0.24) : max(80, height - modelTop - 60)
     model = .init(x: left, y: modelTop, width: available, height: modelHeight)
     details = .init(
@@ -103,6 +104,7 @@ extension Display {
     frame.responsive = true
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
+    frame.flightClip = frame.canvas
     let layout = ShowroomLayout(width: width, height: height, detail: game.showroom.detail)
     let font = GameTypography.scale
     frame.label("SHIP SHOWROOM", 16, 12, scale: font, ink: .yellow)
@@ -133,6 +135,7 @@ extension Display {
       game.showroomProfiles.count > 1 ? "Next profile" : "Single profile",
       game.showroom.rotationPaused ? "Rotate model" : "Pause model",
       "Sort: " + game.showroom.sort.rawValue,
+      "A: " + game.showroom.viewAxis.rawValue, "J: Turn -", "L: Turn +", "0: Reset view",
     ]
     for (index, bounds) in layout.buttons.enumerated() {
       frame.stroke(bounds.x, bounds.maxY, bounds.maxX, bounds.maxY, .blue)
@@ -170,7 +173,9 @@ extension Display {
         layout.details.y - 14, scale: font, ink: .cyan)
     }
     if let selected = game.showroomShip {
-      if layout.wide && game.showroom.compare, let baseline = game.showroomBaseline {
+      if (layout.wide || game.showroom.detail) && game.showroom.compare,
+        let baseline = game.showroomBaseline
+      {
         let half = (layout.model.width - 16) / 2
         showroomModel(
           baseline, game: game,
@@ -179,18 +184,18 @@ extension Display {
             width: half, height: layout.model.height),
           title: game.showroom.baselineUsesCurrent
             ? "CURRENT SHIP" : "PINNED BASELINE",
-          into: &frame)
+          comparedWith: selected, into: &frame)
         showroomModel(
           selected, game: game,
           bounds: .init(
             x: layout.selectedModelX,
             y: layout.model.y, width: half, height: layout.model.height),
           title: "SELECTED SHIP",
-          into: &frame)
+          comparedWith: baseline, into: &frame)
       } else {
         showroomModel(
           selected, game: game, bounds: layout.model, title: "Browsing: " + selected.name,
-          into: &frame)
+          comparedWith: nil, into: &frame)
       }
       if layout.wide || game.showroom.detail {
         showroomDetails(game, bounds: layout.details, modelAligned: layout.wide, into: &frame)
@@ -273,7 +278,7 @@ extension Display {
 
   private static func showroomModel(
     _ ship: CatalogueShip, game: Game, bounds: CanvasRect,
-    title: String, into frame: inout Frame
+    title: String, comparedWith other: CatalogueShip?, into frame: inout Frame
   ) {
     let font = GameTypography.scale
     let columns = max(10, Int(bounds.width / (6 * font)))
@@ -281,20 +286,29 @@ extension Display {
     for (index, line) in lines.prefix(2).enumerated() {
       frame.label(line, bounds.x, bounds.y + Double(index) * 14, scale: font, ink: .yellow)
     }
-    guard let mesh = ship.previewMesh
+    let physicalSource =
+      game.showroom.sourceProfiles
+      && game.showroomProfile?.group == "original-physical-metres"
+    guard let mesh = physicalSource ? ship.physicalSourcePreview : ship.previewMesh
     else {
       frame.label(
-        "Model unavailable", bounds.x + 4, bounds.y + bounds.height / 2,
+        physicalSource ? "Physical model unavailable" : "Model unavailable", bounds.x + 4,
+        bounds.y + bounds.height / 2,
         scale: font, ink: .orange)
       return
     }
     var preview = game
     preview.screen = .front
-    preview.commander.shipDisplayStyle = .shadedPanels
-    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400))
-    body.orientation.rotate(
-      pitch: 0.25 + game.showroom.angle * 0.3,
-      roll: game.showroom.angle * 0.15, yaw: game.showroom.angle)
+    let mode = FleetCataloguePreview.mode(
+      ship: ship, owner: game.commander.equipmentOwnerID, ownedShip: game.commander.shipID,
+      discovery: game.commander.scriptState.savedFleetDiscovery)
+    preview.commander.shipDisplayStyle =
+      mode == .recordedWireframe ? .whiteWireframe : .shadedPanels
+    let scale = ShowroomPreviewScale(
+      ship: ship, comparedWith: other, physicalSource: physicalSource)
+    // Moving the normalized mesh back is perspective-equivalent to scaling all three axes.
+    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400 / scale.factor))
+    body.orientation = game.showroom.viewOrientation
     let clip = frame.flightClip
     frame.flightClip = .init(
       x: bounds.x, y: bounds.y + 28, width: bounds.width,
@@ -303,13 +317,18 @@ extension Display {
       center: .init(
         bounds.x + bounds.width / 2,
         bounds.y + bounds.height / 2), focal: min(bounds.width, bounds.height - 62) * 1.6)
-    draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
-    frame.flightClip = clip
-    let caption =
-      ship.name
-    for (index, line) in ShowroomText.wrap(caption, width: columns).prefix(2).enumerated() {
-      frame.label(line, bounds.x, bounds.maxY - 28 + Double(index) * 14, scale: font, ink: .cyan)
+    if mode == .silhouette {
+      FleetCataloguePreview.drawSilhouette(mesh, body: body, projection: projection, into: &frame)
+    } else {
+      draw(body, game: preview, into: &frame, projection: projection, mesh: mesh)
     }
+    frame.flightClip = clip
+    let modelName = physicalSource ? ship.originalDefinition?.name ?? ship.name : ship.name
+    let caption = mode.caption.map { $0 + " / " + modelName } ?? modelName
+    frame.label(
+      String(caption.prefix(columns)), bounds.x, bounds.maxY - 28, scale: font, ink: .cyan)
+    frame.label(
+      String(scale.caption.prefix(columns)), bounds.x, bounds.maxY - 14, scale: font, ink: .orange)
   }
 
   static func showroomWindow(_ game: Game) -> ScrollWindow {
@@ -361,9 +380,15 @@ extension Display {
       game.showroom.sourceProfiles
       ? [metadata[0], metadata[6], metadata[7]]
       : [
-        ship.name + " / carried fit"
+        game.showroomProfile?.title ?? ship.name + " / carried fit"
       ]
     var rows = headings.flatMap { ShowroomText.wrap($0, width: columns) }.map {
+      [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
+    }
+    let discovery: [String] =
+      game.commander.scriptState.savedFleetDiscovery?.readout(for: ship.id)
+      ?? ["Collection: unknown; no native encounter recorded"]
+    rows += discovery.flatMap { ShowroomText.wrap($0, width: columns) }.map {
       [ShowroomTextLine(text: $0, x: 0, ink: .cyan)]
     }
     if game.showroom.compare {
@@ -451,21 +476,26 @@ extension Display {
   private static func currentCraftRows(_ game: Game) -> [String] {
     let commander = game.commander
     let capacityText = commander.unlimitedCargo ? "Unlimited" : String(commander.capacity)
-    let freeText =
-      commander.unlimitedCargo
-      ? "Unlimited (XYZZY)" : "\(commander.capacity - commander.cargoTonnes)t free"
+    let accommodation = Dictionary(
+      uniqueKeysWithValues: commander.nativeAccommodationFields.map { ($0.key, $0) })
+    func count(_ key: String) -> String {
+      accommodation[key]?.number.map { String(format: "%.0f", $0) } ?? "Unavailable"
+    }
+    let crewStatus = accommodation["required_crew_including_commander"]?.status ?? "unavailable"
     var rows: [String] = [
       "", "CURRENT FITTED CRAFT: " + commander.ship.name.uppercased(),
       "Native performance units stay separate from source/project units.",
-      "Required crew: 1; reserved crew quarters: 1 (assigned)",
-      "Fitted berths: 0; passengers aboard: 0; free places: 0",
-      "Cabin footprint: 0t; no passenger modules are fitted",
-      "Usable cargo after fit: " + freeText,
+      "Required crew: \(count("required_crew_including_commander")); reserved crew quarters: \(count("reserved_crew_accommodation")) (\(crewStatus))",
+      "Fitted cabins: \(count("fitted_passenger_cabins")); places: \(count("fitted_passenger_berths")); passengers aboard: \(count("passengers_aboard")); free awake/stasis places: \(count("free_passenger_places"))/\(count("free_stasis_places"))",
+      "Cabin footprint: \(accommodation["hold_used_by_cabins"]?.text ?? "Unavailable"); stored cabins: \(count("stored_passenger_cabins"))",
+      "Usable cargo after fit: \(accommodation["usable_cargo_after_fit"]?.text ?? "Unavailable") free (physical)",
       "Cargo \(commander.cargoTonnes)/\(capacityText) t; missiles \(commander.missiles)/\(commander.missileCapacity)",
       String(
         format: "Fuel %.1f/%.1f LY; jump limit %.1f LY", Double(commander.fuel) / 10,
         Double(commander.fuelCapacity) / 10, commander.maximumJumpDistance),
-      String(format: "Front/rear shield capacity %.1f native units", commander.shieldCapacity),
+      String(
+        format: "Front/rear shield capacity %.1f / %.1f native units",
+        commander.shieldCapacity, commander.rearShieldCapacity),
       String(
         format: "Energy %.1f; top speed %.1f", commander.performance.energy,
         commander.performance.speed),

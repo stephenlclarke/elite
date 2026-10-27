@@ -1,0 +1,38 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.contract"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "contracts-basic-v2", "local-flight-clocks-v2", "native-station-passengers-v1"]
+priority = 567
+source = "Original G04 complete native station-passenger journey: two finite named people with their own Renas requests, genuine native replies, two fitted compatible life-supported berths, actual one-leg travel and care reception. 510 + 100L + 80H CR; L1 H0 gives 610 CR, no deposit or deadline."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "cabin-journey"
+title = "Consented cabin journey"
+briefing = "Mira Talen and Oren Vey are two original native Avenor station people requesting passage to Renas. Ask for their native replies, then review boarding both in two real free compatible life-supported berths. Requesting is not consent or boarding. Carry these same people to real Renas care reception for 610 CR and the first family clue. No additional cargo, deposit or deadline. Refusal, withdrawal, loss, partial arrival or a substitute person cannot pay."
+destination = "Renas main orbital / actual native receiving care"
+reward = "610 CR at full actual reception; L1 H0, untimed, zero deposit."
+milestones = ["Board both original consenting native people", "Transfer those same two living people to real Renas care"]
+
+[stationJourney]
+batch = "avenor-cabin-journey-01"
+sourceGalaxy = 0
+sourceSystem = 7
+destinationGalaxy = 0
+destinationSystem = 185
+
+[[stationJourney.people]]
+id = "mira-talen"
+name = "Mira Talen"
+
+[[stationJourney.people]]
+id = "oren-vey"
+name = "Oren Vey"
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"

@@ -1,0 +1,7 @@
+# Hull-trade fixtures must declare their source hull and stock resources
+
+CI955 on `ff52dae618c16db1652eb75f33ffe33b135dce11` records four failing ShipTradeTests methods and five failing OwnedEquipmentHullTests methods. Their intended Cobra/Adder scenarios inherited the current SH025 Peregrine fuel of 130. The selected Boa and Adder hold 70, so real quote and transfer validation correctly refuses the fit. Setting only an Adder ship ID also leaves its initial fuel and resource pools inconsistent. The comparison expects Cobra and Boa shields to match, and the refusal flow explicitly checks that SH023 is already owned.
+
+Root assigns MC1 exactly ShipTradeTests.swift, OwnedEquipmentHullTests.swift and these paired notes, isolated from canonical `3a17276f6abdef02fbaf979f6ef3719a45e5d126`. Declare controlled stock hulls before equipment preparation or flight. Preserve real quotes, native performance, cash, physical property, storage/refit, save publication, rollback, nondurable migration and single-round consumption assertions. Production transfer/refusal policy remains authoritative.
+
+Status: source authoring frozen for validation handoff; focused build/test/probe UNRUN. The finite selection is ten existing methods/ten cases, including the unchanged actual fuel/route refusal control. G1 owns canonical ledger updates, shared warm qualification, review and integration through Root. No previous PASS is retained for changed callers; this selection does not establish full-family, CI, playable or release completion.

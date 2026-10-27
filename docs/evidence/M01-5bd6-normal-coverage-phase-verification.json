@@ -1,0 +1,102 @@
+{
+  "run": 40107564156,
+  "published_head": "5bd6e9d3b68509790fbb49c1cf9235b52b283465",
+  "actual_checkout_head": "613b7900d9fb5e3414bad4ca2bc63e8c9f4f9d5c",
+  "verified_input_paths": 1885,
+  "hash_mismatches": [],
+  "source_before_sha256": "fc3084a65743652b8828a4d88bf3cb36b5fe10f0a056b4caaf4d066368b6cc72",
+  "normal_phase": {
+    "summary": {
+      "line": 9874,
+      "text": "\u2714 Test run with 3395 tests in 394 suites passed after 3055.524 seconds."
+    },
+    "coverage_log": "90.45%",
+    "assertion_failure_markers": 0
+  },
+  "snapshot": {
+    "path": "/tmp/elite-mba-5bd6-normal-coverage-phase.log",
+    "bytes": 1034369,
+    "sha256": "4edf66bbbb757618a285f224e8dcdf1fc3f887d35c9a3e83add561b70884d95f",
+    "boundary": "Exact existing ci.log prefix beforeTSAN command"
+  },
+  "coverage_xml": {
+    "path": "/tmp/elite-mba-5bd6-normal-coverage.xml",
+    "bytes": 6047095,
+    "sha256": "8868bb0370d8ad697f61d289f882ba8d86cac5af95d3dc37c5fcd5e3d4bcdfe2",
+    "line_count": 127743,
+    "covered_lines": 115546,
+    "coverage_percent": 90.45192300165175,
+    "required_minimum": 80,
+    "threshold_met": true
+  },
+  "next_phase": {
+    "line": 9876,
+    "command": "swift test --scratch-path .build/tsan --sanitize=thread"
+  },
+  "environment": {
+    "os": {
+      "command": [
+        "sw_vers"
+      ],
+      "exitCode": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0\nBuildVersion:\t\t26A428\n",
+      "stderr": ""
+    },
+    "xcode": {
+      "command": [
+        "xcodebuild",
+        "-version"
+      ],
+      "exitCode": 0,
+      "stdout": "Xcode 27.1\nBuild version 27A9275\n",
+      "stderr": ""
+    },
+    "swift": {
+      "command": [
+        "swift",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": ""
+    },
+    "xcrunSwift": {
+      "command": [
+        "xcrun",
+        "swift",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": "swift-driver version: 1.168.6 "
+    },
+    "sdk": {
+      "command": [
+        "xcrun",
+        "--show-sdk-path"
+      ],
+      "exitCode": 0,
+      "stdout": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\n",
+      "stderr": ""
+    },
+    "sdkVersion": {
+      "command": [
+        "xcrun",
+        "--show-sdk-version"
+      ],
+      "exitCode": 0,
+      "stdout": "27.0\n",
+      "stderr": ""
+    },
+    "architecture": {
+      "command": [
+        "uname",
+        "-m"
+      ],
+      "exitCode": 0,
+      "stdout": "arm64\n",
+      "stderr": ""
+    }
+  },
+  "qualification": "Completed normal and coverage phase only; transition intoTSAN confirms coverage command success. CurrentheadTSAN/ASAN/leaks/fullquality/mainSonar/merge/release pending. No execution/replay/download."
+}

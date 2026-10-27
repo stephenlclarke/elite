@@ -1,0 +1,119 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.contract"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "contracts-basic-v2", "local-flight-clocks-v2", "durable-commands-v2", "profiled-encounters-v2", "exclusive-choices-v2", "dialogue-choices-v2", "gallery-basic-v2"]
+priority = 560
+source = "Original G07 corridor defence. Avenor-Renas-Avenor, L2/H0, 1120 + 140*2 = 1400 CR. Three unique registered armed raiders require actual player-attributed destruction and Voss report."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "corridor-defence"
+title = "Registered corridor defence"
+briefing = "VOSS: Protect the Renas corridor against three specifically registered armed raiders. Only actual player-attributed destruction of all three qualifies; EMP disable, culling and unrelated kills do not. Return to Voss at Avenor main orbital. 0t, no berths or deposit, H0, untimed. Native proof progress is recorded as 0/3 through 3/3."
+destination = "Renas / return to Voss at Avenor main orbital"
+reward = "1400 CR for L2/H0, once after the actual verified report. No failure payment."
+milestones = ["Accept the three registered raiders", "Destroy all three actual raiders yourself", "Report to Voss at Avenor"]
+requiredDestructionEncounters = ["registered-corridor"]
+requiredChoiceGroups = ["corridor-terminal"]
+
+[board]
+id = "corridor-defence"
+title = "Corridor defence / L2 H0 / Untimed"
+generator = "generate"
+clock = "local"
+refreshSeconds = 3600
+exclusiveGroup = "corridor-defence"
+
+[[dialogs]]
+id = "voss-corridor-report"
+text = "VOSS: Confirm all three distinct registered raiders' actual player-attributed destruction records. The advertised 1400 CR and this family's first-success clue commit together. Back changes nothing."
+choices = [{id="report-defended-corridor", label="Report the three verified raiders", group="corridor-terminal"}]
+
+[[dialogs]]
+id = "voss-corridor-withdraw"
+text = "VOSS: Withdraw this defence for zero payment. This does not restore a destroyed actor. A later defence requires a new native offer, instance and raiders. Back changes nothing."
+choices = [{id="withdraw-corridor", label="Withdraw this defence", group="corridor-terminal"}]
+
+[[dialogs]]
+id = "voss-corridor-progress"
+text = "VOSS: Fewer than three player-attributed registered raiders have been verified. The verified count is recorded in your journal. No defence payment is available yet. Return to the corridor or review withdrawal. Back changes nothing."
+choices = [{id="continue-defence",label="Return to the corridor"},{id="review-withdrawal",label="Review withdrawal"}]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "system.entered"
+function = "deploy"
+[[handlers]]
+event = "station.undocked"
+function = "deploy"
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+[[handlers]]
+event = "actor.destroyed"
+function = "destroyed"
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[npcs]]
+id = "corridor-raider"
+name = "Registered Renas corridor raider"
+source = "Original G07 native corridor raider"
+basis = "Explicit native project NPC fit; H0 corridor defence, no incidental bounty."
+model = "catalogue:SH023"
+scale = 1.0
+energy = 100.0
+recharge = 0.0
+speed = 100.0
+acceleration = 50.0
+pitch = 1.0
+yaw = 1.0
+roll = 1.0
+missiles = 0
+fuel = 0.0
+ecm = false
+bounty = 0
+
+[[npcs.lasers]]
+id = "forward"
+kind = "laser"
+muzzle = {x=0.0,y=0.0,z=61.0}
+direction = {x=0.0,y=0.0,z=1.0}
+arc = 0.03
+damage = 6.0
+range = 15000.0
+interval = 0.1
+energy = 0.5
+heat = 3.2
+cooling = 12.0
+maximumHeat = 256.0
+
+[[encounters]]
+id = "registered-corridor"
+galaxy = 0
+system = 185
+profile = "profiled-local-freeze-v1"
+actors = [
+  {id="raider-a", npc="corridor-raider", x=-1800.0,y=0.0,z=4000.0,hostile=true},
+  {id="raider-b", npc="corridor-raider", x=0.0,y=0.0,z=5000.0,hostile=true},
+  {id="raider-c", npc="corridor-raider", x=1800.0,y=0.0,z=4000.0,hostile=true}
+]
+
+[trial]
+ship = "SH025"
+galaxy = 0
+system = 7
+credits = 100000
+cabins = 0
+flight = false
+offer = 0

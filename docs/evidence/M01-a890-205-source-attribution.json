@@ -1,0 +1,30 @@
+{
+  "issue": 205,
+  "head": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+  "scope": "readonly existing source/artifact only",
+  "proven": [
+    "only held/processed/received rows record top-level invalidCommander at declaration107",
+    "allocated row has no failure record; all genuine55/56coldreload boundaries and movingOriginalIntake methodPASS",
+    "artifact retains no per-test missions.json/raw fixture state or throwing subcall",
+    "helper reserializes missions via JSONSerialization and reencodes savedGeometry only",
+    "NativeMeasuredExtraction.hash itself already normalizes JSON through JSONSerialization sortedKeys",
+    "tagged ScriptValue numbers store sixteen hexadecimal characters and unchanged schema55 uses typed decoder"
+  ],
+  "leadingHypothesis": {
+    "call": "positive measuredReadRehash at test135; helper terminal ScriptSaveStore.read236",
+    "confidence": "moderate from phase-specific differential; not proven; earlier extract/collect/save/pristineRead128 also throw"
+  },
+  "candidateInvariants": [
+    {
+      "path": "NativeMeasuredExtractionSave.swift557\u2013566/608",
+      "invariant": "raw source/state NSDictionary equals typed decode+reencode; numeric/field normalization may fail canonical shape"
+    },
+    {
+      "path": "NativeMeasuredExtractionSave.swift238/299;ScriptPersistence.swift1171",
+      "invariant": "extraction/intake authorities and full custody claims; exact offender unknown"
+    }
+  ],
+  "ruledOutAsExplanation": "mere whitespace/key-order changes, or automatic loss of hex tagged ScriptValue floating bits; no basis for authority/validator change",
+  "minimalNextDelta": "failure-only test stage labels around extract/collect/save/pristineRead and positive normalizedRead; preserve original throw. If normalizedRead fails, emit bounded rawFieldsPass, typedDecodePass, source/stateEqualPristine, witnessAuthorityMatch, firstBadIntakeAuthorityIndex, measuredClaimsPass booleans. At most first numeric difference path+old/new bitpattern if typed values differ; no commander dumps. Include in alreadyplanned combinedaffectedbatch, no separate probe/run. Keep all positivecontrol and every forgery expectation.",
+  "execution": "none"
+}

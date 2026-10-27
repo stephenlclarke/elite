@@ -20,13 +20,45 @@ public struct ShowroomState: Sendable {
   public var compare = true
   public var rotationPaused = false
   public var angle = 0.0
+  public var viewAxis: ShowroomViewAxis = .yaw
+  var manualOrientation: Basis3?
+  var viewOrientation: Basis3 {
+    if let manualOrientation { return manualOrientation }
+    var result = Basis3()
+    result.rotate(pitch: 0.25 + angle * 0.3, roll: angle * 0.15, yaw: angle)
+    return result
+  }
+  mutating func rotateView(pitch: Double = 0, roll: Double = 0, yaw: Double = 0) {
+    guard pitch.isFinite, roll.isFinite, yaw.isFinite else { return }
+    var result = viewOrientation
+    result.rotate(pitch: pitch, roll: roll, yaw: yaw)
+    manualOrientation = result
+    rotationPaused = true
+  }
+  mutating func turnView(_ direction: Double) {
+    let step = direction * .pi / 12
+    switch viewAxis {
+    case .pitch: rotateView(pitch: step)
+    case .roll: rotateView(roll: step)
+    case .yaw: rotateView(yaw: step)
+    }
+  }
+  mutating func resetView() {
+    angle = 0
+    manualOrientation = nil
+    rotationPaused = true
+  }
   public var scroll = 0
   public var listOffset = 0
   public var sourceProfiles = false
   public var profileIndex = 0
   public init() {}
   mutating func advance(delta: Double) {
-    if !rotationPaused { angle = (angle + delta * 0.4).truncatingRemainder(dividingBy: 2 * .pi) }
+    if !rotationPaused {
+      let step = delta * 0.4
+      angle = (angle + step).truncatingRemainder(dividingBy: 2 * .pi)
+      manualOrientation?.rotate(pitch: step * 0.3, roll: step * 0.15, yaw: step)
+    }
   }
 }
 extension Game {
@@ -52,7 +84,7 @@ extension Game {
   }
   var showroomProfiles: [ShipProfile] {
     if !showroom.sourceProfiles { return selectedGameProfile.map { [$0] } ?? [] }
-    return showroomShip?.profiles ?? []
+    return showroomShip?.sourceProfilesIncludingPhysical ?? []
   }
   public var showroomBaseline: CatalogueShip? {
     ShipCatalogue.ship(showroom.baselineUsesCurrent ? commander.shipID : showroom.baseline)
@@ -65,11 +97,11 @@ extension Game {
     if !showroom.sourceProfiles {
       if showroom.baselineUsesCurrent { return commander.gameShipProfile }
       guard let ship = showroomBaseline, ship.game != nil else { return nil }
-      var fit = commander
-      fit.shipID = ship.id
-      return fit.gameShipProfile
+      return commander.projectedGameShipProfile(to: ship.id)
     }
-    return showroomBaseline?.profiles.first { $0.group == showroomProfile?.group }
+    return showroomBaseline?.sourceProfilesIncludingPhysical.first {
+      $0.group == showroomProfile?.group
+    }
   }
   public var showroomComparison: [ShipComparisonRow] {
     let selected = showroomProfile
@@ -176,7 +208,6 @@ extension Game {
       return
     }
     switch key {
-    case "w": closeShowroom()
     case "x": clearShowroomSearch()
     case "escape":
       if showroom.detail { showroom.detail = false } else { closeShowroom() }
@@ -187,6 +218,10 @@ extension Game {
       if showroom.detail { openShipTrade() } else { showroom.detail = true }
     case "tab": showroom.detail.toggle()
     case " ": showroom.rotationPaused.toggle()
+    case "a", "showroom-axis": showroom.viewAxis = showroom.viewAxis.next
+    case "j", "showroom-minus": showroom.turnView(-1)
+    case "l", "showroom-plus": showroom.turnView(1)
+    case "0", "showroom-reset-view": showroom.resetView()
     case "showroom-sort":
       showroom.sort = showroom.sort == .alphabetical ? .power : .alphabetical
     case "showroom-trade": openShipTrade()
@@ -319,5 +354,31 @@ extension Game {
     if selected < offset { offset = selected }
     if selected >= offset + layout.listCount { offset = selected - layout.listCount + 1 }
     return max(0, offset)
+  }
+}
+
+extension Game {
+  public mutating func showroomDrag(
+    fromX: Double, fromY: Double, toX: Double, toY: Double, roll: Bool
+  ) {
+    guard screen == .showroom, !paused, !showroom.trading, !showroom.searching,
+      [fromX, fromY, toX, toY].allSatisfy(\.isFinite)
+    else { return }
+    let layout = ShowroomLayout(
+      width: viewportWidth, height: viewportHeight, detail: showroom.detail)
+    guard layout.model.contains(.init(fromX, fromY)), layout.model.contains(.init(toX, toY)) else {
+      return
+    }
+    let dx = max(-256, min(256, toX - fromX)) * 0.01
+    let dy = max(-256, min(256, toY - fromY)) * 0.01
+    if roll { showroom.rotateView(roll: dx) } else { showroom.rotateView(pitch: dy, yaw: dx) }
+  }
+}
+
+extension GameRuntime {
+  public func showroomDrag(fromX: Double, fromY: Double, toX: Double, toY: Double, roll: Bool) {
+    nativeCommand {
+      $0.showroomDrag(fromX: fromX, fromY: fromY, toX: toX, toY: toY, roll: roll)
+    }
   }
 }

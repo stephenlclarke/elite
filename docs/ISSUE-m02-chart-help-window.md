@@ -1,0 +1,7 @@
+# M02.P05: docked chart help advertises scrolling when all data fits
+
+Docked charts contain their own planet-data panel. Its actual ScrollWindow already clamps scrolling and hides the visual scroll cue when every row fits. PlayerHelp instead always advertises Up/Down/Scroll for docked planet data, even in a viewport where those controls cannot reveal another row. This disagrees with the established system/inventory contextual hints.
+
+Derive this one help row from Display.chartDataWindow in the effective chart context, including help opened from either chart. Keep the separate in-flight data-page shortcut at 6. Preserve selection, dock state, commander, dispatch and transaction authority. No rendering/layout or navigation behavior needs to change.
+
+Existing P05 source is credited: numbered destinations distinguish docked chart/showroom/market/status/inventory actions; StationScreenGuide labels actual station/service availability; InventoryInformation separates trade cargo, protected property and fitted/held equipment. The earlier showroom profile-count hint is retained. P04 side-by-side capability and shared pitch/roll/yaw acceptance is already covered by existing source and three maintained comparison methods, all included in the independently verified 527-pass run at 3e79d127; no rewrite or rerun is needed for that source credit. Native usability and full M02 acceptance remain separate.

@@ -1,0 +1,5 @@
+# C08.P05.B.source: original Enron handoffs and local finite kits
+
+Actual original rescue receiving unlocks the three named Enron utility handoffs, not a stage10 repair receipt. Bind each physical original module, its distinct mechanical fault and exactly one local crew-owned sealed kit to that owning induction. Loading, board reopening, source registration or native admission cannot replenish kits, repair controls or award progress.
+
+Use the explicit Enron G01-S190 metre offsets inlet(60000,20000,0), buffer(60300,20000,0), return(60600,20000,0), approved original6m-per-side external enclosures and normal non-spinning rigid-anchor native admission/clearance. Preserve local crew control, zero initial relative motion and original identities. Actual Enron board Confirm grants only mission maintenance authorization, without free ship equipment, player cargo/energy charges, money or a clue. Separate explicit arming, qualifying20s physical work, once-only kit consumption and live local receiving remain C08.P05.B.work.

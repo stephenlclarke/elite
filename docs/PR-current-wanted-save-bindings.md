@@ -1,0 +1,19 @@
+# fix(wanted): align current career bindings with native scene boundaries
+
+WantedCareerLedger.resetPhysicalBindings(system:) clears only the current binding of careers in that system. It preserves identities, callsigns, parked snapshots/resources, legal/bounty state, sightings, aliases, kill history, settled identities, limits and retirement. Commander forwards through its existing optional stored ledger, so clearing an absent registry does not materialize an empty saved field. No Game/Commander field or layout is added.
+
+The helper runs alongside existing NPC unbinding at plain Commander load, docking, visit reset, ordinary system departure and the serialized Commander copy. Live publication retains its real bindings; the separate disk copy clears both native and career scene bindings. After authenticated native scene restoration succeeds, career reconciliation can re-establish current bindings from that accepted native ledger. Loading a parked scene leaves them nil. Validation, identity allocation, population/admission limits and writer rollback remain unchanged.
+
+## Independent current-format oracles
+
+PLUGH and the docked NPC preservation helper establish explicit current mining policy before taking the expected snapshot, using the existing NativeSaveTestFixture.prepareCurrentPolicy. Their independently copied expected Commander clears both documented scene-binding types; it is never copied from writer output. All whole-Commander, valid current state, PLUGH identity, resource/equipment, unchanged-byte and lifecycle assertions remain.
+
+The docked NPC helper now requires an actually bound career before docking, then checks that the binding is nil immediately afterward while identity/callsign, the complete parked snapshot, sighting, legal record, recorded kills and retirement remain equal. Its complete docked/live/disk/restored Commander checks continue unchanged. The campaign disk oracle also accounts explicitly for both binding types; its before/save and reload whole-state checks are retained.
+
+Solar docked-save expectations are captured after explicit current policy is established. After an actual relaunch, the expected wanted ledger starts from the independent prelaunch ledger and applies only actual observations from accepted native logical identities and snapshots. The entire typed wanted ledger must equal this model, including private history/aliases and resource projections, before its unordered Codable projection is removed from the separate general JSON comparison. This permits genuine physical rebindings/reports without ignoring or deleting career checks. The remaining timeline exclusions, native station rebind oracle, full current save equality and exact resource assertions remain intact.
+
+The GameplayScene test is renamed gameplayCurrentSaveRoundTripPreservesCommanderProperty. Only predecessor JSON key stripping, synthetic legacy decoding and old-default expectations are removed under the explicit human compatibility waiver. The exact current typed roundtrip and validity remain, with explicit credits123456/cargo13=7, legal12/equipment, flight state and career equality assertions. No current validator, migration acceptance rule or malformed-current-data guard is loosened. No broad compatibility cleanup is included.
+
+## Validation scope
+
+Author validation: strict Swift formatting, Markdown lint and whitespace checks. No author compiler, native app, GUI, test, profiler or diagnostic execution was run. CI612 failed and closed; its campaign artifacts establish the diagnosis, not corrected acceptance. G1 owns one reviewed coherent build and the actual affected PLUGH, GameplayScene, docked NPC, campaign and solar methods, plus current wanted save/rebind checks as allocated. Other CI612 crash, procurement/completion and input/colour findings remain with their assigned owners.

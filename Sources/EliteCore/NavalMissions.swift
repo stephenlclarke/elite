@@ -16,8 +16,8 @@ public enum NavalMissionStage: Int, Codable, Sendable, CaseIterable {
     case .huntingConstrictor: "HUNT THE CONSTRICTOR"
     case .constrictorDestroyed: "REPORT TO THE NAVY"
     case .constrictorComplete: "CONSTRICTOR MISSION COMPLETE"
-    case .reportToCeerdi: "REPORT TO CEERDI (GALAXY 3)"
-    case .carryingPlans: "DELIVER PLANS TO BIRERA (GALAXY 3)"
+    case .reportToCeerdi: "REPORT TO NERITH (GALAXY 3)"
+    case .carryingPlans: "DELIVER PLANS TO VEYARA (GALAXY 3)"
     case .plansDelivered: "NAVAL MISSIONS COMPLETE"
     }
   }
@@ -50,7 +50,15 @@ public struct MissionNotice: Sendable, Equatable {
   public var text: String {
     let template = dialog?.text ?? "MESSAGE UNAVAILABLE"
     return template.replacingOccurrences(of: "{commander}", with: commander)
-      .replacingOccurrences(of: "{captain}", with: galaxy == 0 ? "CARRUTHERS" : "FOSDYKE SMYTHE")
+      .replacingOccurrences(
+        of: "{captain}", with: OriginalContactIdentity.huntCaptain(galaxy: galaxy).name.uppercased()
+      )
+      .replacingOccurrences(
+        of: "{plans_captain}", with: OriginalContactIdentity.plansCaptain.name.uppercased()
+      )
+      .replacingOccurrences(
+        of: "{plans_agent}", with: OriginalContactIdentity.plansAgent.name.uppercased()
+      )
       .replacingOccurrences(
         of: "{sighting}",
         with: galaxy == 0
@@ -101,8 +109,18 @@ public enum MissionRules {
 
 extension Commander {
   public var energyRechargeMultiplier: Double {
-    if equipment.contains(Equipment.navalEnergyUnit) { return 3 }
-    return equipment.contains("Extra Energy Unit") ? 2 : 1
+    if let multiplier = fittedComponent(at: .energy)?.statistics[.energyRecharge] {
+      return multiplier * fittedAlienSummary(.energyRecharge).multiplier
+    }
+    let ordinary: Double
+    if equipment.contains(Equipment.eliteEnergyUnit) {
+      ordinary = 4
+    } else if equipment.contains(Equipment.navalEnergyUnit) {
+      ordinary = 3
+    } else {
+      ordinary = equipment.contains("Extra Energy Unit") ? 2 : 1
+    }
+    return ordinary * fittedAlienSummary(.energyRecharge).multiplier
   }
   public func laserDamage(against hull: Hull, mount: LaserMount = .front) -> Double {
     guard let laser = laser(on: mount) else { return 0 }

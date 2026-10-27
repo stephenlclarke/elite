@@ -1,0 +1,113 @@
+{
+  "attempts": [
+    {
+      "source_head": "62b3374bbc5198e8a0124caac32abb98ee64bc63",
+      "raw_report_sha256": "032cc6fa493d81dd691d4e655b3edf49ff8dc6d1d3559d8d6acd012fd24e5ddb",
+      "pid": 80183,
+      "image_uuid": "b9767ee3-09b9-3403-a3d4-1c43680e0ee5",
+      "image_sha256": "1ecbb6edc1bd6a399ad425159a4d228a1c1d84902a8c12d857702b919fb1ac25",
+      "signal": "SIGBUS",
+      "stack_pointer": "0x16d9bfd30",
+      "fault_address": "0x16d9bfd40",
+      "frame_pointer": "0x16d9c5120",
+      "mapped_region_evidence": "0x16d9bfd40 is in 0x16d9bc000-0x16d9c0000;  bytes after start: 15680  bytes before end: 703\n      REGION TYPE                    START - END         [ VSIZE] PRT/MAX SHRMOD  REGION DETAIL\n      Stack                       16d99c000-16d9bc000    [  128K] rw-/rwx SM=COW  thread 12\n--->  Stack Guard                 16d9bc000-16d9c0000    [   16K] ---/rwx SM=PRV  \n      Stack                       16d9c0000-16da48000    [  544K] rw-/rwx SM=COW  ",
+      "owning_frames": [
+        {
+          "symbol": "outlined init with copy of WayfarerFieldReliefDefinition?",
+          "file": "/<compiler-generated>",
+          "line": null
+        },
+        {
+          "symbol": "static WayfarerFieldReliefSave.validateDeclaration(_:)",
+          "file": "WayfarerFieldReliefSave.swift",
+          "line": 14
+        },
+        {
+          "symbol": "static ScriptPackLibrary.validate(_:)",
+          "file": "ScriptPack.swift",
+          "line": 446
+        },
+        {
+          "symbol": "static ScriptPackLibrary.read(_:)",
+          "file": "ScriptPack.swift",
+          "line": 400
+        },
+        {
+          "symbol": "static ScriptPackLibrary.installed(directory:)",
+          "file": "ScriptPack.swift",
+          "line": 689
+        },
+        {
+          "symbol": "static ScriptPackLibrary.defaultLibrary(directory:)",
+          "file": "ScriptBundledPacks.swift",
+          "line": 126
+        },
+        {
+          "symbol": "OriginalColdChainTests.productionResourcePinsNativeTermsAndDeduplicatesItsExactDigest()",
+          "file": "OriginalColdChainTests.swift",
+          "line": 137
+        }
+      ],
+      "qualification": "Matched delayed OS report and retained image; no replay. Failed aggregate remains failed."
+    },
+    {
+      "source_head": "7b51ccd21c09cec2aa5f8ccf214ec55a536670e7",
+      "raw_report_sha256": "3379d338c013eb3be4b46b1aa3c8acacb09c6bcc558f9583474a29a82302a14f",
+      "pid": 19591,
+      "image_uuid": "3784b026-06b9-3ecf-846f-0bea63675892",
+      "image_sha256": "5a2d642b71931a492a521a137cfb0c09d22bad13cafc027469ece27d2c3e4b12",
+      "signal": "SIGBUS",
+      "stack_pointer": "0x16f593bb0",
+      "fault_address": "0x16f593bc0",
+      "frame_pointer": "0x16f599120",
+      "mapped_region_evidence": "0x16f593bc0 is in 0x16f590000-0x16f594000;  bytes after start: 15296  bytes before end: 1087\n      REGION TYPE                    START - END         [ VSIZE] PRT/MAX SHRMOD  REGION DETAIL\n      Stack                       16f570000-16f590000    [  128K] rw-/rwx SM=COW  thread 6\n--->  Stack Guard                 16f590000-16f594000    [   16K] ---/rwx SM=PRV  \n      Stack                       16f594000-16f61c000    [  544K] rw-/rwx SM=COW  ",
+      "owning_frames": [
+        {
+          "symbol": "outlined init with copy of NativeGlassMeridianDefinition?",
+          "file": "/<compiler-generated>",
+          "line": null
+        },
+        {
+          "symbol": "static ScriptPackLibrary.validateGlassMeridian(_:)",
+          "file": "NativeGlassMeridian.swift",
+          "line": 205
+        },
+        {
+          "symbol": "static ScriptPackLibrary.validate(_:)",
+          "file": "ScriptPack.swift",
+          "line": 524
+        },
+        {
+          "symbol": "static ScriptPackLibrary.read(_:)",
+          "file": "ScriptPack.swift",
+          "line": 400
+        },
+        {
+          "symbol": "static ScriptPackLibrary.installed(directory:)",
+          "file": "ScriptPack.swift",
+          "line": 689
+        },
+        {
+          "symbol": "static ScriptPackLibrary.defaultLibrary(directory:)",
+          "file": "ScriptBundledPacks.swift",
+          "line": 126
+        },
+        {
+          "symbol": "OriginalColdChainTests.productionResourcePinsNativeTermsAndDeduplicatesItsExactDigest()",
+          "file": "OriginalColdChainTests.swift",
+          "line": 137
+        }
+      ],
+      "qualification": "Matched delayed OS report and retained image; no replay. Failed aggregate remains failed."
+    }
+  ],
+  "privacy": "Selected fault, source and image identity fields only. Raw OS reports remain local.",
+  "static_retained_image_frame_bytes": {
+    "defaultLibrary": 352848,
+    "owning_cold_chain_test": 44624,
+    "validate": 59216,
+    "read": 31584,
+    "installed": 12048
+  },
+  "limits": "Static local allocations are not complete measured dynamic stack costs. Focused correction does not establish full quality or release acceptance."
+}

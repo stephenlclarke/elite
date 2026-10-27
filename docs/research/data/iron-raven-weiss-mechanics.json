@@ -1,0 +1,2916 @@
+{
+  "profile_id": "P19-WEISS-2.0.2-PROJECT-v1",
+  "research_ready": true,
+  "runtime_ready": false,
+  "status": "Complete bounded surveillance through actual GalCop debrief. Native implementation/delivery separate; full parent, LEXICON, Cherkasova/finales remain open.",
+  "source_inputs": [
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-main-script.js",
+      "sha256": "ea20d6ae58867f48a69ac73af4890659874c7d5ef8c9f922c724f748a979ceb7"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-weiss.js",
+      "sha256": "52cf45e46ed6478718fdaba9e84a2ae9941a733b3d8fb5a75fc0492947d14005"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Scripts/IR-mfd.js",
+      "sha256": "3eeddde1bf2e07767921c4bd75222fb4b6383cf932a27a2c78d8e20c1c4c36df"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/shipdata.plist",
+      "sha256": "a08dda1663458176a69292f1083910e938d44c8117180f6fc30dcd75df7ac74a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/missiontext.plist",
+      "sha256": "288335f9100111ed1284016143b38311716fc4ad32849c7af31e92c84fc0be79"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/Config/equipment.plist",
+      "sha256": "5d50f4fb2af5ef7f871a34868be540e51e71220c1ea10f6e64deefbd0de8cc0c"
+    },
+    {
+      "path": "/tmp/elite-gap-research/packs/P19/manifest.plist",
+      "sha256": "3f7c7e85ad2230a52533cc36ca1b5ac6d5d1f82d5948bc441fbc77828fceeeb3"
+    }
+  ],
+  "engine_inputs": [
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Universe.m",
+      "sha256": "062c2282d8ebc5214a34233a0828e041b704214370fdc16526e75d4d6ca56f2a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.m",
+      "sha256": "78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntity.h",
+      "sha256": "b68f852bad5f87aca74767ad57090437aa57e6c80780d205807da99daf2a4a8b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntityAI.m",
+      "sha256": "b761b8312703dac9c40c47d598551d37ec09be1a5cf2b1d81ff4e4b31ca7445e"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/ShipEntityScriptMethods.m",
+      "sha256": "6b03193df0b616811ae908676c504e175c8af8eb56034591cef94514609ec00d"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/WormholeEntity.m",
+      "sha256": "60fa9ea697f526358d14cefb2494d76d8fa92bbb046e06710f0af1f54eb651f5"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/StationEntity.m",
+      "sha256": "98453362e1794419fafbace128b2232746bb0401ea5dac3d055f18efb3c8bead"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/DockEntity.m",
+      "sha256": "bea902a9c8b6a9506ef4ebc2b849107e92c8879de209b8ae63687ce9e1a5c782"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/OOShipRegistry.m",
+      "sha256": "1005316bb00b864b299dd1f87421d06f511eb4a4d7eb4de73e3023296bab057b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/AI.m",
+      "sha256": "abc9110f4c074b3f8de183a9444160615dbd453b8f2179e35cf027a0c455b1d8"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSShip.m",
+      "sha256": "a889adc46459f0954bc6834d4e3086486cb615ce5e2811fbb288746380f55a02"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/PlayerEntityLegacyScriptEngine.m",
+      "sha256": "2fff90a42b394c4070d3734a7e9dfd07c878d4be988294a17b5d98fdc88313f2"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/PlayerEntity.m",
+      "sha256": "f63b5aa15e36ca9e075152cb2a53b48b602ef358fd48daa1f31bcc624c14fe93"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/shipdata.plist",
+      "sha256": "f4910d79b88cc803f7bd785fd2fa7d34597c0c891925659c23748313052ac166"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/equipment.plist",
+      "sha256": "486a3776a8c37ed95801d3dd17db49f3781f7935587d1f71e474947c8207d67a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/autoAImap.plist",
+      "sha256": "b03109ab761b8ad59733999bd6da17eefc33fe75954c72a5a740b2b8c78d598b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/oolite-escortAI.js",
+      "sha256": "dc24382d3aa2d17a7cc85d596b7123cf9013580445700bb51698456c2acddda6"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/oolite-stationAI.js",
+      "sha256": "4868185c10e352b759e23d807934f313c4da16de9d8c8a74622a9c5abc277327"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSPlayerShip.m",
+      "sha256": "d2814afe0c565533dff1f87967f9ac50f2f2f7f4c5456aa1115a8a919bc65c28"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/OOEquipmentType.m",
+      "sha256": "434b32a43ed8a4b59d4663e91aeecfe659f29a4876b9f7b6b326c67bb41f0f97"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSTimer.m",
+      "sha256": "03895ee8b9c707cd7dbd8ec2cf8241dcbe32e2be33001e7b48021e2b9b7ef6e5"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOScriptTimer.m",
+      "sha256": "813bd18c0aaacc6e2ab4008b886073bcd936e0a584a9a92057b4ae7286c42acb"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/AI.h",
+      "sha256": "6c305b27dd238d15cf0703b7a82d9f929fb240634281ece5ab989405f561840b"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Scripting/OOJSGlobal.m",
+      "sha256": "cf32b19d8a9c50332b8ac2fdeacaff3454c52780bde678378fbf1c05badde277"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Config/whitelist.plist",
+      "sha256": "91c7ddbe9836a70d38ab964e6c88ce275efff5c31e60beab00573160cbd0c649"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/WormholeEntity.h",
+      "sha256": "b01bcbacfb82c2b1c1912b26efe15a30fc6227dc47fce18ee05b30e263422d13"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Scripts/oolite-priorityai.js",
+      "sha256": "fc3fe2a7b30f2133a8e5cfd345b55f3ccb4587e3b7bc431ee7b081864a83dcfd"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Scripts/oolite-global-prefix.js",
+      "sha256": "feeb4fae69ac8fe261b988df7476f96451a27126312b06627bc7b86f6201529a"
+    },
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/src/Core/Entities/Entity.h",
+      "sha256": "3c92b02a14d4bff9bf27e882f90d3d700ef785c8a7562898b83b598a345d5a1e"
+    }
+  ],
+  "definitions": [
+    {
+      "id": "IR-quico-transporter",
+      "own": {
+        "roles": "IR-quico-transporter",
+        "script": "IR-weiss.js",
+        "materials": {
+          "Hull": {
+            "emission_map": {
+              "name": "IR-quico-transporter.png",
+              "extract_channel": "a"
+            },
+            "diffuse_map": "IR-quico-transporter.png",
+            "shininess": "42",
+            "normal_map": "IR-sdf-transporter-normal.png",
+            "specular_map": "IR-sdf-transporter-specular.png",
+            "emission_modulate_color": {
+              "red": "9926",
+              "green": "9686",
+              "blue": "7325"
+            },
+            "specular_color": [
+              "0.25",
+              "0.25",
+              "0.25"
+            ],
+            "gloss": "0.65"
+          }
+        },
+        "fuel": "100",
+        "ai_type": "IR-weiss2AI.plist",
+        "beacon": "Q",
+        "beacon_label": "QuiCo Transporter",
+        "auto_ai": "false",
+        "like_ship": "oolite_template_transporter",
+        "name": "QuiCo Transporter",
+        "hyperspace_motor": "yes"
+      },
+      "resolved": {
+        "weapon_position_forward": "0.0 -3.57123 20.76385",
+        "max_energy": "150",
+        "ai_type": "IR-weiss2AI.plist",
+        "forward_weapon_type": "WEAPON_PULSE_LASER",
+        "missiles": "0",
+        "aft_eject_position": "0.0 -8.3 -23.45",
+        "max_flight_pitch": "1",
+        "materials": {
+          "Hull": {
+            "emission_map": {
+              "name": "IR-quico-transporter.png",
+              "extract_channel": "a"
+            },
+            "diffuse_map": "IR-quico-transporter.png",
+            "shininess": "42",
+            "normal_map": "IR-sdf-transporter-normal.png",
+            "specular_map": "IR-sdf-transporter-specular.png",
+            "emission_modulate_color": {
+              "red": "9926",
+              "green": "9686",
+              "blue": "7325"
+            },
+            "specular_color": [
+              "0.25",
+              "0.25",
+              "0.25"
+            ],
+            "gloss": "0.65"
+          }
+        },
+        "max_flight_speed": "100",
+        "hyperspace_motor": "yes",
+        "weapon_position_aft": "0.0 0.0 -17.5",
+        "weapon_position_port": "-9.0 0.0 11.5",
+        "energy_recharge_rate": "3",
+        "thrust": "20",
+        "weapon_position_starboard": "9.0 0.0 11.5",
+        "name": "QuiCo Transporter",
+        "exhaust": [
+          "2.1109 -1.97482 -19.6977 2.0 2.0 0.5",
+          "-2.1109 -1.97482 -19.6977 2.0 2.0 0.5"
+        ],
+        "roles": "IR-quico-transporter",
+        "scoop_position": "0.0 -6.0 -10.5",
+        "max_cargo": "12",
+        "max_flight_roll": "2",
+        "model": "oolite_transporter.dat",
+        "missile_launch_position": "0.0 -6.79 21.0",
+        "weapon_facings": "1",
+        "cargo_type": "CARGO_NOT_CARGO",
+        "script": "IR-weiss.js",
+        "fuel": "100",
+        "beacon": "Q",
+        "beacon_label": "QuiCo Transporter",
+        "auto_ai": "false"
+      }
+    }
+  ],
+  "model_envelopes": [
+    {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/Models/oolite_transporter.dat",
+      "model": "oolite_transporter.dat",
+      "sha256": "4f795989f296694b2979f0737c52b65660aa6f2141af00aefeba40aa27162ae4",
+      "minimum": [
+        -15.1141,
+        -5.91965,
+        -21.6435
+      ],
+      "maximum": [
+        15.1141,
+        5.91965,
+        21.6435
+      ],
+      "vertex_count": 897
+    }
+  ],
+  "assembled_envelopes": [
+    {
+      "definition_id": "IR-quico-transporter",
+      "minimum": [
+        -15.1141,
+        -5.91965,
+        -21.6435
+      ],
+      "maximum": [
+        15.1141,
+        5.91965,
+        21.6435
+      ],
+      "dimensions": [
+        30.2282,
+        11.8393,
+        43.287
+      ],
+      "source": "Raw source meshes and normalized quaternion child transforms; not native octree/docking/interior/cargo volume proof."
+    }
+  ],
+  "AI_transition_closure": {
+    "IR-weiss1AI.plist": {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-weiss1AI.plist",
+      "sha256": "ce5468a226255c6084187fa15c6bfd5b1d86a3d0879f2c67a33b9f3899105469",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setUpEscorts",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_LOST": [
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "UPDATE": [],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FLEE": {
+          "UPDATE": [],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: HEAD_FOR_AEGIS"
+          ],
+          "ENERGY_FULL": [
+            "performIdle",
+            "setStateTo: HEAD_FOR_AEGIS"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "setStateTo: HEAD_FOR_AEGIS"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ]
+        },
+        "PERFORM_JUMP": {
+          "UPDATE": [
+            "sendScriptMessage: performJump"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "sendScriptMessage: prejumpComms",
+            "pauseAI: 5.0",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "WAIT_FOR_PLAYER": {
+          "UPDATE": [
+            "scanForNearestShipWithRole: player",
+            "pauseAI: 1.0"
+          ],
+          "NOTHING_FOUND": [],
+          "TARGET_FOUND": [
+            "setStateTo: PERFORM_JUMP"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setSpeedFactorTo: 1.0",
+            "scanForNearestShipWithRole: player"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "HEAD_AWAY_FROM_PLANET": {
+          "LAUNCHED OKAY": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "EXITED WITCHSPACE": [
+            "switchAITo: enteringTraderAI.plist"
+          ],
+          "ENTER": [
+            "getWitchspaceEntryCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 100.0",
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedFactorTo: 1.0",
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ]
+        }
+      }
+    },
+    "IR-weiss2AI.plist": {
+      "path": "/tmp/elite-gap-research/packs/P19/AIs/IR-weiss2AI.plist",
+      "sha256": "3c1884b5a4bcc05c2b750efa37d542db0deba736cafddbed96ee82e6296ce537",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setUpEscorts",
+            "setStateTo: PREPARE_FOR_JUMP"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_LOST": [
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "UPDATE": [],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FLEE": {
+          "UPDATE": [],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: HEAD_FOR_AEGIS"
+          ],
+          "ENERGY_FULL": [
+            "performIdle",
+            "setStateTo: HEAD_FOR_AEGIS"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "setStateTo: HEAD_FOR_AEGIS"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ]
+        },
+        "PREPARE_FOR_JUMP": {
+          "UPDATE": [
+            "pauseAI: 30.0",
+            "setStateTo: PERFORM_JUMP"
+          ],
+          "PERFORM_JUMP": [
+            "setStateTo: PERFORM_JUMP"
+          ],
+          "COURSE_OK": [
+            "setSpeedToCruiseSpeed",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setDestinationToStationBeacon",
+            "setDesiredRangeTo: 15000",
+            "checkCourseToDestination",
+            "pauseAI: 30.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "PERFORM_JUMP": {
+          "UPDATE": [
+            "sendScriptMessage: performJump"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "sendScriptMessage: preJumpSystem",
+            "pauseAI: 20.0",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    "route1traderAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/route1traderAI.plist",
+      "sha256": "0c29bf3cd1905efe5833f5cff28c88093dc2bea1e3d1470e2f2e8009fcc765f8",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: CHECK_STATUS"
+          ]
+        },
+        "GO_TO_RANDOM_STATION": {
+          "DOCKING_REFUSED": [
+            "switchAITo: route2sunskimAI.plist"
+          ],
+          "INCOMING_MISSILE": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 1.5"
+          ],
+          "ATTACKED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "ENTER": [
+            "dropMessages: WAYPOINT_SET",
+            "setDesiredRangeTo: 15000.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 0.5",
+            "performFlyToRangeFromDestination"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "dockEscorts",
+            "setTargetToNearestStation",
+            "setAITo: dockingAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "ATTACKER_MISSED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "NO_STATION_FOUND": [
+            "switchAITo: exitingTraderAI.plist"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "UPDATE": [
+            "setTargetToLastStation",
+            "setDesiredRangeTo: 15000.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination",
+            "scanForHostiles",
+            "pauseAI: 10.0"
+          ]
+        },
+        "HEAD_FOR_PLANET": {
+          "AEGIS_IN_DOCKING_RANGE": [
+            "dockEscorts",
+            "setStateTo: GO_TO_STATION"
+          ],
+          "INCOMING_MISSILE": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.5 2.0"
+          ],
+          "ATTACKED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "CLOSE_TO_SECONDARY_PLANET": [
+            "setStateTo: GO_TO_SUB_STATION"
+          ],
+          "ENTER": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 30000.0",
+            "setSpeedFactorTo: 0.35",
+            "checkCourseToDestination"
+          ],
+          "RESTARTED": [
+            "checkAegis"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 0.65",
+            "performFlyToRangeFromDestination"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "ATTACKER_MISSED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "AEGIS_CLOSE_TO_MAIN_PLANET": [
+            "setStateTo: GO_TO_STATION"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: GO_TO_STATION"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "UPDATE": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 30000.0",
+            "checkCourseToDestination",
+            "scanForHostiles",
+            "pauseAI: 10.0"
+          ]
+        },
+        "GO_TO_SUB_STATION": {
+          "DOCKING_REFUSED": [
+            "switchAITo: route2sunskimAI.plist"
+          ],
+          "AEGIS_IN_DOCKING_RANGE": [
+            "dockEscorts",
+            "setTargetToSystemStation",
+            "setAITo: dockingAI.plist"
+          ],
+          "ATTACKED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "INCOMING_MISSILE": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 1.5"
+          ],
+          "ENTER": [
+            "dropMessages: WAYPOINT_SET",
+            "setTargetToNearestFriendlyStation",
+            "setDesiredRangeTo: 5000.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 0.5",
+            "performFlyToRangeFromDestination"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "ATTACKER_MISSED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "dockEscorts",
+            "setTargetToNearestFriendlyStation",
+            "setAITo: dockingAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "NO_STATION_FOUND": [
+            "switchAITo: exitingTraderAI.plist"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "UPDATE": [
+            "setTargetToNearestFriendlyStation",
+            "setDesiredRangeTo: 5000.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination",
+            "scanForHostiles",
+            "pauseAI: 10.0"
+          ]
+        },
+        "CHECK_STATUS": {
+          "SELF_THARGOID": [
+            "switchAITo: thargoidAI.plist"
+          ],
+          "NO_STATION_IN_RANGE": [
+            "setStateTo: HEAD_FOR_PLANET"
+          ],
+          "SELF_CLEAN": [
+            "setStateTo: HEAD_FOR_PLANET"
+          ],
+          "ENTER": [
+            "checkOwnLegalStatus",
+            "setDesiredRangeTo: 1000000.0"
+          ],
+          "SELF_OFFENDER": [
+            "rollD: 4"
+          ],
+          "ROLL_4": [
+            "setTargetToRandomStation"
+          ],
+          "STATION_FOUND": [
+            "setStateTo: GO_TO_RANDOM_STATION"
+          ],
+          "ROLL_3": [
+            "setTargetToRandomStation"
+          ],
+          "SELF_FUGITIVE": [
+            "setTargetToRandomStation"
+          ],
+          "ROLL_2": [
+            "setTargetToRandomStation"
+          ],
+          "SELF_MINOR_OFFENDER": [
+            "rollD: 2"
+          ],
+          "ROLL_1": [
+            "setStateTo: HEAD_FOR_PLANET"
+          ]
+        },
+        "GO_TO_STATION": {
+          "DOCKING_REFUSED": [
+            "switchAITo: route2sunskimAI.plist"
+          ],
+          "AEGIS_IN_DOCKING_RANGE": [
+            "dockEscorts",
+            "setTargetToSystemStation",
+            "setAITo: dockingAI.plist"
+          ],
+          "ATTACKED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "INCOMING_MISSILE": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 1.5"
+          ],
+          "ENTER": [
+            "dropMessages: WAYPOINT_SET",
+            "setTargetToSystemStation",
+            "setDesiredRangeTo: 5000.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 0.5",
+            "performFlyToRangeFromDestination"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "ATTACKER_MISSED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "dockEscorts",
+            "setTargetToSystemStation",
+            "setAITo: dockingAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "NO_STATION_FOUND": [
+            "switchAITo: exitingTraderAI.plist"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "UPDATE": [
+            "setTargetToSystemStation",
+            "setDesiredRangeTo: 5000.0",
+            "setDestinationToTarget",
+            "checkCourseToDestination",
+            "scanForHostiles",
+            "pauseAI: 10.0"
+          ]
+        }
+      }
+    },
+    "dumbAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/dumbAI.plist",
+      "sha256": "ac0a29d67aa4af395c2f3e00dcda00cc23fee7eb48859adf82d142bca52ddcf0",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "performTumble"
+          ],
+          "RESTARTED": [
+            "performTumble"
+          ],
+          "UPDATE": [
+            "pauseAI: 3600"
+          ]
+        }
+      }
+    },
+    "nullAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/nullAI.plist",
+      "sha256": "1c882fabfc2f11f7faa8e492b112ee09570c2191a3c6564662fa52554848ee8a",
+      "states": {
+        "GLOBAL": {
+          "EXIT": [
+            "pauseAI: 1"
+          ],
+          "UPDATE": [
+            "pauseAI: 3600"
+          ]
+        }
+      }
+    },
+    "enteringTraderAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/enteringTraderAI.plist",
+      "sha256": "c17a6a7fa5a1662f8685422a8e5c2a78633ed5d2233a90654735e33b9e8a1dc3",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "performIdle",
+            "checkForNormalSpace"
+          ],
+          "NORMAL_SPACE": [
+            "setStateTo: DECIDE_ROUTE"
+          ],
+          "INTERSTELLAR_SPACE": [
+            "switchAITo: exitingTraderAI.plist"
+          ]
+        },
+        "DECIDE_ROUTE": {
+          "ENTER": [
+            "rollD: 3"
+          ],
+          "ROLL_3": [
+            "checkHeatInsulation"
+          ],
+          "INSULATION_POOR": [
+            "switchAITo: route1traderAI.plist"
+          ],
+          "ROLL_1": [
+            "switchAITo: route1traderAI.plist"
+          ],
+          "INSULATION_OK": [
+            "switchAITo: route2sunskimAI.plist"
+          ],
+          "ROLL_2": [
+            "switchAITo: route1traderAI.plist"
+          ]
+        }
+      }
+    },
+    "thargoidAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/thargoidAI.plist",
+      "sha256": "52bc8156f326b4f67bd2f002e3ed4e87680185a6d64fe7c74ca2a957c9a38b89",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "fireMissile",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ROLL_4": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "DEFENSE_TARGET_LOST": [
+            "findNewDefenseTarget"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: respondQMineAI.plist"
+          ],
+          "ROLL_3": [
+            "pauseAI: 45.0"
+          ],
+          "TARGET_FOUND": [
+            "rollD: 4"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ROLL_2": [
+            "setTargetToFoundTarget",
+            "fireMissile"
+          ],
+          "ROLL_1": [
+            "setTargetToFoundTarget"
+          ],
+          "UPDATE": [
+            "findNewDefenseTarget",
+            "scanForNonThargoid",
+            "pauseAI: 30.0"
+          ]
+        },
+        "HEAD_FOR_WITCHPOINT": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "UPDATE": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination",
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "COURSE_OK": [
+            "setSpeedToCruiseSpeed",
+            "performFlyToRangeFromDestination"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: respondQMineAI.plist"
+          ],
+          "ENTER": [
+            "setCourseToWitchpoint",
+            "setDesiredRangeTo: 15000.0",
+            "checkCourseToDestination"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "HEAD_FOR_PLANET": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "INTERSTELLAR_SPACE": [
+            "setStateTo: HEAD_FOR_WITCHPOINT"
+          ],
+          "UPDATE": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 80000.0",
+            "checkCourseToDestination",
+            "scanForNonThargoid",
+            "pauseAI: 10.0"
+          ],
+          "RESTARTED": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 80000.0",
+            "checkCourseToDestination",
+            "checkForNormalSpace"
+          ],
+          "COURSE_OK": [
+            "setSpeedToCruiseSpeed",
+            "performFlyToRangeFromDestination"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: respondQMineAI.plist"
+          ],
+          "ENTER": [
+            "setCourseToPlanet",
+            "setDesiredRangeTo: 80000.0",
+            "checkCourseToDestination",
+            "checkForNormalSpace"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LOOK_FOR_TARGETS"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "LOOK_FOR_TARGETS": {
+          "UPDATE": [
+            "scanForNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "NOTHING_FOUND": [
+            "setStateTo: HEAD_FOR_PLANET"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: respondQMineAI.plist"
+          ],
+          "ENTER": [
+            "setSpeedTo: 0.0",
+            "performTumble",
+            "scanForNonThargoid",
+            "pauseAI: 5.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    "gotoWaypointAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/gotoWaypointAI.plist",
+      "sha256": "ab338701e98bce89377296fece125274a6a813aaa0cf38a47af9a1bee453ff4a",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: NEW_WAYPOINT"
+          ]
+        },
+        "GO_TO_WAYPOINT": {
+          "LAUNCHED OKAY": [
+            "exitAIWithMessage: LAUNCHED OKAY"
+          ],
+          "INCOMING_MISSILE": [
+            "exitAIWithMessage: INCOMING_MISSILE"
+          ],
+          "ATTACKED": [
+            "exitAIWithMessage: ATTACKED"
+          ],
+          "DOCKING_REQUESTED": [
+            "exitAIWithMessage: DOCKING_REQUESTED"
+          ],
+          "ENTER": [
+            "setSpeedFactorTo: 0.75"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setDesiredRangeTo: 1000.0",
+            "exitAI"
+          ],
+          "WAYPOINT_SET": [
+            "setStateTo: NEW_WAYPOINT"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "ATTACKER_MISSED": [
+            "exitAIWithMessage: ATTACKED"
+          ],
+          "AEGIS_CLOSE_TO_MAIN_PLANET": [
+            "exitAIWithMessage: AEGIS_CLOSE_TO_MAIN_PLANET"
+          ],
+          "FRUSTRATED": [
+            "setSpeedFactorTo: 0.1",
+            "setDesiredRangeTo: 1000.0",
+            "exitAI"
+          ],
+          "APPROACHING_SURFACE": [
+            "exitAIWithMessage: APPROACHING_SURFACE"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "exitAIWithMessage: ATTACKED_BY_CLOAKED"
+          ],
+          "UPDATE": [
+            "performFlyToRangeFromDestination",
+            "checkCourseToDestination",
+            "pauseAI: 2.0"
+          ]
+        },
+        "NEW_WAYPOINT": {
+          "LAUNCHED OKAY": [
+            "exitAIWithMessage: LAUNCHED OKAY"
+          ],
+          "INCOMING_MISSILE": [
+            "exitAIWithMessage: INCOMING_MISSILE"
+          ],
+          "ATTACKED": [
+            "exitAIWithMessage: ATTACKED"
+          ],
+          "DOCKING_REQUESTED": [
+            "exitAIWithMessage: DOCKING_REQUESTED"
+          ],
+          "ENTER": [
+            "setSpeedFactorTo: 0.0",
+            "setDesiredRangeForWaypoint",
+            "checkCourseToDestination"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setDesiredRangeTo: 1000.0",
+            "exitAI"
+          ],
+          "WAYPOINT_SET": [
+            "setStateTo: NEW_WAYPOINT"
+          ],
+          "COURSE_OK": [
+            "setStateTo: GO_TO_WAYPOINT"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "ATTACKER_MISSED": [
+            "exitAIWithMessage: ATTACKED"
+          ],
+          "FRUSTRATED": [
+            "setSpeedFactorTo: 0.1",
+            "setDesiredRangeTo: 1000.0",
+            "exitAI"
+          ],
+          "APPROACHING_SURFACE": [
+            "exitAIWithMessage: APPROACHING_SURFACE"
+          ],
+          "AEGIS_CLOSE_TO_MAIN_PLANET": [
+            "exitAIWithMessage: AEGIS_CLOSE_TO_MAIN_PLANET"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "exitAIWithMessage: ATTACKED_BY_CLOAKED"
+          ]
+        }
+      }
+    },
+    "traderInterceptAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/traderInterceptAI.plist",
+      "sha256": "dd13894be6a1af8599601a637072e04ef6f12439f449b51e1b6001b78274d9cc",
+      "states": {
+        "GLOBAL": {
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "DEPLOYING_ESCORTS": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE_WITH_ESCORTS"
+          ],
+          "TARGET_DESTROYED": [
+            "exitAI"
+          ],
+          "INCOMING_MISSILE": [
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 0.75"
+          ],
+          "TARGET_LOST": [
+            "exitAI"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_DESTROYED": [
+            "exitAI"
+          ],
+          "TARGET_LOST": [
+            "exitAI"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ENERGY_LOW": [
+            "setTargetToPrimaryAggressor",
+            "broadcastDistressMessage",
+            "deployEscorts",
+            "setStateTo: FLEE"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "ENTER": [
+            "deployEscorts",
+            "broadcastDistressMessage",
+            "performAttack"
+          ],
+          "INCOMING_MISSILE": [
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 0.75"
+          ],
+          "TARGET_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ESCORT_ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "groupAttackTarget"
+          ]
+        },
+        "FLEE": {
+          "TARGET_LOST": [
+            "performIdle",
+            "exitAI"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "exitAI"
+          ],
+          "INCOMING_MISSILE": [
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 0.75"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "exitAI"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "DEPLOYING_ESCORTS": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE_WITH_ESCORTS"
+          ],
+          "TARGET_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ]
+        },
+        "FLEE_FOR_MISSILE": {
+          "INCOMING_MISSILE": [
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 0.75"
+          ],
+          "NOTHING_FOUND": [
+            "exitAI"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: GLOBAL",
+            "fightOrFleeHostiles"
+          ],
+          "UPDATE": [
+            "fightOrFleeMissile",
+            "pauseAI: 10"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "exitAI"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "broadcastDistressMessage",
+            "performFlee",
+            "pauseAI: 5"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "exitAI"
+          ],
+          "TARGET_LOST": [
+            "scanForHostiles"
+          ],
+          "ATTACKED": [
+            "setStateTo: GLOBAL",
+            "fightOrFleeHostiles"
+          ]
+        },
+        "INCOMING_MISSILE": {
+          "ATTACKED": [
+            "setStateTo: GLOBAL",
+            "fightOrFleeMissile",
+            "fightOrFleeHostiles"
+          ],
+          "UPDATE": [
+            "setTargetToPrimaryAggressor",
+            "fightOrFleeMissile",
+            "setStateTo: FLEE_FOR_MISSILE"
+          ]
+        },
+        "FLEE_FOR_CLOAKED": {
+          "RESTARTED": [
+            "exitAI"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "storeTarget",
+            "setDestinationToJinkPosition",
+            "setDesiredRangeTo: 25600",
+            "performFlyToRangeFromDestination",
+            "setSpeedFactorTo: 7"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "exitAI"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "fightOrFleeHostiles"
+          ],
+          "DEPLOYING_ESCORTS": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE_WITH_ESCORTS"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setDestinationToJinkPosition"
+          ],
+          "UPDATE": [
+            "recallStoredTarget",
+            "pauseAI: 2.0"
+          ]
+        },
+        "FLEE_WITH_ESCORTS": {
+          "INCOMING_MISSILE": [
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.25 0.75"
+          ],
+          "ATTACKED": [
+            "scanForHostiles"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "exitAI"
+          ],
+          "ENERGY_LOW": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts"
+          ],
+          "ROLL_3": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToPrimaryAggressor",
+            "deployEscorts",
+            "rollD: 3"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "exitAI"
+          ],
+          "ESCORT_ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "groupAttackTarget"
+          ],
+          "ROLL_2": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "exitAI"
+          ],
+          "ROLL_1": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    "fleeQMineAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/fleeQMineAI.plist",
+      "sha256": "2580a71f5c158cf8e4239b4501d76cc52b3eedde2c3e11322ff17eb9c235d0a2",
+      "states": {
+        "GLOBAL": {
+          "UPDATE": [
+            "exitAI"
+          ],
+          "TARGET_LOST": [
+            "setSpeedFactorTo: 10",
+            "performFlyToRangeFromDestination"
+          ],
+          "REACHED_SAFETY": [
+            "exitAI"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setStateTo: GLOBAL"
+          ],
+          "ENTER": [
+            "setTargetToFoundTarget",
+            "addFoundTargetAsDefenseTarget",
+            "setDestinationToTarget",
+            "setDesiredRangeTo: 25600",
+            "performFlee",
+            "pauseAI: 15.0"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "exitAI"
+          ],
+          "ATTACKED": [
+            "addPrimaryAggressorAsDefenseTarget"
+          ]
+        }
+      }
+    },
+    "dockingAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/dockingAI.plist",
+      "sha256": "af9c672a2ccf766e83f814c16a97c66f1ca7b6bc5498144286ca37fbb0fa9030",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "dropMessages: DOCKING_ABORTED,FACING_DESTINATION",
+            "setSpeedTo: 0.0",
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "ENTER": [
+            "abortDocking",
+            "setTargetToFoundTarget",
+            "setAITo: interceptAI.plist"
+          ],
+          "RESTARTED": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ]
+        },
+        "APPROACH": {
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 7",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "COURSE_OK": [
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "RESTARTED": [
+            "recallDockingInstructions",
+            "setSpeedFactorTo: 1.0",
+            "checkCourseToDestination"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "ENTER": [
+            "recallDockingInstructions",
+            "setSpeedFactorTo: 1.0",
+            "checkCourseToDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "ATTACKED": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "ABORT": {
+          "GROUP_ATTACK_TARGET": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FACING_DESTINATION": [
+            "setSpeedFactorTo: 1.0",
+            "setDesiredRangeTo: 500.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 7",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "ATTACKER_MISSED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [
+            "abortDocking",
+            "setSpeedTo: 0.0",
+            "setDestinationToDockingAbort",
+            "setDesiredRangeTo: 500.0",
+            "performFaceDestination"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "performIdle",
+            "setStateTo: GLOBAL"
+          ],
+          "ATTACKED": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "AWAIT_COORDS": {
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "TOO_BIG_TO_DOCK": [
+            "exitAIWithMessage: DOCKING_REFUSED"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "APPROACH_COORDINATES": [
+            "setStateTo: GO_TO_COORDS"
+          ],
+          "BACK_OFF": [
+            "setStateTo: RETREAT"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "HOLD_POSITION": [
+            "setStateTo: STATIONKEEPING"
+          ],
+          "APPROACH": [
+            "setStateTo: APPROACH"
+          ],
+          "NO_STATION_FOUND": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "DOCKED": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "TRY_AGAIN_LATER": [
+            "pauseAI: 30.0",
+            "setStateTo: ABORT"
+          ],
+          "UPDATE": [
+            "pauseAI: 2"
+          ]
+        },
+        "GO_TO_COORDS": {
+          "GROUP_ATTACK_TARGET": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FACING_DESTINATION": [
+            "setSpeedFactorTo: 1.0",
+            "recallDockingInstructions",
+            "performFlyToRangeFromDestination"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 7",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "DOCKED": [
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "ENTER": [
+            "performFaceDestination",
+            "dockEscorts"
+          ],
+          "FRUSTRATED": [
+            "performFaceDestination"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "ATTACKED": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "STATIONKEEPING": {
+          "ATTACKED": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ENTER": [
+            "setDestinationToTarget",
+            "performFaceDestination",
+            "setSpeedTo: 0.0",
+            "pauseAI: 10.0"
+          ],
+          "UPDATE": [
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 7",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "ENTER": [
+            "exitAI"
+          ]
+        },
+        "RETREAT": {
+          "RESTART_DOCKING": [
+            "setStateTo: GLOBAL"
+          ],
+          "FACING_DESTINATION": [
+            "setSpeedFactorTo: 1.0",
+            "setDesiredRangeTo: 500.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "DOCKING_ABORTED": [
+            "setStateTo: ABORT"
+          ],
+          "OFFENCE_COMMITTED": [
+            "setTargetToFoundTarget",
+            "markTargetForOffence: 7",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "COLLISION": [
+            "setStateTo: ABORT"
+          ],
+          "ENTER": [
+            "recallDockingInstructions",
+            "setSpeedTo: 0.0",
+            "setDestinationToDockingAbort",
+            "performFaceDestination"
+          ],
+          "GROUP_ATTACK_TARGET": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedTo: 0.0",
+            "requestDockingCoordinates",
+            "setStateTo: AWAIT_COORDS"
+          ],
+          "ATTACKED": [
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    "route2sunskimAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/route2sunskimAI.plist",
+      "sha256": "f2e1b8d2482e2838dea84b8a64bc0f542b24971d1798e064455353801eedf232",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: LOOK_FOR_SUN"
+          ]
+        },
+        "LOOK_FOR_SUN": {
+          "ENTER": [
+            "setSunSkimStartCoordinates"
+          ],
+          "WAIT_FOR_SUN": [
+            "setSunSkimStartCoordinates"
+          ],
+          "APPROACH_COORDINATES": [
+            "setStateTo: HEAD_FOR_SUN"
+          ],
+          "EXITED WITCHSPACE": [
+            "switchAITo: route1traderAI.plist"
+          ],
+          "UPDATE": [
+            "pauseAI: 10"
+          ]
+        },
+        "HEAD_FOR_SUN": {
+          "RESTARTED": [
+            "setStateTo: LOOK_FOR_SUN"
+          ],
+          "INCOMING_MISSILE": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: INCOMING_MISSILE",
+            "randomPauseAI: 0.5 2.0"
+          ],
+          "ATTACKED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 50000",
+            "pauseAI: 0"
+          ],
+          "EXITED WITCHSPACE": [
+            "switchAITo: route1traderAI.plist"
+          ],
+          "COURSE_OK": [
+            "setSpeedToCruiseSpeed",
+            "performFlyToRangeFromDestination"
+          ],
+          "WAYPOINT_SET": [
+            "setAITo: gotoWaypointAI.plist"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "ATTACKER_MISSED": [
+            "setAITo: traderInterceptAI.plist",
+            "fightOrFleeHostiles"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: GO_TO_SKIM"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setAITo: traderInterceptAI.plist",
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "UPDATE": [
+            "setDestinationFromCoordinates",
+            "checkCourseToDestination",
+            "pauseAI: 15"
+          ]
+        },
+        "GO_TO_SKIM": {
+          "ENTER": [
+            "setSunSkimStartCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 100",
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: SKIM_SUN"
+          ]
+        },
+        "LEAVE_SUN": {
+          "ENTER": [
+            "setSunSkimExitCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 250",
+            "setSpeedFactorTo: 2.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "addFuel: 70",
+            "setStateTo: EXIT_SYSTEM"
+          ]
+        },
+        "SKIM_SUN": {
+          "ENTER": [
+            "setSunSkimEndCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 50",
+            "setSpeedFactorTo: 2.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: LEAVE_SUN"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "UPDATE": [
+            "performHyperSpaceExit"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE UNAVAILABLE": [
+            "setAITo: route1traderAI.plist"
+          ]
+        }
+      }
+    },
+    "exitingTraderAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/exitingTraderAI.plist",
+      "sha256": "bde09f899df1e925f0357d7fa60b95724157ecbe44ff0fa84882718fb272c13a",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "ENERGY_LOW": [
+            "setSpeedFactorTo: 1.0",
+            "pauseAI: 15.0",
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "RESTARTED": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setSpeedFactorTo: 1.0",
+            "pauseAI: 15.0",
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "TARGET_LOST": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ]
+        },
+        "EXIT_SYSTEM": {
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "UPDATE": [
+            "performHyperSpaceExit",
+            "pauseAI: 5.0"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 30000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE UNAVAILABLE": [
+            "switchAITo: route1traderAI.plist"
+          ]
+        },
+        "FLEE": {
+          "INCOMING_MISSILE": [
+            "setTargetToPrimaryAggressor",
+            "broadcastDistressMessage",
+            "fightOrFleeMissile"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "RESTARTED": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ]
+        },
+        "HEAD_AWAY_FROM_PLANET": {
+          "LAUNCHED OKAY": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "EXITED WITCHSPACE": [
+            "switchAITo: enteringTraderAI.plist"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "RESTARTED": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "ENTER": [
+            "getWitchspaceEntryCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 100.0",
+            "setSpeedFactorTo: 0.75",
+            "performFlyToRangeFromDestination"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedFactorTo: 1.0",
+            "pauseAI: 15.0",
+            "setStateTo: EXIT_SYSTEM"
+          ],
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ]
+        }
+      }
+    },
+    "respondQMineAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/respondQMineAI.plist",
+      "sha256": "9920a1594030bb1cb0f60e988a3c65f931b0f8343cec22394458fe1ade0d94e8",
+      "states": {
+        "GLOBAL": {
+          "REACHED_SAFETY": [
+            "exitAI"
+          ],
+          "ENTER": [
+            "setTargetToFoundTarget",
+            "clearDefenseTargets",
+            "addFoundTargetAsDefenseTarget",
+            "fireMissile",
+            "performAttack",
+            "setDestinationToTarget",
+            "pauseAI: 4.0"
+          ],
+          "UPDATE": [
+            "setSpeedFactorTo: 1",
+            "setDesiredRangeTo: 25600",
+            "performFlyToRangeFromDestination",
+            "exitAI"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setStateTo: GLOBAL"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "exitAI"
+          ],
+          "TARGET_LOST": [
+            "setSpeedFactorTo: 1",
+            "setDesiredRangeTo: 25600",
+            "performFlyToRangeFromDestination"
+          ]
+        }
+      }
+    },
+    "interceptAI.plist": {
+      "path": "/tmp/elite-gap-research/oolite-engine/Resources/AIs/interceptAI.plist",
+      "sha256": "f649855f351f924d68f061762ba6f3a115c21bb3fc60a638f5803d973a2bdab5",
+      "states": {
+        "GLOBAL": {
+          "ENTER": [
+            "switchLightsOn",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "DEFENSE_TARGET_DESTROYED": [
+            "findNewDefenseTarget"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "DEFENSE_TARGET_LOST": [
+            "findNewDefenseTarget"
+          ],
+          "ESCORT_ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "groupAttackTarget"
+          ],
+          "TARGET_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "ENTER WORMHOLE": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAIWithMessage: ENTER WORMHOLE"
+          ],
+          "PLAYER WITCHSPACE": [
+            "setStateTo: PLAYER_WITCHSPACE"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ]
+        },
+        "FLEE": {
+          "ENERGY_FULL": [
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "addPrimaryAggressorAsDefenseTarget"
+          ],
+          "DEFENSE_TARGET_DESTROYED": [
+            "findNewDefenseTarget"
+          ],
+          "ENTER": [
+            "deployEscorts",
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "DEFENSE_TARGET_LOST": [
+            "findNewDefenseTarget"
+          ],
+          "TARGET_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ],
+          "REACHED_SAFETY": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "ENTER WORMHOLE": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAIWithMessage: ENTER WORMHOLE"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "exitAIWithMessage: CASCADE_WEAPON_DETECTED"
+          ],
+          "TARGET_DESTROYED": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "PLAYER WITCHSPACE": [
+            "setStateTo: PLAYER_WITCHSPACE"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setStateTo: FLEE_FOR_CLOAKED"
+          ]
+        },
+        "PLAYER_WITCHSPACE": {
+          "ENTER WORMHOLE": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI",
+            "enterTargetWormhole"
+          ]
+        },
+        "FLEE_FOR_CLOAKED": {
+          "UPDATE": [
+            "recallStoredTarget",
+            "pauseAI: 2.0"
+          ],
+          "TARGET_FOUND": [
+            "setTargetToFoundTarget",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED_BY_CLOAKED": [
+            "setDestinationToJinkPosition"
+          ],
+          "RESTARTED": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "CASCADE_WEAPON_DETECTED": [
+            "setAITo: fleeQMineAI.plist"
+          ],
+          "ENTER": [
+            "storeTarget",
+            "setDestinationToCurrentLocation",
+            "setDesiredRangeTo: 25600",
+            "performFlyToRangeFromDestination"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "performIdle",
+            "switchLightsOff",
+            "exitAI"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    }
+  },
+  "unused_components": [],
+  "verification": {
+    "source_fixtures": "iron-raven-weiss-source-fixtures.json",
+    "source_cases": 46,
+    "patch_fixtures": "iron-raven-weiss-patch-fixtures.json",
+    "patch_cases": 13,
+    "numerical_fixtures": "iron-raven-weiss-numerical-verification.json",
+    "numerical_cases": 22,
+    "route_bindings": "iron-raven-weiss-route-bindings.json",
+    "route_queries": 1024,
+    "route_time_ties": 20,
+    "orbital_text_count": 13,
+    "independent_models_and_ancestor_checks_pending": false,
+    "original_engine_and_native_game_parity": false
+  },
+  "updated": "2026-10-14",
+  "delivery": {
+    "status": "confirmed-message-sent",
+    "date": "2026-10-14",
+    "target_thread": "01a131fd-24b4-79a1-aff2-a2c1618d2698",
+    "implementation": "Pending. Successful send is not native/playable implementation."
+  },
+  "specification": "../iron-raven-weiss-specifications.md",
+  "source_archive": {
+    "url": "https://wiki.alioth.net/img_auth.php/7/7f/Iron_Raven_2.0.2.oxz",
+    "bytes": 77387646,
+    "sha256": "361ea6547493c6ace297d4d2ad643fd314121d37b20be2fe47ccfe890052f937",
+    "version": "2.0.2",
+    "main_script_version": "2.0",
+    "license": "CC BY-NC-SA3",
+    "MFD_script_license": "CC BY-NC-SA4.0"
+  },
+  "canonical_ship_id": "SH128",
+  "native_actor": {
+    "role": "IR-quico-transporter",
+    "source_definition": "IR-quico-transporter",
+    "core_ancestor": "oolite_template_transporter",
+    "beacon": "Q",
+    "name": "QuiCo Transporter",
+    "hull_energy": 150,
+    "energy_recharge_per_second": 3,
+    "npc_separate_fore_aft_shields": false,
+    "max_speed": 100,
+    "thrust_parameter": 20,
+    "acceleration": 100,
+    "roll_radians_per_second": 2,
+    "pitch_radians_per_second": 1,
+    "yaw_radians_per_second": 1,
+    "native_hold_tonnes": 12,
+    "missile_stock": 0,
+    "missile_capacity": 0,
+    "ECM": false,
+    "injectors": false,
+    "scoop": false,
+    "escape_pod": false,
+    "hyperspace_motor": true,
+    "initial_dictionary_fuel_raw": 100,
+    "initial_fuel_ly": 10,
+    "JS_assignment_fuel_ly": 10,
+    "normal_build_actual_fuel_after_assignment_raw": 70,
+    "fuel_after_first_directed_jump_raw": 50,
+    "fuel_after_second_directed_jump_raw": 26,
+    "script_refuel_project_policy": "One unique saved refuel receipt per leg; no repeated blocked-request/reload/hull-switch refill.",
+    "pulse_laser": {
+      "facings_mask": 1,
+      "position": [
+        0,
+        -3.57123,
+        20.76385
+      ],
+      "damage": 15,
+      "range": 12500,
+      "energy_use": 0.8,
+      "heat_per_shot": 7,
+      "recharge_parameter": 0.5,
+      "strict_firing_and_heat_energy_rules": "See pinned shared weapon contract; reciprocal not guaranteedDPS."
+    },
+    "native_scanner_range": 25600,
+    "source_fitted_escorts": 0,
+    "source_NPC_crew_count": null,
+    "project_NPC_custody": {
+      "operating_crew": 3,
+      "crew_basis": "Explicit borrow of current SH128 project crew3; intrinsic operating quarters, not native Oolite crew fact.",
+      "passengers": [
+        {
+          "identity": "Reinhardt Weiss",
+          "alias": "Richard White",
+          "fitted_cabin_tonnes": 5,
+          "fitted_cabin_equipment_units": 1
+        }
+      ],
+      "equipment_budget": 8,
+      "equipment_budget_basis": "Labelled borrow of common SH128 project budget, not native NPC slot field.",
+      "remaining_available_hold_tonnes": 7,
+      "selected_merchandise_load_tonnes": 0,
+      "merchandise_basis": "Necessary project finite load choice; no scripted trade consignment in this branch.",
+      "person_ids_conserved": true
+    }
+  },
+  "spawn_contract": {
+    "galaxy_zero_based": 7,
+    "system_id": 23,
+    "phase": "IR_WEISS_1",
+    "actual_main_station_aegis": true,
+    "source_fraction": 1,
+    "source_spread": 10000,
+    "source_helper_missing_buoy_fault": true,
+    "project_fallback_centre": "actual main station position; fraction1",
+    "requires_actual_world_admission": true,
+    "same_actor_no_respawn_after_death_transit_unload_or_dock": true
+  },
+  "leg_bindings": [
+    {
+      "origin": 23,
+      "destination": 175,
+      "distance_ly": 2,
+      "source_phase": "IR_WEISS_1",
+      "admitted_phase": "IR_WEISS_2a",
+      "arrived_and_rejoined_phase": "IR_WEISS_2b"
+    },
+    {
+      "origin": 175,
+      "destination": 119,
+      "distance_ly": 4.4,
+      "source_phase": "IR_WEISS_2b",
+      "admitted_phase": "IR_WEISS_3",
+      "final_required_receipt": "actual assigned Laxesori orbital-main-station docking and Weiss disembarkation"
+    }
+  ],
+  "mission_source_completion_deadline": null,
+  "mission_reward_credits": 0,
+  "player_mission_cargo_tonnes": 0,
+  "player_required_charter_berths": 0,
+  "protected_digital_evidence": {
+    "tonnes": 0,
+    "equipment_units": 0,
+    "berths": 0,
+    "unique": true,
+    "classification": "Necessary labelled project custody; station security record replaces source hotel/club photo."
+  },
+  "source_native_readers": {
+    "actor_arrival_event": "shipExitedWormhole",
+    "source_wrong_actor_name": "shipExitedWitchspace",
+    "admission_event": "shipWillEnterWormhole",
+    "outer_exitSystem_TRUE_is_insufficient": true,
+    "raw_main_player_arrival_has_G8_guard": true,
+    "raw_main_promotes2a_on_any_G8_exit": true,
+    "raw_missing_actor_callback_TypeError_not_wholegame_crash": true,
+    "role_scan_alias": "scanForNearestShipWithRole -> scanForNearestShipWithPrimaryRole",
+    "scanner_comparison": "strict stored float squared-distance and actual scanner list/status/cloak restrictions",
+    "target_recognition_required": false,
+    "raw_HEAD_FOR_AEGIS_recognition_message_unhandled": true
+  },
+  "AI_validation": {
+    "raw_table_count": 15,
+    "raw_action_order_state_requests": 192,
+    "raw_missing_requests": [
+      {
+        "machine": "IR-weiss1AI.plist",
+        "state": "FLEE",
+        "event": "DESIRED_RANGE_ACHIEVED",
+        "target_machine": "IR-weiss1AI.plist",
+        "missing_state": "HEAD_FOR_AEGIS"
+      },
+      {
+        "machine": "IR-weiss1AI.plist",
+        "state": "FLEE",
+        "event": "ENERGY_FULL",
+        "target_machine": "IR-weiss1AI.plist",
+        "missing_state": "HEAD_FOR_AEGIS"
+      },
+      {
+        "machine": "IR-weiss1AI.plist",
+        "state": "FLEE",
+        "event": "TARGET_LOST",
+        "target_machine": "IR-weiss1AI.plist",
+        "missing_state": "HEAD_FOR_AEGIS"
+      },
+      {
+        "machine": "IR-weiss2AI.plist",
+        "state": "ATTACK_SHIP",
+        "event": "TARGET_LOST",
+        "target_machine": "IR-weiss2AI.plist",
+        "missing_state": "WAIT_FOR_PLAYER"
+      },
+      {
+        "machine": "IR-weiss2AI.plist",
+        "state": "ATTACK_SHIP",
+        "event": "TARGET_DESTROYED",
+        "target_machine": "IR-weiss2AI.plist",
+        "missing_state": "WAIT_FOR_PLAYER"
+      },
+      {
+        "machine": "IR-weiss2AI.plist",
+        "state": "FLEE",
+        "event": "DESIRED_RANGE_ACHIEVED",
+        "target_machine": "IR-weiss2AI.plist",
+        "missing_state": "HEAD_FOR_AEGIS"
+      },
+      {
+        "machine": "IR-weiss2AI.plist",
+        "state": "FLEE",
+        "event": "ENERGY_FULL",
+        "target_machine": "IR-weiss2AI.plist",
+        "missing_state": "HEAD_FOR_AEGIS"
+      },
+      {
+        "machine": "IR-weiss2AI.plist",
+        "state": "FLEE",
+        "event": "TARGET_LOST",
+        "target_machine": "IR-weiss2AI.plist",
+        "missing_state": "HEAD_FOR_AEGIS"
+      }
+    ],
+    "selected_local_AI_states": {
+      "IR-weiss1AI.plist": {
+        "GLOBAL": {
+          "ENTER": [
+            "setUpEscorts",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_LOST": [
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "UPDATE": [],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FLEE": {
+          "UPDATE": [],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "ENERGY_FULL": [
+            "performIdle",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ]
+        },
+        "PERFORM_JUMP": {
+          "UPDATE": [
+            "sendScriptMessage: performJump"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "sendScriptMessage: preJumpComms",
+            "pauseAI: 5.0",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "WAIT_FOR_PLAYER": {
+          "UPDATE": [
+            "scanForNearestShipWithRole: player",
+            "pauseAI: 1.0"
+          ],
+          "NOTHING_FOUND": [],
+          "TARGET_FOUND": [
+            "setStateTo: PERFORM_JUMP"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setSpeedFactorTo: 1.0",
+            "scanForNearestShipWithRole: player"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "HEAD_AWAY_FROM_PLANET": {
+          "LAUNCHED OKAY": [
+            "setStateTo: HEAD_AWAY_FROM_PLANET"
+          ],
+          "FIGHTING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "FLEEING": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ],
+          "EXITED WITCHSPACE": [
+            "switchAITo: enteringTraderAI.plist"
+          ],
+          "ENTER": [
+            "getWitchspaceEntryCoordinates",
+            "setDestinationFromCoordinates",
+            "setDesiredRangeTo: 100.0",
+            "setSpeedFactorTo: 1.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setSpeedFactorTo: 1.0",
+            "setStateTo: WAIT_FOR_PLAYER"
+          ],
+          "ATTACKED": [
+            "fightOrFleeHostiles"
+          ]
+        }
+      },
+      "IR-weiss2AI.plist": {
+        "GLOBAL": {
+          "ENTER": [
+            "setUpEscorts",
+            "setStateTo: PREPARE_FOR_JUMP"
+          ]
+        },
+        "ATTACK_SHIP": {
+          "TARGET_LOST": [
+            "setStateTo: PREPARE_FOR_JUMP"
+          ],
+          "UPDATE": [],
+          "ENERGY_LOW": [
+            "setStateTo: FLEE"
+          ],
+          "ENTER": [
+            "performAttack"
+          ],
+          "TARGET_DESTROYED": [
+            "setStateTo: PREPARE_FOR_JUMP"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setStateTo: FLEE"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "FLEE": {
+          "UPDATE": [],
+          "DESIRED_RANGE_ACHIEVED": [
+            "setStateTo: PREPARE_FOR_JUMP"
+          ],
+          "ENERGY_FULL": [
+            "performIdle",
+            "setStateTo: PREPARE_FOR_JUMP"
+          ],
+          "REACHED_SAFETY": [
+            "setSpeedTo: 0.0",
+            "performIdle",
+            "pauseAI: 10.0"
+          ],
+          "ENTER": [
+            "setDesiredRangeTo: 25600",
+            "performFlee"
+          ],
+          "TARGET_LOST": [
+            "performIdle",
+            "setStateTo: PREPARE_FOR_JUMP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: FLEE"
+          ]
+        },
+        "PREPARE_FOR_JUMP": {
+          "UPDATE": [
+            "pauseAI: 30.0",
+            "setStateTo: PERFORM_JUMP"
+          ],
+          "PERFORM_JUMP": [
+            "setStateTo: PERFORM_JUMP"
+          ],
+          "COURSE_OK": [
+            "setSpeedToCruiseSpeed",
+            "performFlyToRangeFromDestination"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "setDestinationToStationBeacon",
+            "setDesiredRangeTo: 15000",
+            "checkCourseToDestination",
+            "pauseAI: 30.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        },
+        "PERFORM_JUMP": {
+          "UPDATE": [
+            "sendScriptMessage: performJump"
+          ],
+          "WITCHSPACE BLOCKED": [
+            "setTargetToFoundTarget",
+            "setDestinationWithinTarget",
+            "setDesiredRangeTo: 10000.0",
+            "performFlyToRangeFromDestination"
+          ],
+          "WITCHSPACE OKAY": [
+            "wormholeEscorts"
+          ],
+          "EXIT": [],
+          "ENTER": [
+            "sendScriptMessage: preJumpSystem",
+            "pauseAI: 20.0",
+            "setSpeedFactorTo: 1.0"
+          ],
+          "INCOMING_MISSILE": [
+            "fightOrFleeMissile",
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ],
+          "ATTACKED": [
+            "setTargetToPrimaryAggressor",
+            "setStateTo: ATTACK_SHIP"
+          ]
+        }
+      }
+    },
+    "selected_local_requests": 36,
+    "selected_local_state_count": {
+      "IR-weiss1AI.plist": 6,
+      "IR-weiss2AI.plist": 5
+    },
+    "selected_final_arrival_AI": {
+      "GLOBAL": {
+        "ENTER": [
+          "setStateTo: GO_TO_STATION"
+        ]
+      },
+      "GO_TO_STATION": {
+        "DOCKING_REFUSED": [
+          "pauseAI: 10.0"
+        ],
+        "AEGIS_IN_DOCKING_RANGE": [
+          "dockEscorts",
+          "setTargetToSystemStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "ATTACKED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "INCOMING_MISSILE": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: INCOMING_MISSILE",
+          "randomPauseAI: 0.25 1.5"
+        ],
+        "ENTER": [
+          "dropMessages: WAYPOINT_SET",
+          "setTargetToSystemStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination"
+        ],
+        "COURSE_OK": [
+          "setSpeedFactorTo: 0.5",
+          "performFlyToRangeFromDestination"
+        ],
+        "WAYPOINT_SET": [
+          "setAITo: gotoWaypointAI.plist"
+        ],
+        "ATTACKER_MISSED": [
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "DESIRED_RANGE_ACHIEVED": [
+          "dockEscorts",
+          "setTargetToSystemStation",
+          "setAITo: dockingAI.plist"
+        ],
+        "TARGET_FOUND": [
+          "setTargetToFoundTarget",
+          "setAITo: traderInterceptAI.plist",
+          "fightOrFleeHostiles"
+        ],
+        "CASCADE_WEAPON_DETECTED": [
+          "setAITo: fleeQMineAI.plist"
+        ],
+        "NO_STATION_FOUND": [
+          "sendScriptMessage: requiredOrbitalStationLost",
+          "performIdle"
+        ],
+        "ATTACKED_BY_CLOAKED": [
+          "setAITo: traderInterceptAI.plist",
+          "setStateTo: FLEE_FOR_CLOAKED"
+        ],
+        "UPDATE": [
+          "setTargetToSystemStation",
+          "setDesiredRangeTo: 5000.0",
+          "setDestinationToTarget",
+          "checkCourseToDestination",
+          "scanForHostiles",
+          "pauseAI: 10.0"
+        ]
+      }
+    },
+    "added_native_adapter_method": "requiredOrbitalStationLost records zero-pay actual-station-loss failure; not an original actor method.",
+    "selected_arrival_dispatch": "Real first-leg NPC arrival/rejoin175 -> second-AI preparation; real final NPC arrival119 -> selected orbital dockingAI. Never blindly run second-AI on final arrival just because narrow name-fix fixture does."
+  },
+  "timing": {
+    "first_AI_jump_pause_seconds": 5,
+    "second_AI_prepare_pause_seconds": 30,
+    "second_AI_enter_jump_pause_seconds": 20,
+    "second_AI_nominal_first_attempt_seconds": 50,
+    "AI_think_interval_seconds": 0.125,
+    "AI_tick_gate": "worldTime>nextThinkTime or nextThinkTime==0",
+    "source_hint_delay_seconds": 10,
+    "source_hint_interval_seconds": 0,
+    "source_hint_double_expand_bug": true,
+    "selected_hint_key": "IR_laxesori_reply",
+    "hint_once_after_valid_player_entry_and_actual_target_arrival": true,
+    "domain": "Unpaused simulation/world seconds inclordinary docked local world; offline/explicitpause freeze. Commander calendar only for downstream+20days."
+  },
+  "persistence": {
+    "ordinary_unloaded_actor_flight": "Saved and frozen, including remaining AI preparation; genuine hole transit continues chronologically.",
+    "second_AI_preparation_start": "After genuine first-leg arrival and legitimate player rejoin; same saved actor, no full-health clone.",
+    "own_jump_catch_up": "Allowed with actual logged flight/departure/arrival receipts, real player fuel/range and correct scene; no teleport or blind phase award.",
+    "wrong_galaxy_or_system": "No progress; actual saved mission/actor can resume upon legitimate return.",
+    "no_free_refill_cabin_crew_actor_or_evidence": "Required across save/UI/hull/storage."
+  },
+  "endings": {
+    "success": "Actual final transport station admission, orbital recording then Vegedius GalCopdebrief;0newcredits, one parent IR_IBANEZ_5/currentcommanderDay+20 receipt.",
+    "source_branch_failure_handler": false,
+    "project_zero_pay_failures": [
+      "confirmed abandonment",
+      "irreversible assigned transport/Weiss loss before safe final disembarkation",
+      "irreversible requiredstationloss"
+    ],
+    "live_survivors": "Preserve actual identity/physical life-support/return-only zero-pay care; no fake record or LEXICON unlock.",
+    "downstream_research_ready": false,
+    "downstream_source_comparison": "strict>onG8launch"
+  },
+  "orbital_text_map_scope": "Per selected Weiss surveillance profile only; sharedrawkeys are not global overrides of shipment/Kinnaird/LEXICON.",
+  "orbital_text_overrides": {
+    "IR_weiss_1": "GalCop orbital HQ authorises surveillance of Reinhardt Weiss. Follow flight QC272 from Maenes and report evidence of any suspicious contact. There is no fixed mission expiry; ordinary flight risks and fuel requirements remain.",
+    "IR_weiss_brief_1": "Identify and follow flight QC272 carrying Reinhardt Weiss from Maenes orbital station.",
+    "IR_weiss_depart": "Flight QC272 is departing the Maenes orbital station area.",
+    "IR_transport_depart": "QuiCo flight QC272 is preparing to leave the orbital station area.",
+    "IR_follow_weiss": "That is the assigned QuiCo flight QC272. Weiss is believed to be aboard. Its genuine departure will be logged; targeting it does not grant a completed jump.",
+    "IR-weiss-prejump-comms": "Flight QC272 is preparing for its scheduled hyperspace leg. Keep close or follow the recorded itinerary with your own valid jump.",
+    "IR-weiss-prejump-system": "Flight QC272: next destination Laxesori, System ID119.",
+    "IR_laxesori_reply": "Flight QC272 has reached Laxesori. The orbital arrivals desk can release its record after the flight actually docks.",
+    "IR_weiss_3a": "Laxesori orbital arrivals confirms that QC272 docked and Reinhardt Weiss disembarked. The station security liaison checks his meeting record at your request.",
+    "IR_weiss_3b": "The orbital station record shows Weiss meeting Pieter Kinnaird and accepting a sealed package. Its contents remain unknown. Security supplies one authenticated digital record for GalCop; neither Weiss nor the package has boarded your ship.",
+    "IR_weiss_brief_3": "Deliver the protected digital station record to GalCop orbital HQ at Vegedius.",
+    "IR_IBANEZ_5_debrief": "GalCop orbital HQ accepts the station evidence linking Weiss and Kinnaird. QuiCo security can remove Weiss from the defence-grid assignment temporarily. No arrest is ordered. Await a further lead from GalCop.",
+    "IR_waitforinfo_brief": "Await further instructions from GalCop orbital HQ."
+  },
+  "source_text_key_hashes": {
+    "IR_weiss_1": "be8eea54bf8c6cbe93d1d49c83271f3a566da9e9046e83a660c5e96813081523",
+    "IR_weiss_brief_1": "b95bb0a32671f12bc6818b84bc27af33c78762a3d3469bd41339e8206d956bb4",
+    "IR_weiss_depart": "5294ac3cc97aa9c4865624095cde0bfde545091c5ba056882605538fa1f48cfd",
+    "IR_transport_depart": "c54f3a8e60cffc61ea9bec7a12ab6b0cb67ed43990036b2a4baadb1496f75258",
+    "IR_follow_weiss": "47057cc5b1222331064893157dc542a5f04e75c74b605412c181d522713a7292",
+    "IR-weiss-prejump-comms": "cfd0a4ce7bbcc8f61024a1bfb70a7c139fc023e91f73e438cf7f6b00dde2d16f",
+    "IR-weiss-prejump-system": "ac6e4c6bb6a07000553a8bf43634d6da09426e90f7e51932aec847637d7009de",
+    "IR_laxesori_reply": "40e16a827b5933a5a8f5aa3f47cea3ed0f7b643a6a66d82d91b2f910476a32e5",
+    "IR_weiss_3a": "2a2494290c4f19097909cf9d8659e5e6ffa04c45439113d15d917bcfa10016a8",
+    "IR_weiss_3b": "6f704176e50acb0053d4b7b3f5ae8fa916da3c45cee9ec3118e966e2409548d1",
+    "IR_weiss_brief_3": "7023a0dfab9959b40b2302504a7c713fdb225c30df79f3d61064a539db837c75",
+    "IR_IBANEZ_5_debrief": "bf37bf4b05e193db61c0154b84c761ab0b73e5b86f9a2874eb08273d93e35db1",
+    "IR_waitforinfo_brief": "2d57ea0d5df3f111c926b5e15f2908122b30712283cb921ce03abdab85e7d625"
+  },
+  "source_overlay_bindings": {
+    "IR_weiss_3a": "IR_pw_logo.png",
+    "IR_weiss_3b": "IR_pw_logo.png; also explicit runScreen overlay"
+  },
+  "selected_overlay_replacement": "Own native orbital arrivals/security UI; no required original logo/ground art.",
+  "project_repairs": [
+    "distinctparentreceipts/savedexclusivechoice",
+    "mainstationaegis/registereduniqueactor/missingbuoy",
+    "trueorigin/destination/assignedholeadmissionandarrival",
+    "sameactorprojectionnotremove/reclone",
+    "methodcase/missingAIstates/correctarrivalevent/finaldockingdispatch",
+    "onceperlegsourceNPCrefuelnotretryheal",
+    "orbitalrecord/actualdockingreceipt/unique0tdata",
+    "NPCcrew3+one5t/1unitberth/finiteemptymerchandise",
+    "worldclock/savedpause/hintkey/terminalcancellation",
+    "atomicconfirm/save/abandonment/irreversibleloss/returnonlycare",
+    "isolatedGallery/no ordinarysavechanges"
+  ],
+  "gallery": {
+    "required": true,
+    "isolated": true,
+    "milestones": [
+      "QC272 assigned encounter",
+      "first genuine departure/rejoin",
+      "second genuine departure/final docking",
+      "station security record",
+      "Vegedius evidence debrief"
+    ],
+    "native_acceptance": "Full spec enumeratesflight/actor/custody/clock/AI/save/Back/failure/storage/source-repair boundaries; native implementation not proved by research."
+  },
+  "required_native_capabilities": [
+    "parentdebriefreceiptpredicateandexclusivependingchoice",
+    "registeredpersistentNPC/AI/worldclock/truewormholeadmissionandarrival",
+    "actualNPCstationdock/person/cabin/crew custody",
+    "digital evidence/atomic contacts and sourcecalendarcontinuation",
+    "isolated missionGallery and version/hash save"
+  ]
+}

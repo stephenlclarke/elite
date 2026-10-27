@@ -1,0 +1,16 @@
+{
+  "base": "5bd6e9d3b68509790fbb49c1cf9235b52b283465",
+  "command": [
+    "make",
+    "sanitizer-checkpoints-check"
+  ],
+  "files": {
+    "Tools/CI/sanitizer_checkpoints.py": "fd0ca74766dcaf0ff198ecd2416957befd73d198dc209b9ca6f25a5715de1a5b",
+    "Tools/CI/test_sanitizer_checkpoints.py": "2e5f1393c31672c3cf6f7802f5c3f4acfcf1798fa43cbc1b311644233e16de5d",
+    "Makefile": "15faa43012a81dc99f68d6c4dbadba1a709f881290fb186d2cb34d1772aab63a"
+  },
+  "exit_code": 0,
+  "wall_seconds": 1.2829430000856519,
+  "log_sha256": "4dc96fbf8d3a9973aa7b0b098d810417455d29d8394b05c9c5a037509504a473",
+  "qualification": "18 Python acceptance/fake execution-boundary tests only. No Swift build/discovery/test/native process launched."
+}

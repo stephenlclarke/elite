@@ -24,9 +24,14 @@ func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGIm
   return context.makeImage()
 }
 
-/// The window and exported media share the same drawing path at any pixel size.
+/// Logical drawing and the Quartz fallback are shared with exported media.
+@discardableResult
 @MainActor
-func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
+func drawFrame(
+  _ frame: Frame, context: CGContext, rect: CGRect, panelRenderer: ShipPanelRenderer? = nil
+) -> ShipPanelExecution {
+  var execution = ShipPanelExecution()
+  var budget = ShipPanelBudget()
   context.saveGState()
   context.translateBy(x: rect.minX, y: rect.minY)
   context.scaleBy(x: rect.width / frame.canvas.width, y: rect.height / frame.canvas.height)
@@ -40,12 +45,14 @@ func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
       context.saveGState()
       let clip = frame.flightClip
       context.clip(to: CGRect(x: clip.x, y: clip.y, width: clip.width, height: clip.height))
-      for graphic in frame.worldGraphics { drawGraphic(graphic, context: context, lineWidth: 0.85) }
+      drawGraphics(
+        frame.worldGraphics, context: context, lineWidth: 0.85, panelRenderer: panelRenderer,
+        budget: &budget, execution: &execution)
       context.restoreGState()
     }
-    for graphic in frame.graphics {
-      drawGraphic(graphic, context: context, lineWidth: frame.responsive ? 0.85 : 0.5)
-    }
+    drawGraphics(
+      frame.graphics, context: context, lineWidth: frame.responsive ? 0.85 : 0.5,
+      panelRenderer: panelRenderer, budget: &budget, execution: &execution)
   }
   if frame.responsive {
     context.setShouldAntialias(false)
@@ -70,6 +77,7 @@ func drawFrame(_ frame: Frame, context: CGContext, rect: CGRect) {
     context.draw(bitmap, in: CGRect(x: 0, y: 0, width: 256, height: 256))
   }
   context.restoreGState()
+  return execution
 }
 
 @MainActor
@@ -104,10 +112,55 @@ private func bitmapFor(_ frame: Frame) -> CGImage? {
 }
 
 @MainActor
+private func drawGraphics(
+  _ graphics: [Graphic], context: CGContext, lineWidth: Double,
+  panelRenderer: ShipPanelRenderer?, budget: inout ShipPanelBudget,
+  execution: inout ShipPanelExecution
+) {
+  var index = graphics.startIndex
+  while index < graphics.endIndex {
+    if let panelRenderer, case .panel(let panel) = graphics[index],
+      ShipPanelRenderer.eligible(panel)
+    {
+      var end = index + 1
+      while end < graphics.endIndex, case .panel(let next) = graphics[end],
+        ShipPanelRenderer.eligible(next)
+      { end += 1 }
+      if let device = panelRenderer.draw(graphics[index..<end], context: context, budget: &budget) {
+        execution.metalPanels += end - index
+        execution.device = device
+      } else {
+        for graphic in graphics[index..<end] {
+          drawGraphic(graphic, context: context, lineWidth: lineWidth)
+        }
+        execution.cpuPanels += end - index
+      }
+      index = end
+    } else {
+      drawGraphic(graphics[index], context: context, lineWidth: lineWidth)
+      if case .panel = graphics[index] { execution.cpuPanels += 1 }
+      index += 1
+    }
+  }
+}
+
+@MainActor
 private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Double = 0.5) {
   context.setLineWidth(lineWidth)
   switch graphic {
+  case .textured(let triangle): drawShipTexture(triangle, context: context)
   case .planet(let preview): PlanetRenderer.draw(preview, context: context)
+  case .glow(let line):
+    context.saveGState()
+    context.setStrokeColor(colour(line.ink.rawValue))
+    context.setAlpha(0.55)
+    context.setShadow(offset: .zero, blur: 3, color: colour(line.ink.rawValue))
+    context.setLineWidth(1.4)
+    context.beginPath()
+    context.move(to: .init(x: line.x0, y: line.y0))
+    context.addLine(to: .init(x: line.x1, y: line.y1))
+    context.strokePath()
+    context.restoreGState()
   case .line(let line), .wire(let line):
     context.setStrokeColor(colour(line.ink.rawValue))
     context.beginPath()
@@ -136,8 +189,9 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Doub
       in: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
   case .panel(let panel):
     guard let first = panel.vertices.first else { return }
-    context.setFillColor(colour(panel.colour))
-    context.setStrokeColor(colour(panel.colour))
+    let panelColour = colour(panel.colour)
+    context.setFillColor(panelColour)
+    context.setStrokeColor(panelColour)
     // A small overlap prevents antialiasing cracks between adjoining faces.
     context.setLineWidth(0.25)
     context.beginPath()
@@ -146,6 +200,29 @@ private func drawGraphic(_ graphic: Graphic, context: CGContext, lineWidth: Doub
     context.closePath()
     context.drawPath(using: .fillStroke)
   }
+}
+
+@MainActor
+private func drawShipTexture(_ triangle: ShipTexturedTriangle, context: CGContext) {
+  let transform = context.ctm
+  let scale = min(4, max(hypot(transform.a, transform.b), hypot(transform.c, transform.d)))
+  guard let pixels = ShipTextureAssets.pixels(for: triangle.texture),
+    let tile = ShipTextureRaster.tile(triangle: triangle, pixels: pixels, scale: scale)
+  else { return }
+  let bytes = tile.rgba.map(\.bigEndian).withUnsafeBytes { Data($0) }
+  guard let provider = CGDataProvider(data: bytes as CFData),
+    let image = CGImage(
+      width: tile.width, height: tile.height, bitsPerComponent: 8, bitsPerPixel: 32,
+      bytesPerRow: tile.width * 4, space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+      provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+  else { return }
+  context.saveGState()
+  context.interpolationQuality = .none
+  context.translateBy(x: tile.origin.x, y: tile.origin.y + Double(tile.height) / tile.scale)
+  context.scaleBy(x: 1 / tile.scale, y: -1 / tile.scale)
+  context.draw(image, in: CGRect(x: 0, y: 0, width: tile.width, height: tile.height))
+  context.restoreGState()
 }
 
 private func colour(_ rgba: UInt32, opacity: Double = 1) -> CGColor {

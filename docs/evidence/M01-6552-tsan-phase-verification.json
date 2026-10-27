@@ -1,0 +1,33 @@
+{
+  "run": 40085265091,
+  "published_head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+  "actual_checkout_head": "4c4736b98d711fc33a41ae1d2d58e2a76c3811e6",
+  "phase": "Completed TSAN phase only",
+  "source_before_sha256": "cfcc5dcb0ef453a5e554f4cc4a11576a9b5942ea248ec7ce9b370e84e9f4fbb0",
+  "same_source_manifest_as_verified_normal_phase": true,
+  "verified_source_input_paths": 1885,
+  "hash_mismatches": [],
+  "retained_normal_prefix_byte_identical": true,
+  "tsan_command_line": 9890,
+  "tsan_command": "swift test --scratch-path .build/tsan --sanitize=thread",
+  "terminal_summary": {
+    "line": 19779,
+    "text": "\u2714 Test run with 3395 tests in 394 suites passed after 14342.927 seconds."
+  },
+  "tsan_warning_error_failure_markers": [],
+  "build_summary": [
+    "Build complete! (121.30 secs)"
+  ],
+  "snapshot": {
+    "path": "/tmp/elite-mba-6552-tsan-complete-prefix.log",
+    "bytes": 2071733,
+    "sha256": "605f67cf6401b45ddadff493e8a1d7c6e4c790e616e89ea84ce8a08f7a02f4af",
+    "boundary": "Exact live ci.log prefix before address-sanitizer command, no ASAN output included"
+  },
+  "next_phase": {
+    "line": 19780,
+    "command": "ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel"
+  },
+  "normal_receipt": "/tmp/elite-mba-6552-normal-coverage-phase-verification.json",
+  "limits": "Phase completion only. ASAN has begun; ASAN_OPTIONS explicitly disables its leak detection. Separate leak gate/fullmakeci/mainSonar/merge/release not qualified. No execution, download, probe or retry."
+}

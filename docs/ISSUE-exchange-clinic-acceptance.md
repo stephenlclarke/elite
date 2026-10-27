@@ -1,0 +1,7 @@
+# C08.P06.B.clinic.acceptance: reserve the original sample before pickup
+
+The issued clinic source needs an actual accepted consignment with finite reservations. A read-only route quote cannot authorize cargo, create stock or borrow another operator's capacity. Acceptance must atomically bind the exact original available sample, same-owner eligible window, frozen complete reachable itinerary/price, actual Renas contact, current source/capacity revisions and owned carrier/fitting. Reserve1t actual hold space independently of the maximum three active Original contracts. No carried sample or integrity timer exists before separate pickup.
+
+A separate pre-pickup cancellation must return the same unchanged warehouse sample/window/hold space once. Attained carrier exit must close outstanding uncollected bookings; known source destruction must fail the lost stock instead of replenishing it. Closed saved records must join both directions to the actual parent, original stock mutation, window event and acknowledged clocks. Historical operator consent must remain valid after later bookings and later consents must use their actual prior event clocks.
+
+Refs PR25 and C08.P06.B.clinic.acceptance. Actual pickup/custody/integrity, receiving/payment, cancellation after pickup and held return remain the following clinic leaf. This packet grants no audit, stage12, accreditation or clue and does not weaken generic W01/W03 validation.

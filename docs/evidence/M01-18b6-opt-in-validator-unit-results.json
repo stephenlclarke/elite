@@ -1,0 +1,18 @@
+{
+  "base": "18b6e91b41b4151395eb645318552d9c522772f9",
+  "command": [
+    "make",
+    "native-runner-check",
+    "sanitizer-checkpoints-check"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 1.4057978331111372,
+  "files": {
+    "Tools/CI/sanitizer_checkpoints.py": "7de02a8ffa9df2c856d610df8982115ae61c9dc05da5678d5b498be70ee93411",
+    "Tools/CI/test_sanitizer_checkpoints.py": "039d2767ba43a0ea81a703dc5177c81450036a31eab9af1b6e2d525c60870058",
+    "Tools/CI/test_native_runner.py": "d69cccdcd171f739159ecaf5cd2aee585828fe2c11ec3d6a5f9367d753477f59",
+    "Makefile": "15faa43012a81dc99f68d6c4dbadba1a709f881290fb186d2cb34d1772aab63a"
+  },
+  "log_sha256": "3c415a5965e2d4dc2b2f6db09100976f9173fb884d5763276ead92f2951e34dd",
+  "qualification": "15 native runner and 27 checkpoint Python fake/acceptance tests only. No native build, test bodies or historical checkpoint mutation."
+}

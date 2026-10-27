@@ -1,0 +1,7 @@
+# Bound recorder-capture validation frames
+
+The hosted stack-probe trace enters the former single recorder-capture guard through the newly nested rescue-flight fixture. Validation now uses separate non-inlined borrowed identity, marker, native physical state, fitted model and ingress/clock leaves. Each physical/NPC optional is bound once in its owning leaf instead of keeping repeated large optional projections in one validator frame. Permission and receiving records remain borrowed between these leaves. Every previous validation predicate is retained, and the receipt remains the same immutable value/Codable shape.
+
+The immutable rescue-flight fixture now has reference ownership around its existing finance/commander values. Its initialization, assertions and methods are unchanged. This targets the observed stack/value-frame path; it makes no claim of proved recursion, a compiler root cause or an already-fixed hosted crash.
+
+Necessary Core authoring compilation and affected declaration checks pass. The correction reuses the existing174-method hosted selection, including the six previously crashing flight methods and pickup/finance/service/receiving guards; no assertions, selection or coverage were removed. Actual corrected-head execution and MBA verification remain pending. Four failed runs and issue41 stay open until the required evidence establishes correction. Utility source edits remain separate work in progress. No native gameplay/integration, broad CI/sanitizer/leak or release execution.

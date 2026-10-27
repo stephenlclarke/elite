@@ -1,0 +1,7 @@
+# Frame-loop read buffers remain reserved during deeper simulation
+
+The actual 199 diagnostic reached NPC descriptor validation through `GameRuntime.advance`, whose implementation remains unchanged at full 211. A bounded exact-211 binary audit confirms five named Game-sized stack reservations in that actor entry point, all reserved before prelude work and retained during `game.tick`. They serve early location/scalar reads, projectile preflight, durability/calendar queries and a later post-tick energy check. Readonly copies finish earlier, but their containing frame retains the storage.
+
+Live instantiated metadata reads at 213 establish Game size/stride 24,128/24,128 bytes and Commander 7,606/7,608 bytes. Actual 212 separately stopped during encounter-fixture admission, with SP `0x16f8ec750`, mapped read/write region `0x16f8ec000...0x16f974000`, and a failed stack probe eight bytes below its lower boundary. The 1,872 mapped bytes below that SP describe available mapping, not a verified pthread stack size or safe budget. No original 211 crash equivalence or full-gate acceptance is established.
+
+Scope the original frame prelude and postlude in synchronous actor helpers with only scalar context across the physical tick. Preserve all actor-owned state, clock short-circuiting, flags captured before simulation, pending native entry, physical-first event publication and early failure snapshots. See [the repair](PR-runtime-advance-lifetimes.md).

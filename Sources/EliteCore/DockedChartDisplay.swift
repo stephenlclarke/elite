@@ -29,19 +29,19 @@ extension Display {
     if planetSize >= 32 {
       let planetX = layout.wide ? x + (284 - planetSize) / 2 : layout.width - 16 - planetSize
       let planetY = layout.wide ? bottom - planetSize - 26 : y
-      frame.graphics.append(
-        .planet(
-          .init(
-            galaxy: game.inspectedGalaxy, system: game.inspectedSystem,
-            bounds: .init(x: planetX, y: planetY, width: planetSize, height: planetSize),
-            time: game.time)))
+      planetPreview(
+        .init(
+          galaxy: game.inspectedGalaxy, system: game.inspectedSystem,
+          bounds: .init(x: planetX, y: planetY, width: planetSize, height: planetSize),
+          time: game.time),
+        style: game.commander.shipDisplayStyle, into: &frame)
     }
   }
 
   static func chartDataWindow(_ game: Game) -> ScrollWindow {
     let layout = ChartLayout(
       width: game.viewportWidth, height: game.viewportHeight, local: game.screen == .shortChart,
-      fuel: game.commander.fuel, docked: game.docked)
+      fuel: game.commander.fuel, docked: game.docked, galaxy: game.viewedGalaxy)
     let y = layout.detailsTop
     let bottom = layout.height - (layout.wide ? 48 : 126)
     let diameter = layout.wide ? 0.0 : min(140, bottom - y - 24)

@@ -54,30 +54,42 @@ public struct Mesh: Sendable {
   public let details: [MeshDetail]
   public let materials: [ShipMaterial]
   public let faceMaterials: [Int]
+  public let faceTextures: [ShipMeshTexture?]
   public init(
     vertices: [Vector3], faces: [[Int]], details: [MeshDetail] = [],
-    materials: [ShipMaterial] = [], faceMaterials: [Int] = [], preserveWinding: Bool = false
+    materials: [ShipMaterial] = [], faceMaterials: [Int] = [],
+    faceTextures: [ShipMeshTexture?] = [], preserveWinding: Bool = false
   ) {
     self.vertices = vertices
     self.details = details
     self.materials = materials
     self.faceMaterials = faceMaterials
-    let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
     if preserveWinding {
       self.faces = faces
+      self.faceTextures = faceTextures
       return
     }
+    let center = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
     // A consistent outward winding is essential to preserve silhouette edges.
-    self.faces = faces.map { face in
+    var correctedTextures = faceTextures
+    self.faces = faces.enumerated().map { index, face in
       let a = vertices[face[0]]
       let b = vertices[face[1]]
       let c = vertices[face[2]]
       let faceCenter =
         face.reduce(Vector3(0, 0, 0)) { $0 + vertices[$1] } * (1 / Double(face.count))
-      return (b - a).cross(c - a).dot(faceCenter - center) < 0 ? Array(face.reversed()) : face
+      if (b - a).cross(c - a).dot(faceCenter - center) < 0 {
+        if correctedTextures.indices.contains(index), let texture = correctedTextures[index] {
+          correctedTextures[index] = .init(asset: texture.asset, uv: Array(texture.uv.reversed()))
+        }
+        return Array(face.reversed())
+      }
+      return face
     }
+    self.faceTextures = correctedTextures
   }
   public static func hull(_ kind: Hull) -> Mesh {
+    if kind == .station { return MainStationGeometry.mesh }
     if let mesh = ShipCatalogue.nativeMesh(kind) { return mesh }
     switch kind {
     case .asteroid, .cargo:
@@ -123,10 +135,16 @@ public struct SpaceBody: Sendable, Equatable, Codable, Identifiable {
   public var enemyMissile = false
   public var missileSourceID: Int?
   public var destroyedByPlayer: Bool?
+  public var missionActorID: UUID?
+  public var missionInstanceID: UUID?
   public var blackjackIdentity: UUID?
   public var blackjackRole: BlackjackTarget?
   public var blackjackLaserCooldown: Double?
+  public var scriptNPC: ScriptNPCState?
+  public var scriptShot: ScriptNPCShot?
   public var ecmEnabled = false
+  public var physical: PhysicalActorState?
+  var nativeStationIdentity: NativeStationIdentity?
   public init(id: Int, hull: Hull, position: Vector3, hostile: Bool = false) {
     self.id = id
     self.hull = hull

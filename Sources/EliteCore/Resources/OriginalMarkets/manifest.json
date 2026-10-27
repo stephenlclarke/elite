@@ -1,0 +1,85 @@
+{
+  "acceptedInputManifestSHA256": "a55faffb0bf41ee497463a754fbcccab810c269897d10062fd680336811b3057",
+  "bytes": 5642852,
+  "file": "markets.json",
+  "kind": "original-market-initial-seeds",
+  "quoteCount": 34816,
+  "scope": "Exact authored initial seeds only, not traded/current stock or market activation",
+  "sha256": "4f7e7c9235f13f8151f2d53051828078f6c7d701ffd119c15031dd9137176c5d",
+  "sourceCommit": "6c3c2c40bbbbc6893936e8ddc0547ae05c619c57",
+  "sourceDescriptiveStatuses": {
+    "markets-01.toml": "Private proposal only; not installed",
+    "markets-02.toml": "Private proposal only; not installed",
+    "markets-03.toml": "Private proposal only; not installed",
+    "markets-04.toml": "Private proposal only; not installed",
+    "markets-05.toml": "Private proposal only; not installed",
+    "markets-06.toml": "Private proposal only; not installed",
+    "markets-07.toml": "Private proposal only; not installed",
+    "markets-08.toml": "Private proposal only; not installed"
+  },
+  "sourceFiles": [
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/authoring.toml",
+      "bytes": 6664,
+      "path": "inputs/original-world-economy/authoring.toml",
+      "sha256": "47d83caae5a9b22a4a932f19c55f79c5cb5435b962826a0969ece096b11f80eb"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/catalogue.json",
+      "bytes": 1660913,
+      "path": "inputs/original-world-economy/catalogue.json",
+      "sha256": "120543eedc02a705cce0e37d026125bf926ec22651cff9337ca5d943f2ffd99d"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-01.toml",
+      "bytes": 831079,
+      "path": "inputs/original-world-economy/markets-01.toml",
+      "sha256": "cf3b48bc2b60dddf7f67e90300a2ff854ec9978881a8452c9aba8570a06adc51"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-02.toml",
+      "bytes": 831176,
+      "path": "inputs/original-world-economy/markets-02.toml",
+      "sha256": "027c0d203858c87fcf1a70257ae81387d8436044f7430e08f594dd4929ad136c"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-03.toml",
+      "bytes": 830707,
+      "path": "inputs/original-world-economy/markets-03.toml",
+      "sha256": "45709853ee79f62eff842dd51a15fe68527188cc7b621fea9b0615153ae68b30"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-04.toml",
+      "bytes": 830492,
+      "path": "inputs/original-world-economy/markets-04.toml",
+      "sha256": "af8874622b7d10195309de12587af40dc049086f1bbce7f052a352074d36f3ab"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-05.toml",
+      "bytes": 831580,
+      "path": "inputs/original-world-economy/markets-05.toml",
+      "sha256": "8897412d357d1f652ffeb21f10eab5cfc0b971692805a082d9505d578f68030f"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-06.toml",
+      "bytes": 830819,
+      "path": "inputs/original-world-economy/markets-06.toml",
+      "sha256": "d143054034902ca154bd246d9ba10fbc9fc3f337b8e9566992b3d5868f6642c6"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-07.toml",
+      "bytes": 831108,
+      "path": "inputs/original-world-economy/markets-07.toml",
+      "sha256": "aa08410ca1830c3c6e31a12cde770725239bbb6a172b5a2115bf0004e14e0c5a"
+    },
+    {
+      "approvedInventoryPath": "l337-content-proposal/original-world-economy/markets-08.toml",
+      "bytes": 830972,
+      "path": "inputs/original-world-economy/markets-08.toml",
+      "sha256": "f34eb7864f34dd208598a152f0262e618048d7bd1212f2803b858dbfdfa97e49"
+    }
+  ],
+  "version": 1,
+  "worldCount": 2048,
+  "worldVersion": "l337-world-1"
+}

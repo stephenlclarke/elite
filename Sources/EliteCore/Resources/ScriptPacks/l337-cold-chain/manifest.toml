@@ -1,0 +1,48 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.wayfarer-service"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2"]
+priority = 520
+source = "Original L337 W01 ordinary clinic service. Authored 45-minute flight integrity budget, not a measured journey bound. Six finite samples; no replenishment."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "cold-chain"
+title = "Cold-chain clinic service"
+briefing = "Collect one original sealed medical sample from Cedamar main orbital station. Carry it to Celalen main orbital station, Confirm the original sample's arrival, then Confirm receiving handoff at the same clinic. The advertised integrity budget is 2700 seconds of armed flight after pickup. Pausing stops flight time; save/load preserves the original deadline. Original failed or lost samples earn no payment and never replenish source stock. Ordinary hazard-tier-zero work requires one free cargo tonne and no passenger berth or accreditation."
+destination = "Celalen main orbital station, G01-S241"
+reward = "405 CR at actual reception: 320 CR base + 85 CR for one quoted leg + 0 CR hazard premium."
+milestones = ["Original viable sample received at Celalen"]
+
+[coldChain]
+batch = "cedamar-clinic-01"
+stockUnits = 6
+tonnes = 1
+maximumActive = 3
+route = [85, 241]
+hazardTier = 0
+flightAllowance = 2700
+rewardNative = 4050
+
+[coldChain.source]
+galaxy = 0
+system = 85
+resourceKey = "main-orbital:0:85"
+
+[coldChain.objective]
+galaxy = 0
+system = 241
+resourceKey = "main-orbital:0:241"
+
+[coldChain.receiver]
+galaxy = 0
+system = 241
+resourceKey = "main-orbital:0:241"
+
+[[handlers]]
+event = "timer.fired"
+function = "expire"

@@ -22,6 +22,7 @@ public struct BlackjackEncounter: Sendable, Codable, Equatable {
       && body.rotation.isFinite && body.rotationRate.isFinite
       && (body.blackjackLaserCooldown ?? 0).isFinite
       && (body.blackjackLaserCooldown ?? 0) >= 0
+      && (body.physical?.npc?.resources?.valid ?? true)
   }
 }
 extension Vector3 { var finite: Bool { x.isFinite && y.isFinite && z.isFinite } }
@@ -49,6 +50,12 @@ extension Basis3 {
 }
 extension Game {
   mutating func persistBlackjackTargets() {
+    guard commanderGalaxy == 1 else { return }
+    persistBlackjackTargetsInGalaxyOne()
+  }
+
+  @inline(never)
+  private mutating func persistBlackjackTargetsInGalaxyOne() {
     guard commander.galaxy == 1, let anchor = bodies.first(where: { $0.hull == .station }) else {
       return
     }
@@ -88,6 +95,20 @@ extension Game {
     var body = saved.body
     body = body.withID(nextBodyID)
     nextBodyID += 1
+    if let prior = body.physical,
+      prior.identity.system != systemIdentity
+        || prior.identity.visit != commander.flightSimulation.visit
+    {
+      guard let identity = commander.flightSimulation.allocateActor() else { return }
+      var npc = prior.npc
+      npc?.firstAggressor = nil
+      npc?.intention = nil
+      body.physical = .init(
+        identity: identity, population: prior.population, npc: npc,
+        velocity: prior.velocity, laserCooldown: prior.laserCooldown,
+        blocksNavalEncounter: prior.blocksNavalEncounter, catalogueShipID: prior.catalogueShipID,
+        angularVelocity: prior.angularVelocity)
+    }
     body.position = anchor.position + anchor.orientation.apply(saved.body.position)
     body.orientation = saved.body.orientation.transformed(by: anchor.orientation)
     if body.leavesLocalBubble { body.position = anchor.position * 0.1 }
@@ -120,7 +141,7 @@ extension Game {
     let cooldown = max(0, (bodies[index].blackjackLaserCooldown ?? 0) - delta)
     bodies[index].blackjackLaserCooldown = cooldown
     if distance < 1500 && cooldown == 0 {
-      applyDamage(BlackjackTarget.weaponEnergy, front: bodies[index].position.z >= 0)
+      emitLegacyNPCBeam(bodyID: bodies[index].id, damage: BlackjackTarget.weaponEnergy)
       bodies[index].blackjackLaserCooldown = LaserKind.pulse.firingInterval
     }
   }

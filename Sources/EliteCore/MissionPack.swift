@@ -124,7 +124,7 @@ public struct MissionPackLibrary: Sendable {
   public static let bundled: MissionPackLibrary = {
     let resources =
       Bundle.main.resourceURL.flatMap {
-        Bundle(url: $0.appendingPathComponent("Elite_EliteCore.bundle"))
+        Bundle(url: $0.appendingPathComponent("L337_EliteCore.bundle"))
       } ?? Bundle.module
     do {
       return try load(
@@ -134,7 +134,7 @@ public struct MissionPackLibrary: Sendable {
   }()
   public static var userDirectory: URL {
     FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(
-      ".xyzzy/elite/mission-packs")
+      ".xyzzy/l337/mission-packs")
   }
   public static func read(_ url: URL, bundled: Bool = false) throws -> LoadedMissionPack {
     let properties = try url.resourceValues(forKeys: [

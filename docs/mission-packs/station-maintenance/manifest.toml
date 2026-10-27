@@ -1,0 +1,46 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.station-maintenance"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "classic-encounters-v2", "world-resource-jobs-v2", "pulse-counters-v2", "gallery-basic-v2"]
+priority = 500
+source = "Original resource-owned station patrol demonstration; no historical Elite, Maenes or RRS acceptance claim."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "authorize-patrol"
+title = "Station patrol scheduling demonstration"
+briefing = "Authorize two friendly training ships at Lave. Your authorization completes now, with no payment. The station will deploy the patrol once you launch and space is clear. Follow its progress under Ongoing Services in this Gallery entry."
+destination = "Galaxy 1, Lave main orbital station."
+reward = "No credits or equipment."
+milestones = ["Authorize the station service", "Schedule the independent patrol"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+
+[[encounters]]
+id = "support"
+galaxy = 0
+system = 7
+profile = "classic-local-freeze-v1"
+actors = [
+  {id="support-viper", hull="viper", x=0.0, y=500.0, z=3000.0, hostile=false},
+  {id="support-cobra", hull="cobra", x=1000.0, y=500.0, z=4500.0, hostile=false}
+]
+
+[[worldJobs]]
+id = "patrol-service"
+title = "Station training patrol service"
+handler = "maintenance"
+owner = "station"
+galaxy = 0
+system = 7
+firstDue = 0
+interval = 1
+policy = "skip"
+counters = ["opening"]
+controlledEncounters = ["support"]

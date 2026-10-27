@@ -1,0 +1,7 @@
+# C08.P06.B.capacity: finite original operator reservations
+
+The selected induction charter requires actual finite operator capacity. The generic three-active-contract limit, ship cargo/tools or passenger capacity cannot substitute. Bind six original indivisible service-window units to each clinic/workshop/seed owner for the same persistent charter epoch, protected minimum two each. A unit authorizes one concurrent independently quoted consignment. No reopening/loading/revisit/timer reset may recreate it.
+
+Pooled policy exposes only free surplus above the protected minimum. Protected policy exposes nothing until the actual original owner separately releases an exact free surplus unit. Booking reserves one eligible unit; completion/cancel returns that same unit to its original owner/policy. Refuse protected borrowing, foreign/stale quotes, duplicate reservations/releases/returns and reused completed consignment identities. Original operator consent stations are actual Renas185, Enmadan000 and Enlirin162; Avenor coordinates the choice/audit.
+
+This prerequisite owns the finite source/policy/closed codec. Actual operator consent/signature and real independently quoted consignment adapters remain distinct leaves; their policy-only output must not become a saved native claim. Do not map the unrelated Cedamar operators or an induction-owned item onto a new offered consignment. Root's bounded quote-source binding work proceeds separately.

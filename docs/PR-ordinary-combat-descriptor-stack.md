@@ -1,0 +1,9 @@
+# Keep ordinary combat outside mission descriptor construction
+
+`currentMissionActorDescriptor` first checks its actual first matching body for both mission ownership tags. Missing body/tags already fail the original factory's first guard; they now return before the Commander/source and retained validation frames. A genuine tagged body enters a separate synchronous helper and the unchanged full factory. No combat entitlement caller or Blackjack/naval fallback changes.
+
+A narrow fileprivate Commander method reads the same current instances, galaxy, system and geometry through borrowed self and returns only a transient tuple. Its one ScriptEngineState read replaces repeated whole-Commander temporary copies; it completes before retained descriptor validation starts. There is no cache, persistent data, new state owner, authority token or caller-built descriptor path. The original retained factory body remains byte-identical (SHA256 `aee5f1767b219a3962433195c422b8835a83bad60695d43b2137165fa0c9a7a9`). It retains every duplicate-body, live-energy, ownership, installed-content, presence, system, fit and geometry check.
+
+Parsing, strict formatting, Markdown lint and whitespace checks precede frozen-source review. Affected execution must include the exact `legacyDataHookAcceptsLaterGenuineEpisodeWithoutInventingAnOldSchedule` crash regression, real scripted mission entitlement/payment, current actor/weapon projections and broken joins, ordinary EMP disablement, and original Blackjack/naval rewards. Use the original coverage/debug/default-parallel configuration before broader maintained CI. Compiled frame/call observations are structural evidence, not aggregate measured stack peak, frame rate, TSan safety or full-game acceptance. Independent 331 assertion failures remain separately assigned.
+
+[ISSUE-ordinary-combat-descriptor-stack.md](ISSUE-ordinary-combat-descriptor-stack.md).

@@ -1,0 +1,38 @@
+{
+  "base": "ad13110ad1598d16b55df9347cf18c7d1407b4c9",
+  "patch_sha256": "b97452f0371b633769a26ad11950b1bf61c09629fb55525e1e3b1e3c7dd0a1c6",
+  "files": {
+    "Tools/CI/test_native_runner.py": "d69cccdcd171f739159ecaf5cd2aee585828fe2c11ec3d6a5f9367d753477f59",
+    "docs/ISSUE-185-unfiltered-quality.md": "b263511e2ccbb9a8ddaa5e2204387ebdf966c91e46afc883929bf0eaa9a95f3c",
+    "docs/PR-185-unfiltered-quality.md": "6accd7b15946c729bf64ca951635741ae857dd3652786c565a3ed15382286852"
+  },
+  "actual_file_hashes_match": {
+    "Tools/CI/test_native_runner.py": true,
+    "docs/ISSUE-185-unfiltered-quality.md": true,
+    "docs/PR-185-unfiltered-quality.md": true
+  },
+  "production_makefile_and_runner_unchanged": {
+    "Makefile": true,
+    "Tools/CI/sanitizer_checkpoints.py": true,
+    "Tools/CI/test_sanitizer_checkpoints.py": true
+  },
+  "result": "CLEAR: bounded startup contract correction; no actionable bugs/performance/style findings",
+  "assessment": [
+    "Retains exactly-once authoritative unit selector and existing source-inventory/coverage/leak checks. Requires each maintained checkpoint mode once in dry-run quality plan.",
+    "Invokes actual run_mode under narrow fakes, intercepts first real production build command before process execution, asserts original scratch paths and exact sanitizer mode flags.",
+    "Actual batch_command reuses captured production flags, verifies ASANno-parallel/filter and TSANno-filter/default concurrency. Gates are verified at delegation boundary instead of stale Makefile flag text.",
+    "No production runner/Makefile/runtimeSources/Tests change. Paired handoffs preserve old failed preflight outcome and accurately scope correction."
+  ],
+  "retained_python_results": {
+    "tests_native_runner": 15,
+    "runtime_native_runner_seconds": 0.889,
+    "tests_checkpoint": 18,
+    "runtime_checkpoint_seconds": 0.031,
+    "wall_seconds": 1.3450637087225914,
+    "exit_code": 0,
+    "log_sha256": "90db783f61ca313d818789273028f2fd075c85e8a4756e1d2e5e9be58675ed3c",
+    "input_hashes_match": true,
+    "receipt": "/tmp/elite-m01-ad131-preflight-contract.json"
+  },
+  "limits": "Saved actual Python/fake results inspected, not rerun. Prior ad131 nativecompatibility/source/unit evidence unaffected; no newSwift/native/fullquality/releasepass or blindretry."
+}

@@ -1,0 +1,84 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.wayfarer-service"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "contracts-basic-v2", "local-flight-clocks-v2", "native-record-recovery-v1", "profiled-encounters-v2"]
+priority = 573
+source = "Original W05 SENN depot property recovery; Cedamar85-Celalen241-Cedamar85 L2 H0, 460+95L+130H = 650 CR at actual original recorder owner reception."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "record-recovery"
+title = "SENN crew record recovery"
+briefing = "SENN: Retrieve the archive-owned CDR-001 flight/custody recorder from the Celalen exterior cradle. One protected tonne, zero berths, deposit or deadline. Fit actual targeting, Salvage targeting and Fuel Scoops. First identify the selected original in front view, within 2 degrees and 250-1500 surface units with clear nearest-hit sight across one positive native frame. Identification leaves it at the cradle. Only a separately later safe scoop pickup transfers custody. Return that same original to this actual Cedamar archive for 650 CR and the record-recovery clue. The recorder is not living crew, ordinary cargo or an upgrade; loss cannot be replaced."
+destination = "Celalen exterior wreck cradle, then the actual Cedamar recovery depot"
+reward = "650 CR at actual custodian reception; L2 H0, untimed, zero deposit."
+milestones = ["Accept archive retrieval permission", "Identify original CDR-001", "Recover the identified original", "Return the original to its actual custodian"]
+
+[recordRecovery]
+batch = "cedamar-flight-record-01"
+sourceGalaxy = 0
+sourceSystem = 85
+collectionGalaxy = 0
+collectionSystem = 241
+destinationGalaxy = 0
+destinationSystem = 85
+serials = ["CDR-001"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "system.entered"
+function = "deploy"
+[[handlers]]
+event = "station.undocked"
+function = "deploy"
+
+[[npcs]]
+id = "w05-record-cradle"
+name = "SENN archive wreck cradle"
+source = "Original W05 registered depot fixture/property"
+basis = "Existing project-owned MIT geometry; detached exterior packages, no hull destruction or living crew."
+model = "catalogue:SH141"
+scale = 1.0
+energy = 100.0
+recharge = 0.0
+speed = 0.0
+acceleration = 0.0
+pitch = 0.0
+yaw = 0.0
+roll = 0.0
+missiles = 0
+fuel = 0.0
+ecm = false
+bounty = 0
+
+[[npcs]]
+id = "w05-flight-recorder"
+name = "CDR-001 sealed flight/custody recorder"
+source = "Original W05 registered depot fixture/property"
+basis = "Existing project-owned MIT geometry; detached exterior packages, no hull destruction or living crew."
+model = "catalogue:SH058"
+scale = 0.2
+energy = 100.0
+recharge = 0.0
+speed = 0.0
+acceleration = 0.0
+pitch = 0.0
+yaw = 0.0
+roll = 0.0
+missiles = 0
+fuel = 0.0
+ecm = false
+bounty = 0
+
+[[encounters]]
+id = "w05-wreck"
+galaxy = 0
+system = 241
+profile = "profiled-local-freeze-v1"
+actors = [{id="w05-cradle",npc="w05-record-cradle",x=0.0,y=0.0,z=24000.0,hostile=false},{id="cdr-001",npc="w05-flight-recorder",x=-2000.0,y=0.0,z=24000.0,hostile=false}]

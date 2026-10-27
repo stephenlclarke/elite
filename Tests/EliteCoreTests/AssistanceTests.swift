@@ -12,9 +12,24 @@ private func assistedGame() -> Game {
   game.ecmControl = ECMControl()
   return game
 }
-@Test func autoCyclesVisibleFrontThenOffscreenWithStableMovingTargets() {
-  var game = assistedGame()
+@Test func autoCyclesVisibleFrontThenOffscreenWithStableMovingTargets() throws {
+  // A controlled pre-admission unit cohort, not an ordinary populated launch.
+  var game = Game(executive: false)
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.credits = 1000
+  game.commander.installTargetingComputer(.docking)
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  try #require(game.commander.valid && game.commander.targetingTier == .docking)
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.docked = false
   game.screen = .rear
+  game.speed = 0
+  try #require(game.commander.nativeStations == nil)
+  game.ensurePhysicalActors()
   game.bodies = [
     .init(id: 8, hull: .cobra, position: .init(0, 0, 2000)),
     .init(id: 4, hull: .cobra, position: .init(0, 0, 1000)),
@@ -25,17 +40,17 @@ private func assistedGame() -> Game {
   ]
   #expect(game.autoPilot.targetID == nil)
   for id in [3, 4, 8, 2, 1] {
-    game.key("r")
+    game.key("tab")
     #expect(game.autoPilot.targetID == id)
     game.bodies.reverse()
   }
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 3)
   game.bodies.removeAll { $0.id == 3 }
   game.tick(delta: 0.01)
   #expect(game.autoPilot.targetID == nil)
   game.bodies = []
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.status == "NO TARGETS")
 }
 @Test func autoFacesTargetsWithoutChangingSpeedOrFiringAndManualSteeringWins() {
@@ -43,7 +58,7 @@ private func assistedGame() -> Game {
   game.bodies = [.init(id: 1, hull: .cobra, position: .init(900, 500, -800))]
   game.bodies[0].rotationRate = 0
   game.speed = 7
-  game.key("r")
+  game.key("tab")
   game.key("v")
   game.key("]")
   let initialEnergy = game.bodies[0].energy
@@ -55,21 +70,36 @@ private func assistedGame() -> Game {
   controls.pitch = 0.5
   game.tick(delta: 0.02, controls: controls)
   #expect(game.autoPilot.targetID == nil && game.pitch == 0.5)
-  game.key("r")
+  game.key("tab")
   game.key("q")
   #expect(game.autoPilot.targetID == nil)
 }
-@Test func stationAutoCompletesRealDockingFromEitherSideWithEitherSpin() {
+@Test func stationAutoCompletesRealDockingFromEitherSideWithEitherSpin() throws {
   for z in [1800.0, -1800.0] {
     for rate in [-0.3, 0.3] {
       var game = assistedGame()
-      var station = SpaceBody(id: 0, hull: .station, position: .init(0, 0, z))
-      station.rotation = 1.4
-      station.rotationRate = rate
-      game.bodies = [station]
-      game.key("r")
+      let anchor = try #require(
+        game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+      let index = try #require(game.bodies.firstIndex { $0.id == 0 && $0.hull == .station })
+      // Express the original relative start by moving the observer, retaining the real source.
+      NativeStationTestFixture.reframe(
+        &game,
+        to: .init(
+          position: anchor.position - anchor.orientation.apply(.init(0, 0, z)),
+          orientation: anchor.orientation))
+      game.bodies[index].rotation = 1.4
+      game.bodies[index].rotationRate = rate
+      try #require(game.bodies[index].physical?.identity == anchor.identity)
+      #expect((game.bodies[index].position - Vector3(0, 0, z)).length < 1e-8)
+      #expect(game.bodies[index].rotation == 1.4 && game.bodies[index].rotationRate == rate)
+      for _ in 0..<(game.bodies.count * 2) {
+        game.key("tab")
+        if game.autoPilot.targetActor == anchor.identity { break }
+      }
+      try #require(game.autoPilot.targetID == 0 && game.autoPilot.targetActor == anchor.identity)
       for _ in 0..<7000 where !game.docked { game.tick(delta: 0.02) }
       #expect(game.docked && game.screen == .status && game.bodies.isEmpty)
+      #expect(game.nativeMainStationDockEvidenceIsCurrent)
       #expect(
         !game.ecmControl.events.contains { $0.announcement == .gameplay("DOCKING COLLISION") })
     }
@@ -86,7 +116,9 @@ private func assistedGame() -> Game {
   game.bodies.append(.init(id: 4, hull: .cobra, position: .init(0, 0, 600)))
   game.tick(delta: 0.02)
   #expect(game.ecmControl.events.map(\.announcement) == [.missileDetected, .ecmActivated])
-  #expect(game.energy < 256 && game.bodies.count == 1)
+  #expect(game.energy < 256)
+  #expect(!game.bodies.contains { (1...3).contains($0.id) && $0.hull == .missile })
+  #expect(game.bodies.contains { $0.id == 4 && $0.hull == .cobra && $0.energy > 0 })
   let after = game.energy
   game.ecm()
   #expect(game.energy == after)
@@ -131,25 +163,45 @@ private func assistedGame() -> Game {
     })
 }
 
-@Test func stationAutoUsesTiltedEntrancePoseAndSwitchesAwayWithoutResidualTranslation() {
+@Test func stationAutoUsesTiltedEntrancePoseAndSwitchesAwayWithoutResidualTranslation() throws {
   var game = assistedGame()
-  var station = SpaceBody(id: 1, hull: .station, position: .init(1200, 700, 1600))
-  station.orientation.rotate(pitch: 0.6, roll: 0.4, yaw: 0.8)
+  let anchor = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  let position = Vector3(1200, 700, 1600)
+  var orientation = Basis3()
+  orientation.rotate(pitch: 0.6, roll: 0.4, yaw: 0.8)
+  let camera = anchor.orientation.composed(with: orientation.transposed)
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(position: anchor.position - camera.apply(position), orientation: camera))
+  var station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
   station.rotationRate = -0.3
+  try #require(station.physical?.identity == anchor.identity)
+  #expect((station.position - position).length < 1e-8)
+  for axis in [Vector3(1, 0, 0), .init(0, 1, 0), .init(0, 0, 1)] {
+    #expect((station.orientation.apply(axis) - orientation.apply(axis)).length < 1e-8)
+  }
   game.bodies = [station]
-  game.key("r")
+  game.key("tab")
+  let selected = try #require(game.autoTargetBody)
+  let anchors = try #require(game.commander.flightSimulation.anchors)
+  let actor = try #require(selected.physical?.identity)
+  try #require(
+    selected.id == 0 && selected.nativeStationIdentity == nil
+      && actor == anchors.station.identity && game.dockingComputer)
   for _ in 0..<7000 where !game.docked { game.tick(delta: 0.02) }
   #expect(game.docked)
   game.launch()
   game.speed = 0
+  station = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
   game.bodies = [station, .init(id: 2, hull: .cobra, position: .init(0, 0, 500))]
-  game.key("r")
+  game.key("tab")
   #expect(game.autoPilot.targetID == 2 && game.autoPilot.velocity.length == 0)
   game.bodies.removeAll { $0.hull != .station }
-  game.key("r")
+  game.key("tab")
   game.key("b")
   #expect(game.autoPilot.targetID == nil)
-  game.key("r")
+  game.key("tab")
   game.commander.autoTarget = false
   game.tick(delta: 0.02)
   #expect(game.autoPilot.targetID == nil)
@@ -193,7 +245,7 @@ private func assistedGame() -> Game {
       game.screen = view
       game.speed = 3
       game.bodies = [.init(id: 22, hull: .cobra, position: position)]
-      game.key("r")
+      game.key("tab")
       #expect(game.screen == .front && game.weaponsTargetID == 22)
       for _ in 0..<800 {
         // Independent target movement exercises tracking rather than only a fixed bearing.

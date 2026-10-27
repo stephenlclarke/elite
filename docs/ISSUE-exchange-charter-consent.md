@@ -1,0 +1,5 @@
+# C08.P06.B.operator-consent: actual selected-branch owner signatures
+
+The Avenor policy choice and original capacity allocation cannot sign for the three original operators or release protected-policy capacity. Require separate actual review/Confirm at Renas185 clinic, Enmadan000 workshop and Enlirin162 seed custodians. Bind each signature to the same selected policy/epoch, original operator-owned units, protected minimum and exact current ledger revision/fingerprint. Retain historical consent after later legitimate revisions.
+
+For protected policy, separately review/Confirm one named free surplus unit with its actual owner. Other owners, protected minimums, reserved units and already released units cannot release. Unit rows and review proofs must retain exact serial identity; stale selection/terms refuse. Signature alone releases nothing and creates no source stock, consignment, audit, stage12 receipt, money or accreditation. Real C08 stock/quote adapters and Avenor actual-quote refusal audit remain separate authored leaves.

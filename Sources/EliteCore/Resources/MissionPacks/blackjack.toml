@@ -13,21 +13,21 @@ title = "Blackjack's Bullion"
 initialStage = "not-started"
 binding = "blackjack"
 briefing = "A recovered Oolite 1.2.9 campaign: revenge, a dockside firearm transfer, a witness chase and final report. No score gate or deadline. This project replaces the station robbery with explicit Confirm/Back transfers and repairs witness, custody, wanted-level and duplicate-reward defects."
-destination = "Spoilers, Galaxy 2: Telace 241 > Gerebied 88 > any main station > Tegete 233 > Ceinerxe 127 > Edater 99 > Esdi 67. System IDs are zero-based."
-reward = "20 kg gold earned directly on Bolts death, then 9,500 CR and one-time bounty clearance at Esdi. Gold is not a scoop objective."
-prerequisites = ["Galaxy 2 main-station contact at Telace. No combat-score prerequisite.", "One free tonne is required at Tegete. Marked firearms cannot be sold or stored.", "Seven chronological milestones; optional clues are not progress."]
-milestones = ["Receive Blackjack's contact", "Destroy Bolts; earn 20 kg gold", "Report at a G2 main station", "Collect the marked firearm", "Confirm Ceinerxe dockside handoff", "Destroy the unique witness", "Confirm Esdi report and final reward"]
+destination = "Spoilers, Galaxy 2: Torneden 241 > Kortar 88 > any main station > Sararden 233 > Darvan 127 > Kranenrik 99 > Dradar 67. System IDs are zero-based."
+reward = "20 kg gold earned directly on Bolts death, then 9,500 CR and one-time bounty clearance at Dradar. Gold is not a scoop objective."
+prerequisites = ["Galaxy 2 main-station contact at Torneden. No combat-score prerequisite.", "One free tonne is required at Sararden. Marked firearms cannot be sold or stored.", "Seven chronological milestones; optional clues are not progress."]
+milestones = ["Receive Blackjack's contact", "Destroy Bolts; earn 20 kg gold", "Report at a G2 main station", "Collect the marked firearm", "Confirm Darvan dockside handoff", "Destroy the unique witness", "Confirm Dradar report and final reward"]
 
 [[stages]]
 id = "not-started"
-objective = "Dock at Telace's main station in Galaxy 2 for Blackjack's contact."
+objective = "Dock at Torneden's main station in Galaxy 2 for Blackjack's contact."
 completed = 0
 legacyValues = [0]
 legacyWrite = 0
 
 [[stages]]
 id = "hunt-bolts"
-objective = "Destroy the unique Commander Bolts at Gerebied, Galaxy 2. Any killer counts."
+objective = "Destroy the unique Commander Bolts at Kortar, Galaxy 2. Any killer counts."
 completed = 1
 legacyValues = [1]
 legacyWrite = 1
@@ -41,28 +41,28 @@ legacyWrite = 2
 
 [[stages]]
 id = "collect-firearm"
-objective = "Collect the one-tonne marked firearm at Tegete's main station, Galaxy 2."
+objective = "Collect the one-tonne marked firearm at Sararden's main station, Galaxy 2."
 completed = 3
 legacyValues = [3]
 legacyWrite = 3
 
 [[stages]]
 id = "deliver-firearm"
-objective = "Deliver the marked firearm through Ceinerxe's dockside handoff, Galaxy 2."
+objective = "Deliver the marked firearm through Darvan's dockside handoff, Galaxy 2."
 completed = 4
 legacyValues = [4]
 legacyWrite = 4
 
 [[stages]]
 id = "hunt-witness"
-objective = "Destroy the unique witness at Edater, Galaxy 2. Any killer counts."
+objective = "Destroy the unique witness at Kranenrik, Galaxy 2. Any killer counts."
 completed = 5
 legacyValues = [5]
 legacyWrite = 5
 
 [[stages]]
 id = "report-witness"
-objective = "Confirm the final report at Esdi's main station, Galaxy 2, for 9,500 CR and bounty clearance."
+objective = "Confirm the final report at Dradar's main station, Galaxy 2, for 9,500 CR and bounty clearance."
 completed = 6
 legacyValues = [6]
 legacyWrite = 6
@@ -77,23 +77,23 @@ terminal = true
 
 [[dialogs]]
 id = "introduction"
-text = "Blackjack asks you to find Commander Bolts at Gerebied, Galaxy 2. Destroying the unique target earns 20 kg gold, regardless of the killer. Then report at any main station in Galaxy 2. No deadline. This contact has enrolled you; Continue or Back closes this message."
+text = "Blackjack asks you to find Commander Bolts at Kortar, Galaxy 2. Destroying the unique target earns 20 kg gold, regardless of the killer. Then report at any main station in Galaxy 2. No deadline. This contact has enrolled you; Continue or Back closes this message."
 
 [[dialogs]]
 id = "report"
-text = "Confirm your report to Blackjack. Next: collect one tonne of marked mission firearms at Tegete's main orbital station, Galaxy 2. No payment or item transfer here."
+text = "Confirm your report to Blackjack. Next: collect one tonne of marked mission firearms at Sararden's main orbital station, Galaxy 2. No payment or item transfer here."
 
 [[dialogs]]
 id = "collectfirearm"
-text = "Transfer one tonne of marked firearms from Blackjack's contact into your hold. One free tonne is required. Keep this mission item aboard until Ceinerxe's main orbital station. Personal cargo and equipment stay aboard."
+text = "Transfer one tonne of marked firearms from Blackjack's contact into your hold. One free tonne is required. Keep this mission item aboard until Darvan's main orbital station. Personal cargo and equipment stay aboard."
 
 [[dialogs]]
 id = "robbery"
-text = "Transfer the marked firearm to Blackjack at Ceinerxe's dockside handoff. This completes the station operation, makes you wanted (minimum 64), and directs you to the witness at Edater, Galaxy 2. No on-foot operation is played."
+text = "Transfer the marked firearm to Blackjack at Darvan's dockside handoff. This completes the station operation, makes you wanted (minimum 64), and directs you to the witness at Kranenrik, Galaxy 2. No on-foot operation is played."
 
 [[dialogs]]
 id = "finalreport"
-text = "Report the witness's destruction at Esdi. Confirm to receive 9,500 CR and clear your bounty once. The campaign then ends. Later offences will remain yours."
+text = "Report the witness's destruction at Dradar. Confirm to receive 9,500 CR and clear your bounty once. The campaign then ends. Later offences will remain yours."
 
 [[dialogs]]
 id = "collectgold"
@@ -164,7 +164,7 @@ event = "targetDestroyed"
 to = "report-witness"
 conditions = [{ field = "target", op = "eq", text = "witness" }]
 actions = []
-notification = "WITNESS DESTROYED - REPORT AT ESDI, GALAXY 2"
+notification = "WITNESS DESTROYED - REPORT AT DRADAR, GALAXY 2"
 
 [[transitions]]
 id = "reward"

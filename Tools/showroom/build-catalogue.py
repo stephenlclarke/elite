@@ -10,6 +10,9 @@ from pathlib import Path
 appearance_spec = importlib.util.spec_from_file_location('source_appearance', Path(__file__).with_name('source-appearance.py'))
 appearance = importlib.util.module_from_spec(appearance_spec)
 appearance_spec.loader.exec_module(appearance)
+balance_spec = importlib.util.spec_from_file_location('catalogue_balance', Path(__file__).with_name('catalogue-balance.py'))
+catalogue_balance = importlib.util.module_from_spec(balance_spec)
+balance_spec.loader.exec_module(catalogue_balance)
 
 LABELS = {
     'required_crew_including_commander': ('Required crew', 'people'),
@@ -195,13 +198,15 @@ def main():
     args = parser.parse_args()
     research = args.research
     input_names = ['ships.md','data/player-ship-adaptation.json','data/oolite-ship-specifications.json',
-                   'data/gba-ship-specifications.json','data/elite-dangerous-outfitting.json','data/ship-crew-profiles.json']
+                   'data/gba-ship-specifications.json','data/elite-dangerous-outfitting.json','data/ship-crew-profiles.json',
+                   'data/ship-catalogue-balance.json']
     inputs = {name:(research/name).read_bytes() for name in input_names}
     adaptation = json.loads(inputs['data/player-ship-adaptation.json'])
     oolite = json.loads(inputs['data/oolite-ship-specifications.json'])
     gba = json.loads(inputs['data/gba-ship-specifications.json'])
     ed = json.loads(inputs['data/elite-dangerous-outfitting.json'])
     crew = json.loads(inputs['data/ship-crew-profiles.json'])
+    balances = catalogue_balance.load_balances(research/'data/ship-catalogue-balance.json')
     for name, expected in {
         'src/Core/Entities/ShipEntity.m':'78f26fc31c4bccf935bc730542cbb2fc03c442f7057fc6592e93c7005751d623',
         'src/Core/OOTypes.h':'586e295734a0c6b56542920efe3a66dd203bd302af65ea8c03f9f26c8755580f'}.items():
@@ -242,7 +247,7 @@ def main():
                 ('hold_used_by_cabins', 'Hold used by cabins', 0, 't'),
                 ('usable_cargo_after_fit', 'Usable cargo after fit', profile['fields']['cargo_tonnes']['value'], 't')]:
                 fields.append(field(key, value, label, unit, status='standard unladen refit',
-                                    basis='Zero fitted charter berths; operating quarters are outside usable cargo. Berths require 5t plus one equipment unit each.'))
+                                    basis='Zero fitted charter berths; operating quarters are outside usable cargo. Cabin modules require 5t plus one equipment unit each, independent of grade or occupied places.'))
             facings = int(profile['fields']['laser_facing_mask']['value'])
             for mount, bit in [('rear',2),('left',4),('right',8)]:
                 fields.append(field(mount+'_laser','Empty (standard refit)' if facings & bit else 'Unsupported mount',
@@ -362,6 +367,7 @@ def main():
                             refit=profile is not None, model=model, modelSource=model_source, dimensions=dimensions,
                             geometryContext='Source model units; envelope, not internal volume or SI dimensions.' if model else (geometry_context if dimensions else 'No inspected corresponding mesh or defensible dimensional estimate.'),
                             profiles=variants))
+    records = [catalogue_balance.apply_record_balance(record, balances) for record in records]
     assert len(records) == len(adaptation['catalogue_scope'])
     assert sum(r['refit'] for r in records) == len(profiles)
     assert len({r['id'] for r in records}) == len(records)

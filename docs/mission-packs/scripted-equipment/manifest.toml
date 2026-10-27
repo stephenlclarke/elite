@@ -1,0 +1,43 @@
+schemaVersion = 2
+missionAPI = 2
+id = "example.scripted-equipment"
+version = "1.0.1"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "economy-v2", "owned-equipment-v2", "durable-commands-v2"]
+priority = 500
+source = "Original engine demonstration; not a historical Elite mission."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "equipment-loan"
+title = "Loaned equipment demonstration"
+briefing = "Borrow a uniquely identified ECM unit at a main orbital station. Fit space must be available. Return that original unit, fitted or stored, at Bevitha's main orbital station in Galaxy 1. Hull exchanges preserve the loan."
+destination = "Galaxy 1, Bevitha (system 153)"
+reward = "50 credits after the original loan is returned."
+milestones = ["Borrow the ECM unit", "Return the original unit at Bevitha orbital station"]
+requiredEquipmentReturns = ["ecm-kit"]
+
+[[equipment]]
+id = "ecm-kit"
+name = "E.C.M. System"
+quantity = 1
+loan = true
+returnPolicy = "all"
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+
+[[handlers]]
+event = "contact.requested"
+function = "contact"
+
+[[handlers]]
+event = "dialogue.confirmed"
+function = "confirm"
+
+[[dialogs]]
+id = "return-kit"
+text = "The station will take back the original borrowed ECM unit and pay 50 credits. It may be fitted or in your owned storage. Other ECM units are preserved. Confirm to settle the loan."

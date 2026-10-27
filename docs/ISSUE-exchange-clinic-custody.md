@@ -1,0 +1,9 @@
+# C08.P06.B.clinic.custody: complete the original clinic service loop
+
+The accepted original sample, clinic-owned window and1t hold reservation need actual pickup and receiving behavior. Pickup must occur at the same living Renas source and atomically replace the reserved tonne with that exact carried sample. Start its one native1800-second qualifying-flight integrity timer only at pickup. Keep the deadline, serial, owner, epoch, original quality and frozen reachable-route price through pause and save/restore; no quoted-hop obligation or fuel grant.
+
+At actual living Navidor, positive integrity and original custody permit once-only reception and frozen payment. Cancellation after pickup must retain cargo, window and clock until actual Renas owner return or recorded terminal failure. Return archives the original issued stock without cash or a fresh issue. Native expiry and attained carrier loss release obligations without restock/payment/success. A failed expiry publication must keep the original queued timer proof and allow a later current-ledger return, rather than reset the allowance or become blocked by unrelated ledger activity.
+
+Refs PR25 and C08.P06.B.clinic.custody. Preserve independent three-active-contract and actual hold/fitting rules, including XYZZY, and all earlier receipts. No Avenor audit, stage12, accreditation or clue is granted. Source completion, independent hosted qualification and accessible playable delivery remain separate requirements.
+
+A subsequent authoring compile reported a confusable trailing closure in the custody guard's optional cancellation-clock `map`. Parenthesize that argument without changing its predicate, overload or saved behavior; do not suppress the compiler warning.

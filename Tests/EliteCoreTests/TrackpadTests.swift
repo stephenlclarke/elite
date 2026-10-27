@@ -74,8 +74,16 @@ import Testing
   }
 }
 
-@Test func trackpadHoldsTurnOrThrustEveryFrameAndReleaseStabilizesAtCruisingSpeed() async {
+@Test func trackpadHoldsTurnOrThrustEveryFrameAndReleaseStabilizesAtCruisingSpeed() async throws {
   var game = Game(executive: false)
+  // The fixed speed, braking and turn-rate witnesses use the native stock Cobra.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  let validHull = game.commander.valid
+  try #require(validHull)
   game.launch()
   game.bodies = [SpaceBody(id: 99, hull: .cargo, position: .init(0, 100, 5000))]
   let runtime = GameRuntime(game: game)

@@ -5,7 +5,7 @@ import Testing
 @testable import EliteCore
 
 // Independent binary geometry digests captured before moving the native blueprints.
-@Test func nativeShipFilesPreserveEveryOriginalCoordinateFaceAndDetail() {
+@Test func nativeShipFilesPreserveEveryOriginalCoordinateFaceAndDetail() throws {
   let expected: [(Hull, String)] = [
     (.cobra, "f09c9c467536200111b5352e7a4fbfcdc84977e0af301025ac7c827207fa98f7"),
     (.viper, "24f8bfd532dc259c2f9d94129b59f58ed28607f21a31de989b5a0c6417a1b47f"),
@@ -16,7 +16,7 @@ import Testing
     (.thargon, "2bd2bb98046f0ea9c579c9ca644c949d41ef1c07a14ec93ecf3143680809a281"),
   ]
   for (hull, digest) in expected {
-    let mesh = Mesh.hull(hull)
+    let mesh = try #require(ShipCatalogue.nativeMesh(hull))
     var data = Data()
     func integer(_ value: Int) {
       var bits = Int64(value).bigEndian

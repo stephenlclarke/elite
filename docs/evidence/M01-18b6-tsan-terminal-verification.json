@@ -1,0 +1,126 @@
+{
+  "run": 40132775072,
+  "published_head": "18b6e91b41b4151395eb645318552d9c522772f9",
+  "tested_head": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+  "hosted_outcome": "Infrastructure failure due runner communication loss, separately retained",
+  "checkpoint_status": "failed",
+  "checkpoint_reason": "Batch XML contains unsuccessful outcomes",
+  "process_exit_code": 0,
+  "wall_seconds": 16048.589398958255,
+  "terminal_log_summary": "3395 tests in394suites passed after16042.120s",
+  "xml_cases": 3395,
+  "xml_unique": 3395,
+  "xml_exact_inventory_match": true,
+  "executed_methods": 3389,
+  "skipped_methods": [
+    {
+      "suite": "EliteCoreTests.NativeMultiBatchRuntimeTests",
+      "method": "retained542SecondCycleContinuationDiagnostic()",
+      "reason": "Requires explicit diagnostic opt-in and the private retained run 542 directory"
+    },
+    {
+      "suite": "EliteCoreTests.PlanetGPUShaderTests",
+      "method": "allPalettesMatchStableCPUReferenceIncludingWrappedLongitudeAndAlpha()",
+      "reason": null
+    },
+    {
+      "suite": "EliteCoreTests.PlanetGPUShaderTests",
+      "method": "identityChangesAndOutputReuseCannotMutatePreviouslyPublishedImages()",
+      "reason": null
+    },
+    {
+      "suite": "EliteCoreTests.PlanetGPUShaderTests",
+      "method": "nightEmissionAndMovingSunMatchCPUForEconomyGovernmentAndTechnology()",
+      "reason": null
+    },
+    {
+      "suite": "EliteCoreTests.PlanetGPUShaderTests",
+      "method": "productionRendererUsesPreparedGPUWithIndependentReferenceAndCache()",
+      "reason": null
+    },
+    {
+      "suite": "EliteCoreTests.PlanetGPUShaderTests",
+      "method": "invalidBoundsAndAnglesReturnCPUFallback()",
+      "reason": null
+    }
+  ],
+  "failures": 0,
+  "errors": 0,
+  "sanitizer_error_markers": [],
+  "identity_start_result_match": true,
+  "identity_key_verified": "85ab97018ab16753ca4d3d0ac288723abfc6965a2b4d1742b56431a3e676e123",
+  "published_source_build_inputs_verified": 1887,
+  "source_hash_mismatches": [],
+  "dependency_inputs_recorded": 970,
+  "image": {
+    "path": "/Users/sclarke/Library/EliteNativeCI/native-runner/_work/elite/elite/.build/tsan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests",
+    "sha256": "21e63d2429c0e1b14cab73835e7a135300fa48c850b31805ec88b56f9b3790e1",
+    "macho_uuid": [
+      "dfee3fdb-2d61-3853-9a66-fd75b4994438"
+    ]
+  },
+  "command": [
+    "/Users/sclarke/.swiftly/bin/swift",
+    "test",
+    "--scratch-path",
+    ".build/tsan",
+    "--sanitize=thread",
+    "--skip-build",
+    "--xunit-output",
+    "/Users/sclarke/Library/EliteNativeCI/sanitizer-checkpoints/85ab97018ab16753ca4d3d0ac288723abfc6965a2b4d1742b56431a3e676e123/0/82dddf82-c84b-4787-999f-1717b306a10b/tests.xml"
+  ],
+  "no_filter_or_no_parallel": true,
+  "toolchain": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0",
+  "sdk": "27.0",
+  "architecture": "arm64",
+  "sanitizer_environment": {
+    "DEVELOPER_DIR": "/Applications/Xcode.app/Contents/Developer",
+    "SDKROOT": null,
+    "TOOLCHAINS": null,
+    "SWIFT_EXEC": null,
+    "SWIFT_BACKTRACE": "enable=no,interactive=no,color=no,output-to=stderr,threads=crashed,registers=crashed,images=mentioned",
+    "ASAN_OPTIONS": null,
+    "TSAN_OPTIONS": null,
+    "DYLD_LIBRARY_PATH": null,
+    "DYLD_FRAMEWORK_PATH": null,
+    "DYLD_INSERT_LIBRARIES": null
+  },
+  "outputs_receipt": {},
+  "observed_output_hashes": {
+    "result.json": "7711e3db2c00b84f512637bdc2428448422f0056c0f340565eb9da4e5adbe3d5",
+    "test.log": "3f5002bbbbc0c7528e84969a6490a5ac8ef4fb70d8eaffba0c550cd0d6a33364",
+    "tests-swift-testing.xml": "a83a1515f6800c130f6b0bf019d1a67bd5b55f08d6773c8fd41caa2ebc7c9eb9",
+    "start.json": "97fe4dc9c3f921804a0a9a698f56cc049beb85766cb6a1ed0ca2ee9c4423b6bd"
+  },
+  "attempt": "/Users/sclarke/Library/EliteNativeCI/sanitizer-checkpoints/85ab97018ab16753ca4d3d0ac288723abfc6965a2b4d1742b56431a3e676e123/0/82dddf82-c84b-4787-999f-1717b306a10b",
+  "cache_eligible": false,
+  "qualification": "Processcompletedexit0,3389executedmethodsnoassertionorTSANdiagnostic;6source-declaredopt-inmethodsSKIPPED. Strictvalidatorrecordedfailedandoutputs{}; no reusable successful checkpoint/fullmodequalification. No native/reviewerexecution/rerun/fix. ActualsyntheticSHAretained; priornormal/unitandhosteddisconnectscopeunchanged.",
+  "source_declared_skip_applicability": {
+    "retained542SecondCycleContinuationDiagnostic": {
+      "file": "Tests/EliteCoreTests/NativeMultiBatchRuntimeTests.swift",
+      "lines": "339-345",
+      "condition": "Enabled only when ELITE_NATIVE_WORK_CONTINUATION ==1 AND ELITE_NATIVE_WORK_CONTINUATION_SOURCE is nonempty",
+      "reason": "Explicit diagnostic opt-in and private retained run542directory; not an ordinary shipping/native acceptance test.",
+      "platform": "No platform exclusion; explicit opt-in/private-input prerequisite on this macOS run."
+    },
+    "PlanetGPUShaderTests_five_methods": {
+      "file": "Tests/EliteCoreTests/PlanetGPUShaderTests.swift",
+      "lines": "14-17",
+      "condition": "Entire serialized suite enabled only when ELITE_PLANET_GPU_EXPERIMENT ==1",
+      "reason": "Explicit experimental-GPU opt-in; source does not declare GPUunavailable/platform skip. XML omits reason text.",
+      "platform": "AppKit/macOS test suite; skip is opt-in gating, not proof of missing GPU or sanitizer incompatibility."
+    },
+    "source_identity": {
+      "Tests/EliteCoreTests/NativeMultiBatchRuntimeTests.swift": {
+        "sha256": "42c6721e8c648e01594f60c3cb98c4527e52ce8551daaa460b5d3db52a5da6de",
+        "unchanged_from_6552": true
+      },
+      "Tests/EliteCoreTests/PlanetGPUShaderTests.swift": {
+        "sha256": "2e55e108cb78731b6f44270392851716f26c57f452748d79b45fcb308659f3c5",
+        "unchanged_from_6552": true
+      }
+    },
+    "environment_capture_limit": "Current identity environment map does NOT record ELITE_PLANET_GPU_EXPERIMENT, ELITE_NATIVE_WORK_CONTINUATION or ELITE_NATIVE_WORK_CONTINUATION_SOURCE. Actual XML skip and source declarations show gates not enabled, but do not reconstruct unrecorded exact env values.",
+    "review_caution": "Any future explicitly authorised known-skip policy must preserve all3395IDs, exactsix-only source-bound declarations, zeroerrors/failures and failedoriginalreceipt; bind relevant opt-in environment to futureidentity so enabled-test requirements cannot reuse disabled results. No blanket skips or currentreceiptpromotion."
+  }
+}

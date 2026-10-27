@@ -1,0 +1,5 @@
+# Accept an explicitly declared interest calendar without courier metadata
+
+Qualification 623 of the authored interest feature rejected eight native methods before their actual operations with `Mission calendar requires a closed courier declaration.` The shared manifest validator accepted mission-calendar capability only for courier, procurement or freight declarations. An explicit valid interest profile therefore passed finance validation but failed this older calendar gate.
+
+Authorize the declared interest product through the existing native calendar only after complete finance validation. Keep rejecting calendar capability by itself, interest-free loans requesting it, malformed interest terms, missing finance capabilities, courier capabilities/events without courier declaration and mission-calendar contract boards. Do not fabricate courier metadata or alter admitted calendar arithmetic, native travel, cash, persistence or timer authority. See the [PR notes](PR-finance-interest-calendar-declaration.md).

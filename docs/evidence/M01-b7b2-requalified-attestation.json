@@ -1,0 +1,19 @@
+{
+  "accepted_head": "b7b2026ed5baf0547d4deb24e75d587d82ee3b96",
+  "tested_head": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+  "identity_key": "f9eb1b877937c48bb9de80c8fb26a02518b1e0efeb90612d060f90328f9870ef",
+  "attempt": "/Users/sclarke/Library/EliteNativeCI/sanitizer-checkpoints/f9eb1b877937c48bb9de80c8fb26a02518b1e0efeb90612d060f90328f9870ef/0/2a3f9afd-4cf0-4f68-95a0-b6b7a3642404",
+  "receipt_sha256": "362dc0a5841520a7505e164dbe9a98b97d5a146e888775cc40109822461a8473",
+  "status": "requalified",
+  "inventory": 3395,
+  "executed_methods": 3389,
+  "source_declared_opt_in_skips": 6,
+  "original_failed_receipt_sha256": "7711e3db2c00b84f512637bdc2428448422f0056c0f340565eb9da4e5adbe3d5",
+  "original_failed_receipt_unchanged": true,
+  "outputs": {
+    "test.log": "3f5002bbbbc0c7528e84969a6490a5ac8ef4fb70d8eaffba0c550cd0d6a33364",
+    "tests-swift-testing.xml": "a83a1515f6800c130f6b0bf019d1a67bd5b55f08d6773c8fd41caa2ebc7c9eb9"
+  },
+  "wall_seconds": 0.5293293748982251,
+  "qualification": "Separate source-reviewed metadata attestation of the existing exit-zero TSAN execution; no new test bodies, compile, full mode execution or hosted quality acceptance."
+}

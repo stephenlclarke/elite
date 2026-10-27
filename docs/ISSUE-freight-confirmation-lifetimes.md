@@ -1,0 +1,9 @@
+# Bound freight confirmation snapshot lifetimes
+
+The run-566 coverage helper stopped with an attributed `EXC_BAD_ACCESS` / `SIGBUS` while validating a real freight delivery at its inclusive deadline. Its exception said `Could not determine thread index for stack guard region`; this is distinct from the earlier gallery exception and does not establish an exact frame size or stack margin. The retained test-image UUID matches the captured coverage binary. The actual chain runs from `freightRealTravelExpiryKeepsEarlierDeliveryAndOrdinaryGoods` through the fixture's deadline boundary, `confirmFreightDialogue`, Commander and owned-cargo validation, freight job/offer validation, and freight plan structural validation.
+
+The confirmation method contains a full candidate Game, original and mutable mission snapshots and a committed mission temporary in the same function as its initial cold validation. Owned-cargo validation additionally receives the full mission and engine by value. These source lifetimes retain large values beneath the captured nested validation chain. The repair must separate preparation, attempt ownership, final validation and publication without changing what the transaction accepts or publishes.
+
+Every original current-dialogue, issuer/owner, native dock, epoch, revision, deadline, exact content, declared choice, owned-unit, lot, receipt, settlement and full Commander check must remain ordered and intact. Failure must preserve the original Game and its cargo, credits, clocks and receipts. Schemas, Game representation, ordinary inventory, full equality, tests, default stack and concurrency must remain unchanged.
+
+[PR-freight-confirmation-lifetimes.md](PR-freight-confirmation-lifetimes.md) describes the bounded repair and pending runtime qualification. The [composed validation report](COMPOSED-NATIVE-VALIDATION.md) retains the failed full-gate context; this issue is not a release or full-CI acceptance claim.

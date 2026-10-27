@@ -1,0 +1,11 @@
+# feat(fleet): bind original Kite Interceptor military hull
+
+SH031 now resolves to the original Kite Interceptor rather than the historical Delta runtime refit. It uses its authored 16t hold, 5t expansion, speed43.6, acceleration14, energy350, shield290, 14-LY tank, 10-LY drive, seven pylons, four laser facings and 265,000CR base price. Military classification, technology-seven blueprint rules and existing uncommon natural placement in galaxies one, seven and eight remain intact.
+
+The new physical contract authenticates the exact specification/model identity, hashes, source path and declared metres. All vertices supply the physical envelope and origin-based clearance; physical/player meshes preserve unnormalized geometry and every material/UV assignment. Raw assets and historical profile fields remain unchanged. The existing shared role/fitting projection is reused unchanged and only the exact-ID dispatcher adds SH031. No discovery, ownership, equipment, blueprint, allegiance or passenger berth is granted.
+
+Five new component methods cover authentication/negative cases, original mechanics/history and unchanged hulls, complete physical/player appearance, military/placement/access and earlier-role policy, and standard fit with malformed-input refusal. All396 parent methods remain and five are added, for401. Six Python report fixtures, Swift syntax parsing, strict formatting, Markdown and whitespace checks pass. Actual Swift execution and independent review are pending; parsing is not a unit pass.
+
+This packet stacks on Sparrowhawk f835b8f3 with reviewed current Mac runner configuration. Retarget after the parent merges without rewriting history. It implements the physical prerequisite and runtime/source portion of [M04.H031](ISSUE-original-kite-interceptor.md). M14 anchors, actual flight/docking and full hull acceptance remain open. No GUI/performance journey, broad coverage/sanitizer/leak gate or usable release is claimed. Source assets and README media are unchanged.
+
+The reviewer found that the explicit player-mesh list omitted SH031, causing preview normalization despite the correct physical mesh. The correction adds only that native-metre route. The exact player/source geometry assertion remains intact; actual required Swift checks on the corrected head remain pending.

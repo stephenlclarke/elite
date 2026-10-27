@@ -15,6 +15,7 @@ private func courierGame() throws -> (Game, LoadedMissionPack) {
   let entry = try MissionPackLibrary.read(courierURL)
   var game = Game(executive: false)
   game.screen = .status
+  try game.commander.prepareEquipment(legacy: false)
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   return (game, entry)
 }
@@ -30,12 +31,22 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let folder = try packFolder()
   defer { try? FileManager.default.removeItem(at: folder) }
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.screen = .status
   let runtime = GameRuntime(game: game)
   try await runtime.installMissionPack(from: courierURL, directory: folder)
   let entry = try MissionPackLibrary.read(courierURL)
   game = await runtime.snapshot()
-  #expect(game.missionCatalogue.count == 4)
+  try #require(
+    game.missingPackGallery.isEmpty && game.scriptGallery.isEmpty && game.rrsCourierGallery.isEmpty)
+  #expect(game.missionPacks.entries.count == MissionPackLibrary.bundled.entries.count + 1)
+  #expect(game.missionCatalogue.count == MissionPackLibrary.bundled.entries.count + 1 + 1)
+  let installed = game.missionPacks.entries.enumerated().filter {
+    $0.element.pack.stateID == entry.pack.stateID && $0.element.digest == entry.digest
+  }
+  try #require(installed.count == 1)
+  let index = try #require(installed.first?.offset)
+  try #require(game.missionCatalogue.indices.contains(index))
   game.key("b")
   #expect(game.screen == .handoff && game.offeredPack?.pack.id == entry.pack.id)
   game.key("escape")
@@ -64,17 +75,26 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.key("b")
   game.confirmPackOffer()
   #expect(game.commander.credits == 1500 && game.commander.valid)
-  #expect(game.missionCatalogue.last?.status == .complete)
+  let completedEntries = game.missionPacks.entries.enumerated().filter {
+    $0.element.pack.stateID == entry.pack.stateID && $0.element.digest == entry.digest
+  }
+  try #require(completedEntries.count == 1)
+  let completedIndex = try #require(completedEntries.first?.offset)
+  let catalogue = game.missionCatalogue
+  try #require(catalogue.indices.contains(completedIndex))
+  #expect(catalogue[completedIndex].status == .complete)
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.digest == entry.digest)
 }
 
 @Test func externalMissionTransfersRecheckLocationHoldAndAccountAtomically() throws {
   var (game, entry) = try courierGame()
   game.key("b")
   let before = game.commander
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   game.key("return")
   #expect(
-    game.commander.cargoTonnes == 20 && game.commander.missionProgress == before.missionProgress)
+    game.commander.cargoTonnes == hold && game.commander.missionProgress == before.missionProgress)
   game.commander.cargo[0] = 0
   game.commander.system = 129
   game.key("return")
@@ -110,11 +130,29 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   game.commander.system = 129
   game.dock()
   #expect(game.screen != .handoff && game.commander.credits == saved.credits)
-  #expect(game.missionCatalogue.last?.objective.contains("Suspended") == true)
+  try #require(changed.pack.stateID == entry.pack.stateID && changed.digest != entry.digest)
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.digest == entry.digest)
+  #expect(game.missingPackGallery.isEmpty)
+  let changedEntries = game.missionPacks.entries.enumerated().filter {
+    $0.element.pack.stateID == changed.pack.stateID && $0.element.digest == changed.digest
+  }
+  try #require(changedEntries.count == 1)
+  let changedIndex = try #require(changedEntries.first?.offset)
+  let catalogue = game.missionCatalogue
+  try #require(catalogue.indices.contains(changedIndex))
+  #expect(catalogue[changedIndex].status == .locked)
+  #expect(catalogue[changedIndex].objective == "Suspended: restore the saved pack version/content.")
+  #expect(game.commander.cargo == saved.cargo && game.commander.cargoTonnes == 1)
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.dock()
   game.key("return")
   #expect(game.commander.credits == saved.credits + 500)
+  game.dock()
+  game.key("b")
+  game.confirmPackOffer()
+  #expect(game.commander.credits == saved.credits + 500)
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.stage == "complete")
+  #expect(game.commander.missionProgress[entry.pack.stateID]?.digest == entry.digest)
 }
 
 @Test func packValidationRejectsUnknownMechanicsKeysIDsVersionsAndReferences() throws {
@@ -176,7 +214,9 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   #expect(result.entries.count == 3 && result.errors.count == 2)
 }
 
-@Test func legacyMigrationPreservesEveryNavalAndBlackjackOutcomeWithoutReplayingActions() throws {
+@Test func legacyMigrationPreservesEveryNavalAndBlackjackOutcomeWithoutReplayingActions()
+  async throws
+{
   for stage in NavalMissionStage.allCases {
     var commander = Commander()
     commander.missionStage = stage
@@ -191,8 +231,42 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
           == true)
     }
     let twice = game.commander
-    let loadedTwice = game.load(twice)
-    #expect(loadedTwice && game.commander == twice)
+    try #require(twice.savedEquipmentVersion == 3 && twice.usesEconomyMiningSaveVersion)
+    try #require(twice.miningLedger.retainsLegacyFields)
+    try #require(twice.scriptState.calendarLedger == nil && !game.requiresScriptDurability)
+    try #require(
+      game.bodies.isEmpty && twice.nativeStations == nil && twice.npcPersistence.count == 0)
+    // The first legacy admission has already pinned mining and allocated owned stock hardware.
+    // Only the missing calendar changes at current publication; migration must not run again.
+    var expected = twice
+    expected.scriptState.calendarLedger = .init(origin: .newCommander)
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let file = directory.appendingPathComponent("commander.json")
+    let runtime = GameRuntime(game: game)
+    try #require(await runtime.snapshot().commander == twice)
+    try await runtime.save(to: file)
+    #expect(await runtime.snapshot().commander == expected)
+    let bytes = try Data(contentsOf: file)
+    let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+    try #require(pointer.format == "elite-script-save" && pointer.schemaVersion == 26)
+    try #require(pointer.scope == "commander" && pointer.valueCodec == ScriptValueStorage.codec)
+    let generation = try ScriptSaveStore.generationDirectory(pointer.generation, from: file)
+    let names = Set(["commander.json", "missions.json", "world.json", "contracts.json"])
+    try #require(Set(pointer.hashes.keys) == names)
+    try #require(Set(try FileManager.default.contentsOfDirectory(atPath: generation.path)) == names)
+    for name in names {
+      let chunk = try Data(contentsOf: generation.appendingPathComponent(name))
+      try #require(ScriptPackLibrary.hash(chunk) == pointer.hashes[name])
+    }
+    let (stored, world) = try ScriptSaveStore.read(bytes, from: file)
+    #expect(stored == expected && world.valid && world.consistent(with: stored))
+    let files = try ScriptFinanceTestFixture.files(directory)
+    try await runtime.load(from: file, persistMigrations: false)
+    let reloaded = await runtime.snapshot()
+    #expect(reloaded.commander == expected)
+    #expect(reloaded.commander.miningLedger == twice.miningLedger)
+    #expect(try ScriptFinanceTestFixture.files(directory) == files)
   }
   for stage in BlackjackStage.allCases {
     var commander = Commander()
@@ -230,12 +304,13 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
     ], directory: directory)
   let entry = try MissionPackLibrary.read(clockFile)
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
   game.key("b")
   game.key("return")
   game.launch()
-  game.bodies = []
+  #expect(game.bodies.contains { $0.id == 0 && $0.hull == .station })
   game.tick(delta: 0.1)
   #expect(game.commander.missionProgress[entry.pack.stateID]?.seconds == 0.1)
   for screen in [Screen.help, .gallery, .navigation, .showroom, .handoff, .rumour, .secret] {
@@ -253,8 +328,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   try await runtime.load(from: save)
   game = await runtime.snapshot()
   #expect(game.commander.missionProgress[entry.pack.stateID]?.seconds == 0.1)
-  game.launch()
-  game.bodies = []
+  #expect(!game.docked && !game.paused)
   game.tick(delta: 0.1)
   #expect(game.commander.missionProgress[entry.pack.stateID]?.stage == "complete")
   #expect(game.commander.credits == 1500)
@@ -314,6 +388,7 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let file = try modifiedPack([("event = \"contact\"", "event = \"dock\"")], directory: folder)
   let entry = try MissionPackLibrary.read(file)
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
   game.dock()
@@ -390,26 +465,51 @@ private func modifiedPack(_ edits: [(String, String)], directory: URL) throws ->
   let original = try String(contentsOf: file, encoding: .utf8)
   try (original + failure).write(to: file, atomically: true, encoding: .utf8)
   let entry = try MissionPackLibrary.read(file)
+  func failedEntry(in value: Game) throws -> GalleryMission {
+    let index = try #require(
+      value.missionPacks.entries.firstIndex {
+        $0.pack.stateID == entry.pack.stateID && $0.digest == entry.digest
+      })
+    let catalogue = value.missionCatalogue
+    try #require(catalogue.indices.contains(index))
+    let progress = try #require(value.commander.missionProgress[entry.pack.stateID])
+    #expect(progress.digest == entry.digest && progress.version == entry.pack.version)
+    #expect(progress.stage == "failed")
+    return catalogue[index]
+  }
   var game = Game(executive: false)
+  game.commander.credits = 1000
   game.missionPacks = try .checked(MissionPackLibrary.bundled.entries + [entry])
   game.screen = .status
   game.key("b")
   game.key("return")
   game.launch()
-  game.bodies = []
   game.tick(delta: 0.1)
   #expect(game.commander.credits == 1000 && game.commander.cargoTonnes == 0)
-  #expect(game.missionCatalogue.last?.status == .failed)
-  #expect(game.missionCatalogue.last?.completed == 1)
-  game.commander.system = 129
+  let failed = try failedEntry(in: game)
+  #expect(failed.status == .failed && failed.completed == 1)
+  game.selectedSystem = 129
+  game.arrive()
+  #expect(
+    game.commander.system == 129
+      && game.commander.flightSimulation.anchors?.system == game.systemIdentity)
   game.dock()
   game.key("b")
   #expect(game.commander.credits == 1000 && game.screen != .handoff)
   let runtime = GameRuntime(game: game)
   let save = folder.appendingPathComponent("failed.json")
   try await runtime.save(to: save)
+  let saved = await runtime.snapshot().commander
+  let bytes = try Data(contentsOf: save)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: save)
+  #expect(stored == saved)
   try await runtime.load(from: save)
-  #expect(await runtime.snapshot().missionCatalogue.last?.status == .failed)
+  let loaded = await runtime.snapshot()
+  let restoredFailure = try failedEntry(in: loaded)
+  #expect(restoredFailure.status == .failed && restoredFailure.completed == 1)
+  #expect(loaded.commander.credits == 1000 && loaded.commander.cargoTonnes == 0)
   let outgoing = """
 
     [[transitions]]

@@ -1,0 +1,9 @@
+# Geometry equality still overlaps large admission construction frames
+
+At `fabf581383043ed4088246cd73ad5030b624cc6e`, compile 467 succeeded and focused run 468 started both unchanged anchor regression arguments without a terminal pass or assertion result. Its matched SIGBUS fault is in a stack guard adjacent to the 544 KiB worker stack. The chain reaches full synthesized `ShipDesign` equality through measured mesh construction, template construction, source construction and native/event admission. The previous full NPC-fit validation helper has returned. Original timer regressions remain passed in run 463.
+
+Retained evidence is `/tmp/elite-native-journeys-focused-468/matched-crash-qualification.json`, `mission-mesh-stack-compiled-observation.json` and `ship-design-equality-compiled-observation.json` in that directory. Source construction has 66 stack-probe GOT relocations, template construction 38 and measured mesh zero; all three have zero Commander metadata/read/copy operations. The matched mesh ancestor offset 832 identifies full geometry equality. Two GOT relocations describe each probe, not peak bytes. A mesh wrapper alone would leave the large ancestor construction frames active.
+
+Source identity/body reads, part construction, final bounds/canonical-body storage and mesh validation/transformation need distinct synchronous lifetimes. Preserve complete ShipDesign and NPC-definition equality, exact installed hash/model/geometry validation, legacy component identities, actor/component order, original short-circuit/error order and atomic admission. Do not replace structural comparisons with IDs/hashes, cache trusted facts, copy Game/Commander, alter stack/concurrency settings or change the reproducer.
+
+[PR-mission-construction-lifetimes.md](PR-mission-construction-lifetimes.md).

@@ -1,0 +1,27 @@
+{
+  "status": "CLEAR: actual derived-only permission repair and metadata proof refresh verified",
+  "reviewed_patch_sha256": "7569d94d6c4a62c1aa2c0eab79ccd59d953decfcad629f3ced01ac6786766e46",
+  "preservation_receipt": "/tmp/elite-m01-b7b2-readonly-report-preserved/preservation.json",
+  "verified_four_file_backup_byte_identical": true,
+  "derived_modes": "0700directory/0600exactfourfiles",
+  "original_85ab_attempt_modes_bytes_unchanged": true,
+  "original_failed_receipt_sha256": "7711e3db2c00b84f512637bdc2428448422f0056c0f340565eb9da4e5adbe3d5",
+  "prior_f9_attestation_receipt_modes_bytes_unchanged": true,
+  "build_cache_reset": "Ownerrecordsfalse; originalTSANimage hash and allretaineddependencyinputhashes independentlyunchanged",
+  "actual_retained_inputs_rehashed": 2857,
+  "mismatches": [],
+  "only_two_reviewed_validator_input_changes": [
+    "Tools/CI/sanitizer_checkpoints.py",
+    "Tools/CI/test_sanitizer_checkpoints.py"
+  ],
+  "proof_sha256": "370b2a8fa42868696c516f79853dee3e26b6e1eee76dae1ba947240af883f663",
+  "proposed_identity_sha256": "cbccf2565fd05f55e981c644a6b56e5b9260f9b9e9391b1ead49c321e2c3ea43",
+  "new_policy": "7bcbdba500410691aa81f200c8b4828519746cecc3195b0eb7060aeab17cdf47",
+  "tested_head": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+  "accepted_head": null,
+  "inventory": 3395,
+  "executed": 3389,
+  "source_declared_inactive_opt_ins": 6,
+  "historical_raw_env": "Unknown and not reconstructed; only inactive predicates inferred",
+  "limits": "Metadataonly/sourceproofqualified, not newacceptedattestation/publication or formalquality. Originalfailedreceipt and earlierattestation intact; no newnative/test/build/reviewerexecution/repair/cachemutation."
+}

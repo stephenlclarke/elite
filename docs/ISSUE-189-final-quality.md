@@ -1,0 +1,29 @@
+# Issue 189: fixed-forward thermal emitter fixture
+
+## Motivation
+
+The thermal test uses the new default player hull although its fixed centre ray assumes a closed player mesh. The actual run reports missing shot count and thermal waits. These observations come from required quality run [40054216562](https://github.com/stephenlclarke/elite/actions/runs/40054216562) at `51fbcee474854c190fb748e101f3b8c27d84718a`. Its full coverage execution failed separately with stack exhaustion; later sanitizer and leak gates are not established.
+
+## Implementation and review
+
+Select the explicit closed SH023 hull and valid tank, and initialize the NPC stock resources against that same performance. Preserve the80–100shot and positive thermal-wait assertions and the production fixed-forward gun. Independent review of the combined nine-code-file delta is clear after correcting eager diagnostic work on passing captures. All changes remain in the same M01 packet in [PR25](https://github.com/stephenlclarke/elite/pull/25).
+
+## Validation and compatibility
+
+The single approved normal affected-unit batch is pending. It includes all eight assertion-bearing methods, the actual stack-fault owning evacuation method and directly affected fixture, identity and quote semantics. No passing execution, release qualification or issue closure is claimed. Existing524/40/59method evidence remains limited to its original scopes. Actor ownership, native authority, original assertions, runtime stack/concurrency settings and required quality gates remain unchanged.
+
+## Links and remaining risks
+
+[Issue 189](https://github.com/stephenlclarke/elite/issues/189); [PR25](https://github.com/stephenlclarke/elite/pull/25). The manual capture cause remains pending actual evidence, and issue185 remains open pending qualification of the source lifetime correction. Final full quality, protected merge, main-only SonarQube and signed/notarized release publication remain required.
+
+## Actual normal affected-unit result
+
+Corrected source `9146909960b97dca6fa03135125d256bb08aec6c` built in128.54seconds and completed the exact approved26methods in651.955seconds (781.6847272079999seconds overall). The terminal Swift Testing summary records24 individual passes, two failing methods and two assertions, with exit1 and no fault markers. No XML was produced; the complete original log and result receipts are retained. The earlier `fe6755a7` attempt failed compilation before any tests executed. Independent source, selection and transferred-artifact verification is complete. [The durable receipt](evidence/M01-page-lifetime-followup-unit-results.json) keeps the failed aggregate and per-method results distinct.
+
+The actual stack-fault owning evacuation method passes all four argument rows. Automatic recovery, processing and separate reception pass; all13 mining-work-tool methods, current catalogue cargo, thermal emitter and named board/outlook semantics pass. Historical projectile creation now succeeds but its current-world interception ray hits body10 before admitted projectile14. Manual recovery captures10of12 with no remaining visible allocated bodies; the original custody/loss cause remains pending. Those two failures require the bounded follow-up; the other24 passes are retained. Full quality, protected publication and release remain pending.
+
+## Current qualified publication scope
+
+Independent actual-source and saved-result review is clear. Source914 records24individual passes in a failed26-method aggregate; sourceb58 records the corrected archived-projectile isolation pass in a failed two-method aggregate; sourcec708 records the corrected manual12-original extraction, processing, separate reception and once-only payment pass in a complete one-method run. These results qualify the affected corrections individually; they are not a fresh26-method run. The exact stack-fault owning evacuation method and all four argument rows pass at914. The earlier compile failure, failed aggregates and absent XML are retained honestly in the linked receipts.
+
+All demonstrated assertion methods now have scoped passing evidence. Issue185 remains open pending the final full quality run. Coverage, ThreadSanitizer, AddressSanitizer, leak checks, protected merge, main-only SonarQube and signed/notarized release acceptance remain required. No source, runtime setting or approval gate is weakened by this documentation checkpoint.

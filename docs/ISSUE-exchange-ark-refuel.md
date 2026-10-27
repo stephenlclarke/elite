@@ -1,0 +1,5 @@
+# M10.P01.C08.refuel: real intermediate berth and paid original-ark fuel
+
+The registered ark's own 9-LY drive and 13-LY tank cannot cover the original Enlirin-to-Lareria route without intermediate service. Financial calculations and a route alone do not establish actual NPC docking, fuel availability, payment or same-hull relaunch. Player docking, culling, arrival top-ups and regenerated funds/stock must not substitute for those facts.
+
+Use the actual attained NPC hull/aperture sweep and living original main station. The explicit authoring decision allocates each real main station a distinct persistent 100-LY ark-service reserve, separate from ordinary player Fuel stock semantics. Once-issued reserves survive visits and ship changes; only paid transfers debit the captured reserve and the ark's finite custodian escrow while crediting the same hull's fuel. Preserve shortages/refusals and original cargo, crew and spent condition. Actual Lareria cradle receiving and key return remain a separate child with stage7 still locked.

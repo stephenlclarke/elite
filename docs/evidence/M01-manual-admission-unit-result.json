@@ -1,0 +1,72 @@
+{
+  "source": "c708eeab9cab632242b321e2699af914542f4996",
+  "selection": {
+    "head": "c708eeab9cab632242b321e2699af914542f4996",
+    "expected_unique_methods": 1,
+    "filter": "(?:^|[./])actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce\\(",
+    "command": [
+      "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "test",
+      "--jobs",
+      "3",
+      "--enable-code-coverage",
+      "--xunit-output",
+      "/tmp/elite-m01-manual-admission.xml",
+      "--filter",
+      "(?:^|[./])actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce\\("
+    ]
+  },
+  "result": {
+    "head": "c708eeab9cab632242b321e2699af914542f4996",
+    "command": [
+      "/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "test",
+      "--jobs",
+      "3",
+      "--enable-code-coverage",
+      "--xunit-output",
+      "/tmp/elite-m01-manual-admission.xml",
+      "--filter",
+      "(?:^|[./])actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce\\("
+    ],
+    "swift": "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0\n",
+    "sdk": "15.5",
+    "exit_code": 0,
+    "wall_seconds": 107.167881458
+  },
+  "artifacts": {
+    "/tmp/elite-m01-manual-admission.log": {
+      "bytes": 1222,
+      "sha256": "1f37b0c2aaeab41ad967ed8d78c26cdfba2a9a3d7647d44e0638be5b18f65c8f"
+    },
+    "/tmp/elite-m01-manual-admission-start.json": {
+      "bytes": 554,
+      "sha256": "f3ba2623f14533c2449326bcda0fca9e091f05c732ff3077a2b295db004a3b76"
+    },
+    "/tmp/elite-m01-manual-admission-result.json": {
+      "bytes": 605,
+      "sha256": "246c22f1e7260f20638df180b33cd6fb95a691a665adfb09054f20615b7e2ecd"
+    }
+  },
+  "build_seconds": 44.85,
+  "test_seconds": 61.045,
+  "unique_methods": 1,
+  "passed": [
+    {
+      "method": "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce",
+      "seconds": 61.044
+    }
+  ],
+  "failed": [],
+  "xml_present": false,
+  "fault_markers": false,
+  "scope": "One complete native manual extraction journey passes with all12originalcaptures, processing, separate reception and single payment. Other individual passes remain at9146909(24) andb58f3b8(1); no fresh26aggregate or fullquality/release qualification.",
+  "independent_verification": {
+    "reviewed_committed_file_hash_match": true,
+    "transferred_artifact_hashes_and_bytes_match": true,
+    "head_selection_command_match": true,
+    "exact_single_method_started_and_passed": true,
+    "issues": 0,
+    "receipt": "/tmp/elite-mba-c708-manual-admission-verification.json"
+  }
+}

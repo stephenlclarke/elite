@@ -1,0 +1,23 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.training"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "exclusive-choices-v2"]
+priority = 590
+source = "Original L337 T02 safe-gunnery lesson. Native Avenor consent, three original uncrewed beacons, actual fitted laser or player missile hits, three native flight seconds of ceasefire and separate actual Avenor reception."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "safe-gunnery"
+title = "Safe gunnery practice"
+briefing = "Review and Confirm at actual Avenor before launching with your current owned craft. The native provider freezes a clear practice range containing three original uncrewed 6 m cube beacons. Hit each distinct beacon with an actual fitted laser or player missile; normal energy, heat and finite ammunition costs remain. EMP, utility tools, bombs, proximity and ordinary targets cannot substitute. After the third hit, stop all discharge for three continuous unpaused native flight seconds and resolve every player projectile from this attempt. Any discharge restarts that interval; pause adds no time. An actual player-attributed ordinary actor hit permanently fails this attempt and retains normal damage and law. Return through Avenor's actual docking route and separately Confirm reception. Zero fee, deposit and cash reward. A first verified reception records the existing safe-gunnery family trace once. Failed attempts can be explicitly accepted again; they never duplicate the lifetime trace."
+destination = "Actual Avenor main orbital reception, galaxy 1 system 7"
+reward = "No cash. The existing safe-gunnery family trace once after verified reception."
+milestones = ["Confirm practice consent", "Begin the native range", "Hit three distinct original beacons", "Demonstrate safe ceasefire", "Confirm actual Avenor reception"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
