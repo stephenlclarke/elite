@@ -16,6 +16,19 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "NativeCrewLogHistoricalLoaderUnitTests": (
+        "bundledC08LoadRetainsOriginalDigestGeometryAndAuthorizedRecorderFit",
+        "futureLiveBrabantCannotSupplyC08ButOrdinaryCatalogueLookupIsUnchanged",
+        "changedIdentityVersionOrRecorderBindingsCannotClaimHistoricalOverride",
+        "modifiedPackBytesAndHistoricalAuthenticationFailureCannotFallbackOrGainAuthority",
+    ),
+    "OriginalGiraffeLinerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSalvageConsumersKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "NativeCrewLogHistoricalGeometryUnitTests": (
         "retainedResourceKeepsExactAuthenticatedGeometryAppearanceAndRecorderRadius",
         "changedGeometryMaterialProvenanceOrSourceIdentityCannotPassTheOriginalPin",
