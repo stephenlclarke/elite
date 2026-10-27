@@ -595,6 +595,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
             with install.recoverable_control(), install.quiescent_legacy(policy):
                 actual = install.prepare(SHA, archive, archive_hash, reviewed, checksum)
             self.assertNotEqual(actual, legacy)
+            self.assertEqual(actual.parent.name, "recoverable-" + checksum)
             self.assertEqual(legacy.read_bytes(), legacy_bytes)
             self.assertEqual(actual.parent.parent, legacy.parent)
             for name, expected in {"native_runner.py": policy["guard_sha256"], **policy["recoverable_activation"]["guard_files"]}.items():
@@ -702,16 +703,27 @@ class RecoverableAuthorizationTests(unittest.TestCase):
                 self.assertTrue(install.registered_session_slot(policy, args))
                 before = actual.read_bytes()
                 self.assertEqual(install.prepare(SHA, archive, archive_hash, reviewed, checksum, registered=True).read_bytes(), before)
-                # Execute only the generated stdlib session check; the installed fixture guard is a no-op.
+                # Exercise the shared session check with only fake owned session files.
+                import native_runner, shutil
+                from pathlib import Path
                 hook = actual.parent / "job-started.sh"
-                script = hook.read_text().split("/usr/bin/python3 -B - <<'PY'\n", 1)[1].split("\nPY\n", 1)[0]
-                for run_id, attempt, accepted in (("123", "1", True), ("124", "1", False), ("123", "2", False)):
-                    with patch.dict(os.environ, {"GITHUB_RUN_ID": run_id, "GITHUB_RUN_ATTEMPT": attempt}), patch("time.time", return_value=100):
+                self.assertTrue(hook.read_text().endswith(" --admit\n"))
+                account = home.parent / "account"
+                root = account / "Library/EliteNativeCI/recoverable-sessions"
+                shutil.copytree(home / "recoverable-sessions", root)
+                ticket_path = root / "ticket.json"
+                ticket = json.loads(ticket_path.read_text())
+                ticket['binding'] = str(root / Path(ticket['binding']).name)
+                ticket_path.chmod(0o600)
+                ticket_path.write_text(json.dumps(ticket))
+                ticket_path.chmod(0o400)
+                with patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(account))):
+                    for run_id, attempt, accepted in (("123", "1", True), ("124", "1", False), ("123", "2", False)):
                         if accepted:
-                            exec(compile(script, "fixture-session-check", "exec"), {})
+                            native_runner.require_recoverable_session(policy, dict(GITHUB_RUN_ID=run_id, GITHUB_RUN_ATTEMPT=attempt), now=100)
                         else:
-                            with self.assertRaises(SystemExit):
-                                exec(compile(script, "fixture-session-check", "exec"), {})
+                            with self.assertRaises(ValueError):
+                                native_runner.require_recoverable_session(policy, dict(GITHUB_RUN_ID=run_id, GITHUB_RUN_ATTEMPT=attempt), now=100)
             class Listener:
                 def wait(inner, timeout):
                     (home / "native-runner/.runner").unlink()
@@ -793,6 +805,389 @@ class RecoverableAuthorizationTests(unittest.TestCase):
                         self.assertNotIn("private", str(error.exception))
                     else:
                         self.assertEqual(install.session_run_active(policy, binding), changes.get("status") != "completed")
+
+
+class SplitAuthorizationTests(unittest.TestCase):
+    contract = RecoverableAuthorizationTests.contract
+
+    def request_fixture(self, role):
+        """Use only local fake API responses and immutable temporary assignment files."""
+        import base64, hashlib, json
+        from pathlib import Path
+        from types import SimpleNamespace
+        import native_runner as native
+        policy, env, event = self.contract()
+        Path(env.pop("ELITE_RECOVERABLE_ASSIGNMENT_PATH")).unlink()
+        for name in ("ELITE_RECOVERABLE_ASSIGNMENT_SHA256", "ELITE_RECOVERABLE_CODE_ENABLED",
+                     "ELITE_RECOVERABLE_PLAN_SHA256", "PLAN_DIGEST", "ELITE_RECOVERABLE_REQUEST_MODE",
+                     "ELITE_RECOVERABLE_REQUEST_SHARD", "ELITE_RECOVERABLE_REQUEST_WORKER"):
+            env.pop(name, None)
+        source = b"fake reviewed workflow bytes"
+        activation = policy["recoverable_activation"]
+        activation["runners"]["owned-one"]["jobs"] = [role]
+        activation["workflow_sha256"] = hashlib.sha256(source).hexdigest()
+        env.update(GITHUB_JOB=role, GITHUB_TOKEN="fake-workflow-read-token", REQUESTED_NATIVE="true",
+                   RUNNER_ENVIRONMENT="self-hosted")
+        if role not in native.PREPARE_JOBS:
+            env.update(PLAN_ID="7", PLAN_ARCHIVE="b" * 64, PLAN_DIGEST="e" * 64)
+        if role in ("prepare_thread", "prepare_address"):
+            env["ELITE_RECOVERABLE_REQUEST_MODE"] = role.removeprefix("prepare_")
+        if role in native.SHARD_JOBS:
+            env.update(ELITE_RECOVERABLE_REQUEST_MODE="address" if role == "address_shards" else "thread",
+                       ELITE_RECOVERABLE_REQUEST_SHARD="f" * 64, ELITE_RECOVERABLE_REQUEST_WORKER="one")
+        if role == "native_phase":
+            env["ELITE_RECOVERABLE_REQUEST_PHASE"] = "normal"
+        if role == "native_aggregate":
+            env.update(OTHER_PLAN_ID="8", OTHER_PLAN_ARCHIVE="c" * 64, OTHER_PLAN_DIGEST="d" * 64)
+        root = Path(activation["assignment_root"])
+        policy["recoverable_shards"].update(cache=str(root.with_name(root.name + "-cache")), workers={"one": "/fixture/private-worker"})
+        manifest = {name: activation[name] for name in ("schema", "enabled", "revoked", "expires_at", "head",
+                                                       "workflow_sha256", "runners", "assignment_root")}
+        manifest.update(ref=env["GITHUB_REF"], workflow_file="recoverable-quality.yml")
+        activation["manifest_sha256"] = native.policy_digest(manifest)
+        env.update(ACTIVATION=json.dumps(manifest), POLICY_DIGESTS=json.dumps({"owned-one": native.policy_digest(policy)}),
+                   ELITE_RECOVERABLE_POLICY_SHA256=native.policy_digest(policy),
+                   ELITE_RECOVERABLE_WORKFLOW_SHA256=activation["workflow_sha256"],
+                   ELITE_RECOVERABLE_ACTIVATION_SHA256=activation["manifest_sha256"])
+        requests = []
+
+        def api(path):
+            requests.append(path)
+            if "/contents/Tools/CI?" in path:
+                result = []
+                for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
+                             "quality_phase_checkpoints.py", "crash_artifacts.py"):
+                    raw = (Path(native.__file__).parent / name).read_bytes()
+                    blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw, usedforsecurity=False).hexdigest()
+                    result.append(dict(name=name, type="file", sha=blob))
+                return result
+            if "/contents/" in path:
+                return dict(encoding="base64", content=base64.b64encode(source).decode())
+            return dict(name="native-plan-fake")
+
+        class Remote:
+            def __init__(self, authority, api):
+                pass  # No live API or artifact access in this fake.
+
+            def fetch(self, artifact, digest):
+                return root
+
+        class Workflow:
+            def __init__(self, authority, remote):
+                pass  # The fixture supplies the already authenticated plan contract.
+
+            def plans(self, bundle, digest):
+                return [dict(runtime=dict(mode="address" if digest == "d" * 64 else "thread"))], {
+                    "host": policy["recoverable_shards"]["host"], "phases": ["normal", "leaks"],
+                    "expected": [dict(mode=mode, shard="f" * 64, worker="one") for mode in ("thread", "address")]}
+
+        guard = SimpleNamespace(PHYSICAL_EXECUTION_ENABLED=True, GitHubArtifacts=Remote, NativeWorkflow=Workflow)
+        return policy, env, event, api, guard, requests
+
+    def test_admission_accepts_identity_without_any_custom_job_env_and_never_issues_assignment(self):
+        from pathlib import Path
+        from unittest.mock import patch
+        import native_runner as native
+        for role in sorted(native.RECOVERABLE_JOBS):
+            with self.subTest(role=role):
+                policy, env, event, api, guard, requests = self.request_fixture(role)
+                hook_env = {name: value for name, value in env.items() if name.startswith(("GITHUB_", "RUNNER_", "ELITE_NATIVE_"))}
+                hook_env.pop("GITHUB_TOKEN")
+                with patch.object(native, "require_recoverable_session") as session, patch.object(
+                        native, "load_recoverable_guard", return_value=guard), patch.object(
+                        native, "require_recoverable_host", return_value=Path(env["GITHUB_WORKSPACE"])), patch.object(
+                        native, "authorize_recoverable", side_effect=AssertionError("Admission cannot authorize")):
+                    native.admit_recoverable(policy, hook_env, event, now=100)
+                session.assert_called_once_with(policy, hook_env, 100)
+                self.assertEqual(requests, [])
+                self.assertEqual(list(Path(policy["recoverable_activation"]["assignment_root"]).glob("*.json")), [])
+                self.assertNotIn("ELITE_RECOVERABLE_CODE_ENABLED", hook_env)
+                self.assertFalse(any("ASSIGNMENT" in name for name in hook_env))
+
+    def test_full_authorizer_requires_actual_role_request_for_every_role(self):
+        from pathlib import Path
+        import native_runner as native
+        for role in sorted(native.RECOVERABLE_JOBS):
+            with self.subTest(role=role):
+                policy, env, event, api, guard, requests = self.request_fixture(role)
+                issued = native.authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+                native.require_recoverable_job(policy, issued, event, now=100)
+                assignment = Path(issued["ELITE_RECOVERABLE_ASSIGNMENT_PATH"])
+                self.assertNotIn(env["GITHUB_TOKEN"], assignment.read_text())
+                for field, bad in (("GITHUB_RUN_ID", "124"), ("GITHUB_RUN_ATTEMPT", "2"),
+                                   ("ELITE_RECOVERABLE_REQUEST_MODE", "wrong"),
+                                   ("ELITE_RECOVERABLE_REQUEST_SHARD", "wrong"),
+                                   ("ELITE_RECOVERABLE_REQUEST_WORKER", "wrong"),
+                                   ("ELITE_RECOVERABLE_REQUEST_PHASE", "wrong")):
+                    with self.subTest(field=field), self.assertRaises(ValueError):
+                        native.require_recoverable_job(policy, {**issued, field: bad}, event, now=100)
+                assignment.unlink()
+                for field in ("ELITE_RECOVERABLE_REQUEST_MODE", "ELITE_RECOVERABLE_REQUEST_SHARD",
+                              "ELITE_RECOVERABLE_REQUEST_WORKER", "ELITE_RECOVERABLE_REQUEST_PHASE"):
+                    with self.subTest(field=field), self.assertRaises(ValueError):
+                        native.authorize_recoverable(policy, {**env, field: "wrong"}, event, api=api, guard=guard, now=100)
+                    self.assertEqual(list(assignment.parent.glob("*.json")), [])
+                for field in ("ACTIVATION", "POLICY_DIGESTS", "GITHUB_TOKEN"):
+                    broken = dict(env)
+                    broken.pop(field)
+                    with self.subTest(missing=field), self.assertRaises((ValueError, KeyError)):
+                        native.authorize_recoverable(policy, broken, event, api=api, guard=guard, now=100)
+                    self.assertEqual(list(assignment.parent.glob("*.json")), [])
+
+    def test_session_ticket_rejects_replay_budget_expiry_and_mutated_owned_evidence(self):
+        import hashlib, json
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import native_runner as native
+        policy = dict(approved_head=SHA, recoverable_activation=dict(expires_at=200))
+        env = dict(GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1")
+        with TemporaryDirectory() as temporary:
+            home = Path(temporary).resolve()
+            root = home / "Library/EliteNativeCI/recoverable-sessions"
+            root.mkdir(parents=True, mode=0o700)
+            binding = dict(schema=1, policy_sha256=native.policy_digest(policy), head=SHA, run_id="123",
+                           run_attempt="1", max_jobs=2, expires_at=190)
+            path = root / "session.json"
+            ticket_path = root / "ticket.json"
+
+            def publish(changes=None, ticket_changes=None):
+                value = {**binding, **(changes or {})}
+                if path.exists():
+                    path.chmod(0o600)
+                path.write_text(json.dumps(value))
+                path.chmod(0o400)
+                ticket = dict(binding=str(path), binding_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                              ordinal=1, policy_sha256=native.policy_digest(policy))
+                ticket.update(ticket_changes or {})
+                if ticket_path.exists():
+                    ticket_path.chmod(0o600)
+                ticket_path.write_text(json.dumps(ticket))
+                ticket_path.chmod(0o400)
+
+            with patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(home))):
+                publish()
+                native.require_recoverable_session(policy, env, now=100)
+                for name in env:
+                    with self.subTest(replay=name), self.assertRaises(ValueError):
+                        native.require_recoverable_session(policy, {**env, name: "2"}, now=100)
+                changes = (dict(schema=True), dict(policy_sha256="c" * 64), dict(head="c" * 40),
+                           dict(max_jobs=0), dict(max_jobs=257), dict(max_jobs=True), dict(expires_at=99),
+                           dict(expires_at=201), dict(expires_at=float("inf")))
+                for change in changes:
+                    publish(change)
+                    with self.subTest(binding=change), self.assertRaises(ValueError):
+                        native.require_recoverable_session(policy, env, now=100)
+                for change in (dict(ordinal=0), dict(ordinal=3), dict(ordinal=True),
+                               dict(binding=str(home / "outside.json")), dict(binding_sha256="0" * 64),
+                               dict(policy_sha256="c" * 64), dict(binding=[])):
+                    publish(ticket_changes=change)
+                    with self.subTest(ticket=change), self.assertRaises(ValueError):
+                        native.require_recoverable_session(policy, env, now=100)
+                publish()
+                path.chmod(0o600)
+                with self.assertRaises(ValueError):
+                    native.require_recoverable_session(policy, env, now=100)
+                publish()
+                saved = root / "saved.json"
+                path.rename(saved)
+                path.symlink_to(saved)
+                with self.assertRaises(ValueError):
+                    native.require_recoverable_session(policy, env, now=100)
+
+    def test_full_authorizer_keeps_frozen_plan_membership_phase_and_both_aggregate_inputs(self):
+        from pathlib import Path
+        import native_runner as native
+        cases = (("thread_shards", "ELITE_RECOVERABLE_REQUEST_WORKER", "two"),
+                 ("address_shards", "ELITE_RECOVERABLE_REQUEST_SHARD", "0" * 64),
+                 ("native_phase", "PLAN_ID", "missing"),
+                 ("native_aggregate", "OTHER_PLAN_ID", "missing"),
+                 ("native_aggregate", "OTHER_PLAN_DIGEST", "invalid"),
+                 ("native_aggregate", "OTHER_PLAN_DIGEST", "e" * 64))
+        for role, field, value in cases:
+            with self.subTest(role=role, field=field):
+                policy, env, event, api, guard, requests = self.request_fixture(role)
+                with self.assertRaises(ValueError):
+                    native.authorize_recoverable(policy, {**env, field: value}, event, api=api, guard=guard, now=100)
+                self.assertEqual(list(Path(policy["recoverable_activation"]["assignment_root"]).glob("*.json")), [])
+        policy, env, event, api, guard, requests = self.request_fixture("native_phase")
+        env["ELITE_RECOVERABLE_REQUEST_PHASE"] = "leaks"
+        issued = native.authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+        native.require_recoverable_job(policy, issued, event, now=100)
+
+    def step_fixture(self):
+        """Create a fake account and pinned package; no real runner paths are accessed."""
+        import hashlib, json
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        import native_runner as native
+        policy, env, event, api, guard, requests = self.request_fixture("prepare_address")
+        temporary = TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        home = Path(temporary.name).resolve()
+        raw = Path(native.__file__).read_bytes()
+        policy.update(guard_sha256=hashlib.sha256(raw).hexdigest(), swift="fake Swift", sdk="fake SDK")
+        digest = native.policy_digest(policy)
+        # The raw reviewed input can use different whitespace from the installed policy.
+        reviewed_input = (json.dumps(policy, indent=4) + "\n").encode()
+        generation = hashlib.sha256(reviewed_input).hexdigest()
+        self.assertNotEqual(generation, digest)
+        package = home / "Library/EliteNativeAuthorization" / SHA / ("recoverable-" + generation)
+        package.mkdir(parents=True, mode=0o700)
+        guard_path = package / "native_runner.py"
+        guard_path.write_bytes(raw)
+        guard_path.chmod(0o500)
+        policy_path = package / "policy.json"
+        policy_path.write_text(json.dumps(policy))
+        policy_path.chmod(0o400)
+        event_path = home / "event.json"
+        event_path.write_text(json.dumps(event))
+        env.update(ELITE_NATIVE_POLICY=str(policy_path), ELITE_RECOVERABLE_POLICY_SHA256=digest,
+                   POLICY_DIGESTS=json.dumps({"owned-one": digest}), GITHUB_EVENT_PATH=str(event_path),
+                   GITHUB_ENV=str(home / "hook-env"))
+        root = home / "Library/EliteNativeCI/recoverable-sessions"
+        root.mkdir(parents=True, mode=0o700)
+        binding_path = root / "session.json"
+        binding = dict(schema=1, policy_sha256=digest, head=SHA, run_id="123", run_attempt="1", max_jobs=1, expires_at=190)
+        binding_path.write_text(json.dumps(binding))
+        binding_path.chmod(0o400)
+        (root / "ticket.json").write_text(json.dumps(dict(binding=str(binding_path),
+            binding_sha256=hashlib.sha256(binding_path.read_bytes()).hexdigest(), ordinal=1, policy_sha256=digest)))
+        (root / "ticket.json").chmod(0o400)
+        return home, policy_path, policy, env, event, api, guard, requests
+
+    def workflow_script(self, marker):
+        import textwrap
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
+        return textwrap.dedent(source.split(marker, 1)[1].split("<<'PY'\n", 1)[1].split("\n          PY", 1)[0])
+
+    def test_real_stage_entrypoints_obey_next_step_env_and_binding_before_checkout(self):
+        import contextlib, io, os
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import native_runner as native
+        home, policy_path, policy, env, event, api, guard, requests = self.step_fixture()
+        hook_env = {key: value for key, value in env.items()
+                    if key.startswith(("GITHUB_", "RUNNER_", "ELITE_NATIVE_")) and key != "GITHUB_TOKEN"}
+        hook_env.update(ELITE_RECOVERABLE_CODE_ENABLED="true", ELITE_RECOVERABLE_ASSIGNMENT_PATH="forged")
+        real_authorize = native.authorize_recoverable
+
+        def authorize(p, e, v):
+            return real_authorize(p, e, v, api=api, guard=guard, now=100)
+
+        def run_main(values, flag):
+            with patch.dict(os.environ, values, clear=True), patch("sys.argv", ["native_runner.py", "--policy", str(policy_path), flag]):
+                native.main()
+
+        with patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(home))), patch(
+                "time.time", return_value=100), patch.object(native, "load_recoverable_guard", return_value=guard), patch.object(
+                native, "require_recoverable_host", return_value=Path(env["GITHUB_WORKSPACE"])), patch.object(
+                native, "authorize_recoverable", side_effect=authorize) as full, contextlib.redirect_stdout(io.StringIO()):
+            run_main(hook_env, "--admit")
+            full.assert_not_called()
+            exported = dict(line.split("=", 1) for line in Path(env["GITHUB_ENV"]).read_text().splitlines())
+            self.assertFalse(any("ASSIGNMENT" in name or "CODE_ENABLED" in name for name in exported))
+            self.assertEqual(list(Path(policy["recoverable_activation"]["assignment_root"]).glob("*.json")), [])
+            step_env = {**env, **exported, "GITHUB_ENV": str(home / "authorization-env")}
+
+            def child(argv, cwd, check):
+                self.assertEqual(argv, ["/usr/bin/python3", "-E", "-s", "-B", str(policy_path.parent / "native_runner.py"),
+                                        "--policy", str(policy_path), "--authorize"])
+                self.assertEqual(cwd, policy_path.parent)
+                self.assertTrue(check)
+                run_main(step_env, "--authorize")
+
+            with patch.dict(os.environ, step_env, clear=True), patch("subprocess.run", side_effect=child):
+                exec(compile(self.workflow_script("Authorize actual job request"), "fake-owned-dispatch", "exec"), {})
+                # Child GITHUB_ENV writes do not alter the current parent process.
+                self.assertNotIn("ELITE_RECOVERABLE_CODE_ENABLED", os.environ)
+                with self.assertRaises(KeyError):
+                    exec(compile(self.workflow_script("Require host hook and exact instance"), "fake-binding", "exec"), {})
+            next_env = dict(line.split("=", 1) for line in Path(step_env["GITHUB_ENV"]).read_text().splitlines())
+            with patch.dict(os.environ, {**step_env, **next_env}, clear=True):
+                exec(compile(self.workflow_script("Require host hook and exact instance"), "fake-binding", "exec"), {})
+            self.assertEqual(full.call_count, 1)
+            self.assertTrue(requests)
+
+    def test_step_dispatch_refuses_unowned_paths_or_changed_pins_before_executing_code(self):
+        import os
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        for change in ("supplied-path", "digest", "head", "workflow", "activation", "guard-bytes", "guard-mode", "symlink"):
+            with self.subTest(change=change):
+                home, policy_path, policy, env, event, api, guard, requests = self.step_fixture()
+                guard_path = policy_path.parent / "native_runner.py"
+                if change == "supplied-path":
+                    env["ELITE_NATIVE_POLICY"] = str(home / "untrusted/policy.json")
+                elif change in ("digest", "head", "workflow", "activation"):
+                    key = {"digest": "ELITE_RECOVERABLE_POLICY_SHA256", "head": "GITHUB_SHA",
+                           "workflow": "ELITE_RECOVERABLE_WORKFLOW_SHA256", "activation": "ELITE_RECOVERABLE_ACTIVATION_SHA256"}[change]
+                    env[key] = "0" * (40 if change == "head" else 64)
+                elif change == "guard-bytes":
+                    guard_path.chmod(0o700)
+                    guard_path.write_text("raise RuntimeError('never execute')")
+                    guard_path.chmod(0o500)
+                elif change == "guard-mode":
+                    guard_path.chmod(0o700)
+                else:
+                    saved = home / "saved.py"
+                    guard_path.rename(saved)
+                    guard_path.symlink_to(saved)
+                with patch.dict(os.environ, env, clear=True), patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(home))), patch(
+                        "subprocess.run") as never, self.assertRaises((AssertionError, OSError)):
+                    exec(compile(self.workflow_script("Authorize actual job request"), "fake-owned-dispatch", "exec"), {})
+                never.assert_not_called()
+
+    def test_hook_or_full_authorization_failure_exports_no_assignment_and_stops_before_checkout(self):
+        import contextlib, io, os
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        import native_runner as native
+        for failure in ("hook-identity", "session-attempt", "mode", "activation", "token", "source"):
+            with self.subTest(failure=failure):
+                home, policy_path, policy, env, event, api, guard, requests = self.step_fixture()
+                real_authorize = native.authorize_recoverable
+                if failure == "hook-identity":
+                    env["GITHUB_ACTOR_ID"] = "2"
+                elif failure == "session-attempt":
+                    env["GITHUB_RUN_ATTEMPT"] = "2"
+                elif failure == "mode":
+                    env["ELITE_RECOVERABLE_REQUEST_MODE"] = "thread"
+                elif failure == "activation":
+                    env["ACTIVATION"] = "{}"
+                elif failure == "token":
+                    env.pop("GITHUB_TOKEN")
+                else:
+                    def api(path):
+                        return dict(encoding="base64", content="YmFk")
+                checkout = Mock()
+                with patch.dict(os.environ, env, clear=True), patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(home))), patch(
+                        "time.time", return_value=100), patch("sys.argv", ["native_runner.py", "--policy", str(policy_path), "--authorize"]), patch.object(
+                        native, "load_recoverable_guard", return_value=guard), patch.object(native, "require_recoverable_host", return_value=Path(env["GITHUB_WORKSPACE"])), patch.object(
+                        native, "authorize_recoverable", side_effect=lambda p, e, v: real_authorize(p, e, v, api=api, guard=guard, now=100)), contextlib.redirect_stdout(io.StringIO()):
+                    with self.assertRaises((ValueError, KeyError)):
+                        native.main()
+                        checkout()
+                checkout.assert_not_called()
+                self.assertFalse(Path(env["GITHUB_ENV"]).exists())
+                self.assertEqual(list(Path(policy["recoverable_activation"]["assignment_root"]).glob("*.json")), [])
+
+    def test_workflow_requires_authorization_then_binding_before_every_native_checkout(self):
+        import re
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
+        jobs = dict(zip(*[iter(re.split(r"^  ([a-z_]+):\n", source.split("jobs:\n", 1)[1], flags=re.M)[1:])] * 2))
+        roles = {"native_checks", "prepare_thread", "prepare_address", "native_phase", "thread_shards", "address_shards", "native_aggregate"}
+        for role in sorted(roles):
+            with self.subTest(role=role):
+                steps = jobs[role].split("    steps:\n", 1)[1]
+                self.assertLess(steps.index("native_authorize"), steps.index("native_guard"))
+                self.assertLess(steps.index("native_guard"), steps.index("native_checkout"))
+
 
 
 class PhysicalIdentityTests(unittest.TestCase):

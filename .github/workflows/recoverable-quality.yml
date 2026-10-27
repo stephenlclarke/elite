@@ -158,6 +158,57 @@ jobs:
     runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
     timeout-minutes: 130
     steps:
+      - &native_authorize
+        id: native_authorize
+        name: Authorize actual job request from the pinned installed package
+        run: |
+          /usr/bin/python3 -E -s - <<'PY'
+          import hashlib, json, os, pwd, re, subprocess
+          from pathlib import Path
+          e = os.environ
+          head = e['GITHUB_SHA']
+          digest = e['ELITE_RECOVERABLE_POLICY_SHA256']
+          assert re.fullmatch('[0-9a-f]{40}', head)
+          assert re.fullmatch('[0-9a-f]{64}', digest)
+          # Constrain the installation before reading or executing owned code.
+          home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+          root = home / 'Library/EliteNativeAuthorization' / head
+          policy_path = Path(e['ELITE_NATIVE_POLICY'])
+          package = policy_path.parent
+          assert package.parent == root
+          assert re.fullmatch('recoverable-[0-9a-f]{64}', package.name)
+          assert policy_path.name == 'policy.json'
+          guard_path = package / 'native_runner.py'
+          assert e['ELITE_NATIVE_APPROVED_HEAD'] == head
+          for path in (policy_path, guard_path):
+              for node in (path, *path.parents):
+                  info = node.lstat()
+                  sticky = node != path and info.st_uid == 0
+                  sticky = sticky and info.st_mode & 0o1000
+                  assert not node.is_symlink()
+                  assert info.st_uid in (0, os.getuid())
+                  assert not info.st_mode & 0o022 or sticky
+              assert path.stat().st_uid == os.getuid()
+          assert policy_path.stat().st_mode & 0o777 == 0o400
+          assert guard_path.stat().st_mode & 0o777 == 0o500
+          policy = json.loads(policy_path.read_text())
+          raw = json.dumps(policy, sort_keys=True, separators=(',', ':'),
+                           allow_nan=False).encode()
+          actual = hashlib.sha256(raw).hexdigest()
+          assert actual == digest
+          assert policy['approved_head'] == head
+          activation = policy['recoverable_activation']
+          assert activation['workflow_sha256'] == (
+              e['ELITE_RECOVERABLE_WORKFLOW_SHA256'])
+          assert activation['manifest_sha256'] == (
+              e['ELITE_RECOVERABLE_ACTIVATION_SHA256'])
+          assert hashlib.sha256(guard_path.read_bytes()).hexdigest() == (
+              policy['guard_sha256'])
+          # GITHUB_ENV is visible to the binding guard in the NEXT step.
+          command = ['/usr/bin/python3', '-E', '-s', '-B', str(guard_path),
+                     '--policy', str(policy_path), '--authorize']
+          subprocess.run(command, cwd=package, check=True)
+          PY
       - &native_guard
         id: native_guard
         name: Require host hook and exact instance before checkout or policy I/O
@@ -287,6 +338,7 @@ jobs:
       ELITE_RECOVERABLE_REQUEST_MODE: thread
       PREPARE_BASENAME: ${{ format('recoverable-prepare-thread-{0}-{1}', github.run_id, github.run_attempt) }}
     steps:
+      - *native_authorize
       - *native_guard
       - *native_checkout
       - *verify_checkout
@@ -345,6 +397,7 @@ jobs:
       ELITE_RECOVERABLE_REQUEST_MODE: address
       PREPARE_BASENAME: ${{ format('recoverable-prepare-address-{0}-{1}', github.run_id, github.run_attempt) }}
     steps:
+      - *native_authorize
       - *native_guard
       - *native_checkout
       - *verify_checkout
@@ -408,6 +461,7 @@ jobs:
         github.run_attempt) }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - *native_authorize
       - *native_guard
       - *native_checkout
       - *verify_checkout
@@ -468,6 +522,7 @@ jobs:
       ELITE_RECOVERABLE_REQUEST_WORKER: ${{ matrix.worker }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - *native_authorize
       - *native_guard
       - *native_checkout
       - *verify_checkout
@@ -526,6 +581,7 @@ jobs:
       ELITE_RECOVERABLE_REQUEST_WORKER: ${{ matrix.worker }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - *native_authorize
       - *native_guard
       - *native_checkout
       - *verify_checkout
@@ -575,6 +631,7 @@ jobs:
       OTHER_PLAN_ARCHIVE: ${{ needs.prepare_address.outputs.archive_digest }}
       OTHER_PLAN_DIGEST: ${{ needs.prepare_address.outputs.manifest_digest }}
     steps:
+      - *native_authorize
       - *native_guard
       - *native_checkout
       - *verify_checkout

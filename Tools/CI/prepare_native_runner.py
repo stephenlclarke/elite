@@ -85,7 +85,7 @@ def prepare(approved: str, archive: Path, archive_hash: str, reviewed_policy=Non
     hook_bytes = ("#!/bin/bash\nset -euo pipefail\nexec /usr/bin/python3 "
                   + shlex.quote(str(guard_copy)) + " --policy " + shlex.quote(str(policy)) + "\n").encode()
     if reviewed_policy is not None:
-        hook_bytes = session_hook(expected_policy, policy, guard_copy)
+        hook_bytes = session_hook(policy, guard_copy)
     ensure_owned_directory(HOME_ROOT)
     ensure_owned_directory(authorization.parent)
     if RUNNER.is_symlink():
@@ -343,40 +343,10 @@ def quiescent_legacy(policy):
         yield
 
 
-def session_hook(policy, policy_path, guard_path):
-    """The fixed hook binds the listener's current ticket before the reviewed native guard."""
-    from native_runner import policy_digest
-    ticket = HOME_ROOT / "recoverable-sessions/ticket.json"
-    check = """import hashlib,json,os,time
-from pathlib import Path
-try:
-    def read(p):
-        for n in (p,*p.parents):
-            i=n.lstat()
-            assert not n.is_symlink() and i.st_uid in (0,os.getuid())
-            assert not i.st_mode&0o022 or (n!=p and i.st_uid==0 and i.st_mode&0o1000)
-        assert p.stat().st_uid==os.getuid() and p.stat().st_mode&0o777==0o400
-        return json.loads(p.read_text())
-    p=Path(TICKET)
-    t=read(p)
-    assert set(t)=={'binding','binding_sha256','ordinal','policy_sha256'}
-    assert t['policy_sha256']==POLICY
-    assert Path(t['binding']).parent==p.parent and Path(t['binding']).suffix=='.json'
-    b=read(Path(t['binding']))
-    assert hashlib.sha256(Path(t['binding']).read_bytes()).hexdigest()==t['binding_sha256']
-    assert set(b)=={'schema','policy_sha256','head','run_id','run_attempt','max_jobs','expires_at'}
-    assert b['schema']==1 and b['policy_sha256']==POLICY and b['head']==HEAD
-    assert type(t['ordinal']) is int and 1<=t['ordinal']<=b['max_jobs']<=256
-    assert time.time()<b['expires_at']<=EXPIRY
-    assert os.environ['GITHUB_RUN_ID']==b['run_id']
-    assert os.environ['GITHUB_RUN_ATTEMPT']==b['run_attempt']
-except Exception:
-    raise SystemExit('Recoverable runner session is not authorized') from None
-"""
-    check = ("TICKET=" + repr(str(ticket)) + "\nPOLICY=" + repr(policy_digest(policy))
-             + "\nHEAD=" + repr(policy["approved_head"]) + "\nEXPIRY=" + repr(policy["recoverable_activation"]["expires_at"]) + "\n" + check)
-    return ("#!/bin/bash\nset -euo pipefail\n/usr/bin/python3 -B - <<'PY'\n" + check + "PY\nexec /usr/bin/python3 -B "
-            + shlex.quote(str(guard_path)) + " --policy " + shlex.quote(str(policy_path)) + "\n").encode()
+def session_hook(policy_path, guard_path):
+    """Admit the exact session and host without requiring unavailable job-level env."""
+    return ("#!/bin/bash\nset -euo pipefail\nexec /usr/bin/python3 -E -s -B "
+            + shlex.quote(str(guard_path)) + " --policy " + shlex.quote(str(policy_path)) + " --admit\n").encode()
 
 
 def require_registration(policy):

@@ -112,8 +112,8 @@ def policy_digest(policy: dict) -> str:
                                      allow_nan=False).encode()).hexdigest()
 
 
-def require_recoverable_job(policy: dict, environment: dict, event: dict, now=None, verify_assignment=True) -> dict:
-    """An optional host-owned contract grants only this reviewed manual workflow and instance."""
+def require_recoverable_identity(policy: dict, environment: dict, event: dict, now=None) -> dict:
+    """Admit only the exact approved execution, role, runner and workspace without a job request."""
     activation = policy.get("recoverable_activation", {})
     approved = policy.get("approved_head", "")
     workflow = REPOSITORY + "/" + workflow_path(environment) + "@" + environment.get("GITHUB_REF", "")
@@ -146,6 +146,23 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
     if (environment.get("ELITE_NATIVE_APPROVED_HEAD") != approved
             or not Path(environment.get("ELITE_NATIVE_POLICY", "")).is_absolute()):
         raise ValueError("Legacy native approval/policy controls are missing or inconsistent.")
+    instance = activation.get("runners", {}).get(environment.get("RUNNER_NAME"), {})
+    workspace = Path(environment.get("GITHUB_WORKSPACE", ""))
+    if (environment.get("GITHUB_JOB") not in instance.get("jobs", [])
+            or not set(instance.get("jobs", [])) <= RECOVERABLE_JOBS
+            or not workspace.is_absolute() or str(workspace) != instance.get("workspace")
+            or workspace.parts[-3:] != ("_work", "elite", "elite")
+            or workspace != workspace.resolve()):
+        raise ValueError("Recoverable native runner/workspace is not reserved.")
+    if not all(re.fullmatch(r"[1-9][0-9]*", environment.get(name, "")) for name in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT")):
+        raise ValueError("Recoverable job has no exact run attempt identity.")
+    return activation
+
+
+def require_recoverable_job(policy: dict, environment: dict, event: dict, now=None, verify_assignment=True) -> dict:
+    """Require the complete request and owned assignment before any checkout or native work."""
+    current = time.time() if now is None else now
+    activation = require_recoverable_identity(policy, environment, event, current)
     if verify_assignment and environment.get("ELITE_RECOVERABLE_CODE_ENABLED") != "true":
         raise ValueError("Installed recoverable code was not activated by the owned hook.")
     mode, shard, worker, phase = (environment.get("ELITE_RECOVERABLE_REQUEST_" + name, "")
@@ -168,16 +185,6 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
             raise ValueError("Recoverable frozen plan/assignment attestation changed.")
     elif environment.get("PLAN_DIGEST") or environment.get("ELITE_RECOVERABLE_PLAN_SHA256"):
         raise ValueError("Preparation cannot claim a preexisting frozen plan.")
-    instance = activation.get("runners", {}).get(environment.get("RUNNER_NAME"), {})
-    workspace = Path(environment.get("GITHUB_WORKSPACE", ""))
-    if (environment.get("GITHUB_JOB") not in instance.get("jobs", [])
-            or not set(instance.get("jobs", [])) <= RECOVERABLE_JOBS
-            or not workspace.is_absolute() or str(workspace) != instance.get("workspace")
-            or workspace.parts[-3:] != ("_work", "elite", "elite")
-            or workspace != workspace.resolve()):
-        raise ValueError("Recoverable native runner/workspace is not reserved.")
-    if not all(re.fullmatch(r"[1-9][0-9]*", environment.get(name, "")) for name in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT")):
-        raise ValueError("Recoverable job has no exact run attempt identity.")
     if verify_assignment:
         require_owned_assignment(policy, environment, current)
     return activation
@@ -341,6 +348,56 @@ def require_owned_activation_file(path: Path) -> None:
         raise ValueError("Activation policy must belong to the runner owner.")
 
 
+def require_recoverable_session(policy: dict, environment: dict, now=None) -> None:
+    """Recheck the existing immutable session ticket in both admission and authorization."""
+    import pwd
+    current = time.time() if now is None else now
+    root = Path(pwd.getpwuid(os.getuid()).pw_dir) / "Library/EliteNativeCI/recoverable-sessions"
+
+    def read(path):
+        require_owned_activation_file(path)
+        if path.stat().st_mode & 0o777 != 0o400:
+            raise ValueError("Session evidence is not immutable.")
+        return json.loads(path.read_text())
+
+    ticket = read(root / "ticket.json")
+    if (not isinstance(ticket, dict)
+            or set(ticket) != {"binding", "binding_sha256", "ordinal", "policy_sha256"}
+            or not isinstance(ticket["binding"], str)
+            or ticket["policy_sha256"] != policy_digest(policy)):
+        raise ValueError("Session ticket differs from the installed policy.")
+    path = Path(ticket["binding"])
+    if path.parent != root or path.suffix != ".json":
+        raise ValueError("Session binding is outside owned storage.")
+    binding = read(path)
+    if (not isinstance(binding, dict)
+            or hashlib.sha256(path.read_bytes()).hexdigest() != ticket["binding_sha256"]
+            or set(binding) != {"schema", "policy_sha256", "head", "run_id", "run_attempt", "max_jobs", "expires_at"}
+            or type(binding["schema"]) is not int or binding["schema"] != 1
+            or binding["policy_sha256"] != policy_digest(policy) or binding["head"] != policy["approved_head"]
+            or type(ticket["ordinal"]) is not int or type(binding["max_jobs"]) is not int
+            or not 1 <= ticket["ordinal"] <= binding["max_jobs"] <= 256
+            or type(binding["expires_at"]) not in (int, float) or not math.isfinite(binding["expires_at"])
+            or not current < binding["expires_at"] <= policy["recoverable_activation"]["expires_at"]
+            or environment.get("GITHUB_RUN_ID") != binding["run_id"]
+            or environment.get("GITHUB_RUN_ATTEMPT") != binding["run_attempt"]):
+        raise ValueError("Session run, attempt, budget or expiry is not authorized.")
+
+
+def admit_recoverable(policy: dict, environment: dict, event: dict, now=None) -> Path:
+    """Check the installed session and host; never infer or authorize a job request."""
+    activation = policy["recoverable_activation"]
+    environment.update(ELITE_RECOVERABLE_POLICY_SHA256=policy_digest(policy),
+                       ELITE_RECOVERABLE_WORKFLOW_SHA256=activation["workflow_sha256"],
+                       ELITE_RECOVERABLE_ACTIVATION_SHA256=activation["manifest_sha256"])
+    require_recoverable_session(policy, environment, now)
+    require_recoverable_identity(policy, environment, event, now)
+    guard = load_recoverable_guard(policy)
+    if not guard.PHYSICAL_EXECUTION_ENABLED:
+        raise ValueError("Recoverable native execution HELD by the installed guard.")
+    return require_recoverable_host(policy, environment)
+
+
 def require_trusted_job(environment: dict, event: dict, approved_head: str) -> None:
     """Reject all other repositories, actors, workflows, forks and source revisions."""
     if not re.fullmatch(r"[0-9a-f]{40}", approved_head):
@@ -407,21 +464,27 @@ def require_physical_host(policy: dict, environment: dict) -> Path:
     return workspace
 
 
+def require_recoverable_host(policy: dict, environment: dict) -> Path:
+    """Check the reserved physical host without granting a request or assignment."""
+    activation = policy["recoverable_activation"]
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise ValueError("Recoverable native jobs require physical Apple Silicon.")
+    hardware = output("ioreg", "-rd1", "-c", "IOPlatformExpertDevice")
+    uuids = re.findall(r'"IOPlatformUUID"\s*=\s*"([0-9A-Fa-f-]{36})"', hardware)
+    if len(uuids) != 1 or uuids[0].upper() != policy["recoverable_shards"]["host"]:
+        raise ValueError("Recoverable job is assigned to another physical host.")
+    # One shared host-owned policy may name multiple exact runner instances.
+    instance = activation["runners"][environment["RUNNER_NAME"]]
+    root = Path(instance["workspace"]).parents[2]
+    return require_physical_host(dict(policy, runner_root=str(root)), environment)
+
+
 def validate(policy: dict, environment: dict) -> Path:
     """Validate the immutable pre-job metadata before any workflow checkout or action."""
     event = json.loads(Path(environment["GITHUB_EVENT_PATH"]).read_text())
     if environment.get("GITHUB_JOB") in RECOVERABLE_JOBS:
-        activation = require_recoverable_job(policy, environment, event)
-        if platform.system() != "Darwin" or platform.machine() != "arm64":
-            raise ValueError("Recoverable native jobs require physical Apple Silicon.")
-        hardware = output("ioreg", "-rd1", "-c", "IOPlatformExpertDevice")
-        uuids = re.findall(r'"IOPlatformUUID"\s*=\s*"([0-9A-Fa-f-]{36})"', hardware)
-        if len(uuids) != 1 or uuids[0].upper() != policy["recoverable_shards"]["host"]:
-            raise ValueError("Recoverable job is assigned to another physical host.")
-        # One shared host-owned policy may name multiple exact runner instances.
-        instance = activation["runners"][environment["RUNNER_NAME"]]
-        root = Path(instance["workspace"]).parents[2]
-        return require_physical_host(dict(policy, runner_root=str(root)), environment)
+        require_recoverable_job(policy, environment, event)
+        return require_recoverable_host(policy, environment)
     else:
         require_trusted_job(environment, event, policy["approved_head"])
     return require_physical_host(policy, environment)
@@ -440,10 +503,13 @@ def require_recoverable_checkout(policy: dict, environment: dict, workspace: Pat
 
 
 def main() -> None:
-    """Run from the host-owned hook, or recheck the checked-out source before make ci."""
+    """Admit in the hook, authorize with step env, or recheck the exact checkout."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--policy", default=os.environ.get("ELITE_NATIVE_POLICY"))
-    parser.add_argument("--checkout", action="store_true")
+    stage = parser.add_mutually_exclusive_group()
+    stage.add_argument("--checkout", action="store_true")
+    stage.add_argument("--admit", action="store_true")
+    stage.add_argument("--authorize", action="store_true")
     args = parser.parse_args()
     if not args.policy:
         raise ValueError("A host-owned native policy is required.")
@@ -459,10 +525,16 @@ def main() -> None:
                 or environment.get("ELITE_NATIVE_APPROVED_HEAD", policy["approved_head"]) != policy["approved_head"]):
             raise ValueError("Hook arguments differ from the native approval environment.")
         environment.update(ELITE_NATIVE_POLICY=str(policy_path.resolve()), ELITE_NATIVE_APPROVED_HEAD=policy["approved_head"])
-    if not args.checkout and environment.get("GITHUB_JOB") in RECOVERABLE_JOBS:
+    recoverable = environment.get("GITHUB_JOB") in RECOVERABLE_JOBS
+    if (args.admit or args.authorize) and not recoverable:
+        raise ValueError("Only reviewed recoverable jobs use split authorization.")
+    if not args.checkout and recoverable:
         event = json.loads(Path(environment["GITHUB_EVENT_PATH"]).read_text())
-        environment = authorize_recoverable(policy, environment, event)
-    workspace = validate(policy, environment)
+        workspace = admit_recoverable(policy, environment, event)
+        if not args.admit:
+            environment = authorize_recoverable(policy, environment, event)
+    else:
+        workspace = validate(policy, environment)
     if args.checkout:
         if Path.cwd().resolve() != workspace:
             raise ValueError("Native quality checkout location changed.")
@@ -477,11 +549,13 @@ def main() -> None:
         with Path(environment["GITHUB_ENV"]).open("a") as destination:
             destination.write("ELITE_NATIVE_APPROVED_HEAD=" + policy["approved_head"] + "\n")
             destination.write("ELITE_NATIVE_POLICY=" + str(policy_path.resolve()) + "\n")
-            if environment.get("GITHUB_JOB") in RECOVERABLE_JOBS:
-                for name in ("ELITE_RECOVERABLE_POLICY_SHA256", "ELITE_RECOVERABLE_WORKFLOW_SHA256",
-                             "ELITE_RECOVERABLE_ACTIVATION_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_PATH",
-                             "ELITE_RECOVERABLE_ASSIGNMENT_SHA256", "ELITE_RECOVERABLE_CODE_ENABLED",
-                             "ELITE_RECOVERABLE_PLAN_SHA256"):
+            if recoverable:
+                names = ("ELITE_RECOVERABLE_POLICY_SHA256", "ELITE_RECOVERABLE_WORKFLOW_SHA256",
+                         "ELITE_RECOVERABLE_ACTIVATION_SHA256")
+                if not args.admit:
+                    names += ("ELITE_RECOVERABLE_ASSIGNMENT_PATH", "ELITE_RECOVERABLE_ASSIGNMENT_SHA256",
+                              "ELITE_RECOVERABLE_CODE_ENABLED", "ELITE_RECOVERABLE_PLAN_SHA256")
+                for name in names:
                     if name in environment:
                         destination.write(name + "=" + environment[name] + "\n")
     print(json.dumps({"approvedHead": policy["approved_head"], "physicalHost": True,
@@ -492,11 +566,15 @@ _AUTHORIZATION_FAILURE_SITES = {
     "main": ("hook", "policy-environment-or-publication"),
     "authorize_recoverable": ("pre-job", "source-plan-assignment"),
     "require_recoverable_job": ("pre-job", "exact-job-contract"),
+    "require_recoverable_identity": ("pre-job", "exact-job-contract"),
+    "require_recoverable_session": ("admission", "exact-session"),
+    "admit_recoverable": ("admission", "installed-package-and-host"),
     "require_recoverable_event": ("pre-job", "execution-source-ref"),
     "require_owned_assignment": ("pre-job", "owned-assignment"),
     "load_recoverable_guard": ("pre-job", "installed-package"),
     "require_owned_activation_file": ("policy", "owned-file"),
     "validate": ("host", "platform-hardware-validation"),
+    "require_recoverable_host": ("host", "platform-hardware-validation"),
     "require_physical_host": ("host", "physical-runner-contract"),
     "output": ("host", "external-tool"),
     "require_recoverable_checkout": ("checkout", "workflow-source"),
