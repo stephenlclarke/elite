@@ -26,6 +26,7 @@ public struct OriginalFleetDefinition: Sendable {
   public let integrationBlockers: [String]
   public var runtimeReady: Bool {
     OriginalDorcasRacerActivation.supports(self)
+      || OriginalGiraffeLinerActivation.supports(self)
       || OriginalGopherActivation.supports(self)
       || OriginalAplomadoActivation.supports(self)
       || OriginalLaggarActivation.supports(self)

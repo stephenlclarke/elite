@@ -23,6 +23,25 @@ METHODS = {
         "leisurePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
         "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
+    "NativeCrewLogHistoricalLoaderUnitTests": (
+        "bundledC08LoadRetainsOriginalDigestGeometryAndAuthorizedRecorderFit",
+        "futureLiveBrabantCannotSupplyC08ButOrdinaryCatalogueLookupIsUnchanged",
+        "changedIdentityVersionOrRecorderBindingsCannotClaimHistoricalOverride",
+        "modifiedPackBytesAndHistoricalAuthenticationFailureCannotFallbackOrGainAuthority",
+    ),
+    "OriginalGiraffeLinerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSalvageConsumersKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
+    "NativeCrewLogHistoricalGeometryUnitTests": (
+        "retainedResourceKeepsExactAuthenticatedGeometryAppearanceAndRecorderRadius",
+        "changedGeometryMaterialProvenanceOrSourceIdentityCannotPassTheOriginalPin",
+        "currentBrabantDesignCannotReplaceTheHistoricalRecorderOrGrantHullAccess",
+        "originalSourceFitsAndCustodyRemainExactWithoutAdvancingTheParent",
+    ),
     "OriginalAplomadoUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
