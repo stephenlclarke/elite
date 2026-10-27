@@ -23,7 +23,7 @@ extension ScriptPackLibrary {
         [$0.model] + ($0.components ?? []).map(\.model)
       })
     for reference in references where reference.hasPrefix("catalogue:") {
-      guard let design = ShipCatalogue.ship(String(reference.dropFirst(10)))?.design,
+      guard let design = try catalogueNPCDesign(reference, manifest: manifest),
         scriptGeometryValid(design)
       else { throw MissionPackError("The NPC catalogue geometry is unavailable or too large.") }
       designs[reference] = design
@@ -33,6 +33,20 @@ extension ScriptPackLibrary {
     }
     return (designs, resources)
   }
+  /// Keep the C08 package independent of live hull activation without changing ordinary references.
+  static func catalogueNPCDesign(
+    _ reference: String, manifest: ScriptManifest,
+    live: (String) -> ShipDesign? = { ShipCatalogue.ship($0)?.design },
+    historicalRecorder: () throws -> ShipDesign = {
+      try NativeInductionCrewLogHistoricalGeometry.design.get()
+    }
+  ) throws -> ShipDesign? {
+    if NativeInductionCrewLogHistoricalGeometry.applies(to: manifest, reference: reference) {
+      return try historicalRecorder()
+    }
+    return live(String(reference.dropFirst(10)))
+  }
+
   static func scriptGeometryValid(_ design: ShipDesign) -> Bool {
     design.vertices.count <= 4096 && design.faces.count <= 8192
       && design.faces.allSatisfy { $0.count <= 64 }
