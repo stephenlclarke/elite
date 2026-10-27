@@ -381,6 +381,14 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH091"))
   }
 
+  static let dorcasRacer: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH101") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH101"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -790,6 +798,16 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH101":
+      guard definition.name == "Dorcas Racer",
+        definition.sourceSHA256
+          == "a5d9bd1d8480634ed6b4512c339c6048748b41f5bd4e3d292b1cdfc8ad2f3785",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH101-design.toml",
+        model.sourceSHA256 == "82a26071a46ad1fc2cd4827ee8387e8cfa7d824c738cf29afbde35df740a042b"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -900,6 +918,7 @@ extension CatalogueShip {
     case "SH084": result = OriginalHullPhysicalContract.llama
     case "SH085": result = OriginalHullPhysicalContract.laggar
     case "SH091": result = OriginalHullPhysicalContract.gopher
+    case "SH101": result = OriginalHullPhysicalContract.dorcasRacer
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
