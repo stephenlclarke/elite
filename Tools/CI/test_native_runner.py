@@ -180,7 +180,7 @@ class MaintainedMakeTargetsTests(unittest.TestCase):
         self.assertIn("test_script_instance_equality.py", plan)
         quality = subprocess.check_output(["make", "-n", "ci"], cwd=root, text=True)
         self.assertNotIn("Tools/CI/isolated_units.py", quality)
-        for gate in ["test_native_runner.py", "script/coverage.sh", "leaks --atExit"]:
+        for gate in ["test_native_runner.py", "quality_phase_checkpoints.py normal", "quality_phase_checkpoints.py leaks"]:
             self.assertIn(gate, quality)
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
@@ -210,7 +210,7 @@ class MaintainedMakeTargetsTests(unittest.TestCase):
                     "/toolchain/swift", flags, mode, fixture, ["EliteCoreTests.Smoke/always()"])
                 self.assertIn("--sanitize=" + mode, test)
                 self.assertEqual("--no-parallel" in test, mode == "address")
-                self.assertEqual("--filter" in test, mode == "address")
+                self.assertIn("--filter", test)
 
 
 class ImmutablePreparationTests(unittest.TestCase):

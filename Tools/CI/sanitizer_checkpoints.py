@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resume complete sanitizer outcomes without replacing the full concurrent TSAN run."""
+"""Resume complete sanitizer groups; full concurrent TSAN remains a separate policy."""
 import argparse
 from collections import Counter
 import fcntl
@@ -32,6 +32,15 @@ def digest(path):
         for block in iter(lambda: stream.read(1024 * 1024), b''):
             value.update(block)
     return value.hexdigest()
+
+
+def runtime_identity(environment):
+    """Bind controls which can affect execution, including all authored test opt-ins."""
+    names = {'PATH', 'HOME', 'TMPDIR', 'LANG', 'TZ', 'LLVM_PROFILE_FILE', 'DEVELOPER_DIR', 'SDKROOT', 'TOOLCHAINS',
+             'SWIFT_EXEC', 'ASAN_OPTIONS', 'TSAN_OPTIONS', 'MallocStackLogging', 'MallocScribble'}
+    names.update(key for key in environment if key.startswith(('ELITE_', 'SWIFT_', 'DYLD_', 'LC_')))
+    return {key: hashlib.sha256(environment[key].encode()).hexdigest() if key in environment else None
+            for key in sorted(names)}
 
 
 def atomic_json(path, value):
@@ -92,19 +101,33 @@ def inventory(text):
     return sorted(methods)
 
 
-def partition(methods, mode, target=100):
-    """Keep all original TSAN overlap; ASAN packs whole suites without parallelism."""
+def partition(methods, mode, target=100, shared_groups=(), full_concurrent=False):
+    """Pack whole suites; audited shared-state participants remain in one process."""
     if not methods or len(set(methods)) != len(methods) or target < 1:
         raise ValueError('Invalid sanitizer selection')
-    if mode == 'thread':
+    if full_concurrent and mode != 'thread':
+        raise ValueError('Full concurrent policy requires thread mode')
+    if mode == 'thread' and full_concurrent:
         return [sorted(methods)]
-    if mode != 'address':
+    if mode not in ('address', 'thread'):
         raise ValueError('Unknown sanitizer mode')
     suites = {}
     for method in sorted(methods):
         suites.setdefault(group_key(method), []).append(method)
     batches, pending = [], []
+    reserved = set()
+    for group in shared_groups:
+        selected = set(group)
+        if not selected or not selected <= set(methods) or reserved & selected:
+            raise ValueError('Shared group is empty, overlapping or outside discovery')
+        keys = {group_key(method) for method in selected}
+        if selected != {method for method in methods if group_key(method) in keys}:
+            raise ValueError('Shared group splits a suite')
+        batches.append(sorted(selected))
+        reserved.update(selected)
     for suite in suites.values():
+        if suite[0] in reserved:
+            continue
         if pending and len(pending) + len(suite) > target:
             batches.append(pending)
             pending = []
@@ -117,6 +140,44 @@ def partition(methods, mode, target=100):
     if Counter(method for batch in batches for method in batch) != Counter(methods):
         raise ValueError('Batch partition changed the full selection')
     return batches
+
+
+def grouping_policy(root, methods, mode, target, full_concurrent=False):
+    """Fail closed when the reviewed shared-state source or inventory changes."""
+    if mode != 'thread' or full_concurrent:
+        return {'policy': 'full-concurrent-v1' if full_concurrent else 'whole-suite-v1',
+                'target': target, 'shared_groups': []}
+    manifest = json.loads((root / 'Tools/CI/sanitizer_groups.json').read_text())
+    if manifest['schema'] != 1:
+        raise ValueError('Unknown shared-state grouping schema')
+    by_name = {'/'.join(xml_identity(method)): method for method in methods}
+    groups = []
+    for entry in manifest['groups']:
+        for name, expected in entry['sources'].items():
+            path = root / name
+            if path.is_symlink() or digest(path) != expected:
+                raise ValueError('Shared-state source requires grouping review: ' + name)
+        members = entry['members']
+        if len(set(members)) != len(members) or any(name not in by_name for name in members):
+            raise ValueError('Shared-state group no longer matches discovered inventory')
+        groups.append([by_name[name] for name in members])
+    # A new AppKit consumer must be audited instead of silently losing shared-process coverage.
+    appkit = next(entry for entry in manifest['groups'] if entry['name'] == 'appkit-shared-process')
+    consumers = {str(path.relative_to(root)) for path in (root / 'Tests/EliteCoreTests').glob('*.swift')
+                 if '@Test' in path.read_text() and re.search(
+                     r'import (?:AppKit|EliteMac)\b|PlanetRenderer\.|NSApplication\.shared|NSApp\b',
+                     path.read_text())}
+    if consumers != set(appkit['sources']):
+        raise ValueError('AppKit participant source set requires grouping review')
+    salvage = next(entry for entry in manifest['groups'] if entry['name'] == 'salvage-shared-release')
+    consumers = {str(path.relative_to(root)) for path in (root / 'Tests/EliteCoreTests').glob('*.swift')
+                 if re.search(r'NativeSalvageAdmissionTestFixture|NativeSalvageReleaseSnapshot', path.read_text())}
+    if consumers != set(salvage['sources']):
+        raise ValueError('Salvage shared fixture participant set requires grouping review')
+    partition(methods, mode, target, groups)
+    return {'policy': 'recoverable-thread-v1', 'target': target,
+            'manifest': manifest, 'shared_groups': groups,
+            'coverage': 'Internal concurrency and audited groups retained; arbitrary cross-group overlap differs.'}
 
 
 GPU_OPT_IN = (
@@ -251,7 +312,7 @@ def legacy_requalification(attempt, identity, methods):
     for key in set(old) - {'schema', 'runner', 'inputs'}:
         if old[key] != identity[key]:
             raise ValueError('Tested executable, environment, selection or toolchain changed: ' + key)
-    if prior['command'] != batch_command(old['swift_executable'], old['flags'], 'thread', attempt, methods):
+    if prior['command'] != batch_command(old['swift_executable'], old['flags'], 'thread', attempt, methods, True):
         raise ValueError('Legacy command is not the full original concurrent TSAN command')
     changed = {name for name in set(old['inputs']) | set(identity['inputs'])
                if old['inputs'].get(name) != identity['inputs'].get(name)}
@@ -386,13 +447,13 @@ def output(command, root, environment, lock):
                                    pass_fds=(lock.fileno(),), start_new_session=True).strip()
 
 
-def batch_command(swift, flags, mode, attempt, methods):
-    """TSAN runs unfiltered; ASAN selects complete suites with bounded arguments."""
+def batch_command(swift, flags, mode, attempt, methods, full_concurrent=False):
+    """Keep TSAN parallel internally; only explicit full-concurrent mode is unfiltered."""
     command = [swift, 'test', *flags, '--skip-build']
     if mode == 'address':
         command.append('--no-parallel')
     command += ['--xunit-output', str(attempt / 'tests.xml')]
-    if mode == 'address':
+    if not full_concurrent:
         patterns = set()
         for method in methods:
             module, components = identifier(method)
@@ -421,7 +482,32 @@ def progress(message):
         sys.stdout = open(os.devnull, 'w')
 
 
-def run_mode(mode, cache, target=100, requalify_attempt=None):
+def build_and_discover(root, swift, flags, environment, lock, report):
+    started = time.monotonic()
+    stage = 'build'
+    try:
+        with (report / 'build.log').open('wb') as log:
+            subprocess.run([swift, 'build', '--build-tests', *flags], cwd=root, env=environment,
+                           stdout=log, stderr=subprocess.STDOUT, check=True,
+                           pass_fds=(lock.fileno(),), start_new_session=True)
+        build_wall = time.monotonic() - started
+        stage = 'discovery'
+        listing = output([swift, 'test', *flags, 'list', '--skip-build'], root, environment, lock)
+        (report / 'discovery.log').write_text(listing + '\n')
+        methods = inventory(listing)
+        bins = output([swift, 'build', *flags, '--show-bin-path'], root, environment, lock)
+        images = [image for image in sorted(Path(bins).glob('*.xctest/Contents/MacOS/*')) if image.is_file()]
+        if len(images) != 1:
+            raise ValueError('Expected one actual sanitizer test image')
+        return images[0], methods, build_wall
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+        atomic_json(report / 'phase-failure.json', {'status': 'failed', 'failure_kind': stage,
+                    'reason': str(error), 'exit_code': getattr(error, 'returncode', None),
+                    'wall_seconds': time.monotonic() - started})
+        raise
+
+
+def run_mode(mode, cache, target=100, requalify_attempt=None, full_concurrent=False):
     """Build/discover once, then execute or reuse each fully reconciled batch."""
     root = ROOT
     owned_directory(cache)
@@ -449,40 +535,27 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
         if output(['git', 'status', '--porcelain'], root, environment, lock):
             raise ValueError('Sanitizer checkpoints require a clean committed checkout')
         before = executable_inputs(root, scratch)
-        with (report / 'build.log').open('wb') as log:
-            subprocess.run([swift, 'build', '--build-tests', *flags], cwd=root, env=environment,
-                           stdout=log, stderr=subprocess.STDOUT, check=True,
-                           pass_fds=(lock.fileno(),), start_new_session=True)
-        listing = output([swift, 'test', *flags, 'list', '--skip-build'], root, environment, lock)
-        (report / 'discovery.log').write_text(listing + '\n')
-        methods = inventory(listing)
-        bins = output([swift, 'build', *flags, '--show-bin-path'], root, environment, lock)
-        images = sorted(Path(bins).glob('*.xctest/Contents/MacOS/*'))
-        images = [image for image in images if image.is_file()]
-        if len(images) != 1:
-            raise ValueError('Expected one actual sanitizer test image')
-        image = images[0]
-        identity = {'schema': 2, 'opt_in_policy': opt_in_policy(root, environment), 'inputs': executable_inputs(root, scratch),
+        image, methods, build_wall_seconds = build_and_discover(root, swift, flags, environment, lock, report)
+        policy = grouping_policy(root, methods, mode, target, full_concurrent)
+        identity = {'schema': 3, 'grouping': policy, 'opt_in_policy': opt_in_policy(root, environment), 'inputs': executable_inputs(root, scratch),
                     'runner': digest(Path(__file__)), 'mode': mode, 'flags': flags,
                     'parallel': mode == 'thread', 'architecture': platform.machine(),
                     'swift': output([swift, '--version'], root, environment, lock),
                     'sdk': output(['xcrun', '--show-sdk-version'], root, environment, lock),
                     'swift_executable': swift, 'image_sha256': digest(image),
                     'image_uuid': output(['xcrun', 'dwarfdump', '--uuid', str(image)], root, environment, lock),
-                    'environment': {key: environment.get(key) for key in (
-                        'DEVELOPER_DIR', 'SDKROOT', 'TOOLCHAINS', 'SWIFT_EXEC', 'SWIFT_BACKTRACE',
-                        'ASAN_OPTIONS', 'TSAN_OPTIONS', 'DYLD_LIBRARY_PATH',
-                        'DYLD_FRAMEWORK_PATH', 'DYLD_INSERT_LIBRARIES')}, 'inventory': methods}
+                    'environment': runtime_identity(environment), 'inventory': methods,
+                    'os_version': {'release': os.uname().release, 'version': os.uname().version}}
         if any(identity['inputs'].get(key) != value for key, value in before.items()):
             raise ValueError('Executable inputs changed during build')
         key = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
         storage = cache / key
         owned_directory(storage)
-        batches = partition(methods, mode, target)
+        batches = partition(methods, mode, target, policy['shared_groups'], full_concurrent)
         plan = {'current_head': head, 'identity_key': key, 'identity': identity, 'batches': batches,
                 'packing_target': target,
-                'concurrency': 'Full original concurrent selection is one indivisible TSAN group.'
-                    if mode == 'thread' else 'Original no-parallel mode; suites remain intact.',
+                'concurrency': ('Separate full concurrent TSAN policy.' if full_concurrent else
+                    'Whole-suite groups; TSAN internal parallelism retained, cross-group overlap differs.'),
                 'oversized_batches': [i for i, batch in enumerate(batches) if len(batch) > target]}
         (report / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
         completed = []
@@ -492,7 +565,7 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
             reused = next(((attempt, receipt) for attempt in sorted(batch_root.iterdir())
                            if attempt.is_dir() and (receipt := successful_attempt(attempt, identity, batch))), None)
             if reused is None and requalify_attempt is not None:
-                if mode != 'thread' or len(batches) != 1:
+                if mode != 'thread' or not full_concurrent or len(batches) != 1:
                     raise ValueError('Explicit legacy requalification is limited to full TSAN mode')
                 attempt = requalify_completed(requalify_attempt, batch_root, identity, batch, head)
                 receipt = successful_attempt(attempt, identity, batch)
@@ -504,7 +577,7 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
             else:
                 attempt = batch_root / str(uuid.uuid4())
                 owned_directory(attempt)
-                command = batch_command(swift, flags, mode, attempt, batch)
+                command = batch_command(swift, flags, mode, attempt, batch, full_concurrent)
                 atomic_json(attempt / 'start.json', {'head': head, 'identity': identity,
                             'methods': batch, 'command': command, 'started_utc': time.time()})
                 started = time.monotonic()
@@ -519,11 +592,17 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
                            'command': command, 'exit_code': result.returncode,
                            'wall_seconds': time.monotonic() - started, 'status': 'failed',
                            'report': actual_xml.name, 'outputs': {}}
+                failure_kind = 'test-process'
                 try:
                     if result.returncode:
+                        text = (attempt / 'test.log').read_text(errors='replace')
+                        if result.returncode < 0 or 'unexpected signal' in text or any(marker in text for marker in ERRORS):
+                            failure_kind = 'runtime-diagnostic-or-signal'
                         raise ValueError('Sanitizer process did not exit successfully')
+                    failure_kind = 'evidence-validation'
                     inspect_xml(actual_xml, batch, selected_opt_in_skips(identity, batch))
                     if any(marker in (attempt / 'test.log').read_text(errors='replace') for marker in ERRORS):
+                        failure_kind = 'sanitizer-diagnostic'
                         raise ValueError('Sanitizer reported an error')
                     if executable_inputs(root, scratch) != identity['inputs'] or digest(image) != identity['image_sha256']:
                         raise ValueError('Executable inputs changed during test execution')
@@ -533,17 +612,23 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
                                    for file in [attempt / 'test.log', *sorted(attempt.glob('*.xml'))]})
                 except (ValueError, OSError, ET.ParseError) as error:
                     receipt['reason'] = str(error)
+                    receipt['failure_kind'] = failure_kind
                 atomic_json(attempt / 'result.json', receipt)
                 for file in attempt.iterdir():
                     file.chmod(0o400)
                 attempt.chmod(0o500)
                 if receipt['status'] != 'passed':
                     copy_report(attempt, report / ('failed-batch-' + str(index)))
+                    atomic_json(report / 'phase-failure.json', {'status': 'failed', 'batch': index,
+                                'failure_kind': receipt['failure_kind'], 'reason': receipt['reason'],
+                                'exit_code': receipt['exit_code'], 'test_wall_seconds': receipt['wall_seconds'],
+                                'build_wall_seconds': build_wall_seconds, 'completed_batches': completed})
                     raise ValueError('Sanitizer batch failed; original attempt retained: ' + str(attempt))
             copy_report(attempt, report / ('batch-' + str(index)))
             completed.append({'batch': index, 'tested_head': receipt['tested_head'],
                               'current_head': head, 'reused': reused is not None,
                               'attempt': str(attempt), 'methods': batch, 'outcome_status': receipt['status'],
+                              'test_wall_seconds': receipt['wall_seconds'],
                               'executed_methods': receipt.get('executed_methods', len(batch)),
                               'source_declared_opt_in_skips': receipt.get('source_declared_opt_in_skips', 0),
                               'outputs': receipt['outputs']})
@@ -561,6 +646,9 @@ def run_mode(mode, cache, target=100, requalify_attempt=None):
                    'executed_methods': sum(batch['executed_methods'] for batch in completed),
                    'source_declared_opt_in_skips': sum(batch['source_declared_opt_in_skips'] for batch in completed),
                    'unexpected_skips': 0,
+                   'build_wall_seconds': build_wall_seconds,
+                   'executed_test_wall_seconds': sum(batch['test_wall_seconds'] for batch in completed if not batch['reused']),
+                   'reused_original_test_wall_seconds': sum(batch['test_wall_seconds'] for batch in completed if batch['reused']),
                    'qualification': 'All applicable methods completed; declared opt-ins are explicitly unexecuted. Coverage, leaks, review and hosted checks remain separate.'}
         (report / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
 
@@ -569,15 +657,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=['thread', 'address'])
     parser.add_argument('--cache', type=Path, default=Path.home() / 'Library/EliteNativeCI/sanitizer-checkpoints')
+    parser.add_argument('--target', type=int, default=100, help='Soft method target; suites/shared groups never split')
+    parser.add_argument('--full-concurrent', action='store_true', help='Separate unpartitioned TSAN coverage policy')
     parser.add_argument('--requalify-attempt', type=Path,
                         help='Explicitly attest a completed legacy process under the corrected opt-in policy')
     args = parser.parse_args()
+    if args.full_concurrent and args.mode != 'thread':
+        parser.error('Full concurrent policy is only valid for ThreadSanitizer')
     if args.mode != 'thread' and args.requalify_attempt is not None:
         parser.error('Legacy requalification is limited to full ThreadSanitizer mode')
     prior = args.requalify_attempt
     if args.mode == 'thread' and prior is None and os.environ.get('ELITE_TSAN_REQUALIFY_ATTEMPT'):
         prior = Path(os.environ['ELITE_TSAN_REQUALIFY_ATTEMPT'])
-    run_mode(args.mode, args.cache, requalify_attempt=prior)
+    if prior is not None:
+        parser.error('Historical requalification is not supported by the new grouping identity; retain old proof separately')
+    run_mode(args.mode, args.cache, target=args.target, full_concurrent=args.full_concurrent)
 
 
 if __name__ == '__main__':

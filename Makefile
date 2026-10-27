@@ -1,8 +1,8 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-.PHONY: sanitizer-checkpoints-check native-runner-check instance-equality-check ci-capture-check help build run test unit-ci local-runner-check coverage coverage-check threads address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: sanitizer-checkpoints-check native-runner-check instance-equality-check ci-capture-check help build run test unit-ci local-runner-check coverage coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -13,19 +13,19 @@ unit-ci: instance-equality-check
 	python3 Tools/CI/isolated_units.py
 local-runner-check:
 	python3 -m unittest discover -s Tools/CI -p 'test_local_runner.py'
-coverage coverage-check:
-	./script/coverage.sh
+coverage coverage-check: sanitizer-checkpoints-check
+	python3 Tools/CI/quality_phase_checkpoints.py normal
 sanitizer-checkpoints-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_sanitizer_checkpoints.py'
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_quality_phase_checkpoints.py'
 threads: sanitizer-checkpoints-check
 	python3 Tools/CI/sanitizer_checkpoints.py thread
 address: sanitizer-checkpoints-check
 	python3 Tools/CI/sanitizer_checkpoints.py address
-leaks:
-	swift build
-	mkdir -p reports
-	/usr/bin/leaks --atExit -- "$$(swift build --show-bin-path)/L337" --diagnostics > reports/leaks.txt 2>&1
-	@tail -8 reports/leaks.txt
+threads-full: sanitizer-checkpoints-check
+	python3 Tools/CI/sanitizer_checkpoints.py thread --full-concurrent
+leaks: sanitizer-checkpoints-check
+	python3 Tools/CI/quality_phase_checkpoints.py leaks
 readme-media:
 	swift run L337 --readme-media
 	mkdir -p Resources

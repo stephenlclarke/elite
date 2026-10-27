@@ -1,0 +1,101 @@
+{
+  "base": "38ae83ec3517a1085e2d40e315a4c54260bcddac",
+  "branch": "feat/recoverable-quality-phases",
+  "python": "Python 3.14.7",
+  "results": [
+    {
+      "selection": "test_sanitizer_checkpoints.py",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_sanitizer_checkpoints.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.2341206669807434,
+      "framework_tests": 32,
+      "framework_seconds": 0.129,
+      "log": "/tmp/elite-recoverable-quality-python/test_sanitizer_checkpoints.py.log",
+      "log_sha256": "e277b053a84eb7f698cafaa76fa90067d7d4c32c4489bfa9f739c17c5494a6c7"
+    },
+    {
+      "selection": "test_quality_phase_checkpoints.py",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_quality_phase_checkpoints.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.16549187479540706,
+      "framework_tests": 8,
+      "framework_seconds": 0.064,
+      "log": "/tmp/elite-recoverable-quality-python/test_quality_phase_checkpoints-final.py.log",
+      "log_sha256": "371e25361be4e7b5ac938bc4f8f510251bb6a576312cde15420b74c678e7fc2e"
+    },
+    {
+      "selection": "test_crash_artifacts.py",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_crash_artifacts.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.23166766576468945,
+      "framework_tests": 60,
+      "framework_seconds": 0.158,
+      "log": "/tmp/elite-recoverable-quality-python/test_crash_artifacts.py.log",
+      "log_sha256": "42ddb1ef5c0350336e8f309343c9014771d21ff85bbd70c93e71a857ac740d72"
+    },
+    {
+      "selection": "test_native_runner.py",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "Tools/CI",
+        "-p",
+        "test_native_runner.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.9253084161318839,
+      "framework_tests": 15,
+      "framework_seconds": 0.88,
+      "log": "/tmp/elite-recoverable-quality-python/test_native_runner.py.log",
+      "log_sha256": "764ce1bb870d1be304f4ede25a0ab8dad24e2b89e9302bc550ca94fd00ec6459"
+    }
+  ],
+  "distinct_cases": 115,
+  "source_files": {
+    "Makefile": "699f9b0b68221453a7218e159d828c89ef22b337b5484e91c22ad3f3d042ebd3",
+    "README.md": "5c2547afbabe1a4e3ab1ccbecb7338a3b0719f7efd36c143511b78c99d2ff650",
+    "Tools/CI/crash_artifacts.py": "bfe168fa7c1b49d4c8e0138ecd141b612edea7f9ddd42dfbbe6734ab9a898ab2",
+    "Tools/CI/quality_phase_checkpoints.py": "1baf573364b5fd27476fe9dfec042640530081f77589a3c0bae09fafed7edf1c",
+    "Tools/CI/sanitizer_checkpoints.py": "9f329dd9d7db2c4a122f6b413ed188e0130975d6eafe2d5f96ce35f37ea639f4",
+    "Tools/CI/sanitizer_groups.json": "5cb1eff1b8505f6a165db34009587ec8f4780b4074526306608fa7977b10a63a",
+    "Tools/CI/test_crash_artifacts.py": "1808a28009ee2442f7cf77c655e801e9d6da3b3c8275e053865b62d14cb2703d",
+    "Tools/CI/test_native_runner.py": "3e46138edf3412c559c809069582b2f0deb32924c832172e4901ba3be54bc565",
+    "Tools/CI/test_quality_phase_checkpoints.py": "21900e7172b41adfa591bed3b42e42e38b0472ff3dbe9a4b5d31839e5e10a671",
+    "Tools/CI/test_sanitizer_checkpoints.py": "e62b6f83dd9bbdb82e7d53868c83e56b3c4aca355d0e2a3264615de200d7bc95",
+    "docs/ISSUE-recoverable-quality-phases.md": "9c2a4c3bccc9e192b88da41c9dd640f91776b32c26a6968554339afb6f9e70b5",
+    "docs/PR-recoverable-quality-phases.md": "04cdffe962b20f2952ff1ad78144feba6006e1415599bcee6332a4ff52a53b2e"
+  },
+  "qualification": "Python fake-process/source-contract only; native execution not performed. Phase validator correction reran only affected8cases;32/60/15 unchanged source/results retained.",
+  "native_qualification": "Pending sole executor after live run naturally terminates and evidence retained.",
+  "publication": "Local only; pushing queues native CI, requires coordinated boundary."
+}

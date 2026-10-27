@@ -58,7 +58,11 @@ def coverage_helper(pid, row, workspace):
     image = Path(workspace) / '.build/arm64-apple-macosx/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests'
     expected = [argv[0], '--test-bundle-path', str(image), '--enable-code-coverage',
                 str(image), '--testing-library', 'swift-testing']
-    if argv != expected or not row.get('start'):
+    if argv != expected:
+        image = checkpoint_coverage_image(argv, workspace)
+        if image is None:
+            return None
+    if not row.get('start'):
         return None
     try:
         confined(image, Path(workspace) / '.build')
@@ -67,6 +71,49 @@ def coverage_helper(pid, row, workspace):
     except (OSError, ValueError):
         return None
     return {'pid': pid, 'start': row['start'], 'command': row['command'], 'arguments': argv}
+
+
+def checkpoint_coverage_image(argv, workspace):
+    """Only the exact normal phase child form and its owned durable attempt qualify."""
+    if len(argv) != 10:
+        return None
+    image = Path(argv[2])
+    layouts = [Path(workspace) / '.build' / path for path in (
+        'arm64-apple-macosx/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests',
+        'out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests')]
+    if image not in layouts:
+        return None
+    report = Path(argv[6])
+    cache = Path.home() / 'Library/EliteNativeCI/sanitizer-checkpoints/phases'
+    try:
+        if any(path.is_symlink() for path in (cache, *cache.parents, image, *image.parents)):
+            return None
+        relative = report.relative_to(cache)
+        if (len(relative.parts) != 3 or not re.fullmatch(r'[0-9a-f]{64}', relative.parts[0])
+                or not re.fullmatch(r'[0-9a-f-]{36}', relative.parts[1])
+                or relative.parts[2] != 'tests-swift-testing.xml'):
+            return None
+        attempt = confined(report.parent, cache)
+        start = confined(attempt / 'start.json', cache)
+        for path in (cache, attempt.parent, attempt, start):
+            info = path.stat()
+            if info.st_uid != os.getuid() or info.st_mode & 0o022:
+                return None
+        record = json.loads(start.read_text())
+        requested = str(attempt / 'tests.xml')
+        if (record['identity']['phase'] != 'normal'
+                or record['command'] != [record['identity']['swift_executable'], 'test',
+                    '--enable-code-coverage', '--skip-build', '--xunit-output', requested]):
+            return None
+        expected = [argv[0], '--test-bundle-path', str(image), '--enable-code-coverage',
+                    '--skip-build', '--xunit-output', str(report), str(image),
+                    '--testing-library', 'swift-testing']
+        # Swift 6.4.1 retained --skip-build and rewrote XUnit's filename in saved helper evidence.
+        if argv != expected or report.is_symlink():
+            return None
+        return image
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
 
 
 def fault_capture_exit_code(code, diagnostic):
