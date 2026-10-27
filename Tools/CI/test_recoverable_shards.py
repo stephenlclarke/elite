@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -578,6 +579,235 @@ class PhaseTests(Fixture):
 
 
 class ProcessTests(Fixture):
+    def progress_context(self, mode="address"):
+        return {"mode": mode, "shard": "a" * 64, "selected_method_count": 2,
+                "validated_shards_completed": 1, "shards_total": 3}
+
+    def test_observed_fragmented_ansi_parameterized_and_parallel_events_are_not_proof(self):
+        # Exact Swift Testing spelling from retained TSAN batch-0; Unicode is escaped in source.
+        started = "\u25c7 Test celestialModeRendererEvidence() started.\n"
+        parameterized = "\u25c7 Test cabinFittingIntentRefusesStalePausedWrongStationAndCapacityWithoutCharging() started.\n"
+        for mode in shards.MODES:
+            with self.subTest(mode=mode):
+                attempt = self.root / (mode + "-observations")
+                attempt.mkdir()
+                now = [10.0]
+                with (attempt / "test.log").open("wb") as raw, patch.object(shards.legacy, "progress"), shards.ObservedTestProgress(
+                        attempt, raw, self.progress_context(mode), clock=lambda: now[0]) as capture:
+                    # Split inside a multibyte glyph, an ANSI sequence and a test name.
+                    data = ("\x1b[32m" + started.rstrip() + "\x1b[0m\n" + parameterized).encode()
+                    for byte in data:
+                        capture.feed(bytes([byte]))
+                    capture.feed("\u25c7 Test expanded(argument: \"a b\") started.\n".encode())
+                    self.assertEqual(len(capture.active), 3)
+                    now[0] = 15.0
+                    capture.feed("\u2718 Test expanded(argument: \"a b\") recorded an issue at File.swift:1:1\n".encode())
+                    capture.feed("\u2718 Test expanded(argument: \"a b\") failed after 4.5 seconds with 1 issue.\n".encode())
+                    capture.feed("\u2714 Test celestialModeRendererEvidence() passed after 0.387 seconds.\n".encode())
+                    capture.feed("\u25c7 Test run started.\n".encode())
+                    capture.feed(b"unfinished partial test line")
+                    value = capture.publish("interrupted", force=True)
+                    self.assertEqual(value["observed_counts"], dict(started=3, completed=2, failed=1, skipped=0, cancelled=0, issues=1))
+                    self.assertEqual(value["observed_active"][0]["age_seconds"], 5)
+                    self.assertTrue(value["partial_line"])
+                    self.assertEqual(value["observed_active"][0]["name"], parameterized.split("Test ")[1].split(" started.")[0])
+                    self.assertEqual((attempt / "test.log").read_bytes()[:len(data)], data)
+                    self.assertFalse((attempt / "result.json").exists())
+                events = [json.loads(line) for line in (attempt / "test-events.jsonl").read_text().splitlines()]
+                self.assertEqual(events[-1]["reported_seconds"], 0.387)
+                self.assertTrue(all(event["mode"] == mode for event in events))
+
+    def test_same_display_names_remain_ambiguous_and_truncated_records_do_not_complete(self):
+        attempt = self.root / "ambiguous-progress"
+        attempt.mkdir()
+        with (attempt / "test.log").open("wb") as raw, patch.object(shards.legacy, "progress"), shards.ObservedTestProgress(
+                attempt, raw, self.progress_context()) as capture:
+            capture.feed(("\u25c7 Test same(x:) started.\n" * 2).encode())
+            capture.feed("\u2714 Test same(x:) passed after 1.0 seconds.\n".encode())
+            self.assertEqual(len(capture.active), 2)
+            capture.feed(b"x" * 70000)
+            capture.feed("\u2714 Test bogus() passed after 1.0 seconds.\n".encode())
+            self.assertEqual(capture.counts["completed"], 1)
+            capture.publish("interrupted", force=True)
+        events = [json.loads(line) for line in (attempt / "test-events.jsonl").read_text().splitlines()]
+        self.assertTrue(events[-1]["ambiguous_same_name"])
+        self.assertNotIn("observed_test_seconds", events[-1])
+
+    def test_pty_drains_exact_bytes_and_silent_heartbeat_for_both_sanitizers(self):
+        for mode in shards.MODES:
+            with self.subTest(mode=mode):
+                attempt = self.root / (mode + "-pty")
+                attempt.mkdir()
+                summary = self.root / (mode + "-summary")
+                # Line-buffering is exercised in a fake Python child, not asserted for Swift.
+                script = "import os,time; assert os.isatty(1); print('\\u25c7 Test quiet(x:) started.'); time.sleep(.25); print('\\u2714 Test quiet(x:) passed after 0.25 seconds.')"
+                with patch.object(shards, "PROGRESS_HEARTBEAT_SECONDS", .05), patch.object(shards.legacy, "progress") as output, patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary)}):
+                    code = shards.execute_process([sys.executable, "-c", script], self.root, attempt,
+                        5, [], {"LANG": "C"}, isolate_environment=False, progress=self.progress_context(mode))
+                self.assertEqual(code, 0)
+                raw = (attempt / "test.log").read_bytes()
+                self.assertEqual(raw, "\u25c7 Test quiet(x:) started.\n\u2714 Test quiet(x:) passed after 0.25 seconds.\n".encode())
+                value = shards.load_json(attempt / "test-progress.json")
+                self.assertEqual(value["state"], "exited")
+                self.assertTrue(value["stream_eof"])
+                heartbeats = [json.loads(call.args[0])["test_progress_heartbeat"] for call in output.call_args_list
+                              if "test_progress_heartbeat" in json.loads(call.args[0])]
+                self.assertTrue(any(row["observed_active"] and row["observed_active"][0]["age_seconds"] > .05 for row in heartbeats))
+                self.assertIn(mode + " shard", summary.read_text())
+                self.assertIn("validated shards 1/3", summary.read_text())
+                self.assertEqual(shards.load_json(attempt / "child-exit.json")["exit_code"], 0)
+
+    def test_progress_timeout_retains_partial_raw_events_and_no_success(self):
+        for mode in shards.MODES:
+            attempt = self.root / (mode + "-timeout-progress")
+            attempt.mkdir()
+            script = "import time; print('\\u25c7 Test unfinished() started.'); time.sleep(10)"
+            with patch.object(shards.legacy, "progress"):
+                code = shards.execute_process([sys.executable, "-c", script], self.root, attempt,
+                    .2, [], {"LANG": "C"}, isolate_environment=False, progress=self.progress_context(mode))
+            self.assertEqual(code, 124)
+            value = shards.load_json(attempt / "test-progress.json")
+            self.assertEqual(value["state"], "timed-out")
+            self.assertEqual(value["observed_counts"]["started"], 1)
+            self.assertEqual(value["observed_counts"]["completed"], 0)
+            self.assertEqual(value["observed_active"][0]["name"], "unfinished()")
+            self.assertFalse((attempt / "result.json").exists())
+
+    def test_progress_cancellation_closes_owned_child_and_preserves_partial_output(self):
+        script = """
+import pathlib, sys
+import recoverable_shards as shards
+root = pathlib.Path(sys.argv[1])
+shards.execute_process([sys.executable, '-c', "import time; print('\\u25c7 Test interrupted(value:) started.'); time.sleep(30)"],
+    root, root, 60, [], {'LANG':'C'}, isolate_environment=False,
+    progress={'mode':sys.argv[2], 'shard':'a'*64, 'selected_method_count':1})
+"""
+        for mode in shards.MODES:
+            attempt = self.root / (mode + "-cancel-progress")
+            attempt.mkdir()
+            with (attempt / "controller.log").open("wb") as log:
+                controller = subprocess.Popen([sys.executable, "-c", script, str(attempt), mode],
+                    cwd=Path(shards.__file__).parent, stdout=log, stderr=subprocess.STDOUT)
+                try:
+                    deadline = time.monotonic() + 5
+                    while time.monotonic() < deadline:
+                        path = attempt / "test-progress.json"
+                        if path.exists() and json.loads(path.read_text()).get("observed_active"):
+                            break
+                        time.sleep(.01)
+                    else:
+                        self.fail("Fake child did not publish a started observation")
+                    controller.send_signal(signal.SIGINT)
+                    self.assertNotEqual(controller.wait(timeout=5), 0)
+                finally:
+                    if controller.poll() is None:
+                        controller.kill()
+                        controller.wait(timeout=5)
+                value = shards.load_json(attempt / "test-progress.json")
+                self.assertEqual(value["state"], "interrupted")
+                self.assertEqual(value["observed_counts"]["completed"], 0)
+                self.assertTrue(value["stream_eof"])
+                self.assertFalse((attempt / "result.json").exists())
+                plan = shards.make_plan(self.runtimes[mode], METHODS[:1])
+                identity = shards.shard_identity(plan["runtime"], plan["shards"][0])
+                stage = self.store.root / "attempts" / shards.fingerprint(identity) / (mode + "-partial")
+                stage.parent.mkdir(parents=True)
+                shutil.copytree(attempt, stage)
+                export = self.root / (mode + "-partial-export")
+                self.assertEqual(self.store.export_outcome(identity, export)["status"], "failed")
+                for name in ("test.log", "test-events.jsonl", "test-progress.json"):
+                    self.assertEqual((export / "last-attempt" / name).read_bytes(), (attempt / name).read_bytes())
+                self.assertIsNone(self.store.matching(identity))
+
+    def test_progress_startup_failure_closes_both_pty_fds(self):
+        attempt = self.root / "progress-no-launch"
+        attempt.mkdir()
+        actual_open = shards.os.openpty
+        descriptors = []
+
+        def opened():
+            pair = actual_open()
+            descriptors.extend(pair)
+            return pair
+
+        with patch.object(shards.os, "openpty", side_effect=opened), patch.object(shards.subprocess, "Popen", side_effect=OSError("fake startup")), patch.object(shards.legacy, "progress"):
+            with self.assertRaises(OSError):
+                shards.execute_process(["/fake/command"], self.root, attempt, 5, [], {"LANG": "C"},
+                    isolate_environment=False, progress=self.progress_context())
+        for descriptor in descriptors:
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
+        self.assertEqual(shards.load_json(attempt / "test-progress.json")["state"], "not-launched")
+        self.assertFalse((attempt / "child.json").exists())
+
+    def test_native_executor_routes_shared_progress_without_command_or_environment_changes(self):
+        worker = self.root / "progress-router"
+        worker.mkdir()
+        for mode in shards.MODES:
+            shards.durable_json(worker / (mode + "-build.json"), {"image_relative": ".build/fake-image"})
+            executor = object.__new__(shards.NativeExecutor)
+            executor.workspace, executor.active_workspace, executor.runtime = worker, worker / mode, self.runtimes[mode]
+            environment = {"PATH": "/fake-path", "LANG": "C"}
+            executor.authority = SimpleNamespace(environment_for=lambda _: dict(environment))
+            executor.unknown_live_helpers = lambda: False
+            executor.progress_context = {"validated_shards_completed": 1, "shards_total": 2}
+            monitor = SimpleNamespace(bound_callback=None, observed={"fake-image": True}, errors=[])
+            plan = shards.make_plan(self.runtimes[mode], METHODS)
+            shard = plan["shards"][0]
+            with patch.object(shards.shutil, "which", return_value="/fake/swift"), patch.object(shards, "NativeMonitor", return_value=monitor), patch.object(shards, "execute_process", return_value=0) as execute:
+                self.assertEqual(executor.execute(shard, self.root / "route-attempt", 7200, [17]), 0)
+            args, options = execute.call_args
+            self.assertEqual(args[0], shards.legacy.batch_command("/fake/swift", self.runtimes[mode]["flags"], mode, self.root / "route-attempt", shard["methods"]))
+            self.assertEqual(args[4], [17])
+            self.assertEqual(args[5], environment)
+            self.assertIs(args[6], monitor)
+            self.assertEqual(options["progress"], dict(mode=mode, shard=shard["id"], selected_method_count=len(shard["methods"]), validated_shards_completed=1, shards_total=2))
+
+    def test_progress_files_are_hashed_and_observations_cannot_replace_xml(self):
+        for index, mode in enumerate(shards.MODES):
+            plan = shards.make_plan(self.runtimes[mode], METHODS)
+            shard = plan["shards"][0]
+            self.store = shards.Store(self.root / (mode + "-progress-proof"))
+
+            def observations(attempt):
+                context = dict(mode=mode, shard=shard["id"], selected_method_count=len(shard["methods"]))
+                with (attempt / "test.log").open("ab") as raw, patch.object(shards.legacy, "progress"), shards.ObservedTestProgress(attempt, raw, context) as capture:
+                    capture.feed("\u2714 Test observationOnly() passed after 1.0 seconds.\n".encode())
+                    capture.eof = True
+                    capture.publish("exited", force=True, exit_code=0)
+
+            executor = FakeExecutor(self.root / (mode + "-progress-worker"), self.runtimes)
+            executor.damage = observations
+            outcome = self.run_one(plan, executor)
+            attempt = Path(outcome["attempt"])
+            receipt = shards.load_json(attempt / "result.json")
+            self.assertIn("test-events.jsonl", receipt["outputs"])
+            self.assertIn("test-progress.json", receipt["outputs"])
+            self.assertEqual(receipt["outputs"]["test-progress.json"], shards.legacy.digest(attempt / "test-progress.json"))
+
+            def missing_xml(attempt):
+                observations(attempt)
+                (attempt / "tests.xml").write_text("<testsuites/>")
+
+            self.store = shards.Store(self.root / (mode + "-progress-no-xml"))
+            executor.damage = missing_xml
+            with self.assertRaises(ValueError):
+                self.run_one(plan, executor)
+            self.assertIsNone(self.store.matching(shards.shard_identity(plan["runtime"], shard)))
+
+            for mutation, name in [(lambda attempt: (attempt / "test-events.jsonl").unlink(), "missing-pair"),
+                                   (lambda attempt: (attempt / "test-events.jsonl").write_text('{"schema":1}\n'), "bad-event"),
+                                   (lambda attempt: (attempt / "test-progress.json").write_text('{}'), "bad-snapshot")]:
+                self.store = shards.Store(self.root / (mode + "-progress-" + name))
+
+                def damaged(attempt):
+                    observations(attempt)
+                    mutation(attempt)
+
+                executor.damage = damaged
+                with self.assertRaises(ValueError):
+                    self.run_one(plan, executor)
+
     def test_child_startup_failure_has_durable_no_launch_proof(self):
         attempt = self.root / "not-launched"
         attempt.mkdir(mode=0o700)
@@ -683,7 +913,7 @@ shards.run_shard(plan, plan['shards'][0]['id'], shards.Store(cache), executor,
                                     text=True, capture_output=True,
                                     env={**os.environ, "ELITE_RECOVERABLE_CODE_ENABLED": "true"})
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("HELD", result.stderr)
+            self.assertIn("a host-owned activation policy is required", result.stderr)
 
 
 class NativeAdapterTests(Fixture):
@@ -855,7 +1085,9 @@ class NativeAdapterTests(Fixture):
             plan = shards.make_plan(runtime, METHODS)
             attempt = self.root / ("native-execution-" + mode)
             attempt.mkdir(mode=0o700)
-            def completed(*args):
+            def completed(*args, progress):
+                self.assertEqual(progress["mode"], mode)
+                self.assertEqual(progress["selected_method_count"], len(plan["shards"][0]["methods"]))
                 args[6].observed = {"fake": {"sha256": runtime["image_sha256"], "uuid": runtime["image_uuid"]}}
                 return 0
             with patch.object(shards, "execute_process", side_effect=completed) as execute, patch.object(

@@ -2,6 +2,8 @@
 """Opt-in shard planning and recovery; the existing quality executor is unchanged."""
 
 import argparse
+import codecs
+import errno
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack, contextmanager
@@ -13,12 +15,14 @@ import os
 from pathlib import Path
 import platform
 import re
+import select
 import shutil
 import signal
 import subprocess
 import sys
 import threading
 import time
+import tty
 import uuid
 import xml.etree.ElementTree as ET
 import zipfile
@@ -339,9 +343,36 @@ def evidence_outputs(attempt, runtime, methods):
     """Reuse strict native XML and opt-in validation, without promoting old schemas."""
     entries = physical_tree(attempt)
     allowed = {"test.log", "tests.xml", "tests-swift-testing.xml", "start.json", "result.json",
-               "commit.json", "child.json", "child-exit.json", "processes.json", "environment.json", "authorization.json"}
+               "commit.json", "child.json", "child-exit.json", "processes.json", "environment.json", "authorization.json",
+               "test-events.jsonl", "test-progress.json"}
     if any(name not in allowed and not name.startswith("profiles/") for name in entries):
         raise ValueError("Unaccounted evidence file")
+    progress_files = {"test-events.jsonl", "test-progress.json"}
+    if progress_files & set(entries):
+        if not progress_files <= set(entries):
+            raise ValueError("Incomplete observational progress files")
+        observation = load_json(attempt / "test-progress.json")
+        required = {"schema", "kind", "mode", "shard", "selected_method_count", "state", "exit_code",
+                    "elapsed_seconds", "observed_counts", "observed_active", "partial_line", "stream_eof",
+                    "transport_error", "authority"}
+        if (not required <= set(observation) or set(observation) - required - {"validated_shards_completed", "shards_total"}
+                or observation["schema"] != SCHEMA or observation["kind"] != "observed-test-progress-v1"
+                or observation["mode"] != runtime["mode"] or observation["selected_method_count"] != len(methods)
+                or observation["shard"] != fingerprint(load_json(attempt / "start.json")["identity"])
+                or observation["state"] != "exited" or observation["exit_code"] != 0
+                or observation["stream_eof"] is not True or observation["transport_error"] is not None
+                or type(observation["elapsed_seconds"]) not in (int, float)
+                or not math.isfinite(observation["elapsed_seconds"]) or observation["elapsed_seconds"] < 0):
+            raise ValueError("Observational progress differs from its actual terminal shard")
+        sequence = 0
+        for line in (attempt / "test-events.jsonl").read_text().splitlines():
+            event = json.loads(line)
+            if (event.get("schema") != SCHEMA or event.get("mode") != runtime["mode"]
+                    or event.get("shard") != observation["shard"] or type(event.get("sequence")) is not int
+                    or event["sequence"] <= sequence or not isinstance(event.get("name"), str)
+                    or event.get("kind") not in ("started", "passed", "failed", "skipped", "cancelled", "recorded an issue")):
+                raise ValueError("Malformed observational test event")
+            sequence = event["sequence"]
     report = attempt / "tests-swift-testing.xml"
     if not report.is_file():
         report = attempt / "tests.xml"
@@ -641,23 +672,205 @@ def child_environment(attempt, environment):
     return value
 
 
+PROGRESS_HEARTBEAT_SECONDS = 30
+
+
+class ObservedTestProgress:
+    """Live output observations only; XML and sealed receipts remain the pass authority."""
+    ansi = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+    test_line = re.compile(r"^\S+ Test (.+) (started|passed|failed|skipped|cancelled|recorded an issue)([ .].*)$")
+
+    def __init__(self, attempt, raw, context, clock=time.monotonic):
+        self.attempt, self.raw, self.context, self.clock = attempt, raw, dict(context), clock
+        if self.context.get("mode") not in MODES:
+            raise ValueError("Progress mode is outside the actual sanitizer selection")
+        required = {"mode", "shard", "selected_method_count"}
+        if (not required <= set(self.context) or set(self.context) - required - {"validated_shards_completed", "shards_total"}
+                or not re.fullmatch(r"[0-9a-f]{64}", self.context["shard"])
+                or type(self.context["selected_method_count"]) is not int or self.context["selected_method_count"] < 1):
+            raise ValueError("Progress requires the actual selected shard and method count")
+        self.started, self.last_heartbeat = clock(), clock()
+        self.sequence, self.active, self.counts = 0, {}, dict(started=0, completed=0, failed=0, skipped=0, cancelled=0, issues=0)
+        self.pending, self.discard_line, self.partial = "", False, False
+        self.decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+        self.master = self.slave = None
+        self.reader, self.events = None, None
+        self.finishing, self.halt = threading.Event(), threading.Event()
+        self.drain_deadline, self.eof, self.error = None, False, None
+
+    def __enter__(self):
+        try:
+            self.master, self.slave = os.openpty()
+            tty.setraw(self.slave)
+            os.set_blocking(self.master, False)
+            descriptor = os.open(self.attempt / "test-events.jsonl", os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
+            self.events = os.fdopen(descriptor, "w", encoding="utf-8")
+            self.publish("waiting-for-child", force=True)
+            return self
+        except BaseException:
+            self.__exit__(*sys.exc_info())
+            raise
+
+    def start(self):
+        os.close(self.slave)
+        self.slave = None
+        self.reader = threading.Thread(target=self.drain, daemon=True)
+        self.reader.start()
+
+    def feed(self, block):
+        self.raw.write(block)
+        self.raw.flush()
+        self.pending += self.decoder.decode(block)
+        while "\n" in self.pending:
+            line, self.pending = self.pending.split("\n", 1)
+            if not self.discard_line:
+                self.observe(line.rstrip("\r"))
+            self.discard_line = False
+        if len(self.pending) > 65536:
+            # Preserve every raw byte, but never manufacture a truncated test name.
+            self.pending, self.discard_line, self.partial = "", True, True
+
+    def observe(self, line):
+        match = self.test_line.match(self.ansi.sub("", line))
+        if match is None or match[1] == "run" or match[1].startswith("run "):
+            return
+        name, action, tail = match.groups()
+        now = self.clock()
+        self.sequence += 1
+        record = {"schema": SCHEMA, "kind": action, "sequence": self.sequence,
+                  "mode": self.context["mode"], "shard": self.context["shard"], "name": name,
+                  "line": line, "observed_elapsed_seconds": max(0, now - self.started)}
+        duration = re.search(r" after ([0-9]+(?:\.[0-9]+)?) seconds?", tail)
+        if duration is not None and math.isfinite(float(duration[1])):
+            record["reported_seconds"] = float(duration[1])
+        if action == "started":
+            self.active[self.sequence] = {"name": name, "started": now}
+            self.counts["started"] += 1
+        elif action == "recorded an issue":
+            self.counts["issues"] += 1
+        else:
+            matches = [key for key, item in self.active.items() if item["name"] == name]
+            record["ambiguous_same_name"] = len(matches) > 1
+            if len(matches) > 1:
+                for key in matches:
+                    self.active[key]["ambiguous"] = True
+            if len(matches) == 1:
+                record["observed_test_seconds"] = max(0, now - self.active.pop(matches[0])["started"])
+            # Concurrent identical display names cannot be paired without an event ID.
+            self.counts["completed" if action in ("passed", "failed") else action] += 1
+            if action == "failed":
+                self.counts["failed"] += 1
+        self.events.write(json.dumps(record, sort_keys=True, allow_nan=False) + "\n")
+        self.events.flush()
+        legacy.progress(json.dumps({"observed_test_event": record}, sort_keys=True))
+        self.publish("running")
+
+    def publish(self, state, force=False, exit_code=None):
+        now = self.clock()
+        value = {"schema": SCHEMA, "kind": "observed-test-progress-v1", **self.context,
+                 "state": state, "exit_code": exit_code, "elapsed_seconds": max(0, now - self.started),
+                 "observed_counts": dict(self.counts),
+                 "observed_active": [{"sequence": key, "name": item["name"],
+                                      "age_seconds": max(0, now - item["started"]),
+                                      "ambiguous": item.get("ambiguous", False)}
+                                     for key, item in self.active.items()],
+                 "partial_line": bool(self.pending) or self.discard_line or self.partial,
+                 "stream_eof": self.eof, "transport_error": self.error,
+                 "authority": "observations only; not XML, completed inventory or a pass receipt"}
+        self.raw.flush()
+        self.events.flush()
+        os.fsync(self.raw.fileno())
+        os.fsync(self.events.fileno())
+        durable_json(self.attempt / "test-progress.json", value)
+        if force or now - self.last_heartbeat >= PROGRESS_HEARTBEAT_SECONDS:
+            self.last_heartbeat = now
+            legacy.progress(json.dumps({"test_progress_heartbeat": value}, sort_keys=True))
+            summary = os.environ.get("GITHUB_STEP_SUMMARY")
+            if summary:
+                names = "; ".join(item["name"] + " (" + str(round(item["age_seconds"], 1)) + "s observed age)"
+                                  for item in value["observed_active"][:5]) or "none observed"
+                with open(summary, "a", encoding="utf-8") as output:
+                    output.write("\n- " + self.context["mode"] + " shard `" + self.context["shard"] + "`: " + state
+                                 + "; " + str(round(value["elapsed_seconds"], 1)) + "s elapsed; validated shards "
+                                 + str(value.get("validated_shards_completed", "unknown")) + "/"
+                                 + str(value.get("shards_total", "unknown")) + "; observed test events "
+                                 + str(self.counts) + "; selected method IDs " + str(value["selected_method_count"])
+                                 + "; active: " + names.replace("\n", " ") + ". Observations are not PASS.\n")
+                    output.flush()
+        return value
+
+    def drain(self):
+        try:
+            while not self.halt.is_set():
+                ready, _, _ = select.select([self.master], [], [], 0.1)
+                if ready:
+                    try:
+                        block = os.read(self.master, 65536)
+                    except OSError as error:
+                        if error.errno != errno.EIO:
+                            raise
+                        block = b""  # POSIX PTYs may report EOF as EIO.
+                    if not block:
+                        self.eof = True
+                        return
+                    self.feed(block)
+                if self.clock() - self.last_heartbeat >= PROGRESS_HEARTBEAT_SECONDS:
+                    self.publish("running", force=True)
+                if self.finishing.is_set() and time.monotonic() >= self.drain_deadline:
+                    self.error = "output drain deadline"
+                    return
+        except Exception as error:
+            self.error = type(error).__name__
+
+    def finish(self, state, exit_code=None):
+        self.drain_deadline = time.monotonic() + 2
+        self.finishing.set()
+        if self.reader:
+            self.reader.join(timeout=3)
+            if self.reader.is_alive():
+                self.error = "output reader did not stop"
+                self.halt.set()
+                self.reader.join(timeout=1)
+        self.publish(state, force=True, exit_code=exit_code)
+        return self.error is None and self.eof
+
+    def __exit__(self, kind, value, traceback):
+        self.halt.set()
+        try:
+            if self.reader and self.reader.is_alive():
+                self.reader.join(timeout=1)
+            if self.events:
+                self.events.close()
+        finally:
+            for name in ("master", "slave"):
+                descriptor = getattr(self, name)
+                if descriptor is not None:
+                    os.close(descriptor)
+                    setattr(self, name, None)
+
+
 def execute_process(command, workspace, attempt, timeout, descriptors, environment, observer=None,
-                    isolate_environment=True):
+                    isolate_environment=True, progress=None):
     """Terminate only this owned process session on timeout, never report timeout as success."""
     actual_environment = child_environment(attempt, environment) if isolate_environment else dict(environment)
     descriptor = os.open(attempt / "test.log", os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
-    with os.fdopen(descriptor, "wb") as log:
+    with os.fdopen(descriptor, "wb") as log, ExitStack() as stack:
+        capture = stack.enter_context(ObservedTestProgress(attempt, log, progress)) if progress is not None else None
         try:
-            process = subprocess.Popen(command, cwd=workspace, env=actual_environment, stdout=log,
+            process = subprocess.Popen(command, cwd=workspace, env=actual_environment, stdout=capture.slave if capture else log,
                                        stderr=subprocess.STDOUT, pass_fds=tuple(descriptors),
                                        start_new_session=True, umask=0o077)
         except OSError as error:
             durable_json(attempt / "launch-failure.json", {"schema": SCHEMA, "status": "not-launched",
                                                            "error": type(error).__name__})
+            if capture:
+                capture.finish("not-launched")
             raise
         try:
             durable_json(attempt / "child.json", {"pid": process.pid,
                                                  "command": command, "started": time.time()})
+            if capture:
+                capture.start()
             if observer:
                 observer.start(process.pid)
             try:
@@ -679,7 +892,11 @@ def execute_process(command, workspace, attempt, timeout, descriptors, environme
                 process.wait()
             if observer:
                 observer.finish(True)
+            if capture:
+                capture.finish("interrupted", process.returncode)
             raise
+        if capture and not capture.finish("exited" if code == 0 else "timed-out" if code == 124 else "failed", code):
+            code = code or 125
         durable_json(attempt / "child-exit.json", {"pid": process.pid, "exit_code": code})
         if code == 0 and isolate_environment:
             # Temp is outside the sealed proof. Failed/interrupted work retains it for recovery.
@@ -1666,8 +1883,10 @@ class NativeExecutor:
         image = self.active_workspace / build["image_relative"]
         monitor = NativeMonitor(self.authority, attempt, self.active_workspace, self.runtime, image)
         monitor.bound_callback = getattr(self, "reservation_callback", None)
+        context = {"mode": self.runtime["mode"], "shard": shard["id"],
+                   "selected_method_count": len(shard["methods"]), **getattr(self, "progress_context", {})}
         code = execute_process(command, self.active_workspace, attempt, timeout, descriptors,
-                               self.authority.environment_for(self.runtime["mode"]), monitor)
+                               self.authority.environment_for(self.runtime["mode"]), monitor, progress=context)
         if self.unknown_live_helpers() or not monitor.observed or monitor.errors:
             return code or 126
         return code
@@ -2345,9 +2564,12 @@ def main():
                         workflow.artifacts().restore_shard(plan, shard, store)
                     if args.timeout > SHARD_MAX_SECONDS:
                         raise ValueError("Native shards have a hard two-hour execution bound")
-                    report_progress(plan, store, "starting", shard)
+                    observation = report_progress(plan, store, "starting", shard)
+                    executor = NativeExecutor(authority, args.worker)
+                    executor.progress_context = {"validated_shards_completed": observation["completed"],
+                                                 "shards_total": observation["total"]}
                     try:
-                        result = run_shard(plan, shard["id"], store, NativeExecutor(authority, args.worker),
+                        result = run_shard(plan, shard["id"], store, executor,
                                            authority.policy["approved_head"], args.timeout, authority.admission())
                     except BaseException:
                         report_progress(plan, store, "failed or interrupted", shard)
