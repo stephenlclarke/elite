@@ -218,6 +218,7 @@ struct OriginalGopherUnitTests {
     game.bodies = []
     var npc = NPCState(
       role: .miner, origin: game.systemIdentity, destination: .init(galaxy: 1, system: 0))
+    npc.hasFuelScoops = false
     npc.legal.value = 7
     npc.legal.bountyTenths = 30
     npc.legalProvenance = .recorded
@@ -243,7 +244,7 @@ struct OriginalGopherUnitTests {
     let body = try #require(game.bodies.first)
     #expect(body.physical?.catalogueShipID == ship.id && !body.hostile)
     #expect(body.physical?.npc?.role == .miner && body.physical?.population == .civilian)
-    #expect(body.physical?.npc?.hasFuelScoops == false && !npc.hasFuelScoops)
+    #expect(body.physical?.npc?.hasFuelScoops == false && npc.hasFuelScoops == false)
     #expect(
       body.physical?.npc?.legal == npc.legal && body.physical?.npc?.intention == npc.intention)
     #expect(body.physical?.npc?.resources?.energyCapacity == 340)
