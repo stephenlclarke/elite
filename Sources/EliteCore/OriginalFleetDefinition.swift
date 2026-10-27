@@ -25,7 +25,10 @@ public struct OriginalFleetDefinition: Sendable {
   public let approvedMeshAvailable: Bool
   public let integrationBlockers: [String]
   public var runtimeReady: Bool {
-    OriginalJaguarActivation.supports(self)
+    OriginalLaggarActivation.supports(self)
+      || OriginalLlamaActivation.supports(self)
+      || OriginalJaguarActivation.supports(self)
+      || OriginalHareExplorerActivation.supports(self)
       || OriginalCarabaoHighlinerActivation.supports(self)
       || OriginalCarabaoCarrierActivation.supports(self)
       || OriginalOryxVoyagerActivation.supports(self)

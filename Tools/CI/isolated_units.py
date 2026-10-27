@@ -22,6 +22,20 @@ METHODS = {
         "aplomadoGeometryCannotReplaceHistoricalSourceOrAuthenticateAsC01Harrier",
         "foreignAndMalformedHistoricalRecordsCannotSupplyGeometry",
     ),
+    "OriginalLaggarUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalBountyHunterMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "bountyHunterPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
+    "OriginalLlamaUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalTraderMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "traderPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalJaguarUnitTests": (
         "exactCapitalAuthenticationRejectsForeignDefinitionModelAndUnits",
         "originalCapitalMechanicsPreserveFullHistoryAndOtherHullBindings",
@@ -30,6 +44,21 @@ METHODS = {
         "neverPurchaseCapitalRefusesActualExchangeDespitePositiveBalance",
         "destructionRecordsOnlyCapitalMilestoneAndKeepsBlueprintsIndependent",
         "invalidCapitalPolicyAndMalformedLoaderCannotSilentlyActivate",
+    ),
+    "ShowroomManualViewUnitTests": (
+        "modelDragRotatesBothRenderedPreviewsTogetherAndPausesAutomaticMotion",
+        "everyAxisTurnsThroughAFullCircleAndViewResetPreservesPinnedBaseline",
+        "calibratedPairsUseOneMetreScaleInTheActualRenderedPreview",
+        "unknownScaleIsDisclosedAndViewChangesCannotUnlockOrPurchaseACapital",
+        "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
+        "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
+    ),
+    "OriginalHareExplorerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
     "OriginalCarabaoHighlinerUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",

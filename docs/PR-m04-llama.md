@@ -1,0 +1,25 @@
+# Bind original Llama without changing trader or actor authority
+
+SH084 resolves to original Llama mechanics and approved metre geometry. This M04.H084 packet starts from published, source/composition-reviewed Hare Explorer `6a49ef8b0c469ddf7691317cdea97e74e4f0d732` (PR259), including the actual published Jaguar parent. Parent qualification/integration and pending review gates remain separate. Elite Coder3 owns only the additive SH084 packet; no canonical recomposition is included.
+
+Specification fingerprint `edced23c24b68e9c988e528243aa7949bad29df3c5427f0b4a3c7f67912e617a` and model `fleet-completion-20261019/batch-03/SH084-design.toml`, fingerprint `63e88e1098ea8b59080a254675819a1330bf1ce9a274e2df28be4ca48d2a716d`, authenticate only SH084. The model explicitly declares metres;104 vertices,172 faces, eight materials and complete texture assignments supply raw physical/player geometry. Bounds are21.6 x18.66 x43.59 metres. Display normalization sets no physical scale. Raw resources remain unchanged.
+
+Native values use56t cargo,20t expansion, speed37.7, acceleration11, energy230/recharge3.2, shield220/recharge1.5, roll1.03, pitch0.91, yaw0.84, fuel130, jump9, spool12, five pylons, four laser facings and209,000CR. Trader classification, non-capital status, nil capital subtype, technology-five blueprint rules, common natural placement across all eight galaxies and old tradeLane/deepSpace regions remain. The existing trader cargo minimum is still25t and authored56t is compatible. Shared constructor/role guard and capital/metadata/price validation remain unchanged.
+
+The SH084-only typed live profile applies E01 equipment20, crew1 and intrinsic places1 while historical Mantis fields retain12/8/8. Initial passenger cabins remain zero. All17 catalogue properties are forwarded. No inventory, cargo, people, cabins, equipment, blueprint or hull is granted. AI/legal/ownership/salvage and mission implementations remain unchanged. Catalogue role does not replace explicit NPC actor intent.
+
+Five meaningful methods cover strict role/policy/flyability/source/model/unit/path/hash refusals; mechanics/history and unrelated identities; complete physical/player vertices/faces/materials/UVs and bounds; trader policy/placement, non-capital/nil-subtype/blueprint, minimum25t, prior roles and explicit bounty-hunter NPC/civilian/legal/navigation authority despite trader catalogue classification, with source resources; actual accommodation20/1/1 versus history12/8/8, hold56+20, five pylons, fuel130, tool absence/no grants and malformed retained loader. Existing40 original-fleet oracle files add onlySH084. All681 actual Hare-parent selections remain, including all seven Jaguar methods and five Hare methods; five Llama methods give686. The existing selected salvage method stays once and its fixture is untouched. Unregistered005/006, display028, blocked056/58 and unitless076/082 remain unchanged and not runtime-ready. Closed oracles retain every earlier identity.
+
+Strict Swift formatting, Markdown/whitespace and20 Python report-helper fixtures are the local validation scope. Swift methods remain UNRUN at freeze; independent source review and exact-head hosted qualification remain pending. No local compiler, native/GUI, broad integration, performance or release work ran. [M04.H084](ISSUE-m04-llama.md) source/component acceptance does not establish trade/discovery, flight/docking, M14 anchors, visual/performance acceptance or release.
+
+## Meridian acceptance mapping
+
+Current design branch `docs/final-game-review` remains pinned to `8c899a7e0d351551498b05a7b371b84758575085`. Prerequisite check used ledger `26c37b6bfc4be6596d594259fc16c68f6ec0fa07`; Root queued this bounded packet to activate after actual Hare source-clear publication. That checkpoint is PR259 at6a49ef8b. Root owns ledger updates and independent MBA dispatch. The design snapshot is read-only.
+
+| Design path | SHA256 | Packet mapping |
+| --- | --- | --- |
+| `docs/meridian/missions/gameplay/ships/SH084.json` | `a484ec38be6567acb4a8649e242c562f96640f8cf6933d0d2661a428cded4f57` | Exact Llama/llama/trader/flyable/blueprint identity and all17 native values match packaged data. |
+| `docs/meridian/missions/gameplay/models/SH084.json` | `8a6011b3d9484c3c3e9eaedcebbfd1ce38fc206ca000d203f05af50129cc006f` | Entire parsed model equals packaged geometry, metre units, path/hash, materials and UVs. |
+| `docs/meridian/SHIP-REFERENCE.md` | `6a3688bf28f9251e58853990bfd5c76334c7e514b05d36ba4fc145c1a03ce4af` | E01 equipment20, crew1, reserved1, initial cabins0; historical12/8/8 retained. |
+
+A fresh targeted scan of actual Hare6a49ef8b found no direct non-generated Swift SH084, exact Mantis/Llama reference, stale negative control, name fixture, fixed geometry/name/hash dependency or weight invariant. Jaguar activation, guards, fixture and owner docs remain intact. The corrected Haflinger control stays SH058. Concrete SH056/58 M01 dependencies remain blocked; no name/hash/calibration guard is relaxed. Unitless SH082 receives no inferred scale. No shared role/capital expansion, selector cleanup or unrelated source audit is included.
