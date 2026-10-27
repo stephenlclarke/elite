@@ -1,0 +1,657 @@
+---
+name: Recoverable native quality
+
+'on':
+  workflow_call:
+    inputs:
+      enable_native:
+        required: true
+        type: boolean
+    secrets:
+      SONAR_TOKEN:
+        required: false
+  workflow_dispatch:
+    inputs:
+      enable_native:
+        description: Requires installed exact-head host authorization
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  ACTIVATION: ${{ vars.ELITE_RECOVERABLE_ACTIVATION }}
+  POLICY_DIGESTS: ${{ vars.ELITE_RECOVERABLE_POLICY_DIGESTS }}
+  REQUESTED_NATIVE: ${{ inputs.enable_native }}
+  PYTHONDONTWRITEBYTECODE: '1'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PLAN_BASENAME: ${{ format('recoverable-plan-{0}-{1}', github.run_id, github.run_attempt) }}
+
+jobs:
+  authorize_native:
+    name: Validate exact CI event and installed activation
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      authorized: ${{ steps.authorize.outputs.authorized }}
+    steps:
+      - id: authorize
+        name: Fail closed before any native routing
+        run: |
+          python3 - <<'PY'
+          import json, os, re, time
+          e = os.environ
+          assert e['REQUESTED_NATIVE'] == 'true', 'Native execution was not requested'
+          a, p = json.loads(e['ACTIVATION']), json.loads(e['POLICY_DIGESTS'])
+          assert type(a['schema']) is int and a['schema'] == 1
+          assert a['enabled'] is True and a['revoked'] is False
+          assert time.time() < a['expires_at'] < float('inf')
+          assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/elite'
+          assert e['GITHUB_ACTOR_ID'] == '22142777'
+          assert a['head'] == e['GITHUB_SHA'] and a['ref'] == e['GITHUB_REF']
+          assert a['workflow_file'] in ('ci.yml', 'recoverable-quality.yml')
+          assert e['GITHUB_WORKFLOW_REF'] == (
+              'stephenlclarke/elite/.github/workflows/' + a['workflow_file'] + '@' + a['ref'])
+          assert re.fullmatch('[0-9a-f]{64}', a['workflow_sha256'])
+          assert set(p) == set(a['runners']) and p and len(set(p.values())) == 1
+          assert all(re.fullmatch('[0-9a-f]{64}', v) for v in p.values())
+          with open(e['GITHUB_EVENT_PATH']) as f:
+              event = json.load(f)
+          assert event['repository']['full_name'] == 'stephenlclarke/elite'
+          assert event['repository']['fork'] is False
+          assert str(event['sender']['id']) == '22142777'
+          name = e['GITHUB_EVENT_NAME']
+          if name == 'push':
+              assert a['workflow_file'] == 'ci.yml'
+              assert a['ref'] == event['ref'] == 'refs/heads/main'
+              assert event['after'] == a['head']
+              assert event['deleted'] is False and event['forced'] is False
+          elif name == 'pull_request':
+              pull = event['pull_request']
+              assert a['workflow_file'] == 'ci.yml'
+              assert a['ref'] == 'refs/pull/' + str(event['number']) + '/merge'
+              assert pull['merge_commit_sha'] == a['head']
+              assert pull['head']['sha'] == a['pr_head']
+              assert pull['head']['repo']['full_name'] == 'stephenlclarke/elite'
+              assert pull['head']['repo']['fork'] is False
+              assert pull['base']['ref'] == 'main'
+              assert str(pull['user']['id']) == '22142777'
+          else:
+              assert name == 'workflow_dispatch' and a['ref'].startswith('refs/heads/')
+          with open(e['GITHUB_OUTPUT'], 'a') as out:
+              out.write('authorized=true\n')
+          PY
+
+  fake-contracts:
+    name: Fake ${{ matrix.suite }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {module: test_recoverable_shards, suite: PlanningTests}
+          - {module: test_recoverable_shards, suite: CheckpointTests}
+          - {module: test_recoverable_shards, suite: AdmissionTests}
+          - {module: test_recoverable_shards, suite: PhaseTests}
+          - {module: test_recoverable_shards, suite: ProcessTests}
+          - {module: test_recoverable_shards, suite: NativeAdapterTests}
+          - {module: test_recoverable_shards, suite: WorkflowTests}
+          - {module: test_recoverable_shards, suite: GranularityTests}
+          - {module: test_native_runner, suite: NativeAuthorizationTests}
+          - {module: test_native_runner, suite: PhysicalIdentityTests}
+          - {module: test_native_runner, suite: RecoverableAuthorizationTests}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      # checkout v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Exercise fake-only contracts
+        working-directory: Tools/CI
+        env:
+          SUITE: ${{ matrix.module }}.${{ matrix.suite }}
+        run: |
+          umask 077
+          python3 -m unittest -v "$SUITE" \
+            > fake-contract.log 2>&1
+      - name: Retain this independent contract result
+        if: always()
+        # upload-artifact v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: fake-recoverable-${{ matrix.suite }}-${{ github.sha }}
+          path: Tools/CI/fake-contract.log
+          if-no-files-found: error
+          retention-days: 14
+
+  fake-aggregate:
+    name: Fake contracts aggregate
+    needs: fake-contracts
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every fake contract result
+        env:
+          CONTRACT_RESULT: ${{ needs.fake-contracts.result }}
+        run: |
+          test "$CONTRACT_RESULT" = success
+          echo 'Python fake contracts passed.' \
+            'Physical qualification has a separate result.' \
+            >> "$GITHUB_STEP_SUMMARY"
+
+  native_checks:
+    name: Required make-ci prerequisites
+    needs: authorize_native
+    if: needs.authorize_native.outputs.authorized == 'true'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 130
+    steps:
+      - &native_guard
+        id: native_guard
+        name: Require host hook and exact instance before checkout or policy I/O
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, re, time
+          e = os.environ
+          a = json.loads(e['ACTIVATION'])
+          p = json.loads(e['POLICY_DIGESTS'])
+          digest = hashlib.sha256(json.dumps(
+              a, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+          assert e['REQUESTED_NATIVE'] == 'true'
+          assert type(a['schema']) is int and a['schema'] == 1
+          assert a['enabled'] is True and a['revoked'] is False
+          assert time.time() < a['expires_at'] < float('inf')
+          assert e['RUNNER_ENVIRONMENT'] == 'self-hosted'
+          assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/elite'
+          assert e['GITHUB_ACTOR_ID'] == '22142777'
+          assert e['GITHUB_EVENT_NAME'] in ('workflow_dispatch', 'push', 'pull_request')
+          assert a['head'] == e['GITHUB_SHA']
+          assert a['ref'] == e['GITHUB_REF']
+          assert e['GITHUB_WORKFLOW_REF'] == (
+              'stephenlclarke/elite/.github/workflows/' +
+              a['workflow_file'] + '@' + a['ref'])
+          assert e['ELITE_NATIVE_APPROVED_HEAD'] == e['GITHUB_SHA']
+          assert e['ELITE_RECOVERABLE_CODE_ENABLED'] == 'true'
+          assert e['ELITE_RECOVERABLE_ACTIVATION_SHA256'] == digest
+          assert e['ELITE_RECOVERABLE_WORKFLOW_SHA256'] == a['workflow_sha256']
+          assert e['ELITE_RECOVERABLE_POLICY_SHA256'] == p[e['RUNNER_NAME']]
+          instance = a['runners'][e['RUNNER_NAME']]
+          assert e['GITHUB_JOB'] in instance['jobs']
+          assert e['GITHUB_WORKSPACE'] == instance['workspace']
+          assert os.path.isabs(instance['workspace'])
+          assert os.path.normpath(instance['workspace']) == (
+              instance['workspace'])
+          assert instance['workspace'].endswith('/_work/elite/elite')
+          request_names = (
+              'GITHUB_JOB', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
+              'GITHUB_SHA', 'RUNNER_NAME',
+              'ELITE_RECOVERABLE_REQUEST_MODE',
+              'ELITE_RECOVERABLE_REQUEST_SHARD',
+              'ELITE_RECOVERABLE_REQUEST_WORKER',
+              'ELITE_RECOVERABLE_REQUEST_PHASE')
+          request = {name: e.get(name, '') for name in request_names}
+          request_sha = hashlib.sha256(json.dumps(
+              request, sort_keys=True, separators=(',', ':')).encode())
+          from pathlib import Path
+          root = Path(a['assignment_root'])
+          path = root / (request_sha.hexdigest() + '.json')
+          assert root.is_absolute() and root == root.resolve()
+          assert e['ELITE_RECOVERABLE_ASSIGNMENT_PATH'] == str(path)
+          for node in (path, *path.parents):
+              info = node.lstat()
+              sticky = node != path and info.st_uid == 0
+              sticky = sticky and info.st_mode & 0o1000
+              assert not node.is_symlink()
+              assert info.st_uid in (0, os.getuid())
+              assert not info.st_mode & 0o022 or sticky
+          assert path.stat().st_uid == os.getuid()
+          binding = json.loads(path.read_text())
+          expected = dict(
+              schema=1, head=e['GITHUB_SHA'],
+              workflow_sha256=a['workflow_sha256'],
+              activation_sha256=digest,
+              policy_sha256=p[e['RUNNER_NAME']],
+              run_id=e['GITHUB_RUN_ID'], run_attempt=e['GITHUB_RUN_ATTEMPT'],
+              job=e['GITHUB_JOB'], runner=e['RUNNER_NAME'],
+              workspace=e['GITHUB_WORKSPACE'],
+              policy_path=e['ELITE_NATIVE_POLICY'],
+              mode=e.get('ELITE_RECOVERABLE_REQUEST_MODE', ''),
+              shard=e.get('ELITE_RECOVERABLE_REQUEST_SHARD', ''),
+              worker=e.get('ELITE_RECOVERABLE_REQUEST_WORKER', ''),
+              phase=e.get('ELITE_RECOVERABLE_REQUEST_PHASE', ''),
+              plan_sha256=e.get('PLAN_DIGEST') or None)
+          if e['GITHUB_JOB'] == 'native_aggregate':
+              expected['other_plan_sha256'] = e['OTHER_PLAN_DIGEST']
+          assert set(binding) == set(expected) | {'expires_at', 'revoked'}
+          assert {k: binding[k] for k in expected} == expected
+          assert binding['revoked'] is False
+          assert time.time() < binding['expires_at'] <= a['expires_at']
+          binding_sha = hashlib.sha256(json.dumps(
+              binding, sort_keys=True, separators=(',', ':')).encode())
+          assert binding_sha.hexdigest() == (
+              e['ELITE_RECOVERABLE_ASSIGNMENT_SHA256'])
+          if e['GITHUB_JOB'] not in ('prepare_native', 'prepare_thread', 'prepare_address', 'native_checks'):
+              assert e['ELITE_RECOVERABLE_PLAN_SHA256'] == e['PLAN_DIGEST']
+              assert re.fullmatch('[0-9a-f]{64}', e['PLAN_DIGEST'])
+          else:
+              assert not e.get('PLAN_DIGEST')
+          PY
+      - &native_checkout
+        id: native_checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          clean: false
+          fetch-depth: 0
+      - &verify_checkout
+        name: Recheck exact host source and retain the owned build cache
+        run: python3 Tools/CI/native_runner.py --checkout
+      - name: Execute all original non-phase gates
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-checks --timeout 7200 \
+            --output "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}"
+      - name: Always retain raw prerequisite result
+        if: always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-checks-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/required-checks-${{ github.run_attempt }}
+          if-no-files-found: error
+
+  prepare_thread:
+    name: Prepare, build and discover thread
+    needs: authorize_native
+    if: needs.authorize_native.outputs.authorized == 'true'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 150
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      archive_digest: ${{ steps.upload.outputs.artifact-digest }}
+      manifest_digest: ${{ steps.prepare.outputs.manifest_sha256 }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      has_pending: ${{ steps.prepare.outputs.has_pending }}
+    env:
+      ELITE_RECOVERABLE_REQUEST_MODE: thread
+      PREPARE_BASENAME: ${{ format('recoverable-prepare-thread-{0}-{1}', github.run_id, github.run_attempt) }}
+    steps:
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - name: Build thread once or validate its completed durable build
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-build --mode thread --timeout 7200
+      - id: prepare
+        name: Discover without compiling, freeze private image and select pending thread shards
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-prepare --mode thread \
+            --output "$RUNNER_TEMP/$PREPARE_BASENAME"
+      - name: Always retain raw build and discovery attempts
+        if: always() && steps.native_guard.outcome == 'success'
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-build-export --mode thread \
+            --output "$RUNNER_TEMP/$PREPARE_BASENAME-raw"
+      - name: Upload raw build and discovery failures or completion
+        if: always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-prepare-thread-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PREPARE_BASENAME }}-raw
+          if-no-files-found: error
+      - id: upload
+        name: Retain independently authenticated thread plan
+        if: always() && steps.prepare.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-plan-thread-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PREPARE_BASENAME }}/plan
+          if-no-files-found: error
+      - name: Retain portable frozen thread build
+        if: always() && steps.prepare.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-build-thread-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PREPARE_BASENAME }}/builds/thread
+          if-no-files-found: error
+          include-hidden-files: true
+
+  prepare_address:
+    name: Prepare, build and discover address
+    needs: authorize_native
+    if: needs.authorize_native.outputs.authorized == 'true'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 150
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      archive_digest: ${{ steps.upload.outputs.artifact-digest }}
+      manifest_digest: ${{ steps.prepare.outputs.manifest_sha256 }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      has_pending: ${{ steps.prepare.outputs.has_pending }}
+    env:
+      ELITE_RECOVERABLE_REQUEST_MODE: address
+      PREPARE_BASENAME: ${{ format('recoverable-prepare-address-{0}-{1}', github.run_id, github.run_attempt) }}
+    steps:
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - name: Build address once or validate its completed durable build
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-build --mode address --timeout 7200
+      - id: prepare
+        name: Discover without compiling, freeze private image and select pending address shards
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-prepare --mode address \
+            --output "$RUNNER_TEMP/$PREPARE_BASENAME"
+      - name: Always retain raw build and discovery attempts
+        if: always() && steps.native_guard.outcome == 'success'
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-build-export --mode address \
+            --output "$RUNNER_TEMP/$PREPARE_BASENAME-raw"
+      - name: Upload raw build and discovery failures or completion
+        if: always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-prepare-address-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PREPARE_BASENAME }}-raw
+          if-no-files-found: error
+      - id: upload
+        name: Retain independently authenticated address plan
+        if: always() && steps.prepare.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-plan-address-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PREPARE_BASENAME }}/plan
+          if-no-files-found: error
+      - name: Retain portable frozen address build
+        if: always() && steps.prepare.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-build-address-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PREPARE_BASENAME }}/builds/address
+          if-no-files-found: error
+          include-hidden-files: true
+
+  native_phase:
+    name: ${{ matrix.phase == 'normal' && 'Normal tests and coverage' || 'Zero leaks' }}
+    needs: [authorize_native, prepare_thread]
+    if: needs.authorize_native.outputs.authorized == 'true'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        phase: [normal, leaks]
+    env:
+      PLAN_ID: ${{ needs.prepare_thread.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.prepare_thread.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.prepare_thread.outputs.manifest_digest }}
+      ELITE_RECOVERABLE_REQUEST_PHASE: ${{ matrix.phase }}
+      PHASE_BASENAME: >-
+        ${{ format('recoverable-phase-{0}-{1}', matrix.phase,
+        github.run_attempt) }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - &load_plan
+        id: load_plan
+        name: Restore this mode plan through trusted archive and manifest digests
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-load \
+            --artifact-id "$PLAN_ID" --archive-digest "$PLAN_ARCHIVE" \
+            --digest "$PLAN_DIGEST" --output "$RUNNER_TEMP/$PLAN_BASENAME"
+      - name: Require full normal coverage or zero leaks with durable reuse
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-phase \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --phase "$ELITE_RECOVERABLE_REQUEST_PHASE" --timeout 19800 \
+            --output "$RUNNER_TEMP/$PHASE_BASENAME"
+      - name: Export completed or explicitly missing phase evidence
+        if: >-
+          always() && steps.native_guard.outcome == 'success' &&
+          steps.load_plan.outcome == 'success'
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-phase-export \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --phase "$ELITE_RECOVERABLE_REQUEST_PHASE" \
+            --output "$RUNNER_TEMP/$PHASE_BASENAME"
+      - name: Retain each phase independently even after failure
+        if: >-
+          always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-phase-${{ matrix.phase }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ env.PHASE_BASENAME }}
+          if-no-files-found: error
+
+  thread_shards:
+    name: TSAN ${{ matrix.label }}
+    needs: [authorize_native, prepare_thread]
+    if: >-
+      always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.prepare_thread.result == 'success' &&
+      needs.prepare_thread.outputs.has_pending == 'true'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 130
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.prepare_thread.outputs.matrix) }}
+    env:
+      PLAN_ID: ${{ needs.prepare_thread.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.prepare_thread.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.prepare_thread.outputs.manifest_digest }}
+      ELITE_RECOVERABLE_REQUEST_MODE: ${{ matrix.mode }}
+      ELITE_RECOVERABLE_REQUEST_SHARD: ${{ matrix.shard }}
+      SHARD_BASENAME: >-
+        ${{ format('recoverable-shard-{0}-{1}', matrix.shard,
+        github.run_attempt) }}
+      ELITE_RECOVERABLE_REQUEST_WORKER: ${{ matrix.worker }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - *load_plan
+      - name: Restore success or execute only this pending whole-unit shard
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-run \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --mode "$ELITE_RECOVERABLE_REQUEST_MODE" \
+            --shard "$ELITE_RECOVERABLE_REQUEST_SHARD" \
+            --worker "$ELITE_RECOVERABLE_REQUEST_WORKER" --timeout 7200
+      - name: Always retain validated success or raw failed/incomplete attempt
+        if: >-
+          always() && steps.native_guard.outcome == 'success' &&
+          steps.load_plan.outcome == 'success'
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-export \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --mode "$ELITE_RECOVERABLE_REQUEST_MODE" \
+            --shard "$ELITE_RECOVERABLE_REQUEST_SHARD" \
+            --worker "$ELITE_RECOVERABLE_REQUEST_WORKER" \
+            --output "$RUNNER_TEMP/$SHARD_BASENAME"
+      - name: Upload this independent shard and index after success or failure
+        if: >-
+          always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: >-
+            ${{ format('native-shard-{0}-{1}-{2}', matrix.mode,
+            matrix.shard, github.run_attempt) }}
+          path: ${{ runner.temp }}/${{ env.SHARD_BASENAME }}
+          if-no-files-found: error
+
+  address_shards:
+    name: ASAN ${{ matrix.label }}
+    needs: [authorize_native, prepare_address]
+    if: >-
+      always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.prepare_address.result == 'success' &&
+      needs.prepare_address.outputs.has_pending == 'true'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 130
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.prepare_address.outputs.matrix) }}
+    env:
+      PLAN_ID: ${{ needs.prepare_address.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.prepare_address.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.prepare_address.outputs.manifest_digest }}
+      ELITE_RECOVERABLE_REQUEST_MODE: ${{ matrix.mode }}
+      ELITE_RECOVERABLE_REQUEST_SHARD: ${{ matrix.shard }}
+      SHARD_BASENAME: >-
+        ${{ format('recoverable-shard-{0}-{1}', matrix.shard,
+        github.run_attempt) }}
+      ELITE_RECOVERABLE_REQUEST_WORKER: ${{ matrix.worker }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - *load_plan
+      - name: Restore success or execute only this pending whole-unit shard
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-run \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --mode "$ELITE_RECOVERABLE_REQUEST_MODE" \
+            --shard "$ELITE_RECOVERABLE_REQUEST_SHARD" \
+            --worker "$ELITE_RECOVERABLE_REQUEST_WORKER" --timeout 7200
+      - name: Always retain validated success or raw failed/incomplete attempt
+        if: >-
+          always() && steps.native_guard.outcome == 'success' &&
+          steps.load_plan.outcome == 'success'
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-export \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --mode "$ELITE_RECOVERABLE_REQUEST_MODE" \
+            --shard "$ELITE_RECOVERABLE_REQUEST_SHARD" \
+            --worker "$ELITE_RECOVERABLE_REQUEST_WORKER" \
+            --output "$RUNNER_TEMP/$SHARD_BASENAME"
+      - name: Upload this independent shard and index after success or failure
+        if: >-
+          always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: >-
+            ${{ format('native-shard-{0}-{1}-{2}', matrix.mode,
+            matrix.shard, github.run_attempt) }}
+          path: ${{ runner.temp }}/${{ env.SHARD_BASENAME }}
+          if-no-files-found: error
+
+  native_aggregate:
+    name: Verify exact full inventory, coverage and zero leaks
+    needs: [authorize_native, fake-aggregate, native_checks, prepare_thread, prepare_address, native_phase, thread_shards, address_shards]
+    if: >-
+      always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.prepare_thread.result == 'success' && needs.prepare_address.result == 'success'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 45
+    env:
+      PLAN_ID: ${{ needs.prepare_thread.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.prepare_thread.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.prepare_thread.outputs.manifest_digest }}
+      OTHER_PLAN_ID: ${{ needs.prepare_address.outputs.artifact_id }}
+      OTHER_PLAN_ARCHIVE: ${{ needs.prepare_address.outputs.archive_digest }}
+      OTHER_PLAN_DIGEST: ${{ needs.prepare_address.outputs.manifest_digest }}
+    steps:
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - *load_plan
+      - name: Restore the independent address plan through its own trusted digests
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-load \
+            --artifact-id "$OTHER_PLAN_ID" --archive-digest "$OTHER_PLAN_ARCHIVE" \
+            --digest "$OTHER_PLAN_DIGEST" --output "$RUNNER_TEMP/$PLAN_BASENAME-address"
+      - name: Rehash every required native proof and export exact-main coverage
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-aggregate \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --other-input "$RUNNER_TEMP/$PLAN_BASENAME-address" --other-digest "$OTHER_PLAN_DIGEST" \
+            --output "$RUNNER_TEMP/native-aggregate-${{ github.run_attempt }}"
+      - name: Require every job outcome before authoritative main analysis
+        env:
+          CHECKS: ${{ needs.native_checks.result }}
+          FAKES: ${{ needs.fake-aggregate.result }}
+          PHASES: ${{ needs.native_phase.result }}
+          THREAD: ${{ needs.thread_shards.result }}
+          ADDRESS: ${{ needs.address_shards.result }}
+          THREAD_PENDING: ${{ needs.prepare_thread.outputs.has_pending }}
+          ADDRESS_PENDING: ${{ needs.prepare_address.outputs.has_pending }}
+        run: |
+          test "$CHECKS" = success
+          test "$FAKES" = success
+          test "$PHASES" = success
+          for mode in THREAD ADDRESS; do
+            state="${!mode}"
+            pending_name="${mode}_PENDING"
+            test "$state" = success || { test "$state" = skipped && test "${!pending_name}" = false; }
+          done
+      - name: Install SonarScanner on actual main
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: brew install sonar-scanner
+      - name: Analyze committed main with its exact SHA
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: make sonar
+      - name: Always retain aggregate and coverage evidence
+        if: always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-aggregate-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/native-aggregate-${{ github.run_attempt }}
+            coverage.xml
+            coverage.lcov
+            reports/
+          if-no-files-found: warn
+
+  physical_qualification:
+    name: Required native quality aggregate
+    needs: [authorize_native, native_checks, prepare_thread, prepare_address, native_phase, thread_shards, address_shards, native_aggregate]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      AUTHORIZED: ${{ needs.authorize_native.outputs.authorized }}
+      CHECKS: ${{ needs.native_checks.result }}
+      THREAD_PREPARE: ${{ needs.prepare_thread.result }}
+      ADDRESS_PREPARE: ${{ needs.prepare_address.result }}
+      PHASES: ${{ needs.native_phase.result }}
+      THREAD_SHARDS: ${{ needs.thread_shards.result }}
+      ADDRESS_SHARDS: ${{ needs.address_shards.result }}
+      THREAD_PENDING: ${{ needs.prepare_thread.outputs.has_pending }}
+      ADDRESS_PENDING: ${{ needs.prepare_address.outputs.has_pending }}
+      AGGREGATE: ${{ needs.native_aggregate.result }}
+    steps:
+      - name: Held, failed or cancelled execution never becomes a physical pass
+        run: |
+          python3 - <<'PY'
+          import os
+          e = os.environ
+          assert e['AUTHORIZED'] == 'true', 'Exact-head host activation is required'
+          assert all(e[k] == 'success' for k in (
+              'CHECKS', 'THREAD_PREPARE', 'ADDRESS_PREPARE', 'PHASES', 'AGGREGATE'))
+          for mode in ('THREAD', 'ADDRESS'):
+              assert e[mode + '_SHARDS'] == 'success' or (
+                  e[mode + '_SHARDS'] == 'skipped' and e[mode + '_PENDING'] == 'false')
+          with open(e['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('Every required native component is qualified for this exact execution head.\n')
+          PY
