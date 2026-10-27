@@ -1,5 +1,17 @@
 # Developer and reviewer workflow
 
+## ASAN cost reduction: authorized 27 October
+
+Stephen authorized implementation of the test-cost and recovery plan. This is a delivery priority, not a new diagnostic campaign. Preserve the current exact M01 candidate and its sole native run; no mid-run source, installer or policy changes.
+
+- G3 owns one bounded packet combining the exclusive existing test-overhead changes from PR 216 / issue 219 and PR 217 / issue 220. Reuse already-published frames and scalar observations instead of requesting duplicate actor snapshots or frame publications. Keep every assertion, order, frame bound, simulation delta, control, work budget and save/authority/custody check. Exclude inherited already-integrated M03 changes. SH056 readiness notes remain preserved; activation stays unstarted.
+- MBA reviews the exact combined delta once for bugs, performance and style. Preserve valid parent evidence. Unrelated hosted-unit passes do not qualify the affected native methods. Do not rerun the old timing baseline or launch a standalone broad profiling campaign; record comparable affected-method durations during the next already-required candidate validation. Report any speedup only after measurement.
+- G1 owns activation of the existing independently source-reviewed granular quality workflow, PR 242, at the first quiescent boundary after M01 publication and before the next candidate's required native quality run. Use the existing pinned installer, actual source/execution identity, resource admission, finite runner lifecycle, artifact validation, rollback and required aggregate. Do not invent another CI framework or treat fake/source checks as operational proof. The next required candidate run supplies real activation evidence; no extra broad pilot is added.
+- Routine development uses the focused unit workflow. Broad integration, performance and sanitizer campaigns are batched at explicitly authorized candidate/release checkpoints, not per helper or ordinary feature packet. Existing final-head required checks, approvals, coverage, sanitizer, leaks and main-only Sonar requirements remain intact. Failed, cancelled, missing or stale evidence cannot become a pass.
+- Recover only complete supported exact-identity checkpoints. Preserve interrupted/failed work honestly; retry an unfinished timeout group without repeating eligible completed groups. A real code failure stops for saved evidence and bounded remediation. Separate GitHub jobs improve recovery and progress reporting; they do not establish shorter execution time or physical parallelism on one worker.
+
+Record source completion, review, actual affected execution, integration and operational activation separately in the completion ledger. Track measured method/build time, recovery reuse and any lost unfinished work from existing evidence, without adding repeated measurement runs.
+
 ## Stop after M01 delivery
 
 Stephen directs that once M01 is actually complete and delivered, all project work stops except Mission Researcher session01a13206-3a94-7181-8828-cfebae681e11. Preserve unfinished source and owned branches/PRs. Do not start the next milestone, continue development/review/testing/hygiene or perform post-M01 branch sync. G1 reports verified delivery; Orchestrator stops other workers and disables project follow-ups, then remains idle. Mission Researcher alone continues its existing authorised scope. This overrides older keep-busy and automatic continuation rules below. It does not stop the checks and release work still required to finish M01.
