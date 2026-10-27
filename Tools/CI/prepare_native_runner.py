@@ -383,7 +383,7 @@ def require_registration(policy):
     registration = RUNNER / ".runner"
     from native_runner import require_owned_activation_file
     require_owned_activation_file(registration)
-    value = json.loads(registration.read_text())
+    value = json.loads(registration.read_text(encoding="utf-8-sig"))
     name = next(iter(policy["recoverable_activation"]["runners"]))
     if value.get("agentName") != name or value.get("gitHubUrl") != "https://github.com/stephenlclarke/elite" or value.get("workFolder") != "_work":
         raise ValueError("Existing registration is not this approved repository/runner.")

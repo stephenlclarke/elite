@@ -751,6 +751,75 @@ class PhysicalIdentityTests(unittest.TestCase):
 
 
 class ProvisioningFailureTests(unittest.TestCase):
+    def registration_fixture(self):
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+        from unittest.mock import patch
+        import prepare_native_runner as install
+        temporary = TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        runner = Path(temporary.name).resolve()
+        replacement = patch.object(install, "RUNNER", runner)
+        replacement.start()
+        self.addCleanup(replacement.stop)
+        policy = {"recoverable_activation": {"runners": {"owned-one": {}}}}
+        value = dict(agentName="owned-one", gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")
+        return install, runner / ".runner", policy, value
+
+    def test_registration_accepts_utf8_with_or_without_bom_without_rewriting_vendor_bytes(self):
+        import json
+        install, path, policy, value = self.registration_fixture()
+        value["vendorField"] = "retained \ufeff value"
+        for encoding in ("utf-8", "utf-8-sig"):
+            with self.subTest(encoding=encoding):
+                raw = json.dumps(value, ensure_ascii=False).encode(encoding)
+                path.write_bytes(raw)
+                path.chmod(0o600)
+                self.assertIsNone(install.require_registration(policy))
+                self.assertEqual(path.read_bytes(), raw)
+
+    def test_registration_bom_does_not_accept_malformed_json_or_invalid_utf8(self):
+        import json
+        install, path, policy, value = self.registration_fixture()
+        for prefix in (b"", b"\xef\xbb\xbf"):
+            for payload in (b"{bad json", b"\xff", b'{"agentName":'):
+                with self.subTest(prefix=prefix, payload=payload), self.assertRaises(ValueError):
+                    path.write_bytes(prefix + payload)
+                    path.chmod(0o600)
+                    install.require_registration(policy)
+        path.write_bytes(b"\xef\xbb\xbf" * 2 + json.dumps(value).encode("utf-8"))
+        with self.assertRaises(ValueError):
+            install.require_registration(policy)
+
+    def test_registration_bom_does_not_relax_vendor_identity_checks(self):
+        import json
+        install, path, policy, value = self.registration_fixture()
+        for prefix in (b"", b"\xef\xbb\xbf"):
+            for mutation in ({"agentName": "other"}, {"agentName": "owned-one\ufeff"},
+                             {"gitHubUrl": "https://github.com/outside/elite"}, {"workFolder": "other"},
+                             {"agentName": None}):
+                with self.subTest(prefix=prefix, mutation=mutation):
+                    path.write_bytes(prefix + json.dumps({**value, **mutation}).encode("utf-8"))
+                    path.chmod(0o600)
+                    with self.assertRaisesRegex(ValueError, "approved repository/runner"):
+                        install.require_registration(policy)
+
+    def test_registration_bom_does_not_relax_owned_file_or_symlink_checks(self):
+        import json
+        install, path, policy, value = self.registration_fixture()
+        raw = json.dumps(value).encode("utf-8-sig")
+        path.write_bytes(raw)
+        path.chmod(0o666)
+        with self.assertRaises(ValueError):
+            install.require_registration(policy)
+        target = path.with_name("vendor-json")
+        target.write_bytes(raw)
+        target.chmod(0o600)
+        path.unlink()
+        path.symlink_to(target)
+        with self.assertRaises(ValueError):
+            install.require_registration(policy)
+
     def test_unclean_or_wrong_head_cannot_prepare_a_runner(self):
         from pathlib import Path
         from unittest.mock import patch
