@@ -1,4 +1,5 @@
 import Foundation
+import TOMLDecoder
 import Testing
 
 @testable import EliteCore
@@ -168,7 +169,9 @@ final class C01SurveyorFixture {
 struct NativeC01SurveyorUnitTests {
   @Test func harrierKeepsEveryVisualFaceAt65MetresAndUsesClosedConservativeCollision() throws {
     let geometry = try NativeC01SurveyorGeometry.harrier.get()
-    let original = try #require(ShipCatalogue.ship("SH056"))
+    let original = try TOMLDecoder().decode(
+      CatalogueShip.self,
+      from: Data(contentsOf: ShipCatalogue.folder.appendingPathComponent("SH056.toml")))
     #expect(original.name == "Harrier" && ShipCatalogue.ship("SH026")?.name == "Constrictor")
     #expect(geometry.design.faces == original.design.faces)
     #expect(geometry.design.vertices.count == original.design.vertices.count)

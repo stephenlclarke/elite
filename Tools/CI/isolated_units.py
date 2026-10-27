@@ -22,6 +22,20 @@ METHODS = {
         "currentBrabantDesignCannotReplaceTheHistoricalRecorderOrGrantHullAccess",
         "originalSourceFitsAndCustodyRemainExactWithoutAdvancingTheParent",
     ),
+    "OriginalAplomadoUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
+    "OriginalGopherUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMinerMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "minerPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "NativeC01HistoricalHarrierUnitTests": (
         "historicalHarrierKeepsCompleteDesignAppearanceAndCanonicalModelHash",
         "calibratedBoundsAndClosedConvexCollisionContainEveryHistoricalPoint",
