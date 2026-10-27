@@ -168,6 +168,95 @@ class RecoverableAuthorizationTests(unittest.TestCase):
             with self.subTest(mutation=mutations.index(mutate)), self.assertRaises(ValueError):
                 require_recoverable_job(policy, env, event, now=100)
 
+    def test_safe_hook_diagnostic_names_actual_job_and_event_guard_failures(self):
+        import native_runner
+        policy, env, event = self.contract()
+        env["GITHUB_JOB"] = "unapproved-role"
+        try:
+            native_runner.require_recoverable_job(policy, env, event, now=100)
+        except ValueError as error:
+            record = native_runner.authorization_failure(error)
+        else:
+            self.fail("The unchanged job guard must still refuse")
+        self.assertEqual({key: record[key] for key in ("stage", "predicate", "category")},
+                         dict(stage="pre-job", predicate="exact-job-contract", category="ValueError"))
+        self.assertIs(type(record["owned_line"]), int)
+        policy, env, event = self.internal_pr_contract()
+        event["pull_request"]["head"]["sha"] = "c" * 40
+        try:
+            native_runner.require_recoverable_event(policy["recoverable_activation"], env, event)
+        except ValueError as error:
+            record = native_runner.authorization_failure(error)
+        self.assertEqual(record["predicate"], "execution-source-ref")
+        self.assertNotIn("c" * 40, repr(record))
+
+    def test_safe_hook_diagnostic_never_formats_secret_bearing_or_unknown_errors(self):
+        import json, subprocess
+        from unittest.mock import patch
+        import native_runner
+        secret = "FAKE-PRIVATE-TOKEN-POLICY-PAYLOAD"
+        class UnprintableValueError(ValueError):
+            def __str__(self):
+                raise AssertionError("Exception text must never be formatted")
+        errors = [(UnprintableValueError(secret), "ValueError"), (KeyError(secret), "KeyError"),
+                  (OSError(secret), "OSError"),
+                  (subprocess.CalledProcessError(1, [secret], output=secret, stderr=secret), "SubprocessError"),
+                  (RuntimeError(secret), "unknown")]
+        for error, category in errors:
+            with self.subTest(category=category), patch.dict("os.environ", {"GITHUB_TOKEN": secret, "GITHUB_JOB": secret}):
+                record = native_runner.authorization_failure(error)
+                self.assertEqual(record, dict(stage="unknown", predicate="unknown", category=category, owned_line=None))
+                self.assertNotIn(secret, json.dumps(record))
+                self.assertEqual(set(record), {"stage", "predicate", "category", "owned_line"})
+
+    def test_safe_hook_diagnostic_unknown_owned_site_emits_only_integer_not_name_or_path(self):
+        import json
+        import native_runner
+        private_name = "FAKE_PRIVATE_FUNCTION_NAME"
+        source = "def " + private_name + "():\n    raise ValueError('FAKE_PRIVATE_ARGUMENT')\n"
+        scope = {}
+        exec(compile(source, native_runner.__file__, "exec"), scope)
+        try:
+            scope[private_name]()
+        except ValueError as error:
+            record = native_runner.authorization_failure(error)
+        self.assertEqual(record, dict(stage="unknown", predicate="unknown", category="ValueError", owned_line=2))
+        self.assertNotIn(private_name, json.dumps(record))
+        self.assertNotIn(native_runner.__file__, json.dumps(record))
+
+    def test_safe_hook_entrypoint_keeps_nonzero_exit_and_suppresses_raw_exception_context(self):
+        import ast, json, subprocess, sys
+        from pathlib import Path
+        import native_runner
+        source = Path(native_runner.__file__).read_text()
+        entrypoint = next(node for node in ast.parse(source).body if isinstance(node, ast.If)
+                          and isinstance(node.test, ast.Compare) and ast.unparse(node.test) == "__name__ == '__main__'")
+        expressions = ["ValueError('FAKE_PRIVATE_VALUE')", "KeyError('FAKE_PRIVATE_KEY')",
+                       "OSError('FAKE_PRIVATE_PATH')",
+                       "subprocess.CalledProcessError(1, ['FAKE_PRIVATE_COMMAND'], output='FAKE_PRIVATE_OUTPUT', stderr='FAKE_PRIVATE_STDERR')"]
+        for expression in expressions:
+            # Run only the real handler AST with an injected failing main, never a real hook.
+            script = ("import ast, subprocess\nimport native_runner as native\n"
+                      "def main():\n    raise " + expression + "\n"
+                      "scope = dict(native.__dict__, __name__='__main__', main=main)\n"
+                      "node = next(n for n in ast.parse(" + repr(source) + ").body if isinstance(n,ast.If) and isinstance(n.test,ast.Compare) and ast.unparse(n.test)==\"__name__ == '__main__'\")\n"
+                      "exec(compile(ast.Module(body=[node],type_ignores=[]), native.__file__, 'exec'), scope)\n")
+            result = subprocess.run([sys.executable, "-c", script], cwd=Path(native_runner.__file__).parent,
+                                    capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 1)
+            self.assertEqual(result.stdout, "")
+            self.assertNotIn("FAKE_PRIVATE", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertNotIn(native_runner.__file__, result.stderr)
+            record = json.loads(result.stderr.split("Native quality authorization failed: ", 1)[1])
+            self.assertEqual(set(record), {"stage", "predicate", "category", "owned_line"})
+        # The source handler's suppression and caught classes are preserved exactly.
+        handler = entrypoint.body[0].handlers[0]
+        self.assertEqual(ast.unparse(handler.type), "(KeyError, OSError, ValueError, subprocess.SubprocessError)")
+        self.assertIsInstance(handler.body[-1], ast.Raise)
+        self.assertIsInstance(handler.body[-1].cause, ast.Constant)
+        self.assertIsNone(handler.body[-1].cause.value)
+
     def test_invalid_new_contract_is_rejected_before_physical_probe(self):
         import json
         from pathlib import Path

@@ -53,3 +53,9 @@ The required contract is the approved exact GitHub execution SHA/ref/workflow pl
 The next assigned blocker occurs at the existing vendor `.runner` registration reader, with slot1 registered before any native work. A UTF-8 BOM must be accepted at that read boundary so G1 does not need per-registration manual normalization. Its generation frequency is not assumed. The change must preserve decoded JSON values, exact runner/repository/work-folder identity, ownership and all existing source/archive/policy/lease guards. G1 owns the registered worker's safe cleanup and new execution binding; this correction performs neither operation.
 
 Change only `require_registration` to read with `encoding="utf-8-sig"`, add focused existing registration fixtures and these paired notes. Do not rewrite the vendor file or add a general normalizer, importer, decoder framework or alternate identity policy.
+
+## M01: identify a pre-checkout hook refusal without exposing its inputs
+
+The reviewed9cc registration reader passed and the first native prepare-thread job reached the runner, then failed in the job-started hook before checkout/build with `Native quality authorization failed: ValueError`. That output does not prove which guard refused. G1 owns retained evidence and operator cleanup. A server job name or absent job field in retained context is not proof of the later hook's actual `GITHUB_JOB`; no role workaround or cause is inferred here.
+
+Change only the existing native-hook exception formatter, focused tests and these paired notes. Report fixed named stage/predicate/category codes plus an owned source-line integer. Never expose raw exception text, traceback contents, paths, locals, environment, policy, payload, commands or credentials. Preserve all guards, caught exception classes, nonzero exit, suppression of exception context, success behavior and leases. Controller lifecycle behavior is a separate unassigned issue and remains unchanged.

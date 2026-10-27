@@ -488,9 +488,48 @@ def main() -> None:
                       "swift": policy["swift"], "sdk": policy["sdk"]}))
 
 
+_AUTHORIZATION_FAILURE_SITES = {
+    "main": ("hook", "policy-environment-or-publication"),
+    "authorize_recoverable": ("pre-job", "source-plan-assignment"),
+    "require_recoverable_job": ("pre-job", "exact-job-contract"),
+    "require_recoverable_event": ("pre-job", "execution-source-ref"),
+    "require_owned_assignment": ("pre-job", "owned-assignment"),
+    "load_recoverable_guard": ("pre-job", "installed-package"),
+    "require_owned_activation_file": ("policy", "owned-file"),
+    "validate": ("host", "platform-hardware-validation"),
+    "require_physical_host": ("host", "physical-runner-contract"),
+    "output": ("host", "external-tool"),
+    "require_recoverable_checkout": ("checkout", "workflow-source"),
+    "require_trusted_job": ("legacy", "trusted-job-identity"),
+}
+
+
+def authorization_failure(error: BaseException) -> dict:
+    """Emit only fixed code-site/category labels, never exception or context contents."""
+    stage, predicate, line = "unknown", "unknown", None
+    frame = error.__traceback__
+    while frame is not None:
+        # Only code metadata is inspected. Never access frame locals or format a traceback.
+        code = frame.tb_frame.f_code
+        if code.co_filename == __file__:
+            line = frame.tb_lineno
+            site = _AUTHORIZATION_FAILURE_SITES.get(code.co_name)
+            if site is not None:
+                stage, predicate = site
+        frame = frame.tb_next
+    category = "unknown"
+    for kind, label in ((KeyError, "KeyError"), (OSError, "OSError"),
+                        (ValueError, "ValueError"), (subprocess.SubprocessError, "SubprocessError")):
+        if isinstance(error, kind):
+            category = label
+            break
+    return {"stage": stage, "predicate": predicate, "category": category, "owned_line": line}
+
+
 if __name__ == "__main__":
     try:
         main()
     except (KeyError, OSError, ValueError, subprocess.SubprocessError) as error:
         # Do not print event payloads, commands or registration credentials on a public job.
-        raise SystemExit("Native quality authorization failed: " + type(error).__name__) from None
+        raise SystemExit("Native quality authorization failed: "
+                         + json.dumps(authorization_failure(error), sort_keys=True)) from None
