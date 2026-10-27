@@ -16,6 +16,20 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "OriginalLaggarUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalBountyHunterMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "bountyHunterPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
+    "OriginalLlamaUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalTraderMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "traderPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "OriginalJaguarUnitTests": (
         "exactCapitalAuthenticationRejectsForeignDefinitionModelAndUnits",
         "originalCapitalMechanicsPreserveFullHistoryAndOtherHullBindings",
@@ -32,6 +46,13 @@ METHODS = {
         "unknownScaleIsDisclosedAndViewChangesCannotUnlockOrPurchaseACapital",
         "viewButtonsAndHelpKeepResetSeparateFromBaselineAndSearchAndTradeContexts",
         "actorDragRefusesOtherScreensInvalidCoordinatesAndTradeWithoutMutatingCommander",
+    ),
+    "OriginalHareExplorerUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalLeisureMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "leisurePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
     "OriginalCarabaoHighlinerUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
