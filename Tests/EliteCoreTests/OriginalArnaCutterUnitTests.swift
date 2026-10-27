@@ -105,7 +105,7 @@ struct OriginalArnaCutterUnitTests {
       "SH047", "SH054", "SH055", "SH056", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
       "SH068",
       "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH081", "SH083",
-      "SH084", "SH085",
+      "SH084", "SH085", "SH091",
     ]
     .contains(
       other.id)
@@ -208,7 +208,7 @@ struct OriginalArnaCutterUnitTests {
           "SH047", "SH054", "SH055", "SH056", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
           "SH068",
           "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH081", "SH083",
-          "SH084", "SH085",
+          "SH084", "SH085", "SH091",
         ])
     var game = Game(executive: false)
     game.docked = false

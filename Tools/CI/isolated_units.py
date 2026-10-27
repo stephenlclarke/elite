@@ -23,6 +23,13 @@ METHODS = {
         "militaryPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
         "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
+    "OriginalGopherUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMinerMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "minerPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "NativeC01HistoricalHarrierUnitTests": (
         "historicalHarrierKeepsCompleteDesignAppearanceAndCanonicalModelHash",
         "calibratedBoundsAndClosedConvexCollisionContainEveryHistoricalPoint",
