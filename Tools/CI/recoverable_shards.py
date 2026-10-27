@@ -1992,7 +1992,73 @@ def trusted_json(path, checksum):
     return load_json(path)
 
 
-def require_artifact_run_provenance(authority, run, expected_run):
+def owned_active_artifact_job(authority, run, expected_run, api):
+    """Corroborate activity from this physical registration and exact attempt, never a name alone."""
+    environment, policy = authority.environment, authority.policy
+    root = Path(policy.get("runner_root", ""))
+    name, attempt = environment.get("RUNNER_NAME"), environment.get("GITHUB_RUN_ATTEMPT", "")
+    instance = policy.get("recoverable_activation", {}).get("runners", {}).get(name, {})
+    if (not root.is_absolute() or root != root.resolve()
+            or instance.get("workspace") != str(root / "_work/elite/elite")
+            or not re.fullmatch(r"[1-9][0-9]*", attempt)):
+        return False
+    registration = root / ".runner"
+    native_runner.require_owned_activation_file(registration)
+    raw = registration.read_bytes()
+    agent = json.loads(raw.decode("utf-8-sig"))
+    if (not isinstance(agent, dict) or type(agent.get("agentId")) is not int or agent["agentId"] <= 0
+            or agent.get("agentName") != name or agent.get("workFolder") != "_work"
+            or agent.get("gitHubUrl") != "https://github.com/" + native_runner.REPOSITORY):
+        return False
+    # The existing callback bounds each request to 60s. Refuse a page arriving after this window.
+    deadline, total, seen, active = time.monotonic() + 120, None, set(), []
+    for page in range(1, 17):
+        if time.monotonic() >= deadline:
+            return False
+        result = api(f"repos/{native_runner.REPOSITORY}/actions/runs/{expected_run}/attempts/{attempt}/jobs?per_page=100&page={page}")
+        if time.monotonic() >= deadline or not isinstance(result, dict):
+            return False
+        count, jobs = result.get("total_count"), result.get("jobs")
+        if (type(count) is not int or not 0 <= count <= 1600 or not isinstance(jobs, list)
+                or (total is not None and count != total)):
+            return False
+        total = count
+        if len(jobs) != min(100, total - len(seen)):
+            return False
+        for job in jobs:
+            if not isinstance(job, dict) or type(job.get("id")) is not int or job["id"] <= 0 or job["id"] in seen:
+                return False
+            seen.add(job["id"])
+            if type(job.get("runner_id")) is not int or job["runner_id"] != agent["agentId"]:
+                continue
+            if job.get("status") != "in_progress":
+                continue
+            if ("conclusion" not in job or job["conclusion"] is not None
+                    or job.get("runner_name") != name or type(job.get("run_id")) is not int
+                    or str(job["run_id"]) != expected_run or job.get("head_sha") != run["head_sha"]
+                    or ("run_attempt" in job and str(job["run_attempt"]) != attempt)):
+                return False
+            active.append(job["id"])
+        if len(seen) == total:
+            native_runner.require_owned_activation_file(registration)
+            return len(active) == 1 and registration.read_bytes() == raw
+    return False
+
+
+def artifact_run_active(authority, run, expected_run, api):
+    """Keep the original running path; queued/waiting need fresh owned job corroboration."""
+    if run.get("status") == "in_progress":
+        return True
+    if (run.get("status") not in ("queued", "waiting") or "conclusion" not in run
+            or run["conclusion"] is not None or api is None):
+        return False
+    try:
+        return owned_active_artifact_job(authority, run, expected_run, api)
+    except (KeyError, OSError, TypeError, ValueError, subprocess.SubprocessError):
+        return False
+
+
+def require_artifact_run_provenance(authority, run, expected_run, api=None):
     """Retain each exact run guard separately so a safe owned line identifies refusal."""
     ref = authority.environment.get("GITHUB_REF", "")
     branch = ref.removeprefix("refs/heads/")
@@ -2008,7 +2074,7 @@ def require_artifact_run_provenance(authority, run, expected_run):
         raise ValueError("Artifact run provenance differs from the approved workflow")
     if str(run.get("run_attempt")) != authority.environment.get("GITHUB_RUN_ATTEMPT"):
         raise ValueError("Artifact run provenance differs from the approved workflow")
-    if run.get("status") != "in_progress":
+    if not artifact_run_active(authority, run, expected_run, api):
         raise ValueError("Artifact run provenance differs from the approved workflow")
     if run["event"] != event:
         raise ValueError("Artifact run provenance differs from the approved workflow")
@@ -2035,7 +2101,7 @@ class GitHubArtifacts:
             ["gh", "api", path], env=self.gh_environment(), stderr=subprocess.PIPE, timeout=60)))
         self.download = download or self.download_archive
         run = self.api(f"repos/{native_runner.REPOSITORY}/actions/runs/{self.run}")
-        require_artifact_run_provenance(authority, run, self.run)
+        require_artifact_run_provenance(authority, run, self.run, self.api)
 
     def gh_environment(self):
         environment = dict(self.authority.environment)

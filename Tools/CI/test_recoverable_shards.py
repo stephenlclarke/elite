@@ -1667,6 +1667,245 @@ class ArtifactRunProvenanceTests(unittest.TestCase):
             shards.GitHubArtifacts(authority, api=lambda path: run)
 
 
+class ActiveArtifactJobTests(unittest.TestCase):
+    contract = ArtifactRunProvenanceTests.contract
+
+    def fixture(self, status="queued", event="pull_request", bom=False):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name).resolve() / "native-runner"
+        root.mkdir(mode=0o700)
+        authority, run = self.contract(event)
+        authority.environment.update(RUNNER_NAME="owned-native", GITHUB_JOB="prepare_address")
+        authority.policy.update(runner_root=str(root))
+        authority.policy["recoverable_activation"]["runners"] = {"owned-native": {
+            "workspace": str(root / "_work/elite/elite"), "jobs": ["prepare_address"]}}
+        run.update(status=status, conclusion=None)
+        agent = dict(agentId=49, agentName="owned-native", gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")
+        job = dict(id=901, run_id=123, runner_id=49, runner_name="owned-native", head_sha=run["head_sha"],
+                   status="in_progress", conclusion=None)
+        value = SimpleNamespace(authority=authority, run=run, agent=agent, registration=root / ".runner",
+                                jobs=[job], requests=[], pages=None, error=None)
+
+        def publish():
+            value.registration.write_bytes((b"\xef\xbb\xbf" if bom else b"") + json.dumps(value.agent).encode())
+            value.registration.chmod(0o600)
+
+        def api(path):
+            value.requests.append(path)
+            base = "repos/stephenlclarke/elite/actions/runs/123"
+            if path == base:
+                return value.run
+            prefix = base + "/attempts/2/jobs?per_page=100&page="
+            if not path.startswith(prefix):
+                raise ValueError("Only the exact attempt's jobs may corroborate activity")
+            if value.error is not None:
+                raise value.error
+            page = int(path.removeprefix(prefix))
+            if value.pages is not None:
+                return value.pages[page - 1]
+            return dict(total_count=len(value.jobs), jobs=value.jobs[(page - 1) * 100:page * 100])
+
+        value.publish, value.api = publish, api
+        publish()
+        return value
+
+    def authorize(self, value):
+        return shards.GitHubArtifacts(value.authority, api=value.api)
+
+    def refuse(self, value):
+        with self.assertRaises(ValueError):
+            self.authorize(value)
+
+    def test_queued_waiting_require_the_exact_owned_active_job_and_accept_both_bom_encodings(self):
+        for status in ("queued", "waiting"):
+            for event in ("pull_request", "push", "workflow_dispatch"):
+                for bom in (False, True):
+                    with self.subTest(status=status, event=event, bom=bom):
+                        value = self.fixture(status, event, bom)
+                        raw = value.registration.read_bytes()
+                        self.authorize(value)
+                        self.assertEqual(value.registration.read_bytes(), raw)
+                        self.assertEqual(value.requests, ["repos/stephenlclarke/elite/actions/runs/123",
+                            "repos/stephenlclarke/elite/actions/runs/123/attempts/2/jobs?per_page=100&page=1"])
+        value = self.fixture("in_progress")
+        value.registration.unlink()
+        self.authorize(value)
+        self.assertEqual(len(value.requests), 1)  # Preserve the original running path without new I/O.
+
+    def test_terminal_unknown_or_concluded_runs_never_request_job_corroboration(self):
+        for status in ("completed", "cancelled", "failure", "success", "requested", "pending", "unknown", None, "missing"):
+            with self.subTest(status=status):
+                value = self.fixture(status)
+                if status == "missing":
+                    value.run.pop("status")
+                self.refuse(value)
+                self.assertEqual(len(value.requests), 1)
+        for conclusion in ("failure", "success", "cancelled", "missing"):
+            value = self.fixture()
+            if conclusion == "missing":
+                value.run.pop("conclusion")
+            else:
+                value.run["conclusion"] = conclusion
+            self.refuse(value)
+            self.assertEqual(len(value.requests), 1)
+
+    def test_wrong_job_run_head_runner_attempt_or_conclusion_cannot_corroborate(self):
+        changes = (dict(id=0), dict(id=True), dict(id="901"), dict(run_id=124), dict(run_id=True),
+                   dict(runner_id=50), dict(runner_id=True), dict(runner_name="foreign"),
+                   dict(head_sha=HEAD), dict(head_sha="c" * 40), dict(run_attempt=1),
+                   dict(status="queued"), dict(status="completed"), dict(status="cancelled"),
+                   dict(conclusion="failure"), dict(conclusion="success"))
+        for change in changes:
+            with self.subTest(change=change):
+                value = self.fixture()  # PR job head is the source b*, not the synthetic execution a*.
+                value.jobs[0].update(change)
+                self.refuse(value)
+        for missing in ("id", "run_id", "runner_id", "runner_name", "head_sha", "status", "conclusion"):
+            value = self.fixture()
+            value.jobs[0].pop(missing)
+            self.refuse(value)
+        value = self.fixture()
+        value.authority.environment["GITHUB_RUN_ATTEMPT"] = "1"
+        self.refuse(value)
+        self.assertEqual(len(value.requests), 1)
+        value = self.fixture()
+        value.jobs = []
+        self.refuse(value)
+        value = self.fixture()
+        value.jobs.append({**value.jobs[0], "id": 902})
+        self.refuse(value)
+
+    def test_owned_registration_identity_paths_modes_and_json_remain_mandatory(self):
+        changes = (dict(agentId=0), dict(agentId=-1), dict(agentId=True), dict(agentId="49"),
+                   dict(agentName="foreign"), dict(gitHubUrl="https://github.com/foreign/repo"), dict(workFolder="other"))
+        for change in changes:
+            value = self.fixture()
+            value.agent.update(change)
+            value.publish()
+            self.refuse(value)
+        for fault in ("missing-id", "missing-file", "malformed", "invalid-utf8", "double-bom", "writable-file", "writable-parent", "symlink", "foreign-owner", "changed-during-read"):
+            with self.subTest(fault=fault):
+                value = self.fixture()
+                if fault == "missing-id":
+                    value.agent.pop("agentId")
+                    value.publish()
+                elif fault == "missing-file":
+                    value.registration.unlink()
+                elif fault in ("malformed", "invalid-utf8", "double-bom"):
+                    value.registration.write_bytes({"malformed": b"{", "invalid-utf8": b"\xff", "double-bom": b"\xef\xbb\xbf\xef\xbb\xbf{}"}[fault])
+                elif fault == "writable-file":
+                    value.registration.chmod(0o622)
+                elif fault == "writable-parent":
+                    value.registration.parent.chmod(0o722)
+                    self.addCleanup(value.registration.parent.chmod, 0o700)
+                elif fault == "symlink":
+                    saved = value.registration.with_name("saved.json")
+                    value.registration.rename(saved)
+                    value.registration.symlink_to(saved)
+                elif fault == "foreign-owner":
+                    with patch.object(shards.native_runner, "require_owned_activation_file", side_effect=ValueError("foreign owner")):
+                        self.refuse(value)
+                    continue
+                else:
+                    original = value.api
+                    def replace(path):
+                        response = original(path)
+                        if "/jobs?" in path:
+                            value.agent["agentId"] = 50
+                            value.publish()
+                        return response
+                    value.api = replace
+                self.refuse(value)
+        value = self.fixture()
+        value.authority.environment["ELITE_RUNNER_REGISTRATION"] = "/untrusted/.runner"
+        value.registration.unlink()
+        self.refuse(value)  # No environment-supplied registration location is consulted.
+
+    def test_complete_pagination_rejects_duplicates_truncation_inconsistency_and_bounds(self):
+        value = self.fixture()
+        queued = [dict(id=1000 + i, status="queued", runner_id=0) for i in range(100)]
+        value.jobs = queued + value.jobs
+        self.authorize(value)
+        self.assertEqual(len(value.requests), 3)
+        for fault in ("duplicate", "duplicate-page", "ambiguous-later", "truncated-first", "truncated-last", "inconsistent-total", "over-limit", "malformed", "elapsed"):
+            with self.subTest(fault=fault):
+                value = self.fixture()
+                jobs = queued + value.jobs
+                value.pages = [dict(total_count=101, jobs=deepcopy(jobs[:100])), dict(total_count=101, jobs=deepcopy(jobs[100:]))]
+                if fault == "duplicate":
+                    value.pages[1]["jobs"][0]["id"] = queued[0]["id"]
+                elif fault == "duplicate-page":
+                    value.pages[1]["jobs"] = value.pages[0]["jobs"]
+                elif fault == "ambiguous-later":
+                    value.pages[0]["jobs"][0] = deepcopy(value.jobs[0])
+                    value.pages[1]["jobs"][0]["id"] = 902
+                elif fault == "truncated-first":
+                    value.pages[0]["jobs"].pop()
+                elif fault == "truncated-last":
+                    value.pages[1]["jobs"] = []
+                elif fault == "inconsistent-total":
+                    value.pages[1]["total_count"] = 102
+                elif fault == "over-limit":
+                    value.pages[0]["total_count"] = 1601
+                elif fault == "malformed":
+                    value.pages[0] = dict(total_count=True, jobs=[])
+                else:
+                    with patch.object(shards.time, "monotonic", side_effect=[0, 0, 121]):
+                        self.refuse(value)
+                    continue
+                self.refuse(value)
+        value = self.fixture()
+        value.jobs = [dict(id=1000 + i, status="queued", runner_id=0) for i in range(1599)] + value.jobs
+        self.authorize(value)
+        self.assertEqual(len(value.requests), 17)  # One run request plus the sixteen bounded job pages.
+
+    def test_api_failures_refuse_without_logging_or_retry(self):
+        for error in (OSError("FAKE_PRIVATE_API_PAYLOAD"), ValueError("FAKE_PRIVATE_API_PAYLOAD"),
+                      subprocess.CalledProcessError(1, ["FAKE_PRIVATE_TOKEN"], output="FAKE_PRIVATE_BODY"),
+                      subprocess.TimeoutExpired(["FAKE_PRIVATE_TOKEN"], 60)):
+            value = self.fixture()
+            value.error = error
+            try:
+                self.authorize(value)
+            except ValueError as refused:
+                record = shards.native_runner.authorization_failure(refused)
+            else:
+                self.fail("An API failure cannot authorize activity")
+            self.assertEqual(len(value.requests), 2)
+            self.assertNotIn("FAKE_PRIVATE", json.dumps(record))
+            self.assertEqual(record["predicate"], "run-provenance")
+
+    def test_nine_run_identity_guards_still_refuse_with_valid_active_job_evidence(self):
+        changes = (lambda r: r.update(id=124), lambda r: r.update(head_sha="c" * 40), lambda r: r.update(run_attempt=3),
+                   lambda r: r.update(event="outside"), lambda r: r["repository"].update(full_name="outside/repo"),
+                   lambda r: r["actor"].update(id=2), lambda r: r["triggering_actor"].update(id=2),
+                   lambda r: r.update(head_branch="outside"), lambda r: r.update(path="outside.yml"))
+        for change in changes:
+            value = self.fixture(event="push")
+            change(value.run)
+            self.refuse(value)
+
+    def test_registration_changes_bind_authorization_without_changing_native_environment_or_identity(self):
+        value = self.fixture()
+        controller = object.__new__(shards.NativeAuthority)
+        controller.environment = value.authority.environment
+        controller.config = dict(host="fake-host", admission=ADMISSION)
+        original_environment = deepcopy(controller.environment)
+        child = controller.execution_environment()
+        runtime = shards.legacy.runtime_identity(child)
+        for agent_id in (49, 50):
+            value.agent["agentId"] = agent_id
+            value.publish()
+            value.jobs[0]["runner_id"] = agent_id
+            self.authorize(value)
+            self.assertEqual(controller.environment, original_environment)
+            self.assertEqual(controller.execution_environment(), child)
+            self.assertEqual(shards.legacy.runtime_identity(controller.execution_environment()), runtime)
+            value.jobs[0]["runner_id"] = agent_id + 1
+            self.refuse(value)
+
+
 class GranularityTests(Fixture):
     authority = NativeAdapterTests.authority
     prepared = NativeAdapterTests.prepared
