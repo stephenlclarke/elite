@@ -2,6 +2,12 @@
 
 ## ASAN cost reduction: authorized 27 October
 
+**Latest conditional direction:** If the current M01 ASAN job naturally times out, do not start another unchanged monolithic six-hour retry. Preserve the terminal, exact binary and complete checkpoints; MBA independently verifies only new terminal/prefix evidence. G1 and MC1 prepare the minimal current-M01 plus already-reviewed PR242 workflow composition and concrete owned policy/job plan. One independent source/policy/composition review precedes G1 activation at that quiescent timeout boundary. This specific timeout recovery supersedes the older post-M01-publication-only rollout timing below. The current running job remains uninterrupted.
+
+The six-hour cap is a hard execution limit, not an inactivity limit. New log messages do not extend it. Use separately observable bounded whole-suite/cohort jobs with independent raw results, JUnit, always-upload artifacts, finite runner renewal and the unchanged required final aggregate. Aim for 30–60-minute chunks where retained timings permit; do not split an indivisible test/cohort or promise unmeasured duration. Preserve strict failure/timeout semantics.
+
+The reviewed new runtime explicitly rejects legacy receipt protocol/identity. Therefore the supported transition is a minimally composed new candidate and its truthful required checks, not promotion of old M01 normal/TSAN/ASAN receipts. Keep old qualified results as historical evidence at their exact source/image identity. No new importer, attestation workaround, new CI framework, stale-pass claim or gate weakening is authorized. Concrete identity/check/protection/host-lifecycle blockers must be reported with a bounded workable path before operation.
+
 Stephen authorized implementation of the test-cost and recovery plan. This is a delivery priority, not a new diagnostic campaign. Preserve the current exact M01 candidate and its sole native run; no mid-run source, installer or policy changes.
 
 - G3 owns one bounded packet combining the exclusive existing test-overhead changes from PR 216 / issue 219 and PR 217 / issue 220. Reuse already-published frames and scalar observations instead of requesting duplicate actor snapshots or frame publications. Keep every assertion, order, frame bound, simulation delta, control, work budget and save/authority/custody check. Exclude inherited already-integrated M03 changes. SH056 readiness notes remain preserved; activation stays unstarted.
