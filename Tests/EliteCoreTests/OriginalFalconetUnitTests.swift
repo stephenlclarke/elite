@@ -36,12 +36,14 @@ struct OriginalFalconetUnitTests {
         }
       }
     }
-    let blocked = try retained("SH056")
+    let historicalHarrier = try retained("SH056")
+    let blocked = try retained("SH086")
     let blockedDefinition = try #require(blocked.originalDefinition)
     #expect(
       !blockedDefinition.runtimeReady && !OriginalFalconetActivation.supports(blockedDefinition))
-    #expect(blocked.name == "Harrier" && blocked.model == "ROC-SH056")
-    #expect(ShipCatalogue.ship("SH056") == blocked)
+    #expect(historicalHarrier.name == "Harrier" && historicalHarrier.model == "ROC-SH056")
+    #expect(try OriginalFalconetActivation.resolve(historicalHarrier) == historicalHarrier)
+    #expect(ShipCatalogue.ship("SH086") == blocked)
     #expect(try OriginalPlayerHullActivation.resolve(blocked) == blocked)
     #expect(contract.metresPerSourceUnit == 1 && model.coordinateUnits == "metres")
     #expect(contract.envelope.minimum == .init(-8.3, -2.7, -9.09))
@@ -93,7 +95,8 @@ struct OriginalFalconetUnitTests {
       "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
       "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
       "SH046",
-      "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065", "SH068",
+      "SH047", "SH054", "SH055", "SH056", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
+      "SH068",
       "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH081", "SH083",
       "SH084", "SH085",
     ]
@@ -166,7 +169,8 @@ struct OriginalFalconetUnitTests {
           "SH002", "SH003", "SH004", "SH007", "SH012", "SH018", "SH019", "SH027", "SH029", "SH030",
           "SH031", "SH032", "SH033", "SH035", "SH036", "SH041", "SH042", "SH043", "SH044", "SH045",
           "SH046",
-          "SH047", "SH054", "SH055", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065", "SH068",
+          "SH047", "SH054", "SH055", "SH056", "SH057", "SH059", "SH061", "SH062", "SH064", "SH065",
+          "SH068",
           "SH069", "SH070", "SH074", "SH075", "SH077", "SH078", "SH079", "SH080", "SH081", "SH083",
           "SH084", "SH085",
         ])

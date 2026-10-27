@@ -16,6 +16,13 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "OriginalAplomadoUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "militaryPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "NativeC01HistoricalHarrierUnitTests": (
         "historicalHarrierKeepsCompleteDesignAppearanceAndCanonicalModelHash",
         "calibratedBoundsAndClosedConvexCollisionContainEveryHistoricalPoint",
