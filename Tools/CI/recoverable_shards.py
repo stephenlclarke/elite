@@ -2453,6 +2453,53 @@ class NativeWorkflow:
         seal(output)
         return {"raw_preparation_retained": True}
 
+    def export_checks(self, source, output):
+        """Retain bound raw evidence even when prerequisites never created a result."""
+        environment = self.authority.environment
+        expected = {"head": self.authority.policy["approved_head"], "role": "native_checks",
+                    "run_id": environment["GITHUB_RUN_ID"], "run_attempt": environment["GITHUB_RUN_ATTEMPT"]}
+        if environment.get("GITHUB_JOB") != "native_checks":
+            raise ValueError("Raw prerequisite export requires the exact checks role")
+        if (not source.is_absolute() or not output.is_absolute() or source != source.resolve() or output != output.resolve() or source == output
+                or source.is_relative_to(output) or output.is_relative_to(source) or output.exists()):
+            raise ValueError("Raw prerequisite export requires separate new physical output")
+
+        def bound(record):
+            if not isinstance(record, dict):
+                return False
+            authorization = record.get("authorization", {})
+            return (isinstance(authorization, dict) and record.get("head") == expected["head"]
+                    and all(authorization.get(name) == value for name, value in expected.items()))
+
+        def copy_raw(path, destination):
+            entries = physical_tree(path)
+            legacy.owned_directory(destination.parent)
+            shutil.copytree(path, destination)
+            if physical_tree(destination) != entries:
+                raise ValueError("Raw prerequisite evidence changed during export")
+
+        legacy.owned_directory(output)
+        checks_state, checks_binding = "missing", "absent"
+        if source.exists() or source.is_symlink():
+            entries = physical_tree(source)
+            if entries:
+                checks_state, checks_binding = "incomplete", "unbound"
+                launch = source / "launch.json"
+                if launch.is_file() and bound(load_json(launch)):
+                    copy_raw(source, output / "checks")
+                    checks_binding = "matched"
+                    if "result.json" in entries:
+                        checks_state = "result-recorded"
+        for launch in sorted((self.authority.cache / "preparation").glob("*/launch.json")):
+            native_runner.require_owned_activation_file(launch)
+            if bound(load_json(launch)):
+                copy_raw(launch.parent, output / "preparation" / launch.parent.name)
+        durable_json(output / "export.json", {"schema": SCHEMA, "kind": "raw-prerequisites",
+            "status": "unqualified", **expected, "checks_state": checks_state,
+            "checks_binding": checks_binding, "outputs": physical_tree(output)})
+        seal(output)
+        return {"raw_prerequisites_retained": True, "checks_state": checks_state, "status": "unqualified"}
+
     def restore_preparation(self, modes):
         # Restore a prior attempt only after archive authentication; retain failed local stages.
         for mode in modes:
@@ -2600,7 +2647,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("plan", "prepare", "worker", "pool", "export", "restore",
                                              "phase", "aggregate", "workflow-prepare", "workflow-load",
-                                             "workflow-run", "workflow-build", "workflow-build-export", "workflow-checks", "workflow-phase", "workflow-export",
+                                             "workflow-run", "workflow-build", "workflow-build-export", "workflow-checks", "workflow-checks-export", "workflow-phase", "workflow-export",
                                              "workflow-phase-export", "workflow-aggregate"))
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
@@ -2641,6 +2688,10 @@ def main():
             if args.output is None:
                 parser.error("workflow-checks requires --output")
             result = workflow.checks(args.output, args.timeout)
+        elif args.command == "workflow-checks-export":
+            if args.input is None or args.output is None:
+                parser.error("workflow-checks-export requires --input and --output")
+            result = workflow.export_checks(args.input, args.output)
         elif args.command == "workflow-build-export":
             if args.mode is None or args.output is None:
                 parser.error("workflow-build-export requires --mode and --output")

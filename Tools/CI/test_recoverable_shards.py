@@ -1711,6 +1711,151 @@ class ArtifactRunProvenanceTests(unittest.TestCase):
             shards.GitHubArtifacts(authority, api=lambda path: run)
 
 
+class PrerequisiteRawExportTests(unittest.TestCase):
+    def fixture(self):
+        authority, free, root = ResourceRefusalEvidenceTests.fixture(self, ram=5)
+        authority.environment["GITHUB_JOB"] = "native_checks"
+        authority.environment.pop("ELITE_RECOVERABLE_REQUEST_MODE")
+        return authority, free, root
+
+    def launch(self, authority):
+        return dict(head=HEAD, stage="admission", status="not-launched", mode=None,
+                    authorization=authority.authorization())
+
+    def assert_raw(self, output):
+        manifest = shards.load_json(output / "export.json")
+        self.assertEqual((manifest["kind"], manifest["status"]), ("raw-prerequisites", "unqualified"))
+        actual = shards.physical_tree(output)
+        self.assertEqual(manifest["outputs"], {name: digest for name, digest in actual.items() if name != "export.json"})
+        shards.require_sealed(output)
+        return manifest
+
+    def test_real_early_admission_refusal_exports_its_exact_bound_raw_sample_without_rerun(self):
+        authority, free, root = self.fixture()
+        source, output = root / "checks", root / "raw"
+        with patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=free)) as disk, patch.object(
+                shards.legacy, "ensure_no_live_tests"), patch.object(shards, "execute_process") as never, patch("sys.stdout", io.StringIO()):
+            with self.assertRaisesRegex(ValueError, "RAM/disk admission reserve"):
+                shards.NativeWorkflow(authority).checks(source, 5)
+            original = next((authority.cache / "preparation").glob("*/resource-admission.json"))
+            raw = original.read_bytes()
+            with patch.object(authority, "admission", side_effect=AssertionError("Do not resample during export")):
+                shards.NativeWorkflow(authority).export_checks(source, output)
+        disk.assert_called_once()
+        never.assert_not_called()
+        self.assertEqual(len(authority.calls), 2)
+        self.assertTrue(source.is_dir())
+        self.assertEqual(list(source.iterdir()), [])
+        self.assertEqual((output / "preparation" / original.parent.name / original.name).read_bytes(), raw)
+        manifest = self.assert_raw(output)
+        self.assertEqual((manifest["checks_state"], manifest["checks_binding"]), ("missing", "absent"))
+        self.assertEqual((manifest["head"], manifest["role"], manifest["run_id"], manifest["run_attempt"]),
+                         (HEAD, "native_checks", "123", "2"))
+        self.assertFalse(any(path.name in {"result.json", "index.json", "commit.json", "ready.json"} for path in output.rglob("*")))
+
+    def test_cli_exports_missing_or_empty_checks_as_unqualified_without_sampling_or_execution(self):
+        for empty in (False, True):
+            with self.subTest(empty=empty):
+                authority, free, root = self.fixture()
+                source, output = root / "checks", root / "raw"
+                if empty:
+                    source.mkdir(mode=0o700)
+                argv = ["recoverable_shards.py", "workflow-checks-export", "--policy", str(root / "owned-policy.json"),
+                        "--input", str(source), "--output", str(output)]
+                with patch.object(sys, "argv", argv), patch.object(shards, "NativeAuthority", return_value=authority), patch.object(
+                        authority, "admission", side_effect=AssertionError("No admission during export")), patch.object(
+                        authority, "output", side_effect=AssertionError("No resource probes")), patch.object(
+                        shards, "execute_process") as never, patch("sys.stdout", io.StringIO()):
+                    shards.main()
+                never.assert_not_called()
+                self.assertEqual(self.assert_raw(output)["checks_state"], "missing")
+                self.assertEqual(source.exists(), empty)
+
+    def test_bound_partial_cancelled_and_failed_check_files_are_copied_without_rewriting(self):
+        for result in (None, {"head": HEAD, "exit_code": 9}):
+            with self.subTest(result=result):
+                authority, free, root = self.fixture()
+                source, output = root / "checks", root / "raw"
+                source.mkdir(mode=0o700)
+                shards.durable_json(source / "launch.json", self.launch(authority))
+                (source / "test.log").write_bytes(b"partial original log\n")
+                (source / "result.json.pending-interrupted").write_bytes(b'{"partial":')
+                if result is not None:
+                    shards.durable_json(source / "result.json", result)
+                before = shards.physical_tree(source)
+                with patch.object(shards, "execute_process") as never:
+                    shards.NativeWorkflow(authority).export_checks(source, output)
+                never.assert_not_called()
+                self.assertEqual(shards.physical_tree(source), before)
+                self.assertEqual(shards.physical_tree(output / "checks"), before)
+                manifest = self.assert_raw(output)
+                self.assertEqual(manifest["checks_state"], "incomplete" if result is None else "result-recorded")
+
+    def test_foreign_head_role_run_attempt_and_unbound_partial_files_are_excluded(self):
+        for field in ("launch-head", "head", "role", "run_id", "run_attempt", "missing-launch"):
+            with self.subTest(field=field):
+                authority, free, root = self.fixture()
+                source, output = root / "checks", root / "raw"
+                source.mkdir(mode=0o700)
+                foreign = self.launch(authority)
+                if field == "launch-head":
+                    foreign["head"] = "c" * 40
+                elif field != "missing-launch":
+                    foreign["authorization"][field] = "foreign"
+                if field != "missing-launch":
+                    shards.durable_json(source / "launch.json", foreign)
+                (source / "test.log").write_text("unbound raw output")
+                for name, record in (("foreign", foreign), ("current", self.launch(authority))):
+                    path = authority.cache / "preparation" / name
+                    path.mkdir(parents=True, mode=0o700)
+                    shards.durable_json(path / "launch.json", record if field != "missing-launch" or name == "current" else [])
+                    (path / "resource-admission.json").write_text('{"status":"refused"}')
+                shards.NativeWorkflow(authority).export_checks(source, output)
+                manifest = self.assert_raw(output)
+                self.assertEqual((manifest["checks_state"], manifest["checks_binding"]), ("incomplete", "unbound"))
+                self.assertFalse((output / "checks").exists())
+                self.assertFalse((output / "preparation/foreign").exists())
+                self.assertTrue((output / "preparation/current/resource-admission.json").is_file())
+
+    def test_unsafe_or_overlapping_paths_and_foreign_export_roles_are_rejected(self):
+        for fault in ("symlink", "writable", "nested-output", "existing-output", "foreign-role"):
+            with self.subTest(fault=fault):
+                authority, free, root = self.fixture()
+                source, output = root / "checks", root / "raw"
+                source.mkdir(mode=0o700)
+                shards.durable_json(source / "launch.json", self.launch(authority))
+                if fault == "symlink":
+                    (source / "linked.log").symlink_to(root / "private")
+                elif fault == "writable":
+                    (source / "launch.json").chmod(0o666)
+                elif fault == "nested-output":
+                    output = source / "raw"
+                elif fault == "existing-output":
+                    output.mkdir(mode=0o700)
+                else:
+                    authority.environment["GITHUB_JOB"] = "prepare_address"
+                with self.assertRaises((ValueError, OSError)):
+                    shards.NativeWorkflow(authority).export_checks(source, output)
+
+    def test_workflow_always_exports_before_upload_and_missing_or_failed_checks_never_pass_gate(self):
+        source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
+        job = source.split("  native_checks:\n", 1)[1].split("  prepare_thread:\n", 1)[0]
+        self.assertLess(job.index("workflow-checks --timeout 7200"), job.index("workflow-checks-export"))
+        self.assertLess(job.index("workflow-checks-export"), job.index("uses: actions/upload-artifact@"))
+        self.assertEqual(job.count("if: always() && steps.native_guard.outcome == 'success'"), 2)
+        self.assertIn('            --input "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}"', job)
+        self.assertIn('            --output "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}-raw"', job)
+        self.assertIn("path: ${{ runner.temp }}/required-checks-${{ github.run_attempt }}-raw", job)
+        self.assertNotIn("continue-on-error", job)
+        gate = WorkflowTests.workflow_script(self, "Held, failed or cancelled execution")
+        for status in ("failure", "failed", "cancelled", "skipped", "missing"):
+            values = dict(AUTHORIZED="true", CHECKS=status, THREAD_PREPARE="success", ADDRESS_PREPARE="success",
+                          PHASES="success", AGGREGATE="success", THREAD_SHARDS="skipped", THREAD_PENDING="false",
+                          ADDRESS_SHARDS="skipped", ADDRESS_PENDING="false")
+            with self.subTest(status=status), patch.dict(os.environ, values, clear=True), self.assertRaises(AssertionError):
+                exec(compile(gate, "fake-final-gate", "exec"), {})
+
+
 class ResourceRefusalEvidenceTests(unittest.TestCase):
     def fixture(self, ram=10, disk=100, cpu_budget=2):
         temporary = tempfile.TemporaryDirectory()

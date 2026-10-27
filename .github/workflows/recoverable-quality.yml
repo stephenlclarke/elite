@@ -314,12 +314,19 @@ jobs:
           umask 077
           python3 Tools/CI/recoverable_shards.py workflow-checks --timeout 7200 \
             --output "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}"
+      - name: Always export raw prerequisite evidence
+        if: always() && steps.native_guard.outcome == 'success'
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-checks-export \
+            --input "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}" \
+            --output "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}-raw"
       - name: Always retain raw prerequisite result
         if: always() && steps.native_guard.outcome == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: native-checks-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/required-checks-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/required-checks-${{ github.run_attempt }}-raw
           if-no-files-found: error
 
   prepare_thread:
