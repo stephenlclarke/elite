@@ -13,6 +13,18 @@ enum NativeInductionCrewLogHistoricalGeometry {
     try decode(Data(contentsOf: ShipCatalogue.folder.appendingPathComponent("SH058.toml")))
   }
 
+  /// Geometry selection grants no native mission authority; the complete pack digest still applies.
+  static func applies(to manifest: ScriptManifest, reference: String) -> Bool {
+    guard reference == NativeInductionCrewLogSource.recorderModel,
+      manifest.stateID == NativeInductionCrewLogPack.stateID,
+      manifest.version == NativeInductionCrewLogPack.version
+    else { return false }
+    let users = (manifest.npcs ?? []).filter {
+      $0.model == reference || ($0.components ?? []).contains { $0.model == reference }
+    }
+    return users == [NativeInductionCrewLogSource.recorderProfile()]
+  }
+
   static func decode(_ data: Data) throws -> ShipDesign {
     let retained = try TOMLDecoder().decode(RetainedSource.self, from: data)
     return try authenticate(retained.design, sourceID: retained.id)
