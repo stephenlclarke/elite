@@ -16,6 +16,13 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "OriginalGopherUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMinerMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "minerPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
     "NativeC01HistoricalHarrierUnitTests": (
         "historicalHarrierKeepsCompleteDesignAppearanceAndCanonicalModelHash",
         "calibratedBoundsAndClosedConvexCollisionContainEveryHistoricalPoint",
