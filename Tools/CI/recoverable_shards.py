@@ -922,6 +922,36 @@ def worker_limit(explicit, cpu_budget, ram_available, ram_reserve, peak_per_work
     return result
 
 
+def admission_refusal(bounds, configured_cpu, observed_cpu, stage, error):
+    """Describe only measured numbers and fixed refusal codes, without sampling or error text."""
+    stage = stage if type(stage) is str and stage in ("configuration", "cpu", "ram", "bounds", "disk", "decision") else "unknown"
+    def number(value):
+        return value if type(value) is int or (type(value) is float and math.isfinite(value)) else None
+
+    sample = {name: number(bounds.get(name)) for name in (
+        "explicit", "cpu_budget", "ram_available", "ram_reserve", "peak_per_worker", "ram_capacity",
+        "disk_available", "disk_reserve", "disk_per_worker", "disk_capacity")}
+    sample.update(cpu_observed=number(observed_cpu), cpu_budget_configured=number(configured_cpu), cpu_required=1)
+    for prefix, per_worker in (("ram", "peak_per_worker"), ("disk", "disk_per_worker")):
+        reserve, peak = sample[prefix + "_reserve"], sample[per_worker]
+        sample[prefix + "_required"] = number(reserve + peak) if reserve is not None and peak is not None else None
+    reasons = []
+    if stage == "decision":
+        if sample["cpu_budget"] is not None and sample["cpu_budget"] < 1:
+            reasons.append("cpu")
+        for prefix in ("ram", "disk"):
+            available, required = sample[prefix + "_available"], sample[prefix + "_required"]
+            if available is not None and required is not None and available < required:
+                reasons.append(prefix)
+    if not reasons:
+        reasons.append("invalid-bound" if stage == "decision" else "sample-" + stage)
+    category = next((label for kind, label in ((ValueError, "ValueError"), (OSError, "OSError"),
+                    (KeyError, "KeyError"), (TypeError, "TypeError"), (subprocess.SubprocessError, "SubprocessError"))
+                    if isinstance(error, kind)), "unknown")
+    return {"schema": SCHEMA, "status": "refused", "stage": stage, "reasons": reasons,
+            "category": category, "sample": sample}
+
+
 def reservation_update(store, reservation, **changes):
     with claim(store.root / "claims", "admission", wait_seconds=30):
         current = load_json(reservation["path"])
@@ -1351,23 +1381,57 @@ class NativeAuthority:
 
     def admission(self):
         bounds = dict(self.config["admission"])
-        require_fields(bounds, ("explicit", "cpu_budget", "ram_reserve", "peak_per_worker",
-                                "disk_reserve", "disk_per_worker", "ram_capacity", "disk_capacity"))
-        cpus = int(self.output(["sysctl", "-n", "hw.logicalcpu"]))
-        memory = self.output(["vm_stat"])
-        size = re.search(r"page size of (\d+) bytes", memory)
-        if not size:
-            raise ValueError("Available memory evidence is missing")
-        pages = []
-        for name in ("Pages free", "Pages inactive", "Pages speculative"):
-            match = re.search(re.escape(name) + r":\s*(\d+)\.", memory)
-            if not match:
-                raise ValueError("Available memory evidence is incomplete")
-            pages.append(int(match[1]))
-        bounds.update(cpu_budget=min(positive(bounds["cpu_budget"]), cpus),
-                      ram_available=sum(pages) * int(size[1]),
-                      disk_available=shutil.disk_usage(self.cache).free)
-        worker_limit(**bounds)
+        configured_cpu, cpus, stage = bounds.get("cpu_budget"), None, "configuration"
+        observed = {}
+        try:
+            require_fields(bounds, ("explicit", "cpu_budget", "ram_reserve", "peak_per_worker",
+                                    "disk_reserve", "disk_per_worker", "ram_capacity", "disk_capacity"))
+            stage = "cpu"
+            cpus = int(self.output(["sysctl", "-n", "hw.logicalcpu"]))
+            stage = "ram"
+            memory = self.output(["vm_stat"])
+            size = re.search(r"page size of (\d+) bytes", memory)
+            if not size:
+                raise ValueError("Available memory evidence is missing")
+            pages = []
+            for name in ("Pages free", "Pages inactive", "Pages speculative"):
+                match = re.search(re.escape(name) + r":\s*(\d+)\.", memory)
+                if not match:
+                    raise ValueError("Available memory evidence is incomplete")
+                pages.append(int(match[1]))
+            stage = "bounds"
+            observed["cpu_budget"] = min(positive(bounds["cpu_budget"]), cpus)
+            stage = "ram"
+            observed["ram_available"] = sum(pages) * int(size[1])
+            stage = "disk"
+            observed["disk_available"] = shutil.disk_usage(self.cache).free
+            bounds.update(observed)
+            stage = "decision"
+            worker_limit(**bounds)
+        except (KeyError, OSError, TypeError, ValueError, subprocess.SubprocessError) as error:
+            sample = {**bounds, **{name: observed.get(name) for name in ("cpu_budget", "ram_available", "disk_available")}}
+            record = admission_refusal(sample, configured_cpu, cpus, stage, error)
+            retained = False
+            try:
+                report = self.cache / "preparation" / str(uuid.uuid4())
+                legacy.owned_directory(report)
+                durable_json(report / "resource-admission.json", record)
+                mode = self.environment.get("ELITE_RECOVERABLE_REQUEST_MODE")
+                durable_json(report / "launch.json", {"head": self.policy["approved_head"],
+                    "mode": mode if mode in MODES else None,
+                    "stage": "admission", "status": "not-launched", "authorization": self.authorization()})
+                retained = True
+            except (KeyError, OSError, TypeError, ValueError):
+                pass  # Retention failure cannot replace the original admission refusal.
+            try:
+                message = json.dumps({"resource_admission": record, "raw_attempt_retained": retained}, sort_keys=True)
+                legacy.progress(message)
+                if self.environment.get("GITHUB_STEP_SUMMARY"):
+                    with Path(self.environment["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+                        summary.write("## Resource admission refused\n\n```json\n" + message + "\n```\n")
+            except (OSError, ValueError):
+                pass  # A disconnected report must not change the refusal or trigger another sample.
+            raise
         return bounds
 
     def environment_for(self, mode):

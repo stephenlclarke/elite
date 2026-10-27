@@ -324,8 +324,13 @@ jobs:
 
   prepare_thread:
     name: Prepare, build and discover thread
-    needs: authorize_native
-    if: needs.authorize_native.outputs.authorized == 'true'
+    needs: [authorize_native, prepare_address, address_shards]
+    if: >-
+      always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.prepare_address.result == 'success' &&
+      (needs.address_shards.result == 'success' ||
+      (needs.address_shards.result == 'skipped' &&
+      needs.prepare_address.outputs.has_pending == 'false'))
     runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
     timeout-minutes: 150
     outputs:

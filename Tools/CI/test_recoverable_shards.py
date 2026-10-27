@@ -1286,6 +1286,50 @@ class WorkflowTests(Fixture):
     authority = NativeAdapterTests.authority
     prepared = NativeAdapterTests.prepared
 
+    def test_thread_prepare_waits_for_successful_address_chain_or_proven_empty_plan(self):
+        source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
+        job = source.split("\n  prepare_thread:\n", 1)[1].split("\n  prepare_address:\n", 1)[0]
+        self.assertIn("    needs: [authorize_native, prepare_address, address_shards]\n", job)
+        address = source.split("\n  prepare_address:\n", 1)[1].split("\n  native_phase:\n", 1)[0]
+        self.assertIn("    needs: authorize_native\n", address)
+        shards_job = source.split("\n  address_shards:\n", 1)[1].split("\n  native_aggregate:\n", 1)[0]
+        self.assertIn("    needs: [authorize_native, prepare_address]\n", shards_job)
+        condition = job.split("    if: >-\n", 1)[1].split("\n    runs-on:", 1)[0]
+        condition = " ".join(condition.split()).replace("&&", "and").replace("||", "or")
+        gate = self.workflow_script("Held, failed or cancelled execution")
+        cases = (
+            ("pending passed", "true", "success", "success", "true", True),
+            ("pending failed", "true", "success", "failure", "true", False),
+            ("completed plan", "true", "success", "skipped", "false", True),
+            ("pending skipped", "true", "success", "skipped", "true", False),
+            ("missing pending", "true", "success", "skipped", "", False),
+            ("invalid pending", "true", "success", "skipped", "False", False),
+            ("shards cancelled", "true", "success", "cancelled", "true", False),
+            ("prepare failed", "true", "failure", "skipped", "false", False),
+            ("prepare cancelled", "true", "cancelled", "skipped", "false", False),
+            ("prepare skipped", "true", "skipped", "skipped", "false", False),
+            ("unauthorized", "false", "success", "success", "true", False),
+            ("missing authorization", "", "success", "skipped", "false", False),
+        )
+        for label, authorized, prepare, shards_result, pending, expected in cases:
+            with self.subTest(label=label):
+                needs = SimpleNamespace(
+                    authorize_native=SimpleNamespace(outputs=SimpleNamespace(authorized=authorized)),
+                    prepare_address=SimpleNamespace(result=prepare, outputs=SimpleNamespace(has_pending=pending)),
+                    address_shards=SimpleNamespace(result=shards_result))
+                eligible = eval(condition, {"__builtins__": {}, "always": lambda: True, "needs": needs})
+                self.assertEqual(eligible, expected)
+                env = dict(AUTHORIZED=authorized, CHECKS="success", THREAD_PREPARE="success" if eligible else "skipped",
+                           ADDRESS_PREPARE=prepare, PHASES="success", AGGREGATE="success",
+                           THREAD_SHARDS="success", THREAD_PENDING="true", ADDRESS_SHARDS=shards_result,
+                           ADDRESS_PENDING=pending, GITHUB_STEP_SUMMARY=str(self.root / "address-first-summary"))
+                with patch.dict(os.environ, env, clear=True):
+                    if expected:
+                        exec(compile(gate, "fake-address-first-final-gate", "exec"), {})
+                    else:
+                        with self.assertRaises(AssertionError):
+                            exec(compile(gate, "fake-address-first-final-gate", "exec"), {})
+
     def workflow(self):
         authority, builder, builds, calls = self.prepared()
         for mode in shards.MODES:
@@ -1665,6 +1709,161 @@ class ArtifactRunProvenanceTests(unittest.TestCase):
         run.pop("head_sha")
         with self.assertRaises(KeyError):
             shards.GitHubArtifacts(authority, api=lambda path: run)
+
+
+class ResourceRefusalEvidenceTests(unittest.TestCase):
+    def fixture(self, ram=10, disk=100, cpu_budget=2):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name).resolve()
+        authority = object.__new__(shards.NativeAuthority)
+        authority.root, authority.cache, authority.legacy_cache = root / "controller", root / "cache", root / "legacy"
+        authority.cache.mkdir(mode=0o700)
+        authority.legacy_cache.mkdir(mode=0o700)
+        authority.config = dict(host="fake-host", admission=dict(explicit=1, cpu_budget=cpu_budget,
+            ram_reserve=2, peak_per_worker=6, ram_capacity=100, disk_reserve=2, disk_per_worker=20, disk_capacity=200))
+        authority.policy = dict(approved_head=HEAD, recoverable_shards=authority.config)
+        authority.environment = dict(GITHUB_JOB="prepare_address", GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="2",
+                                     RUNNER_NAME="owned-native", ELITE_RECOVERABLE_REQUEST_MODE="address",
+                                     GITHUB_STEP_SUMMARY=str(root / "summary"))
+        authority.calls = []
+
+        def output(command):
+            authority.calls.append(command)
+            if command == ["sysctl", "-n", "hw.logicalcpu"]:
+                return "4"
+            if command == ["vm_stat"]:
+                return ("Mach Virtual Memory Statistics: (page size of 1 bytes)\n"
+                        f"Pages free: {ram}.\nPages inactive: 0.\nPages speculative: 0.\n")
+            raise AssertionError("No additional resource probe is permitted")
+
+        authority.output, authority.snapshot = output, lambda: {}
+        return authority, disk, root
+
+    def reports(self, authority):
+        return list((authority.cache / "preparation").glob("*/resource-admission.json"))
+
+    def test_ram_disk_cpu_and_zero_headroom_refusals_export_the_exact_sample_without_launch(self):
+        for ram, disk, cpu, reasons in ((5, 100, 2, ["ram"]), (10, 10, 2, ["disk"]),
+                                       (10, 100, 0.5, ["cpu"]), (2, 2, 2, ["ram", "disk"])):
+            with self.subTest(reasons=reasons):
+                authority, free, root = self.fixture(ram, disk, cpu)
+                log = io.StringIO()
+                with patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=free)) as sample_disk, patch.object(
+                        shards.legacy, "ensure_no_live_tests"), patch.object(shards, "execute_process") as never, patch.object(
+                        shards.shutil, "which") as compiler, patch("sys.stdout", log):
+                    with self.assertRaises(ValueError):
+                        shards.NativeBuilder(authority).build_only("address", 5)
+                never.assert_not_called()
+                compiler.assert_not_called()
+                sample_disk.assert_called_once_with(authority.cache)
+                self.assertEqual(authority.calls, [["sysctl", "-n", "hw.logicalcpu"], ["vm_stat"]])
+                reports = self.reports(authority)
+                self.assertEqual(len(reports), 1)
+                record = shards.load_json(reports[0])
+                self.assertEqual(record["reasons"], reasons)
+                self.assertEqual(record["sample"], dict(explicit=1, cpu_budget=cpu, cpu_observed=4,
+                    cpu_budget_configured=cpu, cpu_required=1, ram_available=ram, ram_reserve=2,
+                    peak_per_worker=6, ram_capacity=100, ram_required=8, disk_available=disk,
+                    disk_reserve=2, disk_per_worker=20, disk_capacity=200, disk_required=22))
+                launch = shards.load_json(reports[0].with_name("launch.json"))
+                self.assertEqual((launch["head"], launch["mode"], launch["stage"], launch["status"]),
+                                 (HEAD, "address", "admission", "not-launched"))
+                self.assertEqual(json.loads(log.getvalue())["resource_admission"], record)
+                self.assertIn(json.dumps(record["reasons"]), (root / "summary").read_text())
+                exported = root / "raw-export"
+                shards.NativeWorkflow(authority).export_preparation("address", exported)
+                copied = exported / reports[0].parent.name / "resource-admission.json"
+                self.assertEqual(shards.load_json(copied), record)
+                manifest = shards.load_json(exported / "export.json")
+                self.assertEqual(manifest["outputs"][copied.relative_to(exported).as_posix()], shards.legacy.digest(copied))
+                shards.require_sealed(exported)
+                self.assertFalse(any(path.name in {"index.json", "commit.json", "ready.json", "build.json", "result.json", "child.json"}
+                                     for path in exported.rglob("*")))
+
+    def test_partial_sampling_errors_retain_only_completed_measurements_and_original_exception(self):
+        for failed in ("cpu", "ram", "disk"):
+            authority, free, root = self.fixture()
+            original = authority.output
+            error = OSError("FAKE_PRIVATE_PROBE_RESPONSE")
+            def output(command):
+                if (failed == "cpu" and command[0] == "sysctl") or (failed == "ram" and command[0] == "vm_stat"):
+                    authority.calls.append(command)
+                    raise error
+                return original(command)
+            authority.output = output
+            with patch.object(shards.shutil, "disk_usage", side_effect=error if failed == "disk" else None,
+                              return_value=SimpleNamespace(free=free)) as sample_disk, patch("sys.stdout", io.StringIO()):
+                try:
+                    authority.admission()
+                except OSError as actual:
+                    self.assertIs(actual, error)
+                else:
+                    self.fail("Sampling failure must still refuse")
+            record = shards.load_json(self.reports(authority)[0])
+            self.assertEqual(record["reasons"], ["sample-" + failed])
+            self.assertEqual(record["sample"]["cpu_observed"], None if failed == "cpu" else 4)
+            self.assertEqual(record["sample"]["ram_available"], 10 if failed == "disk" else None)
+            self.assertIsNone(record["sample"]["disk_available"])
+            self.assertEqual(sample_disk.call_count, int(failed == "disk"))
+            self.assertEqual(len(authority.calls), 1 if failed == "cpu" else 2)
+            self.assertNotIn("FAKE_PRIVATE", json.dumps(record))
+
+    def test_success_retains_the_existing_return_and_probe_count_without_failure_artifacts(self):
+        authority, free, root = self.fixture()
+        with patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=free)) as disk, patch("sys.stdout", io.StringIO()) as log:
+            admitted = authority.admission()
+        self.assertEqual(admitted, {**authority.config["admission"], "cpu_budget": 2, "ram_available": 10, "disk_available": 100})
+        self.assertEqual(len(authority.calls), 2)
+        disk.assert_called_once()
+        self.assertEqual(self.reports(authority), [])
+        self.assertEqual(log.getvalue(), "")
+        self.assertFalse((root / "summary").exists())
+
+    def test_secret_bearing_exception_text_is_never_formatted_in_new_evidence(self):
+        class UnprintableError(ValueError):
+            def __str__(self):
+                raise AssertionError("Do not format exception text")
+        authority, free, root = self.fixture()
+        error = UnprintableError("FAKE_PRIVATE_PAYLOAD_TOKEN")
+        authority.output = lambda command: (_ for _ in ()).throw(error)
+        with patch.object(shards.shutil, "disk_usage") as disk, patch("sys.stdout", io.StringIO()) as log:
+            try:
+                authority.admission()
+            except UnprintableError as actual:
+                self.assertIs(actual, error)
+        disk.assert_not_called()
+        record = shards.load_json(self.reports(authority)[0])
+        self.assertEqual(record["category"], "ValueError")
+        self.assertNotIn("FAKE_PRIVATE", log.getvalue() + (root / "summary").read_text() + json.dumps(record))
+        poisoned = shards.admission_refusal({"ram_available": "FAKE_PRIVATE_VALUE"}, "FAKE_PRIVATE_CPU",
+                                            "FAKE_PRIVATE_SAMPLE", "FAKE_PRIVATE_STAGE", error)
+        self.assertNotIn("FAKE_PRIVATE", json.dumps(poisoned))
+        self.assertEqual(poisoned["reasons"], ["sample-unknown"])
+
+    def test_retention_failure_does_not_replace_the_refusal_or_repeat_a_sample(self):
+        authority, free, root = self.fixture(ram=5)
+        with patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=free)) as disk, patch.object(
+                shards, "durable_json", side_effect=OSError("FAKE_PRIVATE_WRITE_ERROR")), patch("sys.stdout", io.StringIO()) as log:
+            with self.assertRaisesRegex(ValueError, "RAM/disk admission reserve"):
+                authority.admission()
+        self.assertEqual(len(authority.calls), 2)
+        disk.assert_called_once()
+        self.assertFalse(json.loads(log.getvalue())["raw_attempt_retained"])
+        self.assertNotIn("FAKE_PRIVATE", log.getvalue())
+
+    def test_invalid_nonfinite_caps_are_null_in_diagnostics_without_changing_refusal(self):
+        authority, free, root = self.fixture()
+        authority.config["admission"]["ram_capacity"] = float("inf")
+        # Keep the fake authorization serializable so this test isolates numeric diagnostic sanitization.
+        authority.authorization = lambda: {"schema": 1, "head": HEAD}
+        with patch.object(shards.shutil, "disk_usage", return_value=SimpleNamespace(free=free)), patch("sys.stdout", io.StringIO()):
+            with self.assertRaises(ValueError):
+                authority.admission()
+        record = shards.load_json(self.reports(authority)[0])
+        self.assertIsNone(record["sample"]["ram_capacity"])
+        self.assertEqual(record["reasons"], ["invalid-bound"])
+        json.dumps(record, allow_nan=False)
 
 
 class ActiveArtifactJobTests(unittest.TestCase):
