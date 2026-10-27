@@ -33,3 +33,5 @@ The authoritative branch `docs/final-game-review` is pinned to `8c899a7e0d351551
 | `docs/meridian/SHIP-REFERENCE.md` | `6a3688bf28f9251e58853990bfd5c76334c7e514b05d36ba4fc145c1a03ce4af` | Live equipment14, unchangedcrew/places1/1/charter0, historical Orca12/1/1 retained. |
 
 [Motivation and acceptance](ISSUE-m04-giraffe-liner.md).
+
+Expected-parent preparation now includes the frozen C08 715 head `38b71a28555431d52a6791bc178388f406540e79`, tree `80e5c7708076d257db5b3ebedd5d8ca9a67bb075`, with actual qualified Gopher ancestry. The complete union is720: all715 parent methods plus the same five Giraffe methods. SH091 and SH093 memberships and the new Gopher oracle are retained. This preparation is unpublished and awaits actual qualified715 canonical integration, unchanged-tree ancestry binding and the single final720 run/current-head review. Original source review and local711 evidence retain their earlier scope.

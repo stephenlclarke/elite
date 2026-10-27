@@ -121,7 +121,7 @@ struct NativeInductionCrewLogSource: Sendable {
   }
 
   private static let authenticatedRecorder: Result<ShipDesign, any Error> = Result {
-    guard let design = ShipCatalogue.ship("SH058")?.design,
+    guard let design = try? NativeInductionCrewLogHistoricalGeometry.design.get(),
       ScriptPackLibrary.hash(try ScriptPackLibrary.canonicalGeometry(design)) == recorderGeometry
     else { throw SaveError.invalidCommander }
     return design

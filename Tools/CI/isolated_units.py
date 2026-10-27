@@ -23,11 +23,24 @@ METHODS = {
         "leisurePolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
         "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
+    "NativeCrewLogHistoricalGeometryUnitTests": (
+        "retainedResourceKeepsExactAuthenticatedGeometryAppearanceAndRecorderRadius",
+        "changedGeometryMaterialProvenanceOrSourceIdentityCannotPassTheOriginalPin",
+        "currentBrabantDesignCannotReplaceTheHistoricalRecorderOrGrantHullAccess",
+        "originalSourceFitsAndCustodyRemainExactWithoutAdvancingTheParent",
+    ),
     "OriginalAplomadoUnitTests": (
         "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
         "originalMilitaryMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
         "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
         "militaryPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
+        "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
+    ),
+    "OriginalGopherUnitTests": (
+        "exactMetreContractRejectsOtherHullIdentityUnitsPathAndHash",
+        "originalMinerMechanicsRetainAllHistoricalFieldsAndOtherHullBindings",
+        "physicalPlayerAndSourceNotesKeepCompleteApprovedGeometryAndAppearance",
+        "minerPolicyKeepsAccessAndPlacementWithoutChangingActorAuthorityOrEarlierRoles",
         "originalHoldCrewWeaponLimitsAndRetainedInputValidationGrantNoFreeFittings",
     ),
     "NativeC01HistoricalHarrierUnitTests": (

@@ -373,6 +373,14 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH085"))
   }
 
+  static let gopher: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH091") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH091"))
+  }
+
   static let giraffeLiner: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH093") else {
       throw Failure.unsupportedSource
@@ -780,6 +788,16 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH091":
+      guard definition.name == "Gopher",
+        definition.sourceSHA256
+          == "f9cf956f09a9a2e53276609fbfb5d44dc6282c68cbac7f71a00c5f215358bc73",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-03/SH091-design.toml",
+        model.sourceSHA256 == "fd2fe452563dc9641dd4e48d5bf2beebec411ab225041c4da8c2ff97d36366e3"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH093":
       guard definition.name == "Giraffe Liner",
         definition.sourceSHA256
@@ -899,6 +917,7 @@ extension CatalogueShip {
     case "SH083": result = OriginalHullPhysicalContract.hareExplorer
     case "SH084": result = OriginalHullPhysicalContract.llama
     case "SH085": result = OriginalHullPhysicalContract.laggar
+    case "SH091": result = OriginalHullPhysicalContract.gopher
     case "SH093": result = OriginalHullPhysicalContract.giraffeLiner
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
