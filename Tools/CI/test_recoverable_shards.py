@@ -1020,7 +1020,7 @@ class NativeAdapterTests(Fixture):
         authority = self.authority()
         calls = []
         def build(root, swift, flags, environment, lock, report):
-            mode = flags[-1].split("=")[1]
+            mode = next(flag for flag in flags if flag.startswith("--sanitize=")).split("=", 1)[1]
             calls.append(mode)
             image = root / flags[1] / "fake.xctest/Contents/MacOS/EliteCoreTests"
             image.parent.mkdir(parents=True, mode=0o700)
@@ -1709,6 +1709,158 @@ class ArtifactRunProvenanceTests(unittest.TestCase):
         run.pop("head_sha")
         with self.assertRaises(KeyError):
             shards.GitHubArtifacts(authority, api=lambda path: run)
+
+
+class AsanLowMemoryTests(Fixture):
+    authority = NativeAdapterTests.authority
+    prepared = NativeAdapterTests.prepared
+
+    def build_context(self):
+        from contextlib import ExitStack
+        stack = ExitStack()
+        self.addCleanup(stack.close)
+        authority = self.authority()
+        images, commands, queries = {}, [], []
+        for mode in shards.MODES:
+            image = authority.root / (".build/asan" if mode == "address" else ".build/tsan") / "Fake.xctest/Contents/MacOS/Fake"
+            image.parent.mkdir(parents=True)
+            image.write_bytes(self.image.read_bytes())
+            images[mode] = image
+        original = authority.output
+
+        def output(command, *args, **kwargs):
+            if "--show-bin-path" in command:
+                queries.append(command)
+                mode = next(value.split("=", 1)[1] for value in command if value.startswith("--sanitize="))
+                return str(images[mode].parents[3])
+            return original(command, *args, **kwargs)
+
+        def runtime(workspace, mode, image, flags, inputs=None):
+            return {**self.runtimes[mode], "flags": list(flags), "image_sha256": shards.legacy.digest(image)}
+
+        def execute(command, workspace, attempt, *args, **kwargs):
+            commands.append(command)
+            (attempt / "test.log").write_text("\n".join(METHODS) if "list" in command else "fake build complete")
+            return 0
+
+        for context in (patch.object(shards.legacy, "ensure_no_live_tests"),
+                        patch.object(shards.shutil, "which", return_value="/fake/swift"),
+                        patch.object(shards.legacy, "executable_inputs", return_value=self.runtimes["thread"]["inputs"]),
+                        patch.object(shards.legacy, "grouping_policy", return_value={"shared_groups": [METHODS[:2]]}),
+                        patch.object(authority, "admission", return_value=ADMISSION),
+                        patch.object(authority, "output", side_effect=output), patch.object(authority, "runtime", side_effect=runtime),
+                        patch.object(shards, "execute_process", side_effect=execute)):
+            stack.enter_context(context)
+        return authority, shards.NativeBuilder(authority), commands, queries
+
+    def test_only_asan_build_flags_change_and_existing_test_serialization_and_selectors_stay_exact(self):
+        address = ["--scratch-path", ".build/asan", "--sanitize=address"]
+        thread = ["--scratch-path", ".build/tsan", "--sanitize=thread"]
+        low = ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+        self.assertEqual(shards.sanitizer_build_flags("thread"), thread)
+        self.assertEqual(shards.sanitizer_build_flags("address"), address + low)
+        old = shards.legacy.batch_command("fake-swift", address, "address", self.root, METHODS)
+        new = shards.legacy.batch_command("fake-swift", address + low, "address", self.root, METHODS)
+        start = new.index("--jobs")
+        self.assertEqual(new[start:start + 4], low)
+        self.assertEqual(new[:start] + new[start + 4:], old)
+        self.assertEqual(new.count("--no-parallel"), 1)
+        self.assertIn("--skip-build", new)
+        self.assertEqual(shards.legacy.batch_command("fake-swift", thread, "thread", self.root, METHODS),
+                         shards.legacy.batch_command("fake-swift", shards.sanitizer_build_flags("thread"), "thread", self.root, METHODS))
+
+    def test_build_only_ready_reuse_and_skip_build_discovery_use_the_identical_profile(self):
+        authority, builder, commands, queries = self.build_context()
+        for mode in shards.MODES:
+            self.assertFalse(builder.build_only(mode, 5)["reused"])
+            self.assertTrue(builder.build_only(mode, 5)["reused"])
+            with builder.preparation_claim():
+                result = builder.build_and_discover(mode)
+            self.assertEqual(result[1], METHODS)
+            flags = shards.sanitizer_build_flags(mode)
+            self.assertEqual(result[0]["flags"], flags)
+            self.assertEqual(commands[-2], ["/fake/swift", "build", "--build-tests", *flags])
+            self.assertEqual(commands[-1], ["/fake/swift", "test", *flags, "list", "--skip-build"])
+            self.assertEqual(queries[-1], ["/fake/swift", "build", *flags, "--show-bin-path"])
+            ready = shards.load_json(authority.cache / "build-stage" / HEAD / mode / "ready.json")
+            self.assertEqual(ready["runtime"]["flags"], flags)
+        self.assertEqual(sum("--build-tests" in command for command in commands), 2)
+
+    def test_ready_checkpoint_with_old_asan_flags_is_refused_before_any_rebuild_or_discovery(self):
+        authority, builder, commands, queries = self.build_context()
+        builder.build_only("address", 5)
+        ready = authority.cache / "build-stage" / HEAD / "address/ready.json"
+        value = shards.load_json(ready)
+        value["runtime"]["flags"] = ["--scratch-path", ".build/asan", "--sanitize=address"]
+        ready.parent.chmod(0o700)
+        ready.chmod(0o600)
+        shards.durable_json(ready, value)
+        shards.seal(ready.parent)
+        before = list(commands)
+        with self.assertRaisesRegex(ValueError, "Prepared controller build changed"):
+            builder.build_only("address", 5)
+        with builder.preparation_claim(), self.assertRaisesRegex(ValueError, "checkpoint runtime changed"):
+            builder.build_and_discover("address")
+        self.assertEqual(commands, before)
+
+    def test_legacy_fallback_build_discovery_and_bin_queries_forward_exact_flags(self):
+        for mode in shards.MODES:
+            flags = shards.sanitizer_build_flags(mode)
+            report = self.root / ("fallback-" + mode)
+            report.mkdir()
+            image = self.root / mode / "Fake.xctest/Contents/MacOS/Fake"
+            image.parent.mkdir(parents=True)
+            image.write_bytes(self.image.read_bytes())
+            queries = []
+            def output(command, *args):
+                queries.append(command)
+                return "\n".join(METHODS) if "list" in command else str(image.parents[3])
+            with patch.object(shards.legacy.subprocess, "run") as never_native, patch.object(
+                    shards.legacy, "output", side_effect=output), open(self.root / ("lock-" + mode), "a") as lock:
+                actual, methods, _ = shards.legacy.build_and_discover(self.root, "fake-swift", flags, {"LANG": "C"}, lock, report)
+            self.assertEqual(actual, image)
+            self.assertEqual(methods, METHODS)
+            self.assertEqual(never_native.call_args.args[0], ["fake-swift", "build", "--build-tests", *flags])
+            self.assertEqual(queries, [["fake-swift", "test", *flags, "list", "--skip-build"],
+                                       ["fake-swift", "build", *flags, "--show-bin-path"]])
+
+    def test_flags_bind_existing_plan_shard_and_receipt_identity_without_promoting_old_profile(self):
+        old_runtime = {**self.runtimes["address"], "flags": ["--scratch-path", ".build/asan", "--sanitize=address"]}
+        new_runtime = {**old_runtime, "flags": shards.sanitizer_build_flags("address")}
+        old_plan = shards.make_plan(old_runtime, METHODS)
+        new_plan = shards.make_plan(new_runtime, METHODS)
+        old_identity = shards.shard_identity(old_runtime, old_plan["shards"][0])
+        new_identity = shards.shard_identity(new_runtime, new_plan["shards"][0])
+        self.assertNotEqual(shards.fingerprint(old_identity), shards.fingerprint(new_identity))
+        self.assertEqual(old_plan["inventory"], new_plan["inventory"])
+        self.assertEqual(old_identity["methods"], new_identity["methods"])
+        executor = FakeExecutor(self.root / "old-profile-worker", {"address": old_runtime})
+        shards.run_shard(old_plan, old_plan["shards"][0]["id"], self.store, executor, HEAD, 5, ADMISSION)
+        self.assertIsNotNone(self.store.matching(old_identity))
+        self.assertIsNone(self.store.matching(new_identity))
+        exported = self.root / "old-profile-artifact"
+        checksum = self.store.export(old_identity, exported)
+        with self.assertRaises(ValueError):
+            shards.Store(self.root / "new-profile-cache").restore_artifact(exported, checksum, new_identity)
+
+    def test_private_executor_keeps_asan_instrumentation_environment_filters_and_skip_build(self):
+        authority, builder, builds, calls = self.prepared()
+        runtime = builds["address"]["runtime"]
+        self.assertEqual(runtime["flags"], shards.sanitizer_build_flags("address"))
+        self.assertEqual(builds["thread"]["runtime"]["flags"], shards.sanitizer_build_flags("thread"))
+        executor = shards.NativeExecutor(authority, "one")
+        executor.verify(runtime)
+        plan = shards.make_plan(runtime, METHODS)
+        attempt = self.root / "low-memory-execution"
+        attempt.mkdir()
+        def completed(*args, progress):
+            args[6].observed = {"fake": {"sha256": runtime["image_sha256"], "uuid": runtime["image_uuid"]}}
+            return 0
+        with patch.object(shards, "execute_process", side_effect=completed) as execute, patch.object(
+                executor, "unknown_live_helpers", return_value=False):
+            self.assertEqual(executor.execute(plan["shards"][0], attempt, 5, []), 0)
+        self.assertEqual(execute.call_args.args[0], shards.legacy.batch_command("/fake/swift", runtime["flags"], "address", attempt, METHODS))
+        self.assertEqual(execute.call_args.args[5]["ASAN_OPTIONS"], "detect_leaks=0")
 
 
 class PrerequisiteRawExportTests(unittest.TestCase):

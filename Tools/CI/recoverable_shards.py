@@ -1540,6 +1540,14 @@ def writable_private_tree(root):
                 path.chmod(0o700 if path.stat().st_mode & 0o111 else 0o600)
 
 
+def sanitizer_build_flags(mode):
+    """Keep ASAN compilation to one build job without combining frontend batches."""
+    flags = ["--scratch-path", ".build/tsan" if mode == "thread" else ".build/asan", "--sanitize=" + mode]
+    if mode == "address":
+        flags += ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+    return flags
+
+
 class NativeBuilder:
     def __init__(self, authority):
         self.authority, self.lock = authority, None
@@ -1607,19 +1615,19 @@ class NativeBuilder:
         if timeout > SHARD_MAX_SECONDS:
             raise ValueError("Preparation exceeds the reviewed two-hour bound")
         destination = self.authority.cache / "build-stage" / self.authority.policy["approved_head"] / mode
+        flags = sanitizer_build_flags(mode)
         with self.preparation_claim():
             if destination.exists():
                 ready = load_json(destination / "ready.json")
                 image = self.authority.root / ready["image_relative"]
                 if (ready["head"] != self.authority.policy["approved_head"] or ready["runtime"] != self.authority.runtime(
-                        self.authority.root, mode, image, ready["runtime"]["flags"])):
+                        self.authority.root, mode, image, flags)):
                     raise ValueError("Prepared controller build changed before discovery")
                 return {"reused": True, "stage": str(destination)}
             root, env = self.authority.root, self.authority.environment_for(mode)
             swift = shutil.which("swift", path=env.get("PATH"))
             if swift is None:
                 raise ValueError("Approved Swift compiler is unavailable")
-            flags = ["--scratch-path", ".build/tsan" if mode == "thread" else ".build/asan", "--sanitize=" + mode]
             report = self.authority.cache / "preparation" / str(uuid.uuid4())
             legacy.owned_directory(report)
             inputs = legacy.executable_inputs(root, flags[1])
@@ -1650,8 +1658,7 @@ class NativeBuilder:
         swift = shutil.which("swift", path=env.get("PATH"))
         if swift is None:
             raise ValueError("Approved Swift compiler is unavailable")
-        flags = ["--scratch-path", ".build/tsan" if mode == "thread" else ".build/asan",
-                 "--sanitize=" + mode]
+        flags = sanitizer_build_flags(mode)
         report = self.authority.cache / "preparation" / str(uuid.uuid4())
         legacy.owned_directory(report)
         durable_json(report / "launch.json", {"head": self.authority.policy["approved_head"], "mode": mode,
