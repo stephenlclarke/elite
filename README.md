@@ -560,6 +560,8 @@ The original **SH084 Llama** uses its approved metre trader hull, 56t hold, 20t 
 
 The original **SH085 Laggar** uses its approved metre bounty-hunter hull, 18t hold, 5t expansion, five pylons, 13-LY tank and 9-LY drive. Live E01 and historical Merlin accommodation already agree at twelve equipment units, one operating crew and one intrinsic crew place, with zero initial charter cabins. Technology-nine blueprint rules and uncommon placement in galaxies one, seven and eight remain. No people, cabins or equipment are issued.
 
+The original **SH093 Giraffe Liner** uses its approved metre leisure hull, 30t hold, 10t expansion, five pylons, 14-LY tank and 10-LY drive. Live E01 equipment is fourteen units; historical Orca fields retain twelve. Crew and intrinsic places remain one each, with zero initial charter cabins. Technology-eleven blueprint rules and uncommon placement in galaxies one, seven and eight remain. Its existing large-liner salvage classification uses the complete raw hull. No people, cabins or equipment are issued.
+
 The original **SH043 Eagle Cruiser** uses its authenticated metre hull and capital mechanics. It remains unpriced and not for sale; a destruction collection milestone grants no blueprint or fabrication right. Its retained 52-person crew figure is a project estimate, not newly issued living crew.
 
 Development source now uses the authenticated 2,048-world original catalogue for native flight, Cartesian light-year charts and routes. Station trades use original buy and sell quotes, with changed stock retained in the commander across departures and current-format saves. [Live world scope and validation limits](docs/ORIGINAL-WORLD-RUNTIME.md) describe the separate fleet, equipment and later economic-epoch work.
