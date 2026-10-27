@@ -33,13 +33,17 @@ def require_recoverable_event(activation: dict, environment: dict, event: dict) 
     if name == "pull_request":
         pull = event.get("pull_request", {})
         source, base = pull.get("head", {}), pull.get("base", {})
-        valid = (source.get("sha") == activation.get("pr_head")
+        # The immutable GitHub execution context is authoritative, not webhook merge metadata.
+        valid = (head == activation.get("head")
+                 and re.fullmatch(r"[0-9a-f]{40}", head)
+                 and activation.get("workflow_ref") == environment.get("GITHUB_WORKFLOW_REF")
+                 and activation.get("workflow_ref") == REPOSITORY + "/.github/workflows/ci.yml@" + ref
+                 and source.get("sha") == activation.get("pr_head")
                  and re.fullmatch(r"[0-9a-f]{40}", activation.get("pr_head", ""))
                  and source.get("repo", {}).get("full_name") == REPOSITORY
                  and source.get("repo", {}).get("fork") is False
                  and base.get("repo", {}).get("full_name") == REPOSITORY and base.get("ref") == "main"
                  and str(pull.get("user", {}).get("id")) == ACTOR
-                 and pull.get("merge_commit_sha") == head
                  and ref == "refs/pull/" + str(event.get("number")) + "/merge")
     elif name == "push":
         valid = (ref == "refs/heads/main" and event.get("ref") == ref and event.get("after") == head
@@ -49,7 +53,9 @@ def require_recoverable_event(activation: dict, environment: dict, event: dict) 
     else:
         valid = False
     if not valid:
-        raise ValueError("Recoverable execution event/source is not approved.")
+        raise ValueError("Recoverable execution/source/ref is not approved: execution=" + head
+                         + ", approved_execution=" + str(activation.get("head"))
+                         + ", ref=" + ref)
 
 
 def assignment_digest(environment: dict) -> str:

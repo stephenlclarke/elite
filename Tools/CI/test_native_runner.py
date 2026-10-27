@@ -310,11 +310,76 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         require_recoverable_job(policy, env, event, now=100, verify_assignment=False)
         for mutate in (lambda p: p["head"].update(sha="c" * 40),
                        lambda p: p["head"].update(repo={**REPO, "fork": True}),
-                       lambda p: p.update(merge_commit_sha="c" * 40)):
+                       lambda p: p["base"].update(ref="release/m01")):
             bad = deepcopy(event)
             mutate(bad["pull_request"])
             with self.assertRaises(ValueError):
                 require_recoverable_job(policy, env, bad, now=100, verify_assignment=False)
+
+    def internal_pr_contract(self):
+        from native_runner import policy_digest
+        policy, env, event = self.contract()
+        env.update(GITHUB_JOB="prepare_thread", ELITE_RECOVERABLE_REQUEST_MODE="thread",
+                   GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/7/merge",
+                   GITHUB_WORKFLOW_REF=REPO["full_name"] + "/.github/workflows/ci.yml@refs/pull/7/merge")
+        for key in ("PLAN_DIGEST", "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_REQUEST_SHARD", "ELITE_RECOVERABLE_REQUEST_WORKER"):
+            env.pop(key, None)
+        activation = policy["recoverable_activation"]
+        activation.update(pr_head="b" * 40, workflow_ref=env["GITHUB_WORKFLOW_REF"])
+        activation["runners"]["owned-one"]["jobs"] = ["prepare_thread"]
+        env["ELITE_RECOVERABLE_POLICY_SHA256"] = policy_digest(policy)
+        event.update(number=7, pull_request={"head": {"sha": "b" * 40, "repo": copy.deepcopy(REPO)},
+                     "base": {"ref": "main", "repo": copy.deepcopy(REPO)},
+                     "user": {"id": 22142777}, "merge_commit_sha": None})
+        return policy, env, event
+
+    def test_pr_context_accepts_null_stale_or_absent_webhook_merge_metadata(self):
+        from native_runner import require_recoverable_event, require_recoverable_job
+        for webhook in (None, "c" * 40, SHA, "absent"):
+            with self.subTest(webhook=webhook):
+                policy, env, event = self.internal_pr_contract()
+                if webhook == "absent":
+                    event["pull_request"].pop("merge_commit_sha")
+                else:
+                    event["pull_request"]["merge_commit_sha"] = webhook
+                require_recoverable_event(policy["recoverable_activation"], env, event)
+                self.assertEqual(require_recoverable_job(policy, env, event, now=100, verify_assignment=False), policy["recoverable_activation"])
+
+    def test_webhook_metadata_cannot_authorize_wrong_pr_execution_source_or_context(self):
+        from native_runner import require_recoverable_job
+        changes = [lambda e, v: e.update(GITHUB_SHA="c" * 40),
+                   lambda e, v: v["pull_request"]["head"].update(sha="c" * 40),
+                   lambda e, v: e.update(GITHUB_REF="refs/pull/8/merge"),
+                   lambda e, v: e.update(GITHUB_WORKFLOW_REF="outside/workflow"),
+                   lambda e, v: v.update(number=8),
+                   lambda e, v: e.update(GITHUB_REPOSITORY="outside/elite"),
+                   lambda e, v: v["repository"].update(full_name="outside/elite"),
+                   lambda e, v: v["repository"].update(fork=True),
+                   lambda e, v: e.update(GITHUB_ACTOR_ID="2"),
+                   lambda e, v: v["sender"].update(id=2),
+                   lambda e, v: v["pull_request"]["user"].update(id=2),
+                   lambda e, v: v["pull_request"]["head"]["repo"].update(full_name="outside/elite"),
+                   lambda e, v: v["pull_request"]["head"]["repo"].update(fork=True),
+                   lambda e, v: v["pull_request"]["base"].update(ref="release/m01"),
+                   lambda e, v: v["pull_request"]["base"]["repo"].update(full_name="outside/elite")]
+        for webhook in (None, "c" * 40):
+            for index, mutate in enumerate(changes):
+                with self.subTest(webhook=webhook, mutation=index):
+                    policy, env, event = self.internal_pr_contract()
+                    event["pull_request"]["merge_commit_sha"] = webhook
+                    mutate(env, event)
+                    with self.assertRaises(ValueError):
+                        require_recoverable_job(policy, env, event, now=100, verify_assignment=False)
+
+    def test_pr_event_helper_itself_requires_approved_execution_and_workflow_ref(self):
+        from native_runner import require_recoverable_event
+        for change in ({"GITHUB_SHA": "c" * 40}, {"GITHUB_REF": "refs/pull/8/merge"},
+                       {"GITHUB_WORKFLOW_REF": "outside/workflow"}):
+            policy, env, event = self.internal_pr_contract()
+            env.update(change)
+            event["pull_request"]["merge_commit_sha"] = env["GITHUB_SHA"]
+            with self.assertRaisesRegex(ValueError, "execution/source/ref"):
+                require_recoverable_event(policy["recoverable_activation"], env, event)
 
     def test_ci_prejob_authorizer_pins_caller_and_called_workflow_before_owned_issuance(self):
         import base64

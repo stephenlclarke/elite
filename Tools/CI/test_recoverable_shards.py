@@ -1444,6 +1444,83 @@ class WorkflowTests(Fixture):
         body = source.split(marker, 1)[1].split("python3 - <<'PY'\n", 1)[1].split("\n          PY", 1)[0]
         return textwrap.dedent(body)
 
+    def pr_authorizer_fixture(self):
+        activation = dict(schema=1, enabled=True, revoked=False, expires_at=time.time() + 60,
+                          head=HEAD, ref="refs/pull/7/merge", pr_head="b" * 40,
+                          workflow_file="ci.yml", workflow_sha256="c" * 64,
+                          runners={"owned-one": {"workspace": "/fixture/native-runner/_work/elite/elite"}})
+        env = dict(ACTIVATION=json.dumps(activation), POLICY_DIGESTS=json.dumps({"owned-one": "d" * 64}),
+                   REQUESTED_NATIVE="true", GITHUB_REPOSITORY="stephenlclarke/elite",
+                   GITHUB_ACTOR_ID="22142777", GITHUB_EVENT_NAME="pull_request", GITHUB_SHA=HEAD,
+                   GITHUB_REF="refs/pull/7/merge",
+                   GITHUB_WORKFLOW_REF="stephenlclarke/elite/.github/workflows/ci.yml@refs/pull/7/merge",
+                   GITHUB_EVENT_PATH=str(self.root / "hosted-pr-event.json"),
+                   GITHUB_OUTPUT=str(self.root / "hosted-pr-output"), GITHUB_TOKEN="must-not-log-this-token")
+        repo = {"full_name": "stephenlclarke/elite", "fork": False}
+        event = {"repository": deepcopy(repo), "sender": {"id": 22142777}, "number": 7,
+                 "pull_request": {"head": {"sha": "b" * 40, "repo": deepcopy(repo)},
+                                  "base": {"ref": "main", "repo": deepcopy(repo)},
+                                  "user": {"id": 22142777}, "merge_commit_sha": None}}
+        return activation, env, event
+
+    def run_pr_authorizer(self, activation, env, event):
+        source = self.workflow_script("Fail closed before any native routing")
+        env["ACTIVATION"] = json.dumps(activation)
+        Path(env["GITHUB_EVENT_PATH"]).write_text(json.dumps(event))
+        Path(env["GITHUB_OUTPUT"]).unlink(missing_ok=True)
+        with patch.dict(os.environ, env, clear=True):
+            exec(compile(source, "fake-hosted-pr-authorizer", "exec"), {})
+        return Path(env["GITHUB_OUTPUT"]).read_text()
+
+    def test_hosted_authorizer_accepts_null_stale_or_absent_webhook_only_with_exact_pr_context(self):
+        for webhook in (None, "c" * 40, HEAD, "absent"):
+            with self.subTest(webhook=webhook):
+                activation, env, event = self.pr_authorizer_fixture()
+                if webhook == "absent":
+                    event["pull_request"].pop("merge_commit_sha")
+                else:
+                    event["pull_request"]["merge_commit_sha"] = webhook
+                self.assertEqual(self.run_pr_authorizer(activation, env, event), "authorized=true\n")
+
+    def test_hosted_authorizer_rejects_wrong_execution_source_ref_repo_actor_or_workflow(self):
+        changes = [lambda e, v: e.update(GITHUB_SHA="c" * 40),
+                   lambda e, v: v["pull_request"]["head"].update(sha="c" * 40),
+                   lambda e, v: e.update(GITHUB_REF="refs/pull/8/merge"),
+                   lambda e, v: e.update(GITHUB_WORKFLOW_REF="outside/workflow"),
+                   lambda e, v: v.update(number=8),
+                   lambda e, v: e.update(GITHUB_REPOSITORY="outside/elite"),
+                   lambda e, v: v["repository"].update(full_name="outside/elite"),
+                   lambda e, v: v["repository"].update(fork=True),
+                   lambda e, v: e.update(GITHUB_ACTOR_ID="2"),
+                   lambda e, v: v["sender"].update(id=2),
+                   lambda e, v: v["pull_request"]["user"].update(id=2),
+                   lambda e, v: v["pull_request"]["head"]["repo"].update(full_name="outside/elite"),
+                   lambda e, v: v["pull_request"]["head"]["repo"].update(fork=True),
+                   lambda e, v: v["pull_request"]["base"].update(ref="release/m01"),
+                   lambda e, v: v["pull_request"]["base"]["repo"].update(full_name="outside/elite")]
+        for webhook in (None, "c" * 40):
+            for index, mutate in enumerate(changes):
+                with self.subTest(webhook=webhook, mutation=index):
+                    activation, env, event = self.pr_authorizer_fixture()
+                    event["pull_request"]["merge_commit_sha"] = webhook
+                    mutate(env, event)
+                    with self.assertRaises(AssertionError):
+                        self.run_pr_authorizer(activation, env, event)
+                    self.assertFalse(Path(env["GITHUB_OUTPUT"]).exists())
+
+    def test_hosted_pr_mismatch_diagnostics_include_only_nonsecret_execution_or_source_fields(self):
+        for mutate, label in [(lambda e, v: e.update(GITHUB_SHA="c" * 40), "execution SHA/ref mismatch"),
+                              (lambda e, v: v["pull_request"]["head"].update(sha="c" * 40), "source SHA mismatch")]:
+            activation, env, event = self.pr_authorizer_fixture()
+            mutate(env, event)
+            with self.assertRaises(AssertionError) as failure:
+                self.run_pr_authorizer(activation, env, event)
+            message = str(failure.exception)
+            self.assertIn(label, message)
+            self.assertIn("c" * 40, message)
+            self.assertNotIn(env["GITHUB_TOKEN"], message)
+            self.assertNotIn("merge_commit_sha", message)
+
     def test_physical_guard_requires_separate_host_hook_before_any_checkout_and_cancelled_never_passes(self):
         source = self.workflow_script("Require host hook and exact instance")
         activation = dict(schema=1, enabled=True, revoked=False, expires_at=time.time() + 60,

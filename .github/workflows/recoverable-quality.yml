@@ -51,7 +51,9 @@ jobs:
           assert time.time() < a['expires_at'] < float('inf')
           assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/elite'
           assert e['GITHUB_ACTOR_ID'] == '22142777'
-          assert a['head'] == e['GITHUB_SHA'] and a['ref'] == e['GITHUB_REF']
+          assert a['head'] == e['GITHUB_SHA'] and a['ref'] == e['GITHUB_REF'], (
+              'Approved execution SHA/ref mismatch: approved=' + str((a['head'], a['ref'])) +
+              ' actual=' + str((e['GITHUB_SHA'], e['GITHUB_REF'])))
           assert a['workflow_file'] in ('ci.yml', 'recoverable-quality.yml')
           assert e['GITHUB_WORKFLOW_REF'] == (
               'stephenlclarke/elite/.github/workflows/' + a['workflow_file'] + '@' + a['ref'])
@@ -72,11 +74,14 @@ jobs:
           elif name == 'pull_request':
               pull = event['pull_request']
               assert a['workflow_file'] == 'ci.yml'
-              assert a['ref'] == 'refs/pull/' + str(event['number']) + '/merge'
-              assert pull['merge_commit_sha'] == a['head']
-              assert pull['head']['sha'] == a['pr_head']
+              assert a['ref'] == 'refs/pull/' + str(event['number']) + '/merge', 'PR merge ref mismatch'
+              # GITHUB_SHA above is the execution identity; webhook merge metadata is informational.
+              assert re.fullmatch('[0-9a-f]{40}', a['pr_head']), 'Invalid approved PR source SHA'
+              assert pull['head']['sha'] == a['pr_head'], (
+                  'PR source SHA mismatch: approved=' + a['pr_head'] + ' actual=' + pull['head']['sha'])
               assert pull['head']['repo']['full_name'] == 'stephenlclarke/elite'
               assert pull['head']['repo']['fork'] is False
+              assert pull['base']['repo']['full_name'] == 'stephenlclarke/elite'
               assert pull['base']['ref'] == 'main'
               assert str(pull['user']['id']) == '22142777'
           else:
