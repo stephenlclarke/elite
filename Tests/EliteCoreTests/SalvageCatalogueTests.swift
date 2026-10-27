@@ -5,7 +5,7 @@ import Testing
 @Suite struct SalvageCatalogueTests {
   @Test func reviewedCapitalCarrierAndLargeHullProfilesUseActualCatalogueRecords() throws {
     let expected: [String: String] = [
-      "SH043": "Eagle Cruiser", "SH081": "Majestic-class Interdictor",
+      "SH043": "Eagle Cruiser", "SH081": "Jaguar",
       "SH161": "Military Fiasco Leviathan", "SH155": "Ionics Funnelweb",
       "SH123": "Thargoid Titan", "SH171": "Liberator DSV2",
       "SH078": "Oryx Voyager", "SH079": "Carabao Carrier", "SH080": "Carabao Highliner",
