@@ -807,6 +807,74 @@ class RecoverableAuthorizationTests(unittest.TestCase):
                         self.assertEqual(install.session_run_active(policy, binding), changes.get("status") != "completed")
 
 
+class ArtifactProvenanceDiagnosticTests(unittest.TestCase):
+    def test_loaded_pinned_helper_failure_emits_only_fixed_codes_and_integer(self):
+        import ast, json
+        from pathlib import Path
+        from types import SimpleNamespace
+        import native_runner as native
+        import recoverable_shards as shards
+        secret = "FAKE_PRIVATE_RUN_PAYLOAD_TOKEN"
+        authority = SimpleNamespace(environment=dict(GITHUB_REF="refs/heads/approved", GITHUB_EVENT_NAME="workflow_dispatch"),
+                                    policy=dict(approved_head=SHA))
+        class UnprintableValueError(ValueError):
+            def __str__(self):
+                raise AssertionError("Never format exception text")
+        class PrivateRun(dict):
+            def __getitem__(self, key):
+                raise UnprintableValueError(secret)
+        try:
+            shards.require_artifact_run_provenance(authority, PrivateRun(), "123")
+        except ValueError as error:
+            record = native.authorization_failure(error)
+        function = shards.require_artifact_run_provenance
+        source = ast.parse(Path(shards.__file__).read_text())
+        check = next(node for node in source.body if isinstance(node, ast.FunctionDef) and node.name == function.__name__)
+        first_guard = next(node for node in check.body if isinstance(node, ast.If))
+        self.assertEqual(record, dict(stage="artifact", predicate="run-provenance", category="ValueError", owned_line=first_guard.lineno))
+        self.assertNotIn(secret, json.dumps(record))
+        self.assertNotIn(shards.__file__, json.dumps(record))
+        self.assertEqual(set(record), {"stage", "predicate", "category", "owned_line"})
+
+    def test_same_name_or_spoofed_filename_cannot_replace_the_loaded_helper_code(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import native_runner as native
+        import recoverable_shards as shards
+        name = "require_artifact_run_provenance"
+        source = "def " + name + "():\n    raise ValueError('FAKE_PRIVATE_ARGUMENT')\n"
+        for filename in ("/untrusted/recoverable_shards.py", shards.__file__):
+            with self.subTest(filename=filename):
+                scope = {}
+                exec(compile(source, filename, "exec"), scope)
+                try:
+                    scope[name]()
+                except ValueError as error:
+                    record = native.authorization_failure(error)
+                self.assertEqual(record, dict(stage="unknown", predicate="unknown", category="ValueError", owned_line=None))
+        # Matching the loaded function identity alone cannot admit a foreign path.
+        foreign = {}
+        exec(compile(source, "/untrusted/recoverable_shards.py", "exec"), foreign)
+        with patch.dict("sys.modules", {"recoverable_shards": SimpleNamespace(**foreign)}):
+            try:
+                foreign[name]()
+            except ValueError as error:
+                record = native.authorization_failure(error)
+        self.assertEqual(record["predicate"], "unknown")
+        self.assertIsNone(record["owned_line"])
+
+    def test_unloaded_helper_is_not_imported_to_format_an_unrelated_error(self):
+        from unittest.mock import patch
+        import native_runner as native
+        import sys
+        loaded = dict(sys.modules)
+        loaded.pop("recoverable_shards", None)
+        with patch.dict(sys.modules, loaded, clear=True), patch("builtins.__import__", wraps=__import__) as imports:
+            record = native.authorization_failure(ValueError("FAKE_PRIVATE_ARGUMENT"))
+        self.assertEqual(record, dict(stage="unknown", predicate="unknown", category="ValueError", owned_line=None))
+        self.assertFalse(any(call.args[0] == "recoverable_shards" for call in imports.call_args_list))
+
+
 class SplitAuthorizationTests(unittest.TestCase):
     contract = RecoverableAuthorizationTests.contract
 

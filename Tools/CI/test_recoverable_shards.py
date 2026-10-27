@@ -1572,6 +1572,101 @@ class WorkflowTests(Fixture):
                 exec(compile(gate, "fake-final-gate", "exec"), {})
 
 
+class ArtifactRunProvenanceTests(unittest.TestCase):
+    def contract(self, event="workflow_dispatch"):
+        ref = {"workflow_dispatch": "refs/heads/approved", "push": "refs/heads/main",
+               "pull_request": "refs/pull/25/merge"}[event]
+        workflow = ".github/workflows/recoverable-quality.yml" if event == "workflow_dispatch" else ".github/workflows/ci.yml"
+        environment = dict(GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="2", GITHUB_REF=ref, GITHUB_EVENT_NAME=event,
+                           GITHUB_WORKFLOW_REF=shards.native_runner.REPOSITORY + "/" + workflow + "@" + ref)
+        policy = dict(approved_head=HEAD, recoverable_activation=dict(pr_head="b" * 40))
+        authority = SimpleNamespace(environment=environment, policy=policy)
+        run = dict(id=123, run_attempt=2, status="in_progress", head_sha="b" * 40 if event == "pull_request" else HEAD,
+                   event=event, repository=dict(full_name=shards.native_runner.REPOSITORY),
+                   actor=dict(id=22142777), triggering_actor=dict(id=22142777),
+                   head_branch=ref.removeprefix("refs/heads/"), path=workflow)
+        return authority, run
+
+    def guard_lines(self):
+        import ast, inspect
+        tree = ast.parse(inspect.getsource(shards.require_artifact_run_provenance))
+        first = shards.require_artifact_run_provenance.__code__.co_firstlineno
+        return [first + node.body[0].lineno - 1 for node in tree.body[0].body if isinstance(node, ast.If)]
+
+    def refusal(self, authority, run):
+        try:
+            shards.GitHubArtifacts(authority, api=lambda path: run)
+        except ValueError as error:
+            self.assertEqual(type(error), ValueError)
+            self.assertEqual(error.args, ("Artifact run provenance differs from the approved workflow",))
+            return shards.native_runner.authorization_failure(error)
+        self.fail("A changed provenance field must refuse")
+
+    def test_exact_dispatch_push_and_separate_pr_source_contexts_accept_existing_paths(self):
+        for event in ("workflow_dispatch", "push", "pull_request"):
+            authority, run = self.contract(event)
+            workflow = shards.native_runner.workflow_path(authority.environment)
+            ref = authority.environment["GITHUB_REF"]
+            paths = {workflow, workflow + "@" + ref, workflow + "@" + ref.removeprefix("refs/heads/"), workflow + "@" + HEAD}
+            for path in sorted(paths):
+                with self.subTest(event=event, path=path):
+                    run["path"] = path
+                    remote = shards.GitHubArtifacts(authority, api=lambda endpoint: run)
+                    self.assertEqual(remote.run, "123")
+            if event == "pull_request":
+                run["head_sha"] = HEAD
+                self.assertEqual(self.refusal(authority, run)["owned_line"], self.guard_lines()[1])
+
+    def test_each_of_ten_original_predicates_has_one_distinct_owned_refusal_line(self):
+        changes = [lambda r: r.update(id=124), lambda r: r.update(head_sha="c" * 40),
+                   lambda r: r.update(run_attempt=3), lambda r: r.update(status="queued"),
+                   lambda r: r.update(event="pull_request_target"),
+                   lambda r: r["repository"].update(full_name="outside/repository"),
+                   lambda r: r["actor"].update(id=2), lambda r: r["triggering_actor"].update(id=2),
+                   lambda r: r.update(head_branch="outside"), lambda r: r.update(path="outside/workflow.yml")]
+        lines = self.guard_lines()
+        self.assertEqual(len(lines), 10)
+        self.assertEqual(len(set(lines)), 10)
+        for index, change in enumerate(changes):
+            for event in ("workflow_dispatch", "push", "pull_request"):
+                if event == "pull_request" and index == 8:
+                    continue  # The original branch-name check applies only outside PRs.
+                with self.subTest(predicate=index, event=event):
+                    authority, run = self.contract(event)
+                    change(run)
+                    self.assertEqual(self.refusal(authority, run), dict(
+                        stage="artifact", predicate="run-provenance", category="ValueError", owned_line=lines[index]))
+
+    def test_queued_completed_cancelled_missing_status_and_invalid_branch_ref_still_refuse(self):
+        for status in ("queued", "completed", "cancelled", "waiting", "pending", None, "missing"):
+            with self.subTest(status=status):
+                authority, run = self.contract()
+                if status == "missing":
+                    run.pop("status")
+                else:
+                    run["status"] = status
+                self.assertEqual(self.refusal(authority, run)["owned_line"], self.guard_lines()[3])
+        authority, run = self.contract()
+        authority.environment["GITHUB_REF"] = "refs/tags/approved"
+        self.assertEqual(self.refusal(authority, run)["owned_line"], self.guard_lines()[8])
+
+    def test_first_failed_predicate_keeps_short_circuit_before_later_missing_fields(self):
+        fields = ["id", "head_sha", "run_attempt", "status", "event", "repository", "actor", "triggering_actor", "head_branch", "path"]
+        bad = [124, "c" * 40, 3, "queued", "outside", dict(full_name="outside/repository"),
+               dict(id=2), dict(id=2), "outside", "outside.yml"]
+        for index, field in enumerate(fields):
+            with self.subTest(field=field):
+                authority, run = self.contract()
+                run[field] = bad[index]
+                for later in fields[index + 1:]:
+                    run.pop(later)
+                self.assertEqual(self.refusal(authority, run)["owned_line"], self.guard_lines()[index])
+        authority, run = self.contract()
+        run.pop("head_sha")
+        with self.assertRaises(KeyError):
+            shards.GitHubArtifacts(authority, api=lambda path: run)
+
+
 class GranularityTests(Fixture):
     authority = NativeAdapterTests.authority
     prepared = NativeAdapterTests.prepared

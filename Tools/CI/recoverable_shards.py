@@ -1992,6 +1992,38 @@ def trusted_json(path, checksum):
     return load_json(path)
 
 
+def require_artifact_run_provenance(authority, run, expected_run):
+    """Retain each exact run guard separately so a safe owned line identifies refusal."""
+    ref = authority.environment.get("GITHUB_REF", "")
+    branch = ref.removeprefix("refs/heads/")
+    workflow = native_runner.workflow_path(authority.environment)
+    event = authority.environment.get("GITHUB_EVENT_NAME")
+    run_head = (authority.policy.get("recoverable_activation", {}).get("pr_head")
+                if event == "pull_request" else authority.policy["approved_head"])
+    paths = {workflow, workflow + "@" + branch, workflow + "@" + ref,
+             workflow + "@" + authority.policy["approved_head"]}
+    if str(run["id"]) != expected_run:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if run["head_sha"] != run_head:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if str(run.get("run_attempt")) != authority.environment.get("GITHUB_RUN_ATTEMPT"):
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if run.get("status") != "in_progress":
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if run["event"] != event:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if run["repository"]["full_name"] != native_runner.REPOSITORY:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if str(run["actor"]["id"]) != native_runner.ACTOR:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if str(run["triggering_actor"]["id"]) != native_runner.ACTOR:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if event != "pull_request" and (not ref.startswith("refs/heads/") or run["head_branch"] != branch):
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+    if run["path"] not in paths:
+        raise ValueError("Artifact run provenance differs from the approved workflow")
+
+
 class GitHubArtifacts:
     """Authenticate the complete archive against GitHub's run-bound digest before extraction."""
     def __init__(self, authority, api=None, download=None):
@@ -2003,23 +2035,7 @@ class GitHubArtifacts:
             ["gh", "api", path], env=self.gh_environment(), stderr=subprocess.PIPE, timeout=60)))
         self.download = download or self.download_archive
         run = self.api(f"repos/{native_runner.REPOSITORY}/actions/runs/{self.run}")
-        ref = authority.environment.get("GITHUB_REF", "")
-        branch = ref.removeprefix("refs/heads/")
-        workflow = native_runner.workflow_path(authority.environment)
-        event = authority.environment.get("GITHUB_EVENT_NAME")
-        run_head = (authority.policy.get("recoverable_activation", {}).get("pr_head")
-                    if event == "pull_request" else authority.policy["approved_head"])
-        paths = {workflow, workflow + "@" + branch, workflow + "@" + ref,
-                 workflow + "@" + authority.policy["approved_head"]}
-        if (str(run["id"]) != self.run or run["head_sha"] != run_head
-                or str(run.get("run_attempt")) != authority.environment.get("GITHUB_RUN_ATTEMPT")
-                or run.get("status") != "in_progress"
-                or run["event"] != event or run["repository"]["full_name"] != native_runner.REPOSITORY
-                or str(run["actor"]["id"]) != native_runner.ACTOR
-                or str(run["triggering_actor"]["id"]) != native_runner.ACTOR
-                or (event != "pull_request" and (not ref.startswith("refs/heads/") or run["head_branch"] != branch))
-                or run["path"] not in paths):
-            raise ValueError("Artifact run provenance differs from the approved workflow")
+        require_artifact_run_provenance(authority, run, self.run)
 
     def gh_environment(self):
         environment = dict(self.authority.environment)

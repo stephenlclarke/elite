@@ -584,6 +584,12 @@ _AUTHORIZATION_FAILURE_SITES = {
 
 def authorization_failure(error: BaseException) -> dict:
     """Emit only fixed code-site/category labels, never exception or context contents."""
+    import sys
+    # The already loaded helper is hash-pinned by load_recoverable_guard. Do not import here.
+    helper = sys.modules.get("recoverable_shards")
+    function = getattr(helper, "require_artifact_run_provenance", None)
+    helper_code = getattr(function, "__code__", None)
+    helper_path = str(Path(__file__).with_name("recoverable_shards.py"))
     stage, predicate, line = "unknown", "unknown", None
     frame = error.__traceback__
     while frame is not None:
@@ -594,6 +600,8 @@ def authorization_failure(error: BaseException) -> dict:
             site = _AUTHORIZATION_FAILURE_SITES.get(code.co_name)
             if site is not None:
                 stage, predicate = site
+        elif code is helper_code and code.co_filename == helper_path:
+            stage, predicate, line = "artifact", "run-provenance", frame.tb_lineno
         frame = frame.tb_next
     category = "unknown"
     for kind, label in ((KeyError, "KeyError"), (OSError, "OSError"),
