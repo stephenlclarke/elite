@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current catalogue diagnostic-only execution — 28 October 2026
+## Current ordinary disabled-profile qualification — 28 October 2026
+
+Root selected the source-reviewed disabled-profile mesh-reuse fix after the one catalogue diagnostic ended at SH061 emp-before. That observation narrows a span without proving runtime initializer state or allocator cause. Preserve all earlier raw failures and counters. MC1 owns concrete source/test findings and G1 owns the sole native lease; actual assertions, cold initialization and memory effect remain validation pending.
+
+Freeze all final source and status documents and review exact composition/pins. Publish the actual source, request PR review and bind fresh ordinary gate-OFF policy/environment/runtime/storage records to G1's exact new owned physical execution workspace. The diagnostic key must be absent entirely. App attachment registration hit the identity cap; use the managed tool's returned workspace explicitly, without touching the primary checkout or reusing missing-workspace policies. After actual finite input review, one matching ASAN preparation compiles the fix and appended catalogue checks and establishes the fresh full inventory/image/plan. Review those records and ordered finite assignments before complete catalogue, previous native/Panel and AppKit cohorts, with strict success required before each conditional follow-up.
+
+Keep all original assertions, SH061 physical/authored semantics, resolved geometry/texture oracles, diagnostic operation order, profile iterations, selectors, cohorts, instrumentation, concurrency, options, shared locks, 2.25 GiB worker estimate, 2 GiB reserve and refusal rules. Full raw-cache construction can occur earlier on EMP-first paths and the appended oracle work has a cost; neither source sharing nor source/model checks prove memory fit. Stop at the first failure or uncertainty. Do not split cohorts, duplicate the normal build, reset counters, raise budgets or promote diagnostic-on observations. All final quality and publication gates remain required. See [the disabled-profile handoff](PR-m01-disabled-profile-mesh-reuse.md).
+
+## Previous catalogue diagnostic-only execution — 28 October 2026
 
 The ordinary Catalogue16 run stopped at its RSS guard during the strengthened mesh method without a qualified shard or an identified profile/subphase. Root selected the bounded catalogue diagnostic; its source and narrow external-parser correction passed review. G1 owns the existing native lease, MC1 owns source findings, and Root alone dispatches the single active MBA task. Prior source, raw failures and all consumed or unused counters remain unchanged.
 
