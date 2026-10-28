@@ -748,7 +748,7 @@ shards.execute_process([sys.executable, '-c', "import time; print('\\u25c7 Test 
             executor = object.__new__(shards.NativeExecutor)
             executor.workspace, executor.active_workspace, executor.runtime = worker, worker / mode, self.runtimes[mode]
             environment = {"PATH": "/fake-path", "LANG": "C"}
-            executor.authority = SimpleNamespace(environment_for=lambda _: dict(environment))
+            executor.authority = SimpleNamespace(config={}, environment_for=lambda _: dict(environment))
             executor.unknown_live_helpers = lambda: False
             executor.progress_context = {"validated_shards_completed": 1, "shards_total": 2}
             monitor = SimpleNamespace(bound_callback=None, observed={"fake-image": True}, errors=[])
@@ -2803,6 +2803,8 @@ class LocalSanitizerTests(Fixture):
         directory.mkdir(mode=0o700)
         home, repo, controls = physical_home or directory / "home", directory / "source", directory / "controls"
         controls.mkdir(mode=0o700)
+        from test_native_runner import owned_control_fixture
+        owned_control_fixture(home / "Library/EliteNativeCI")
         (repo / "Tools/CI").mkdir(parents=True, mode=0o700)
         for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
                      "quality_phase_checkpoints.py", "crash_artifacts.py"):

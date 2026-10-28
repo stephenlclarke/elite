@@ -238,6 +238,7 @@ def register_and_run(run: bool, runner_name="elite-mbp-native", deadline=None, d
 RECOVERABLE_ROLES = {"native_checks", "prepare_thread", "prepare_address", "native_phase",
                      "thread_shards", "address_shards", "native_aggregate"}
 ASAN_RECOVERABLE_ROLES = {"native_checks", "prepare_address", "address_shards"}
+NORMAL_CI_ROLES = {"native_checks"}
 MAX_SESSION_SECONDS = 7 * 86400
 
 
@@ -319,13 +320,16 @@ def reviewed_recoverable_policy(path, checksum, base):
         raise ValueError("This installer reserves exactly one physical runner.")
     runner_name, instance = next(iter(activation["runners"].items()))
     backend, _ = backend_descriptor(value)
-    allowed_roles = (LOCAL_COMPONENT_ROLES,) if backend == LOCAL_COMPONENTS_BACKEND else (RECOVERABLE_ROLES, ASAN_RECOVERABLE_ROLES)
+    allowed_roles = (LOCAL_COMPONENT_ROLES,) if backend == LOCAL_COMPONENTS_BACKEND else (RECOVERABLE_ROLES, ASAN_RECOVERABLE_ROLES, NORMAL_CI_ROLES)
     if (not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", runner_name)
             or set(instance) != {"workspace", "jobs"}
             or instance["workspace"] != str(RUNNER / "_work/elite/elite")
             or set(instance["jobs"]) not in allowed_roles
             or len(instance["jobs"]) != len(set(instance["jobs"]))):
         raise ValueError("Recoverable runner/workspace/role reservation differs.")
+    if backend == native_runner.GITHUB_BACKEND and set(instance['jobs']) == NORMAL_CI_ROLES:
+        if native_runner.phase_profile(value, 'normal') is None:
+            raise ValueError('Current CI role reservation requires both normal/leaks phase profiles')
     if (type(config.get("schema")) is not int or config.get("schema") != 1 or set(config) - {"schema", "host", "cache", "legacy_cache", "workers", "admission", "planning", "phase_profiles"}
             or set(config.get("workers", {})) != {"one"}
             or config.get("admission", {}).get("explicit") != 1

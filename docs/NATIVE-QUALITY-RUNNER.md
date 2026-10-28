@@ -4,6 +4,8 @@ The required `quality` check runs the complete `make ci` pipeline on the physica
 
 ## Authorization and source
 
+New reviewed policies for the active CI use exactly `jobs: [native_checks]` and both independently validated normal/leak resource profiles. The installer rejects that singleton role if either profile is missing or malformed. Historical full and sanitizer role sets remain manual-only options; CI does not request their proofs.
+
 The physical runner uses the separate `elite-native` label and dedicated `~/Library/EliteNativeCI/native-runner` checkout. It registers ephemerally, listens for one job and unregisters after that job. No persistent service is installed. Only the repository owner's internal reviewed PR, main push or explicit branch dispatch is accepted. Forks, another actor, a different workflow/job, another head, forced main pushes and deleted branches fail closed.
 
 Workflow routing is not the security boundary. Before registration, `Tools/CI/prepare_native_runner.py` copies the reviewed guard outside both the runner application and checkout, and writes an owned read-only policy pinning the exact approved head and compiler/SDK identities. The runner's own `.env` installs its pre-job hook. The hook validates immutable event metadata before any workflow step or checkout and publishes an exact-head attestation. A rejected hook fails the job; `continue-on-error` cannot override it. [GitHub's pre-job hook contract](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/run-scripts) describes this ordering and failure behavior.

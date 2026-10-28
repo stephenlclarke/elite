@@ -8,6 +8,25 @@ SHA = "a" * 40
 REPO = {"full_name": "stephenlclarke/elite", "fork": False}
 
 
+def owned_control_fixture(root):
+    """Create the existing physical lease and valid-empty custody in a temporary fake home."""
+    import json
+    root.mkdir(parents=True, mode=0o700, exist_ok=True)
+    legacy = root / 'sanitizer-checkpoints'
+    legacy.mkdir(mode=0o700, exist_ok=True)
+    if not (legacy / 'executor.lock').exists():
+        (legacy / 'executor.lock').touch(mode=0o600)
+    custody = root / 'diagnostic-custody'
+    if custody.exists():
+        return custody  # Shared fake homes retain their exact existing custody state.
+    custody.mkdir(mode=0o700)
+    (custody / 'resolutions').mkdir(mode=0o700)
+    (custody / 'registry.json').write_text(json.dumps({
+        'schema': 1, 'kind': 'owned-diagnostic-custody-v1', 'generation': 0, 'records': {}}))
+    (custody / 'registry.json').chmod(0o600)
+    return custody
+
+
 def fixture():
     """Return a trusted internal PR event with an immutable reviewed head."""
     environment = {"GITHUB_REPOSITORY": REPO["full_name"], "GITHUB_ACTOR_ID": "22142777",
@@ -101,6 +120,11 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         temporary = TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         assignment_root = Path(temporary.name).resolve()
+        custody = owned_control_fixture(assignment_root / 'control')
+        from unittest.mock import patch
+        custody_path = patch('native_runner.diagnostic_custody_root', return_value=custody)
+        custody_path.start()
+        self.addCleanup(custody_path.stop)
         policy = {"approved_head": SHA, "recoverable_activation": {
             "schema": 1, "enabled": True, "revoked": False, "expires_at": 200,
             "head": SHA, "workflow_ref": workflow, "workflow_sha256": "c" * 64,
@@ -558,9 +582,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         workflow.mkdir(parents=True)
         for name in ("ci.yml", "recoverable-quality.yml"):
             (workflow / name).write_text("# pinned workflow " + name + "\n")
-        legacy = home.parent / "legacy-cache"
-        legacy.mkdir(mode=0o700)
-        (legacy / "executor.lock").touch(mode=0o600)
+        legacy = home / "sanitizer-checkpoints"
         activation = dict(schema=1, enabled=True, revoked=False, expires_at=10000, head=SHA,
                           workflow_ref="stephenlclarke/elite/.github/workflows/ci.yml@refs/heads/main",
                           workflow_sha256=hashlib.sha256((workflow / "ci.yml").read_bytes()).hexdigest(),
@@ -584,6 +606,46 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         reviewed.chmod(0o400)
         checksum = hashlib.sha256(reviewed.read_bytes()).hexdigest()
         return stack, home, archive, archive_hash, reviewed, checksum, policy
+
+    def test_installer_accepts_normal_leaks_only_ci_roles_and_requires_both_profiles(self):
+        import hashlib, json
+        from copy import deepcopy
+        import prepare_native_runner as install
+        from native_runner import policy_digest
+        stack, home, archive, archive_hash, reviewed, checksum, original = self.recoverable_installation_fixture()
+        with stack:
+            selected = deepcopy(original)
+            selected['recoverable_activation']['runners']['elite-mbp-native']['jobs'] = ['native_checks']
+            selected['recoverable_shards']['phase_profiles'] = {
+                phase: dict(build_profile='jobs1-nonbatch-v1',
+                            admission=deepcopy(selected['recoverable_shards']['admission']))
+                for phase in ('normal', 'leaks')}
+            base = {k: v for k, v in selected.items() if k not in ('recoverable_activation', 'recoverable_shards')}
+            def publish(value):
+                activation = value['recoverable_activation']
+                manifest = {k: activation[k] for k in ('schema', 'enabled', 'revoked', 'expires_at', 'head',
+                            'workflow_sha256', 'reusable_workflow_sha256', 'runners', 'assignment_root')}
+                manifest.update(ref='refs/heads/main', workflow_file='ci.yml')
+                activation['manifest_sha256'] = policy_digest(manifest)
+                reviewed.chmod(0o600)
+                reviewed.write_text(json.dumps(value))
+                reviewed.chmod(0o400)
+                return hashlib.sha256(reviewed.read_bytes()).hexdigest()
+            checksum = publish(selected)
+            self.assertEqual(install.reviewed_recoverable_policy(reviewed, checksum, base), selected)
+            for mutate in (
+                lambda value: value['recoverable_shards'].pop('phase_profiles'),
+                lambda value: value['recoverable_shards']['phase_profiles'].pop('leaks'),
+                lambda value: value['recoverable_shards']['phase_profiles']['normal'].update(build_profile='unknown'),
+                lambda value: value['recoverable_shards']['phase_profiles']['leaks']['admission'].update(explicit=2),
+                lambda value: value['recoverable_activation']['runners']['elite-mbp-native'].update(jobs=['native_checks', 'native_checks']),
+                lambda value: value['recoverable_activation']['runners']['elite-mbp-native'].update(jobs=['native_checks', 'quality']),
+            ):
+                changed = deepcopy(selected)
+                mutate(changed)
+                with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                    install.reviewed_recoverable_policy(reviewed, publish(changed), base)
+            self.assertFalse((home / 'native-runner').exists())
 
     def test_installer_accepts_only_exact_full_or_asan_role_profiles(self):
         import hashlib, itertools, json
@@ -703,7 +765,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         stack, home, archive, archive_hash, reviewed, checksum, policy = self.recoverable_installation_fixture()
         with stack, open(policy["recoverable_shards"]["legacy_cache"] + "/executor.lock", "a") as active:
             fcntl.flock(active, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            with self.assertRaises(BlockingIOError), install.quiescent_legacy(policy):
+            with install.recoverable_control(), self.assertRaises(BlockingIOError), install.quiescent_legacy(policy):
                 self.fail("Cannot cross the current native lease")
 
     def test_installer_serial_session_reserves_before_tokens_and_stops_at_durable_job_budget(self):
@@ -857,7 +919,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         from unittest.mock import patch
         import prepare_native_runner as install
         stack, home, archive, archive_hash, reviewed, checksum, policy = self.recoverable_installation_fixture()
-        with stack:
+        with stack, install.recoverable_control(), install.quiescent_legacy(policy):
             binding = {"run_id": "123", "run_attempt": "1", "expires_at": 9000}
             run = dict(id=123, run_attempt=1, head_sha=SHA, repository={"full_name": "stephenlclarke/elite"},
                        actor={"id": 22142777}, triggering_actor={"id": 22142777}, status="in_progress",
@@ -1376,7 +1438,15 @@ class ProvisioningFailureTests(unittest.TestCase):
         import prepare_native_runner as install
         temporary = TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
-        runner = Path(temporary.name).resolve()
+        home = Path(temporary.name).resolve() / 'EliteNativeCI'
+        custody = owned_control_fixture(home)
+        runner = home / 'native-runner'
+        runner.mkdir(mode=0o700)
+        for target, value in [('prepare_native_runner.HOME_ROOT', home),
+                              ('native_runner.diagnostic_custody_root', lambda: custody)]:
+            context = patch(target, value)
+            context.start()
+            self.addCleanup(context.stop)
         replacement = patch.object(install, "RUNNER", runner)
         replacement.start()
         self.addCleanup(replacement.stop)
@@ -1442,6 +1512,7 @@ class ProvisioningFailureTests(unittest.TestCase):
         from pathlib import Path
         from unittest.mock import patch
         from prepare_native_runner import prepare
+        self.registration_fixture()
         for values in [["b" * 40], [SHA, " M a.swift"]]:
             with self.subTest(values=values), \
                     patch("prepare_native_runner.output", side_effect=values), self.assertRaises(ValueError):
@@ -1453,6 +1524,7 @@ class ProvisioningFailureTests(unittest.TestCase):
         from types import SimpleNamespace
         from unittest.mock import patch
         from prepare_native_runner import register_and_run
+        self.registration_fixture()
         for responses in [[SimpleNamespace(returncode=1, stdout="private", stderr="private")],
                           [SimpleNamespace(returncode=0, stdout='{"token":"fake-private-token"}'),
                            SimpleNamespace(returncode=1)]]:
@@ -1470,6 +1542,7 @@ class ProvisioningFailureTests(unittest.TestCase):
         from types import SimpleNamespace
         from unittest.mock import patch
         from prepare_native_runner import register_and_run
+        self.registration_fixture()
         responses = [SimpleNamespace(returncode=0, stdout='{"token":"fake-private-token"}'),
                      SimpleNamespace(returncode=0), SimpleNamespace(returncode=0)]
         captured = io.StringIO()
@@ -1540,6 +1613,8 @@ class ImmutablePreparationTests(unittest.TestCase):
         temporary = stack.enter_context(tempfile.TemporaryDirectory())
         fixture = Path(temporary).resolve()
         home = fixture / "EliteNativeCI"
+        custody = owned_control_fixture(home)
+        stack.enter_context(patch('native_runner.diagnostic_custody_root', return_value=custody))
         authorization = fixture / "NativeAuthorization"
         repo = fixture / "repo"
         guard = repo / "Tools/CI/native_runner.py"
@@ -1571,7 +1646,7 @@ class ImmutablePreparationTests(unittest.TestCase):
         from prepare_native_runner import prepare, register_and_run
         stack, home, archive, digest = self.with_fixture()
         with stack:
-            self.assertFalse(home.exists())
+            self.assertFalse((home / "native-runner").exists())
             policy = prepare(SHA, archive, digest)
             before = policy.read_bytes()
             installation = home / "native-runner/.elite-native-installation.json"
@@ -1655,7 +1730,7 @@ class HookDispatchTests(unittest.TestCase):
             spaced = home.parent / "Application Support/native-runner"
             with patch("prepare_native_runner.RUNNER", spaced), self.assertRaises(ValueError):
                 prepare(SHA, archive, digest)
-            self.assertFalse(home.exists())
+            self.assertFalse((home / "native-runner").exists())
             self.assertFalse(spaced.exists())
             policy = prepare(SHA, archive, digest)
             self.assertFalse(any(character.isspace() for character in str(home)))
