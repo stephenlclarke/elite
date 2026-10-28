@@ -4,6 +4,7 @@ import Testing
 
 struct PanelClippingTests {
   @Test func containedInclusiveBoundaryAndDegeneratePanelsKeepExactVerticesColourAndOrder() {
+    expectIndexedProjectionParity()
     var frame = Frame()
     frame.rasterizeGraphics = false
     frame.flightClip = .init(x: 16, y: 16, width: 33, height: 33)
@@ -82,6 +83,42 @@ struct PanelClippingTests {
       let before = frame
       for polygon in rejected { frame.panel(polygon, colour: 0xFFD5_5BFF) }
       #expect(frame == before)
+    }
+  }
+
+  private func expectIndexedProjectionParity() {
+    let polygons: [[Vector3]] = [
+      [], [.init(0, 0, 1)], [.init(1, 2, 1), .init(-3, 4, 2)],
+      [.init(-1, -1, 1), .init(2, -1, 2), .init(0, 3, 3)],
+      [.init(-1, -1, 0.5), .init(2, -1, 2), .init(0, 3, 3)],
+      [.init(-1, -1, 2), .init(2, -1, 0.5), .init(0, 3, 0.5)],
+      [.init(-1, -1, -2), .init(2, -1, 0), .init(0, 3, 0.5)],
+      [.init(-1, -1, 1), .init(2, -1, 1), .init(2, 3, 1), .init(-1, 3, 1)],
+      [.init(.nan, -1, 2), .init(2, -1, 2), .init(0, 3, 2)],
+      [.init(-1, .infinity, 2), .init(2, -1, 2), .init(0, 3, 2)],
+      [.init(-1, -1, .nan), .init(2, -1, 2), .init(0, 3, 2)],
+      [.init(-1, -1, .infinity), .init(2, -1, 2), .init(0, 3, 2)],
+    ]
+    let projections: [FlightProjection] = [
+      .legacy, .init(center: .init(128, 128), focal: 300),
+      .init(center: .init(-12.5, 35.75), focal: 0.125),
+    ]
+    for polygon in polygons {
+      // Interleave unused vertices and reverse indices to check exact source ordering.
+      var vertices = [Vector3(999, 999, 999)]
+      var forward: [Int] = []
+      for point in polygon {
+        forward.append(vertices.count)
+        vertices.append(point)
+        vertices.append(.init(999, 999, 999))
+      }
+      for face in [forward, Array(forward.reversed())] {
+        for projection in projections {
+          let original = ShipProjection.polygon(face.map { vertices[$0] }, projection: projection)
+          let indexed = ShipProjection.polygon(face, vertices: vertices, projection: projection)
+          #expect(indexed == original)
+        }
+      }
     }
   }
 }

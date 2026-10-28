@@ -62,6 +62,17 @@ enum ShipProjection {
     return r << 24 | g << 16 | b << 8 | 255
   }
 
+  /// Faces in front of or on the near plane need only their final screen points.
+  static func polygon(
+    _ face: [Int], vertices: [Vector3], projection: FlightProjection = .legacy
+  ) -> [ScreenPoint] {
+    guard !face.isEmpty, face.allSatisfy({ vertices[$0].z >= 1 }) else {
+      return polygon(face.map { vertices[$0] }, projection: projection)
+    }
+    let points = face.map { projection.point(vertices[$0]) }
+    return points.allSatisfy { $0.x.isFinite && $0.y.isFinite } ? points : []
+  }
+
   static func polygon(_ vertices: [Vector3], projection: FlightProjection = .legacy)
     -> [ScreenPoint]
   {

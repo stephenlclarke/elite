@@ -359,7 +359,6 @@ public enum Display {
       let c = vertices[face[2]]
       let normal = (b - a).cross(c - a)
       guard normal.dot(a) < 0 else { continue }
-      visibleFaces.insert(entry.index)
       if style == .shadedPanels {
         let material =
           mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
@@ -390,13 +389,14 @@ public enum Display {
           }
         }
         frame.panel(
-          ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
+          ShipProjection.polygon(face, vertices: vertices, projection: projection),
           colour: material.map {
             ShipProjection.shade($0.colour, normal: normal, emissive: $0.emissive)
           }
             ?? ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
         continue
       }
+      visibleFaces.insert(entry.index)
       let ink: Ink =
         style == .whiteWireframe
         ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
