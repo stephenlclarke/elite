@@ -250,13 +250,14 @@ public enum SalvageCatalogue {
       guard indices.count >= 3, indices.allSatisfy({ mesh.vertices.indices.contains($0) }) else {
         return nil
       }
-      let vertices = indices.map { mesh.vertices[$0] }
-      let cross = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0])
+      let first = mesh.vertices[indices[0]]
+      let cross = (mesh.vertices[indices[1]] - first).cross(mesh.vertices[indices[2]] - first)
       guard cross.length > 1e-8 else { return nil }
-      let midpoint = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
+      let midpoint =
+        indices.reduce(Vector3(0, 0, 0)) { $0 + mesh.vertices[$1] } * (1 / Double(indices.count))
       return .init(
         index: index, center: midpoint, normal: cross * (1 / cross.length),
-        radius: vertices.map { ($0 - midpoint).length }.max()!)
+        radius: indices.map { (mesh.vertices[$0] - midpoint).length }.max()!)
     }
     let directions: [Vector3] = [
       .init(0, 1, 0), .init(0, -1, 0), .init(0, 0, 1),

@@ -179,6 +179,7 @@ import Testing
       #expect(profile.catalogueShipID == ship.id)
       #expect(profile.role == .disabledOrdinaryShip && profile.physicalScale == 1)
       expectSameMesh(profile.mesh, as: expected)
+      try expectSectionGeometryMatchesArrayProjection(profile, mesh: expected)
       guard ship.id != "SH061" else { continue }
       let cached = try #require(ShipCatalogue.rawMesh(ship.id))
       let sharesVertices = profile.mesh.vertices.withUnsafeBufferPointer { profileVertices in
@@ -187,6 +188,25 @@ import Testing
         }
       }
       #expect(sharesVertices)
+    }
+  }
+
+  private func expectSectionGeometryMatchesArrayProjection(_ profile: SalvageProfile, mesh: Mesh)
+    throws
+  {
+    for section in profile.sections {
+      try #require(mesh.faces.indices.contains(section.sourceFaceIndex))
+      let indices = mesh.faces[section.sourceFaceIndex]
+      try #require(indices.count >= 3 && indices.allSatisfy(mesh.vertices.indices.contains))
+      let vertices = indices.map { mesh.vertices[$0] }
+      let cross = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0])
+      try #require(cross.length > 1e-8)
+      let midpoint = vertices.reduce(Vector3(0, 0, 0), +) * (1 / Double(vertices.count))
+      let normal = cross * (1 / cross.length)
+      let radius = try #require(vertices.map { ($0 - midpoint).length }.max())
+      #expect(section.localPosition == midpoint)
+      #expect(section.normal == normal)
+      #expect(section.radius == radius)
     }
   }
 
