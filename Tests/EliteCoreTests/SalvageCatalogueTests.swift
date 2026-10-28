@@ -70,15 +70,21 @@ import Testing
   }
 
   @Test func actualMeshBoundsMaterialsAndFaceWorkGeometryRemainUnnormalized() throws {
+    let diagnostic = ASANAllocatorDiagnostic.begin(.catalogueMesh)
+    defer { diagnostic?.checkpoint(.bodyExit) }
     for profile in SalvageCatalogue.all {
+      diagnostic?.checkpoint(.profileEntry, argument: profile.catalogueShipID)
       let ship = try #require(ShipCatalogue.all.first { $0.id == profile.catalogueShipID })
       let mesh = ship.design.rawMesh
+      diagnostic?.catalogueDetail(.oracleReady, profile: profile.catalogueShipID)
       #expect(profile.physicalScale == 1)
       #expect(profile.mesh.vertices == mesh.vertices && profile.mesh.faces == mesh.faces)
       #expect(
         profile.mesh.materials == mesh.materials && profile.mesh.faceMaterials == mesh.faceMaterials
       )
+      diagnostic?.catalogueDetail(.cacheBefore, profile: profile.catalogueShipID)
       let cached = try #require(ShipCatalogue.rawMesh(profile.catalogueShipID))
+      diagnostic?.catalogueDetail(.cacheAfter, profile: profile.catalogueShipID)
       expectSameMesh(profile.mesh, as: mesh)
       expectSameMesh(cached, as: mesh)
       let sharesVertices = profile.mesh.vertices.withUnsafeBufferPointer { profileVertices in
@@ -87,6 +93,7 @@ import Testing
         }
       }
       #expect(sharesVertices)
+      diagnostic?.catalogueDetail(.parityDone, profile: profile.catalogueShipID)
       #expect(profile.bounds.radius > 0 && profile.bounds.radius.isFinite)
       for vertex in mesh.vertices {
         #expect((vertex - profile.bounds.center).length <= profile.bounds.radius + 1e-8)
@@ -94,6 +101,7 @@ import Testing
         #expect(vertex.y >= profile.minimum.y && vertex.y <= profile.maximum.y)
         #expect(vertex.z >= profile.minimum.z && vertex.z <= profile.maximum.z)
       }
+      diagnostic?.catalogueDetail(.boundsDone, profile: profile.catalogueShipID)
       #expect(Set(profile.sections.map(\.index)).count == profile.sections.count)
       #expect(Set(profile.sections.map(\.sourceFaceIndex)).count == profile.sections.count)
       for section in profile.sections {
@@ -109,11 +117,12 @@ import Testing
         #expect(section.structural == (section.kind == .hull || section.kind == .cargo))
       }
     }
+    diagnostic?.checkpoint(.profilesDone)
     let leviathan = try #require(SalvageCatalogue.profile(catalogueShipID: "SH161"))
     #expect(leviathan.maximum.z - leviathan.minimum.z > 1500)
     let wheel = try #require(SalvageCatalogue.profile(catalogueShipID: "SH141"))
     #expect(wheel.bounds.radius > 0)
-    try expectActivatedOriginalTexturesAndHaflingerScale()
+    try expectActivatedOriginalTexturesAndHaflingerScale(diagnostic: diagnostic)
   }
 
   private func expectSameMesh(_ actual: Mesh, as expected: Mesh) {
@@ -125,8 +134,11 @@ import Testing
     #expect(actual.faceTextures == expected.faceTextures)
   }
 
-  private func expectActivatedOriginalTexturesAndHaflingerScale() throws {
+  private func expectActivatedOriginalTexturesAndHaflingerScale(
+    diagnostic: ASANAllocatorDiagnostic.Token?
+  ) throws {
     for (id, vertices, faces) in [("SH012", 132, 228), ("SH019", 172, 304)] {
+      diagnostic?.checkpoint(.textureBefore, argument: id)
       let original = try OriginalFleetShowroomModels.model(for: id)
       let mesh = original.nativeDesign.rawMesh
       #expect(mesh.vertices.count == vertices && mesh.faces.count == faces)
@@ -136,17 +148,22 @@ import Testing
       let cached = try #require(ShipCatalogue.rawMesh(id))
       expectSameMesh(profile.mesh, as: mesh)
       expectSameMesh(cached, as: mesh)
+      diagnostic?.checkpoint(.textureDone, argument: id)
     }
+    diagnostic?.checkpoint(.haflingerBegin, argument: "SH061")
     let ship = try #require(ShipCatalogue.ship("SH061"))
     let authored = ship.design.rawMesh
     let physical = try OriginalHullPhysicalContract.haflinger.get()
     let cached = try #require(ShipCatalogue.rawMesh("SH061"))
+    diagnostic?.checkpoint(.empBefore, argument: "SH061")
     let disabled = try #require(SalvageCatalogue.empProfile(catalogueShipID: "SH061"))
+    diagnostic?.checkpoint(.empAfter, argument: "SH061")
     #expect(SalvageCatalogue.profile(catalogueShipID: "SH061") == nil)
     #expect(physical.metresPerSourceUnit == 20)
     #expect(cached.vertices != authored.vertices)
     expectSameMesh(cached, as: physical.physicalMesh)
     expectSameMesh(disabled.mesh, as: authored)
+    diagnostic?.checkpoint(.haflingerDone, argument: "SH061")
   }
 
   @Test func workSurfaceIDsArePersistentAndTechnologyMetadataResolvesEveryCategory() throws {

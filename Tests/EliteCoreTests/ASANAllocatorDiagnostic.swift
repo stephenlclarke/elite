@@ -13,11 +13,22 @@ enum ASANAllocatorDiagnostic {
       "EliteCoreTests.NativeMissionStationTests/anActualDeadStationCannotBeReplacedByAnOlderLivingReferenceFrame()"
     case staleSalvage =
       "EliteCoreTests.NativeSalvageAuthorityTests/staleHotAuthorityRefusesWorkAndEveryColdFlushWithoutChangingCustody(change:)"
+    case catalogueMesh =
+      "EliteCoreTests.SalvageCatalogueTests/actualMeshBoundsMaterialsAndFaceWorkGeometryRemainUnnormalized()"
+
+    private static let catalogueArguments = [
+      "SH005", "SH006", "SH012", "SH013", "SH014", "SH019", "SH028", "SH034", "SH043",
+      "SH045", "SH062", "SH064", "SH066", "SH067", "SH077", "SH078", "SH079", "SH080",
+      "SH081", "SH093", "SH096", "SH097", "SH098", "SH099", "SH102", "SH123", "SH127",
+      "SH129", "SH132", "SH133", "SH134", "SH141", "SH155", "SH156", "SH161", "SH164",
+      "SH171", "SH061",
+    ]
 
     func accepts(_ argument: String) -> Bool {
       switch self {
       case .invalidAnchor: ["player", "unallocated", "visit", "system"].contains(argument)
       case .staleSalvage: ["owner", "hull", "epoch", "actor", "section", "source", "cycle"].contains(argument)
+      case .catalogueMesh: argument == "none" || Self.catalogueArguments.contains(argument)
       default: argument == "none"
       }
     }
@@ -27,6 +38,12 @@ enum ASANAllocatorDiagnostic {
     case entry, fixtureReady = "fixture-ready", hotWorkReady = "hot-work-ready"
     case preFinalFlush = "pre-final-flush", finalFlushDone = "final-flush-done"
     case bodyExit = "body-exit"
+    case profileEntry = "profile-entry", oracleReady = "oracle-ready"
+    case cacheBefore = "cache-before", cacheAfter = "cache-after"
+    case parityDone = "parity-done", boundsDone = "bounds-done", profilesDone = "profiles-done"
+    case textureBefore = "texture-before", textureDone = "texture-done"
+    case haflingerBegin = "haflinger-begin", empBefore = "emp-before", empAfter = "emp-after"
+    case haflingerDone = "haflinger-done"
   }
 
   struct Token: Sendable {
@@ -34,11 +51,20 @@ enum ASANAllocatorDiagnostic {
     let argument: String
     let invocation: UInt64
 
-    func checkpoint(_ phase: Phase) {
+    func checkpoint(_ phase: Phase, argument: String? = nil) {
       guard ASANAllocatorDiagnostic.enabled else { return }
       let boundary = Boundary()
-      _ = State.shared.record(method, argument: argument, phase: phase, invocation: invocation,
-                              boundary: boundary)
+      let tag = method == .catalogueMesh ? (argument ?? self.argument) : self.argument
+      _ = State.shared.record(
+        method, argument: tag, phase: phase, invocation: invocation, boundary: boundary)
+    }
+
+    func catalogueDetail(_ phase: Phase, profile: String) {
+      guard method == .catalogueMesh else { return }
+      switch profile {
+      case "SH005", "SH012", "SH019": checkpoint(phase, argument: profile)
+      default: return
+      }
     }
   }
 
@@ -130,7 +156,8 @@ enum ASANAllocatorDiagnostic {
       let numbers = values?.map { String($0) } ?? Array(repeating: "null", count: 4)
       var dump: Int?
       if error == nil && ((dumps == 0 && phase == .entry)
-        || (dumps == 1 && method == .staleSalvage && phase == .hotWorkReady))
+        || (dumps == 1 && method == .staleSalvage && phase == .hotWorkReady)
+        || (dumps == 1 && method == .catalogueMesh && phase == .cacheAfter && argument == "SH005"))
       { dumps += 1; dump = dumps }
       let availability = error == nil ? "available" : "unavailable"
       let errors = error.map { "[\"\($0)\"]" } ?? "[]"
