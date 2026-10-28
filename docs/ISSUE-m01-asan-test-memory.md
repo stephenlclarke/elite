@@ -18,3 +18,7 @@ The existing ASAN build uses one compiler job with batch mode disabled. Test exe
 Focused Python fakes must cover exact inventory membership, indivisible groups, packing limits, process ownership, RSS units, high-water retention, missing samples, asynchronous refusal and failed child evidence. A pure calculation using the retained inventory must fit the existing matrix limit. Native peak memory and the largest indivisible cohort remain unqualified until G1 executes the reviewed profile.
 
 The candidate external allocation is one 2 GiB worker plus a 2 GiB reserve. This is a fixed-host allocation, not a measured peak or an OS hard limit. Sampled RSS can miss transient spikes and counts shared resident pages in more than one process. See [the implementation handoff](PR-m01-asan-test-memory.md).
+
+## ASAN-only installer role correction
+
+G1's reviewed ASAN-only policy contains exactly `native_checks`, `prepare_address` and `address_shards`. The installer previously required all seven recoverable roles and refused this narrower policy. Accept the exact three-role profile alongside the existing complete seven-role profile; reject every other subset, extra role and duplicate. Preserve source, archive, toolchain, path, ownership, expiry and manifest validation. Do not broaden the low-memory policy to unrelated native phases.

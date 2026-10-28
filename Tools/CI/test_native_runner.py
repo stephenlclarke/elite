@@ -585,6 +585,72 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         checksum = hashlib.sha256(reviewed.read_bytes()).hexdigest()
         return stack, home, archive, archive_hash, reviewed, checksum, policy
 
+    def test_installer_accepts_only_exact_full_or_asan_role_profiles(self):
+        import hashlib, itertools, json
+        import prepare_native_runner as install
+        from native_runner import policy_digest
+        stack, home, archive, archive_hash, reviewed, checksum, policy = self.recoverable_installation_fixture()
+        with stack:
+            base = {k: v for k, v in policy.items() if k not in ("recoverable_activation", "recoverable_shards")}
+            full = sorted(install.RECOVERABLE_ROLES)
+            asan = ["native_checks", "prepare_address", "address_shards"]
+            self.assertEqual(install.ASAN_RECOVERABLE_ROLES, set(asan))
+            candidates = [list(group) for count in range(8) for group in itertools.combinations(full, count)]
+            candidates += [asan + ["native_checks"], full + ["native_checks"], asan + ["quality"],
+                           full + ["quality"], ["quality"], list(reversed(asan)), list(reversed(full))]
+            accepted = []
+            for jobs in candidates:
+                with self.subTest(jobs=jobs):
+                    a = policy["recoverable_activation"]
+                    a["runners"]["elite-mbp-native"]["jobs"] = jobs
+                    manifest = {k: a[k] for k in ("schema", "enabled", "revoked", "expires_at", "head",
+                                "workflow_sha256", "reusable_workflow_sha256", "runners", "assignment_root")}
+                    manifest.update(ref="refs/heads/main", workflow_file="ci.yml")
+                    a["manifest_sha256"] = policy_digest(manifest)
+                    reviewed.chmod(0o600)
+                    reviewed.write_text(json.dumps(policy))
+                    reviewed.chmod(0o400)
+                    checksum = hashlib.sha256(reviewed.read_bytes()).hexdigest()
+                    if len(jobs) == len(set(jobs)) and set(jobs) in (set(full), set(asan)):
+                        actual = install.reviewed_recoverable_policy(reviewed, checksum, base)
+                        self.assertEqual(actual, policy)
+                        accepted.append(set(jobs))
+                    else:
+                        with self.assertRaisesRegex(ValueError, "role reservation"):
+                            install.reviewed_recoverable_policy(reviewed, checksum, base)
+            self.assertEqual(len(accepted), 4)  # Both exact profiles, in both supplied orders.
+            self.assertFalse((home / "native-runner").exists())
+
+    def test_installer_preserves_asan_only_roles_and_keeps_manifest_gate(self):
+        import hashlib, json
+        import prepare_native_runner as install
+        from native_runner import policy_digest
+        stack, home, archive, archive_hash, reviewed, checksum, policy = self.recoverable_installation_fixture()
+        with stack:
+            a = policy["recoverable_activation"]
+            jobs = ["native_checks", "prepare_address", "address_shards"]
+            a["runners"]["elite-mbp-native"]["jobs"] = jobs
+            # Rehash the reviewed file but leave its old full-profile manifest digest: still refused.
+            reviewed.chmod(0o600)
+            reviewed.write_text(json.dumps(policy))
+            reviewed.chmod(0o400)
+            checksum = hashlib.sha256(reviewed.read_bytes()).hexdigest()
+            with self.assertRaisesRegex(ValueError, "manifest is inconsistent"):
+                install.prepare(SHA, archive, archive_hash, reviewed, checksum)
+            self.assertFalse((home / "native-runner").exists())
+            manifest = {k: a[k] for k in ("schema", "enabled", "revoked", "expires_at", "head",
+                        "workflow_sha256", "reusable_workflow_sha256", "runners", "assignment_root")}
+            manifest.update(ref="refs/heads/main", workflow_file="ci.yml")
+            a["manifest_sha256"] = policy_digest(manifest)
+            reviewed.chmod(0o600)
+            reviewed.write_text(json.dumps(policy))
+            reviewed.chmod(0o400)
+            checksum = hashlib.sha256(reviewed.read_bytes()).hexdigest()
+            actual = install.prepare(SHA, archive, archive_hash, reviewed, checksum)
+            installed = json.loads(actual.read_text())
+            self.assertEqual(installed, policy)
+            self.assertEqual(installed["recoverable_activation"]["runners"]["elite-mbp-native"]["jobs"], jobs)
+
     def test_installer_explicit_mode_installs_five_pins_and_preserves_legacy_and_immutable_mismatches(self):
         import hashlib
         import prepare_native_runner as install
