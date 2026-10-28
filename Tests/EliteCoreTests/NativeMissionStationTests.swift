@@ -8,7 +8,10 @@ struct NativeMissionStationTests {
   func restoringALivingStationUsesTheCurrentCanonicalIdentityWithoutAllocatingOrReusingCustody()
     throws
   {
+    let diagnostic = ASANAllocatorDiagnostic.begin(.livingStation)
+    defer { diagnostic?.checkpoint(.bodyExit) }
     var (game, _, _) = try actualMissionBridgeGame()
+    diagnostic?.checkpoint(.fixtureReady)
     game.persistScriptActors()
     let frame = try #require(game.scriptReferenceFrame)
     let anchors = try #require(game.commander.flightSimulation.anchors)
@@ -32,7 +35,10 @@ struct NativeMissionStationTests {
 
   @Test(arguments: ["player", "unallocated", "visit", "system"])
   func invalidDecodedAnchorCannotCreateAStationOrMutateAnyNativeState(field: String) throws {
+    let diagnostic = ASANAllocatorDiagnostic.begin(.invalidAnchor, argument: field)
+    defer { diagnostic?.checkpoint(.bodyExit) }
     var (game, _, _) = try actualMissionBridgeGame()
+    diagnostic?.checkpoint(.fixtureReady)
     game.persistScriptActors()
     game.bodies.removeAll { $0.id == 0 }
     let encoded = try JSONEncoder().encode(game.commander.flightSimulation)
@@ -65,7 +71,10 @@ struct NativeMissionStationTests {
   }
 
   @Test func anActualDeadStationCannotBeReplacedByAnOlderLivingReferenceFrame() throws {
+    let diagnostic = ASANAllocatorDiagnostic.begin(.deadStation)
+    defer { diagnostic?.checkpoint(.bodyExit) }
     var (game, _, _) = try actualMissionBridgeGame()
+    diagnostic?.checkpoint(.fixtureReady)
     game.persistScriptActors()
     let index = try #require(game.bodies.firstIndex { $0.id == 0 })
     try #require(game.scriptReferenceFrame?.station.energy ?? 0 > 0)

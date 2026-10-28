@@ -6,10 +6,14 @@ import Testing
 struct NativeSalvageAuthorityTests {
   @Test(arguments: ["owner", "hull", "epoch", "actor", "section", "source", "cycle"])
   func staleHotAuthorityRefusesWorkAndEveryColdFlushWithoutChangingCustody(change: String) throws {
+    let diagnostic = ASANAllocatorDiagnostic.begin(.staleSalvage, argument: change)
+    defer { diagnostic?.checkpoint(.bodyExit) }
     var (game, _) = try NativePagedSalvageFixture.game()
+    diagnostic?.checkpoint(.fixtureReady)
     let observedCutterResult = game.fireSalvageCutter(delta: 0.1)
     #expect(observedCutterResult)
     let original = try #require(game.nativeSalvageWork)
+    diagnostic?.checkpoint(.hotWorkReady)
     let body = try #require(game.bodies.first { $0.physical?.identity == original.actor })
     let source = original.plan.source
     var cycle = original.cycle
@@ -63,9 +67,11 @@ struct NativeSalvageAuthorityTests {
     #expect(!observedWreckFlush)
     #expect(game.commander == commander && game.energy == energy && game.laserHeat == heat)
     #expect(game.nativeSalvageWork?.cycle == stale.cycle)
+    diagnostic?.checkpoint(.preFinalFlush)
     game.nativeSalvageWork = original
     let observedWorkFlush2 = game.flushNativeSalvageWork()
     #expect(observedWorkFlush2)
+    diagnostic?.checkpoint(.finalFlushDone)
   }
 
   @Test func freshFactorySealsTheWholeOriginalLedgerAndNeverClampsExcessOldPartial() throws {
