@@ -441,3 +441,21 @@ class NormalLeaksOnlyCITests(unittest.TestCase):
             execute.return_value = 1
             with self.assertRaises(subprocess.CalledProcessError):
                 runner.run_hosted_phase('normal')
+
+    def test_framework_python_image_matches_only_its_own_runtime_prefix(self):
+        prefix = self.root / 'runtime'
+        launcher = prefix / 'bin/python3.12'
+        image = prefix / 'Resources/Python.app/Contents/MacOS/Python'
+        for file in (launcher, image):
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_bytes(b'fake interpreter image')
+        with patch.object(runner.sys, 'executable', str(launcher)), \
+                patch.object(runner.sys, 'base_prefix', str(prefix)), \
+                patch.object(runner.sys, 'platform', 'darwin'), \
+                patch.object(runner.sysconfig, 'get_config_var', return_value='Python'):
+            self.assertEqual(runner.controller_interpreters(), {launcher, image})
+            with patch.object(runner.sys, 'base_prefix', str(self.root / 'other-runtime')):
+                self.assertEqual(runner.controller_interpreters(), {launcher})
+            image.unlink()
+            image.symlink_to(launcher)
+            self.assertEqual(runner.controller_interpreters(), {launcher})

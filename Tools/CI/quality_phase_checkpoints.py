@@ -10,6 +10,7 @@ import re
 import shutil
 import shlex
 import sys
+import sysconfig
 import subprocess
 import time
 import uuid
@@ -323,6 +324,20 @@ def digest_identity(identity):
     return hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
 
 
+def controller_interpreters():
+    """Recognize this interpreter and its own macOS framework executable image."""
+    executable = Path(sys.executable).resolve()
+    allowed = {executable}
+    prefix = Path(sys.base_prefix).resolve()
+    framework = sysconfig.get_config_var('PYTHONFRAMEWORK')
+    if (sys.platform == 'darwin' and framework and executable.parent.parent == prefix
+            and executable.parent.name == 'bin'):
+        image = prefix / 'Resources' / (framework + '.app') / 'Contents/MacOS' / framework
+        if image.is_file() and not image.is_symlink() and image == image.resolve():
+            allowed.add(image)
+    return allowed
+
+
 def require_monitor_parent(args, authority):
     """Bind the private child to the still-live exact hosted phase wrapper."""
     import native_runner
@@ -333,7 +348,7 @@ def require_monitor_parent(args, authority):
     executable = shutil.which(argv[0]) if argv else None
     source = Path(__file__).resolve()
     script = (authority.root / argv[1]).resolve() if len(argv) > 1 else None
-    if (not executable or Path(executable).resolve() != Path(sys.executable).resolve()
+    if (not executable or Path(executable).resolve() not in controller_interpreters()
             or script != source or argv[2:] != [args.phase]
             or native_runner.custody_digest(row['start']) != args.monitor_parent_start
             or native_runner.custody_digest(row['command']) != args.monitor_parent_command
