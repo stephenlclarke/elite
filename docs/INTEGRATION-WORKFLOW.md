@@ -1,5 +1,17 @@
 # Integration and validation workflow
 
+## Current M01 execution — 28 October 2026
+
+This checkpoint supersedes the historical execution assignments below. G1 is the sole native operator. Finish the fresh local address and thread sanitizer campaigns serially on one final published source H, then the remaining real quality and release gates. Other workstreams remain held. The source-reviewed owned-local-components backend preserves each original local proof at its tested head and re-verifies both complete components in place before any intentional GitHub sanitizer-matrix skip can satisfy real quality.
+
+Actual CI target M must independently verify exact tree, all canonical inputs, profile and environment equivalence through the reviewed external binding. It runs normal coverage and zero-leak checks with its own real phase anchor and authority. Actual-main exact-SHA Sonar, the existing quality check and Actions application identity, final-head checks, clean review, protected merge and release-publisher gates remain required. Local components alone do not complete `make ci` or authorize publication. Do not fabricate check results, copy or relabel receipts, promote historical proof or bypass branch protections.
+
+Preserve full sanitizer instrumentation, assertions, inventory, normal test parallel policy and leak diagnostics. The build-only single-job/nonbatch profile and each mode or phase budget are separately bound. Each candidate allocation is 2 GiB worker plus 2 GiB reserve and remains unmeasured until actual qualification; retain owned monitoring and refusal. Final composition and pins, then actual policies and finite session bindings, must pass review before native preparation. Source clearance is not activation or a native pass.
+
+Freeze every tracked file before address preparation, including ledger and status documentation. Later progress belongs in durable external operator records. Any tracked tree drift invalidates the H/M equivalence and requires fresh qualification. The [current ledger](COMPLETION-LEDGER.md) records the frozen starting status, and the [bridge handoff](PR-m01-local-quality-bridge.md) describes the full gate.
+
+## Historical workflow decisions
+
 Human workflow decision recorded on 18 October 2026. Integration takes priority over documentation and coordination overhead.
 
 On 19 October the user explicitly made existing saves disposable and waived backward compatibility. Delivery targets one clean current L337 model; predecessor saves, content formats, internal APIs and namespaces need no migrations, aliases, adapters, compatibility defaults or historical-format tests solely to preserve old versions. Remove superseded compatibility work within the assigned implementation scope. Current-format round trips, validity, durable transactions, native gameplay and rejection of malformed current data remain required. Protect source/WIP, preferences, credentials and unrelated files; do not add snapshot, hash or process ceremony solely to preserve unused old player saves. Keep genuine runtime isolation and owned-process cleanup. A running validation invocation finishes unchanged before applying this policy to source or expectations.

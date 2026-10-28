@@ -1,6 +1,16 @@
 # L337 completion ledger
 
-Updated 24 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
+Updated 28 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
+
+## Current execution priority — 28 October 2026
+
+M01 remains incomplete. Finish fresh local AddressSanitizer and ThreadSanitizer qualification on the fixed host, then real normal coverage, zero-leak checks, final-head GitHub checks and review, protected merge, actual-main Sonar and usable release. Other workstreams remain held. This checkpoint supersedes the execution instructions below while preserving their historical evidence.
+
+The local sanitizer adapter, startup lease ordering and local thread profile have source clearance. Bridge commit `90d37e718478b80300f909c371a26d6cd79d245d` also passed independent source and gate review with no actionable findings; its 63 focused fake tests and static checks passed. These are source and fake results, not native qualification. Fresh local native passes are zero. Each local mode projects 200 shards and the full 3,403-method inventory; actual preparation must verify those counts. Each sanitizer mode and each normal/leak phase has its own explicitly bound candidate allocation of 2 GiB worker plus 2 GiB reserve. All four allocations remain unmeasured until actual qualification, with owned monitoring and refusal retained. Historical 9a, c15 and e731 evidence remains scoped to its original source and authority and is not promoted.
+
+Freeze every tracked source, tooling, workflow and status file into final published source H before fresh preparation. Original local proof retains H. The real PR/main CI target M must independently verify exact tree, complete inputs, profile and environment equivalence through the reviewed external binding. Both complete local components must pass verification before intentional GitHub sanitizer-matrix skips can satisfy real quality. Actual CI normal coverage, zero leaks, required checks, actual-main exact-SHA Sonar and release protections remain required. Local components alone do not complete full quality or authorize release.
+
+Final composition and helper pins, then actual operator policies and finite sessions, require review before native preparation. G1 remains the sole native operator and runs address mode before thread mode. After the final source freeze, record progress in durable external operator records; do not change tracked ledger or source files on the execution branch. See [the bridge requirement](ISSUE-m01-local-quality-bridge.md) and [implementation handoff](PR-m01-local-quality-bridge.md).
 
 ## Current execution checkpoint — 22 October, 14:23 UTC
 
