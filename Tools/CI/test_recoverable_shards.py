@@ -2834,5 +2834,449 @@ class AsanTestMemoryTests(Fixture):
                             shards.shard_identity(changed, plan["shards"][0]))
 
 
+class LocalSanitizerTests(Fixture):
+    def controls(self, mode="address", stage="execute", launches=1, extra_environment=None, separate_shards=False):
+        import uuid
+        directory = self.root / str(uuid.uuid4())
+        directory.mkdir(mode=0o700)
+        home, repo, controls = directory / "home", directory / "source", directory / "controls"
+        controls.mkdir(mode=0o700)
+        (repo / "Tools/CI").mkdir(parents=True, mode=0o700)
+        for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
+                     "quality_phase_checkpoints.py", "crash_artifacts.py"):
+            (repo / "Tools/CI" / name).write_bytes((Path(__file__).parent / name).read_bytes())
+        gib = 1024**3
+        config = dict(schema=1, host="AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA", cache=str(directory / "cache"),
+            legacy_cache=str(home / "Library/EliteNativeCI/sanitizer-checkpoints"), workers={"one": str(directory / "worker")},
+            admission=dict(explicit=1, cpu_budget=1, ram_capacity=20*gib, ram_reserve=2*gib,
+                peak_per_worker=(2 if mode == "address" else 4)*gib,
+                disk_capacity=100*gib, disk_reserve=10*gib, disk_per_worker=20*gib))
+        environment = {"PATH": "/fake/bin", "DEVELOPER_DIR": "/fixture/Xcode", "LANG": "C", **(extra_environment or {})}
+        policy = dict(approved_head=HEAD, developer_dir="/fixture/Xcode", swift="fake Swift", sdk="fake SDK",
+            recoverable_shards=config, local_activation=dict(schema=1, kind="local-sanitizer-activation-v1",
+                mode=mode, workspace=str(repo), sources={p.name: shards.legacy.digest(p) for p in (repo / "Tools/CI").iterdir()},
+                expires_at=10000, inventory_sha256=shards.fingerprint(METHODS), inventory_count=3,
+                shard_count=2 if separate_shards else 1,
+                environment=shards.legacy.runtime_identity(shards.runtime_child_environment(environment))))
+        policy_path = controls / "policy.json"
+        self.control_write(policy_path, policy)
+        policy_sha = shards.legacy.digest(policy_path)
+        child = shards.runtime_child_environment(environment)
+        child["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"] = shards.execution_policy_digest(config)
+        child[shards.LOCAL_POLICY_ENV] = policy_sha
+        phase_environment = dict(child)
+        if mode == "address":
+            child["ASAN_OPTIONS"] = "detect_leaks=0"
+        runtime = {**self.runtimes[mode], "host": config["host"], "environment": shards.legacy.runtime_identity(child),
+                   "phase_environment": shards.legacy.runtime_identity(phase_environment), "flags": shards.sanitizer_build_flags(mode)}
+        history = ({shards.fingerprint(unit): 600 for unit in shards.legacy.partition(METHODS, mode, 1)}
+                   if separate_shards else shards.workflow_history(METHODS, mode, []))
+        plan = shards.make_plan(runtime, METHODS, history=history, max_methods=64)
+        plan_path = directory / "plan.json"
+        shards.durable_json(plan_path, plan)
+        session = dict(schema=1, kind="local-sanitizer-session-v1", id=str(uuid.uuid4()), head=HEAD,
+            policy_sha256=policy_sha, mode=mode, worker="one", stage=stage, expires_at=9000,
+            shards=[row["id"] for row in plan["shards"]] if stage == "execute" else None,
+            plan_sha256=None if stage == "prepare" else shards.legacy.digest(plan_path),
+            max_launches=0 if stage == "validate" else launches)
+        session_path = controls / "session.json"
+        self.control_write(session_path, session)
+        session_sha = shards.legacy.digest(session_path)
+        state = session_path.with_name(session_path.name + ".state.json")
+        shards.durable_json(state, dict(schema=1, session_sha256=session_sha, used=0))
+        calls = []
+        def read(command, workspace, env, descriptors):
+            calls.append(command)
+            self.assertNotIn("gh", command)
+            if command[:3] == ["git", "rev-parse", "HEAD"]:
+                return HEAD
+            if command[:2] == ["git", "status"]:
+                return ""
+            if command[0] == "ioreg":
+                return '"IOPlatformUUID" = "' + config["host"] + '"'
+            if command[:2] == ["sysctl", "-n"]:
+                return "Mac14,12"
+            if command[0] == "/fake/swift":
+                return policy["swift"]
+            if command[0] == "xcrun":
+                return policy["sdk"]
+            raise AssertionError("Unexpected fake command: " + repr(command))
+        for item in (patch.object(shards, "__file__", str(repo / "Tools/CI/recoverable_shards.py")),
+                     patch.object(shards.time, "time", return_value=100),
+                     patch.object(shards.platform, "system", return_value="Darwin"),
+                     patch.object(shards.platform, "machine", return_value="arm64"),
+                     patch.object(shards.shutil, "which", return_value="/fake/swift"),
+                     patch.object(shards.subprocess, "Popen", side_effect=AssertionError("No real native spawn in local fakes")),
+                     patch.object(shards.subprocess, "run", side_effect=AssertionError("No real API/native command in local fakes")),
+                     patch.object(shards.subprocess, "check_output", side_effect=AssertionError("No real probe in local fakes")),
+                     patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(home)))):
+            item.start()
+            self.addCleanup(item.stop)
+        return SimpleNamespace(policy_path=policy_path, session_path=session_path, session_sha=session_sha,
+            policy=policy, session=session, state=state, plan=plan, plan_path=plan_path, environment=environment,
+            read=read, calls=calls, home=home)
+
+    @staticmethod
+    def control_write(path, value):
+        if path.exists():
+            path.chmod(0o600)
+        path.write_text(json.dumps(value))
+        path.chmod(0o400)
+
+    def authority(self, value):
+        return shards.LocalAuthority(value.policy_path, value.session_path, value.session_sha,
+            value.session["mode"], value.session["stage"], value.environment, value.read)
+
+    def fake_local_executor(self, authority, plan):
+        executor = FakeExecutor(authority.workers["one"], {plan["runtime"]["mode"]: plan["runtime"]})
+        executor.authority = authority
+        def execute(shard, attempt, timeout, descriptors):
+            authority.check_session("execute")
+            authority.consume_launch()
+            executor.calls += 1
+            for descriptor in descriptors:
+                os.fstat(descriptor)
+            shards.child_environment(attempt, authority.environment_for(plan["runtime"]["mode"]))
+            shards.durable_json(attempt / "child.json", {"pid": 4242, "command": ["fake"], "started": 100})
+            xml(attempt / "tests.xml", shard["methods"])
+            (attempt / "test.log").write_text("fake completed\n")
+            processes = {"running": False, "workspace": str(authority.workers["one"] / plan["runtime"]["mode"]),
+                "root": {"pid": 4242, "start": "fake start"},
+                "observed_images": {"fake": {"sha256": plan["runtime"]["image_sha256"], "uuid": plan["runtime"]["image_uuid"]}}}
+            if plan["runtime"]["mode"] == "address":
+                processes["resident_memory"] = dict(kind="sampled-owned-process-rss-v1", failure=None,
+                    helper_samples=1, samples=1, high_water_bytes=1024,
+                    budget_bytes=authority.config["admission"]["peak_per_worker"])
+            shards.durable_json(attempt / "processes.json", processes)
+            shards.durable_json(attempt / "child-exit.json", {"pid": 4242, "exit_code": 0})
+            return 0
+        executor.execute = execute
+        return executor
+
+    def args(self, value, command):
+        return SimpleNamespace(command=command, policy=value.policy_path, local_session=value.session_path,
+            local_session_digest=value.session_sha, mode=value.session["mode"], timeout=5,
+            input=value.plan_path, digest=shards.legacy.digest(value.plan_path),
+            output=value.plan_path.with_name("component"))
+
+    def test_both_modes_are_genuinely_local_with_independent_profiles_and_unchanged_flags(self):
+        for mode in shards.MODES:
+            value = self.controls(mode)
+            authority = self.authority(value)
+            shards.verify_local_plan(authority, value.plan, shards.legacy.digest(value.plan_path))
+            shards.validate_authorization(authority.authorization(), value.plan["runtime"])
+            child = authority.environment_for(mode)
+            self.assertFalse(any(k.startswith(("GITHUB_", "RUNNER_")) for k in child))
+            self.assertEqual("ASAN_OPTIONS" in child, mode == "address")
+            self.assertNotIn("TSAN_OPTIONS", child)
+            self.assertEqual(authority.config["admission"]["peak_per_worker"], (2 if mode == "address" else 4)*1024**3)
+            if mode == "thread":
+                self.assertEqual(value.plan["runtime"]["flags"], ["--scratch-path", ".build/tsan", "--sanitize=thread"])
+            self.assertFalse(any(c[0] == "gh" for c in value.calls))
+
+    def test_held_activation_and_supplied_github_identities_refuse_before_file_or_probe(self):
+        for environment in ({"GITHUB_JOB": "address_shards"}, {"RUNNER_NAME": "pretend"},
+                            {"ELITE_RECOVERABLE_CODE_ENABLED": "true"}, {shards.LOCAL_POLICY_ENV: "pretend"}):
+            with patch.object(shards, "local_control") as never, self.assertRaises(ValueError):
+                shards.LocalAuthority(Path("/missing"), Path("/missing-session"), "a"*64, "address", "execute", environment)
+            never.assert_not_called()
+
+        with patch.object(shards, "PHYSICAL_EXECUTION_ENABLED", False), patch.object(shards, "local_control") as never:
+            with self.assertRaisesRegex(ValueError, "HELD"):
+                shards.LocalAuthority(Path("/missing"), Path("/missing-session"), "a"*64, "thread", "execute", {})
+            never.assert_not_called()
+
+    def test_reviewed_tsan_options_are_bound_and_cross_mode_or_unreviewed_options_refuse(self):
+        value = self.controls("thread", extra_environment={"TSAN_OPTIONS": "halt_on_error=1"})
+        authority = self.authority(value)
+        self.assertEqual(authority.environment_for("thread")["TSAN_OPTIONS"], "halt_on_error=1")
+        value.calls.clear()
+        value.environment["TSAN_OPTIONS"] = "different unreviewed controls"
+        with self.assertRaisesRegex(ValueError, "mode environment"):
+            self.authority(value)
+        self.assertEqual(value.calls, [])
+        for mode, option in (("thread", "ASAN_OPTIONS"), ("address", "TSAN_OPTIONS")):
+            other = self.controls(mode, extra_environment={option: "cross-mode"})
+            with self.assertRaisesRegex(ValueError, "mode environment"):
+                self.authority(other)
+            self.assertEqual(other.calls, [])
+
+    def test_wrong_source_mode_policy_budget_or_expiry_refuses_before_probes(self):
+        for fault in ("head", "mode", "policy", "expiry", "budget", "missing-state", "source"):
+            value = self.controls()
+            if fault in ("head", "mode", "policy", "expiry"):
+                value.session[{"head": "head", "mode": "mode", "policy": "policy_sha256", "expiry": "expires_at"}[fault]] = {
+                    "head": "b"*40, "mode": "thread", "policy": "f"*64, "expiry": 99}[fault]
+                self.control_write(value.session_path, value.session)
+                value.session_sha = shards.legacy.digest(value.session_path)
+            elif fault == "budget":
+                shards.durable_json(value.state, {"schema": 1, "session_sha256": value.session_sha, "used": 257})
+            elif fault == "missing-state":
+                value.state.unlink()
+            else:
+                (Path(value.policy["local_activation"]["workspace"]) / "Tools/CI/crash_artifacts.py").write_text("# changed")
+            with self.subTest(fault=fault), self.assertRaises((ValueError, OSError)):
+                self.authority(value)
+            self.assertEqual(value.calls, [])
+
+    def test_symlink_writable_and_overlapping_controls_never_authorize(self):
+        value = self.controls()
+        for mode in (0o600, 0o444):
+            value.session_path.chmod(mode)
+            with self.assertRaises(ValueError):
+                self.authority(value)
+        value.session_path.chmod(0o400)
+        link = value.session_path.with_name("linked-session.json")
+        link.symlink_to(value.session_path)
+        with self.assertRaises(ValueError):
+            shards.LocalAuthority(value.policy_path, link, value.session_sha, "address", "execute", value.environment, value.read)
+        inside = Path(value.policy["local_activation"]["workspace"]) / "session.json"
+        self.control_write(inside, value.session)
+        with self.assertRaisesRegex(ValueError, "overlap"):
+            shards.LocalAuthority(value.policy_path, inside, value.session_sha, "address", "execute", value.environment, value.read)
+        self.assertEqual(value.calls, [])
+
+    def test_launch_budget_is_durable_missing_exhausted_or_changed_state_cannot_reset(self):
+        value = self.controls()
+        authority = self.authority(value)
+        authority.consume_launch()
+        self.assertEqual(shards.load_json(value.state)["used"], 1)
+        with self.assertRaisesRegex(ValueError, "exhausted"):
+            authority.consume_launch()
+        value.state.unlink()
+        with self.assertRaises(OSError):
+            authority.consume_launch()
+        self.assertFalse(value.state.exists())
+
+    def test_session_drift_and_mode_allocation_drift_refuse_reuse(self):
+        value = self.controls()
+        authority = self.authority(value)
+        changed = deepcopy(value.plan)
+        changed["runtime"]["environment"][shards.LOCAL_POLICY_ENV] = "f"*64
+        for plan, digest in ((changed, value.session["plan_sha256"]), (value.plan, "e"*64)):
+            with self.assertRaises(ValueError):
+                shards.verify_local_plan(authority, plan, digest)
+        value.policy["recoverable_shards"]["admission"]["peak_per_worker"] *= 2
+        self.control_write(value.policy_path, value.policy)
+        with self.assertRaises(ValueError):
+            authority.check_session()
+
+    def test_local_executor_consumes_budget_before_spawn_and_inherits_controller_descriptor(self):
+        value = self.controls()
+        authority = self.authority(value)
+        with shards.file_claim(value.home / "Library/EliteNativeCI/recoverable-control.lock") as control:
+            authority.control_descriptors = (control.fileno(),)
+            executor = shards.LocalExecutor(authority, "one")
+            def refused(*args):
+                self.assertEqual(shards.load_json(value.state)["used"], 1)
+                self.assertIn(control.fileno(), args[-1])
+                raise OSError("fake failed spawn")
+            with patch.object(shards.NativeExecutor, "execute", side_effect=refused):
+                with self.assertRaises(OSError):
+                    executor.execute(value.plan["shards"][0], self.root, 5, [])
+                with self.assertRaisesRegex(ValueError, "exhausted"):
+                    executor.execute(value.plan["shards"][0], self.root, 5, [])
+
+    def test_local_prepare_uses_existing_separate_build_discovery_and_actual_mode(self):
+        for mode in shards.MODES:
+            value = self.controls(mode, "prepare")
+            authority = self.authority(value)
+            args = self.args(value, "local-prepare")
+            args.output = value.plan_path.with_name("fresh-plan.json")
+            build = {"runtime": value.plan["runtime"], "inventory": METHODS, "shared_groups": []}
+            def build_only(m, t):
+                self.assertEqual((m, t), (mode, 5))
+                os.fstat(authority.control_descriptors[0])
+                with self.assertRaises(BlockingIOError), shards.file_claim(value.home / "Library/EliteNativeCI/recoverable-control.lock"):
+                    self.fail("The common controller lease must remain held during preparation")
+            builder = SimpleNamespace(build_only=build_only, prepare=lambda m, p: build)
+            with patch.object(shards, "LocalAuthority", return_value=authority), patch.object(shards, "NativeBuilder", return_value=builder):
+                result = shards.local_command(args)
+            self.assertEqual(result["plan_sha256"], shards.legacy.digest(args.output))
+            self.assertEqual(shards.load_json(value.state)["used"], 1)
+
+    def test_actual_builder_and_discovery_forward_local_controller_descriptor_both_modes(self):
+        fixture = AsanLowMemoryTests()
+        fixture.setUp()
+        self.addCleanup(fixture.doCleanups)
+        authority, builder, commands, queries = fixture.build_context()
+        fake_execute = shards.execute_process.side_effect
+        with shards.file_claim(self.root / "controller.lock") as control:
+            authority.control_descriptors = (control.fileno(),)
+            def execute(command, workspace, attempt, timeout, descriptors, *args, **kwargs):
+                self.assertIn(control.fileno(), descriptors)
+                self.assertEqual(len(descriptors), 2)
+                for descriptor in descriptors:
+                    os.fstat(descriptor)
+                return fake_execute(command, workspace, attempt, timeout, descriptors, *args, **kwargs)
+            with patch.object(shards, "execute_process", side_effect=execute) as observed:
+                for mode in shards.MODES:
+                    builder.build_only(mode, 5)
+                    with builder.preparation_claim():
+                        builder.build_and_discover(mode)
+            self.assertEqual(observed.call_count, 4)
+
+    def test_serial_local_run_and_exact_receipt_reuse_consume_no_extra_launches_both_modes(self):
+        for mode in shards.MODES:
+            value = self.controls(mode)
+            authority = self.authority(value)
+            executor = self.fake_local_executor(authority, value.plan)
+            admission = {**authority.config["admission"], "ram_available": 20*1024**3, "disk_available": 100*1024**3}
+            args = self.args(value, "local-run")
+            with patch.object(shards, "LocalAuthority", return_value=authority), patch.object(shards, "LocalExecutor", return_value=executor), patch.object(
+                    authority, "admission", return_value=admission), patch.object(shards.legacy, "progress"):
+                result = shards.local_command(args)
+                reused = shards.local_command(args)
+            self.assertEqual(len(result["results"]), 1)
+            self.assertTrue(reused["results"][0]["reused"])
+            self.assertEqual(executor.calls, 1)
+            self.assertEqual(shards.load_json(value.state)["used"], 1)
+
+    def test_local_authorization_cannot_substitute_mode_head_policy_plan_or_github_kind(self):
+        value = self.controls()
+        authority = self.authority(value)
+        record = authority.authorization()
+        for malformed in (None, [], "pretend"):
+            with self.assertRaises(ValueError):
+                shards.validate_authorization(malformed, value.plan["runtime"])
+        for field, replacement in (("head", "b"*40), ("mode", "thread"), ("policy_sha256", "f"*64),
+                                   ("kind", "validated-control-plane-v1"), ("authorized_at", 9000)):
+            altered = deepcopy(record)
+            altered[field] = replacement
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                shards.validate_authorization(altered, value.plan["runtime"])
+
+        for field, replacement in (("plan_sha256", "wrong"), ("max_launches", 0), ("stage", "prepare")):
+            altered = deepcopy(record)
+            altered["session"][field] = replacement
+            altered["session_content_sha256"] = shards.fingerprint(altered["session"])
+            with self.subTest(session_field=field), self.assertRaises(ValueError):
+                shards.validate_authorization(altered, value.plan["runtime"])
+
+    def test_owned_subset_qualification_does_not_launch_unassigned_shards_or_qualify_full_union(self):
+        value = self.controls(separate_shards=True)
+        selected = value.plan["shards"][-1]["id"]
+        value.session["shards"] = [selected]
+        self.control_write(value.session_path, value.session)
+        value.session_sha = shards.legacy.digest(value.session_path)
+        shards.durable_json(value.state, dict(schema=1, session_sha256=value.session_sha, used=0))
+        authority = self.authority(value)
+        executor = self.fake_local_executor(authority, value.plan)
+        admission = {**authority.config["admission"], "ram_available": 20*1024**3, "disk_available": 100*1024**3}
+        with patch.object(shards, "LocalAuthority", return_value=authority), patch.object(shards, "LocalExecutor", return_value=executor), patch.object(
+                authority, "admission", return_value=admission), patch.object(shards.legacy, "progress"):
+            result = shards.local_command(self.args(value, "local-run"))
+        self.assertEqual([r["id"] for r in result["results"]], [selected])
+        self.assertEqual(executor.calls, 1)
+        validation = self.validation_authority(value)
+        with patch.object(shards.NativeExecutor, "verify"), patch.object(shards.NativeExecutor, "unknown_live_helpers", return_value=False):
+            with self.assertRaisesRegex(ValueError, "missing/failed"):
+                shards.local_component(validation, value.plan, value.session["plan_sha256"], shards.Store(authority.cache),
+                                       value.plan_path.with_name("component"))
+        authority.session["shards"] = ["e"*64]
+        with self.assertRaisesRegex(ValueError, "outside the exact full plan"):
+            shards.verify_local_plan(authority, value.plan, value.session["plan_sha256"])
+        malformed = {**value.session, "shards": [selected, selected]}
+        with self.assertRaisesRegex(ValueError, "unique shard"):
+            shards.validate_local_session(malformed)
+
+    def validation_authority(self, value):
+        import uuid
+        current = SimpleNamespace(**vars(value))
+        current.session = {**value.session, "id": str(uuid.uuid4()), "stage": "validate", "max_launches": 0, "shards": None}
+        current.session_path = value.session_path.with_name("validate-session.json")
+        self.control_write(current.session_path, current.session)
+        current.session_sha = shards.legacy.digest(current.session_path)
+        current.state = current.session_path.with_name(current.session_path.name + ".state.json")
+        shards.durable_json(current.state, dict(schema=1, session_sha256=current.session_sha, used=0))
+        return self.authority(current)
+
+    def completed_local(self, mode="address"):
+        value = self.controls(mode)
+        authority = self.authority(value)
+        executor = self.fake_local_executor(authority, value.plan)
+        admission = {**authority.config["admission"], "ram_available": 20*1024**3, "disk_available": 100*1024**3}
+        store = shards.Store(authority.cache)
+        result = shards.run_shard(value.plan, value.plan["shards"][0]["id"], store, executor, HEAD, 5, admission)
+        return value, authority, store, Path(result["attempt"])
+
+    def test_component_gates_both_full_mode_unions_and_seals_only_component_qualification(self):
+        for mode in shards.MODES:
+            value, authority, store, attempt = self.completed_local(mode)
+            validation = self.validation_authority(value)
+            output = value.plan_path.with_name("component")
+            args = self.args(value, "local-validate")
+            args.local_session, args.local_session_digest = validation.session_path, validation.session_digest
+            with patch.object(shards, "LocalAuthority", return_value=validation), patch.object(shards.NativeExecutor, "verify") as verify, patch.object(
+                    shards.NativeExecutor, "unknown_live_helpers", return_value=False):
+                result = shards.local_command(args)
+            verify.assert_called_once_with(value.plan["runtime"])
+            self.assertEqual(result["status"], "qualified")
+            self.assertEqual(result["inventory_count"], 3)
+            self.assertEqual(result["inventory_sha256"], shards.fingerprint(METHODS))
+            self.assertEqual(result["mode"], mode)
+            self.assertIn("pending full quality", result["release_status"])
+            self.assertEqual(result["sampled_rss_high_water_bytes"], 1024 if mode == "address" else None)
+            shards.require_sealed(output)
+            with self.assertRaises(ValueError), patch.object(shards.NativeExecutor, "verify"), patch.object(
+                    shards.NativeExecutor, "unknown_live_helpers", return_value=False):
+                shards.local_component(validation, value.plan, value.session["plan_sha256"], store, output)
+
+    def test_component_rejects_missing_tampered_diagnostics_and_unknown_lifecycle(self):
+        value = self.controls()
+        validation = self.validation_authority(value)
+        store = shards.Store(validation.cache)
+        output = value.plan_path.with_name("component")
+        with patch.object(shards.NativeExecutor, "verify"), patch.object(shards.NativeExecutor, "unknown_live_helpers", return_value=False):
+            with self.assertRaisesRegex(ValueError, "missing/failed"):
+                shards.local_component(validation, value.plan, value.session["plan_sha256"], store, output)
+        self.assertFalse(output.exists())
+        for mutation in ("tamper", "unknown"):
+            value, authority, store, attempt = self.completed_local()
+            validation = self.validation_authority(value)
+            if mutation == "tamper":
+                (attempt / "test.log").chmod(0o600)
+                (attempt / "test.log").write_text("ERROR: AddressSanitizer: fake deliberate diagnostic\n")
+                (attempt / "test.log").chmod(0o400)
+            with patch.object(shards.NativeExecutor, "verify"), patch.object(
+                    shards.NativeExecutor, "unknown_live_helpers", return_value=mutation == "unknown"):
+                with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                    shards.local_component(validation, value.plan, value.session["plan_sha256"], store,
+                                           value.plan_path.with_name("component"))
+
+    def test_component_rejects_internally_committed_bad_rss_image_and_plan_evidence(self):
+        for mutation in ("rss-missing", "rss-over", "rss-zero", "image", "running", "plan"):
+            value, authority, store, attempt = self.completed_local()
+            validation = self.validation_authority(value)
+            attempt.chmod(0o700)
+            processes = shards.load_json(attempt / "processes.json")
+            if mutation == "rss-missing":
+                processes.pop("resident_memory")
+            elif mutation == "rss-over":
+                processes["resident_memory"]["high_water_bytes"] = processes["resident_memory"]["budget_bytes"] + 1
+            elif mutation == "rss-zero":
+                processes["resident_memory"]["helper_samples"] = 0
+            elif mutation == "image":
+                processes["observed_images"]["fake"]["uuid"] = "wrong image"
+            elif mutation == "running":
+                processes["running"] = True
+            else:
+                authorization = shards.load_json(attempt / "authorization.json")
+                authorization["session"]["plan_sha256"] = "e"*64
+                authorization["session_content_sha256"] = shards.fingerprint(authorization["session"])
+                shards.durable_json(attempt / "authorization.json", authorization)
+            shards.durable_json(attempt / "processes.json", processes)
+            # Simulate a source bug that sealed internally consistent but insufficient raw evidence.
+            receipt = shards.load_json(attempt / "result.json")
+            receipt["outputs"] = shards.evidence_outputs(attempt, value.plan["runtime"], METHODS)
+            shards.durable_json(attempt / "result.json", receipt)
+            shards.durable_json(attempt / "commit.json", {"schema": 1, "receipt_sha256": shards.legacy.digest(attempt / "result.json")})
+            shards.seal(attempt)
+            with patch.object(shards.NativeExecutor, "verify"), patch.object(shards.NativeExecutor, "unknown_live_helpers", return_value=False):
+                with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                    shards.local_component(validation, value.plan, value.session["plan_sha256"], store,
+                                           value.plan_path.with_name("component"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -77,6 +77,8 @@ def require_fields(value, names):
 
 
 def validate_authorization(record, runtime):
+    if isinstance(record, dict) and record.get("kind") == "validated-local-sanitizer-v1":
+        return validate_local_authorization(record, runtime)
     require_fields(record, ("schema", "kind", "head", "host", "role", "run_id", "run_attempt", "mode", "shard",
                             "worker", "phase", "workflow_sha256", "plan_sha256", "instance", "workspace",
                             "policy_sha256", "execution_policy_sha256", "controls"))
@@ -411,6 +413,12 @@ def evidence_outputs(attempt, runtime, methods):
         validate_authorization(authorization, runtime)
         if authorization["head"] != load_json(attempt / "start.json")["tested_head"]:
             raise ValueError("Authorized source and actual attempt head differ")
+        if authorization["kind"] == "validated-local-sanitizer-v1" and not (
+                authorization["authorized_at"] <= child["started"] < authorization["session"]["expires_at"]):
+            raise ValueError("Native child started outside its local authorization window")
+        if (authorization["kind"] == "validated-local-sanitizer-v1"
+                and fingerprint(load_json(attempt / "start.json")["identity"]) not in authorization["session"]["shards"]):
+            raise ValueError("Native child selection is outside its exact local shard assignment")
     return {name: digest for name, digest in entries.items()
             if name not in ("result.json", "commit.json")}
 
@@ -1353,6 +1361,10 @@ class NativeAuthority:
         native_runner.require_recoverable_checkout(self.policy, self.environment, self.root)
         if policy_path.is_relative_to(self.root):
             raise ValueError("Repository content cannot authorize native execution")
+        self.configure_storage()
+
+    def configure_storage(self):
+        """Retain the same disjoint owned storage and committed controller checks."""
         self.config = self.policy["recoverable_shards"]
         required = {"schema", "host", "cache", "legacy_cache", "workers", "admission"}
         if not required <= set(self.config) or set(self.config) - required - {"planning"}:
@@ -1509,6 +1521,215 @@ class NativeAuthority:
                 "policy": POLICY, "opt_in_policy": legacy.opt_in_policy(workspace, environment)}
 
 
+LOCAL_POLICY_ENV = "ELITE_RECOVERABLE_LOCAL_POLICY_SHA256"
+LOCAL_SESSION_FIELDS = {"schema", "kind", "id", "head", "policy_sha256", "mode", "worker", "stage", "shards",
+                        "expires_at", "plan_sha256", "max_launches"}
+
+
+def local_control(path):
+    path = Path(path)
+    if not path.is_absolute() or path != path.resolve():
+        raise ValueError("Local control must be an absolute physical path")
+    native_runner.require_owned_activation_file(path)
+    if path.stat().st_mode & 0o777 != 0o400:
+        raise ValueError("Local control must be immutable and owned")
+    return load_json(path)
+
+
+def validate_local_session(session):
+    require_fields(session, LOCAL_SESSION_FIELDS)
+    if (type(session["schema"]) is not int or session["schema"] != SCHEMA
+            or session["kind"] != "local-sanitizer-session-v1"
+            or not isinstance(session["id"], str)
+            or str(uuid.UUID(session["id"])) != session["id"]
+            or not re.fullmatch(r"[0-9a-f]{40}", session["head"])
+            or not re.fullmatch(r"[0-9a-f]{64}", session["policy_sha256"])
+            or session["mode"] not in MODES or session["worker"] != "one"
+            or session["stage"] not in ("prepare", "execute", "validate")
+            or type(session["max_launches"]) is not int
+            or not 0 <= session["max_launches"] <= 256):
+        raise ValueError("Invalid local sanitizer session")
+    positive(session["expires_at"])
+    if session["stage"] == "prepare":
+        if session["plan_sha256"] is not None or session["max_launches"] != 1 or session["shards"] is not None:
+            raise ValueError("Local preparation requires one bounded unplanned session")
+    elif (not re.fullmatch(r"[0-9a-f]{64}", session["plan_sha256"] or "")
+          or (session["stage"] == "execute" and session["max_launches"] < 1)
+          or (session["stage"] == "validate" and session["max_launches"] != 0)):
+        raise ValueError("Local execution/validation requires its exact plan and launch budget")
+    if session["stage"] == "execute":
+        if (not isinstance(session["shards"], list) or not 1 <= len(session["shards"]) <= 256
+                or any(not isinstance(shard, str) or not re.fullmatch(r"[0-9a-f]{64}", shard) for shard in session["shards"])
+                or len(set(session["shards"])) != len(session["shards"])):
+            raise ValueError("Local execution requires an exact unique shard assignment")
+    elif session["shards"] is not None:
+        raise ValueError("Preparation/validation cannot carry a partial shard assignment")
+
+
+def validate_local_authorization(record, runtime):
+    require_fields(record, ("schema", "kind", "head", "host", "mode", "workspace", "policy_sha256",
+                            "execution_policy_sha256", "authorized_at", "session", "session_content_sha256"))
+    session = record["session"]
+    validate_local_session(session)
+    positive(record["authorized_at"])
+    if any(not re.fullmatch(r"[0-9a-f]{64}", record[name] or "")
+           for name in ("policy_sha256", "execution_policy_sha256", "session_content_sha256")):
+        raise ValueError("Local authorization hashes are incomplete")
+    if (type(record["schema"]) is not int or record["schema"] != SCHEMA
+            or record["kind"] != "validated-local-sanitizer-v1"
+            or record["host"] != runtime["host"] or record["mode"] != runtime["mode"]
+            or session["mode"] != record["mode"] or session["head"] != record["head"]
+            or session["stage"] != "execute" or session["policy_sha256"] != record["policy_sha256"]
+            or fingerprint(session) != record["session_content_sha256"]
+            or hashlib.sha256(record["policy_sha256"].encode()).hexdigest() != runtime["environment"].get(LOCAL_POLICY_ENV)
+            or hashlib.sha256(record["execution_policy_sha256"].encode()).hexdigest() != runtime["environment"].get(
+                "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256")
+            or not Path(record["workspace"]).is_absolute()
+            or not 0 < record["authorized_at"] < session["expires_at"]):
+        raise ValueError("Local authorization differs from the actual source/mode/profile")
+
+
+class LocalAuthority(NativeAuthority):
+    """A genuine local, finite sanitizer approval; never a simulated Actions job."""
+    def __init__(self, policy_path, session_path, session_digest, mode, stage, environment=None, read=native_output):
+        import pwd
+        require_physical_activation()  # Before control-file reads or any native/resource probe.
+        self.environment = dict(os.environ if environment is None else environment)
+        if any(name.startswith(("GITHUB_", "RUNNER_")) or name in AUTHORIZATION_CONTROLS
+               or name in ("ELITE_NATIVE_POLICY", "ELITE_NATIVE_APPROVED_HEAD", LOCAL_POLICY_ENV,
+                           "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256")
+               for name in self.environment):
+            raise ValueError("Local sanitizer execution refuses GitHub or supplied authorization identities")
+        self.read, self.policy_path, self.session_path = read, Path(policy_path), Path(session_path)
+        self.policy = local_control(self.policy_path)
+        require_fields(self.policy, ("approved_head", "developer_dir", "swift", "sdk", "recoverable_shards", "local_activation"))
+        self.policy_sha256, self.session_digest = legacy.digest(self.policy_path), session_digest
+        self.activation = self.policy["local_activation"]
+        require_fields(self.activation, ("schema", "kind", "mode", "workspace", "sources", "expires_at",
+                                        "inventory_sha256", "inventory_count", "shard_count", "environment"))
+        current = time.time()
+        if (type(self.activation["schema"]) is not int or self.activation["schema"] != SCHEMA
+                or self.activation["kind"] != "local-sanitizer-activation-v1"
+                or mode not in MODES or self.activation["mode"] != mode
+                or not re.fullmatch(r"[0-9a-f]{40}", self.policy["approved_head"])
+                or not re.fullmatch(r"[0-9a-f]{64}", self.activation["inventory_sha256"])
+                or type(self.activation["inventory_count"]) is not int or self.activation["inventory_count"] < 1
+                or type(self.activation["shard_count"]) is not int or not 1 <= self.activation["shard_count"] <= 256
+                or type(self.activation["expires_at"]) not in (int, float)
+                or not current < self.activation["expires_at"] <= current + 7*86400):
+            raise ValueError("Local mode/source/inventory/finite activation differs")
+        if (self.activation["environment"] != legacy.runtime_identity(runtime_child_environment(self.environment))
+                or (mode == "thread" and "ASAN_OPTIONS" in self.environment)
+                or (mode == "address" and "TSAN_OPTIONS" in self.environment)):
+            raise ValueError("Local mode environment differs from its independently reviewed profile")
+        self.root = Path(self.activation["workspace"])
+        if (not self.root.is_absolute() or self.root != self.root.resolve()
+                or Path(__file__).resolve() != self.root / "Tools/CI/recoverable_shards.py"):
+            raise ValueError("Local controller must execute its exact reviewed physical source")
+        self.config = self.policy["recoverable_shards"]
+        self.physical_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+        if self.config.get("legacy_cache") != str(self.physical_home / "Library/EliteNativeCI/sanitizer-checkpoints"):
+            raise ValueError("Local modes must share the existing physical executor lease")
+        if (set(self.config.get("workers", {})) != {"one"}
+                or self.config.get("admission", {}).get("explicit") != 1
+                or self.config.get("admission", {}).get("cpu_budget") != 1):
+            raise ValueError("Local sanitizers reserve exactly one serial worker")
+        bounds = self.config["admission"]
+        require_fields(bounds, ("explicit", "cpu_budget", "ram_capacity", "ram_reserve", "peak_per_worker",
+                                "disk_capacity", "disk_reserve", "disk_per_worker"))
+        worker_limit(**bounds, ram_available=bounds["ram_capacity"], disk_available=bounds["disk_capacity"])
+        spaces = [self.root, *(Path(self.config[k]) for k in ("cache", "legacy_cache")),
+                  *(Path(p) for p in self.config["workers"].values())]
+        if any(control.is_relative_to(space) or space.is_relative_to(control.parent)
+               for control in (self.policy_path, self.session_path) for space in spaces):
+            raise ValueError("Local controls overlap mutable execution data")
+        helpers = {"native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
+                   "quality_phase_checkpoints.py", "crash_artifacts.py"}
+        if set(self.activation["sources"]) != helpers:
+            raise ValueError("Local approval requires all five source pins")
+        for name, digest in self.activation["sources"].items():
+            source = self.root / "Tools/CI" / name
+            native_runner.require_owned_activation_file(source)
+            if source.is_symlink() or legacy.digest(source) != digest:
+                raise ValueError("Local approved helper source changed")
+        self.check_session(stage)
+        self.budget_state()  # A missing counter cannot silently create a fresh launch allowance.
+        if (platform.system() != "Darwin" or platform.machine() != "arm64"
+                or self.environment.get("DEVELOPER_DIR") != self.policy["developer_dir"]):
+            raise ValueError("Local sanitizers require the reviewed physical Apple Silicon toolchain")
+        if self.output(["sysctl", "-n", "hw.model"]).startswith("VirtualMac"):
+            raise ValueError("Local sanitizers cannot execute on a VM")
+        self.host()
+        swift = shutil.which("swift", path=self.environment.get("PATH"))
+        if (not swift or self.output([swift, "--version"]) != self.policy["swift"]
+                or self.output(["xcrun", "--sdk", "macosx", "--show-sdk-version"]) != self.policy["sdk"]):
+            raise ValueError("Local compiler/SDK differs from the reviewed profile")
+        self.configure_storage()
+
+    def check_session(self, stage=None):
+        local_control(self.policy_path)
+        session = local_control(self.session_path)
+        validate_local_session(session)
+        if (not re.fullmatch(r"[0-9a-f]{64}", self.session_digest or "")
+                or legacy.digest(self.session_path) != self.session_digest
+                or legacy.digest(self.policy_path) != self.policy_sha256
+                or session["policy_sha256"] != self.policy_sha256
+                or session["head"] != self.policy["approved_head"] or session["mode"] != self.activation["mode"]
+                or (stage is not None and session["stage"] != stage)
+                or not time.time() < session["expires_at"] <= self.activation["expires_at"]):
+            raise ValueError("Local source/mode/policy/session stage or expiry changed")
+        self.session = session
+        return session
+
+    def budget_state(self):
+        path = self.session_path.with_name(self.session_path.name + ".state.json")
+        native_runner.require_owned_activation_file(path)
+        if path.stat().st_mode & 0o777 != 0o600:
+            raise ValueError("Local session budget must be an owned mutable file")
+        state = load_json(path)
+        require_fields(state, ("schema", "session_sha256", "used"))
+        if (type(state["schema"]) is not int or state["schema"] != SCHEMA
+                or state["session_sha256"] != self.session_digest or type(state["used"]) is not int
+                or not 0 <= state["used"] <= self.session["max_launches"]):
+            raise ValueError("Local session launch budget changed")
+        return path, state
+
+    def consume_launch(self):
+        with claim(self.session_path.parent / "claims", "local-session:" + self.session_digest):
+            self.check_session()
+            path, state = self.budget_state()
+            if state["used"] >= self.session["max_launches"]:
+                raise ValueError("Local session launch budget exhausted")
+            durable_json(path, {**state, "used": state["used"] + 1})
+
+    def execution_environment(self):
+        value = super().execution_environment()
+        value[LOCAL_POLICY_ENV] = self.policy_sha256
+        return value
+
+    def output(self, command, workspace=None, environment=None, descriptors=()):
+        return super().output(command, workspace, environment,
+                              (*descriptors, *getattr(self, "control_descriptors", ())))
+
+    def authorization(self):
+        self.check_session()
+        return {"schema": SCHEMA, "kind": "validated-local-sanitizer-v1", "head": self.policy["approved_head"],
+                "host": self.config["host"], "mode": self.activation["mode"], "workspace": str(self.root),
+                "policy_sha256": self.policy_sha256, "execution_policy_sha256": execution_policy_digest(self.config),
+                "authorized_at": time.time(), "session": self.session,
+                "session_content_sha256": fingerprint(self.session)}
+
+    def runtime(self, workspace, mode, image, flags, inputs=None):
+        self.check_session()
+        if mode != self.activation["mode"]:
+            raise ValueError("Local runtime mode is outside its independently reviewed allocation")
+        return super().runtime(workspace, mode, image, flags, inputs)
+
+    def admission(self):
+        self.check_session()
+        return super().admission()
+
+
 def copy_build_tree(source, destination):
     """SwiftPM's internal relative links are allowed; links escaping the frozen tree are not."""
     for directory, names, files in os.walk(source, followlinks=False):
@@ -1650,7 +1871,8 @@ class NativeBuilder:
             command = [swift, "build", "--build-tests", *flags]
             durable_json(report / "launch.json", {"head": self.authority.policy["approved_head"], "mode": mode,
                                                   "command": command, "authorization": self.authority.authorization()})
-            code = execute_process(command, root, report, timeout, [self.lock.fileno()], env,
+            code = execute_process(command, root, report, timeout,
+                                   [self.lock.fileno(), *getattr(self.authority, "control_descriptors", ())], env,
                                    NativeMonitor(self.authority, report, root), isolate_environment=False)
             if code != 0:
                 raise ValueError("Mode build failed or timed out; raw attempt retained: " + str(report))
@@ -1690,7 +1912,8 @@ class NativeBuilder:
                 raise ValueError("Build/discovery checkpoint runtime changed")
             # Discovery cannot compile; the completed build step owns that execution.
             code = execute_process([swift, "test", *flags, "list", "--skip-build"], root, report, 300,
-                                   [self.lock.fileno()], env, NativeMonitor(self.authority, report, root),
+                                   [self.lock.fileno(), *getattr(self.authority, "control_descriptors", ())], env,
+                                   NativeMonitor(self.authority, report, root),
                                    isolate_environment=False)
             if code != 0:
                 raise ValueError("Discovery failed or exceeded five minutes; raw attempt retained")
@@ -2031,6 +2254,14 @@ class NativeExecutor:
         if self.unknown_live_helpers() or not monitor.observed or monitor.errors:
             return code or 126
         return code
+
+
+class LocalExecutor(NativeExecutor):
+    def execute(self, shard, attempt, timeout, descriptors):
+        self.authority.check_session("execute")
+        self.authority.consume_launch()  # Never refund a failed/uncertain spawn or reset a missing counter.
+        return super().execute(shard, attempt, timeout,
+                               [*descriptors, *self.authority.control_descriptors])
 
 
 class NativePhaseRunner:
@@ -2721,12 +2952,148 @@ class NativeWorkflow:
         return {"status": "failed" if candidates else "missing"}
 
 
+def verify_local_plan(authority, plan, digest=None):
+    validate_plan(plan)
+    activation = authority.activation
+    if (plan["runtime"]["mode"] != activation["mode"]
+            or fingerprint(plan["inventory"]) != activation["inventory_sha256"]
+            or len(plan["inventory"]) != activation["inventory_count"]
+            or len(plan["shards"]) != activation["shard_count"]
+            or plan["runtime"]["environment"].get(LOCAL_POLICY_ENV) != hashlib.sha256(
+                authority.policy_sha256.encode()).hexdigest()
+            or (digest is not None and digest != authority.session["plan_sha256"])):
+        raise ValueError("Local plan differs from its mode/source/profile/full-inventory approval")
+    if authority.session["stage"] == "execute" and not set(authority.session["shards"]) <= {row["id"] for row in plan["shards"]}:
+        raise ValueError("Local assigned shards are outside the exact full plan")
+
+
+def local_component(authority, plan, digest, store, output):
+    """Validate a full local sanitizer component; never manufacture a full quality/release pass."""
+    authority.check_session("validate")
+    if not output.is_absolute() or output != output.resolve() or output.is_relative_to(authority.root) or output.exists():
+        raise ValueError("Local component output must be fresh, physical and outside source")
+    verify_local_plan(authority, plan, digest)
+    executor = NativeExecutor(authority, "one")
+    executor.verify(plan["runtime"])
+    if executor.unknown_live_helpers():
+        raise ValueError("Unknown live native helpers block local component qualification")
+    receipts, actual, maxima = {}, [], []
+    for shard in plan["shards"]:
+        found = store.matching(shard_identity(plan["runtime"], shard))
+        if found is None:
+            raise ValueError("Local component has a missing/failed/incomplete shard: " + shard["id"])
+        attempt, receipt = found
+        authorization = load_json(attempt / "authorization.json")
+        if (authorization["kind"] != "validated-local-sanitizer-v1"
+                or authorization["session"]["plan_sha256"] != digest
+                or authorization["policy_sha256"] != authority.policy_sha256
+                or receipt["tested_head"] != authority.policy["approved_head"]):
+            raise ValueError("Local component contains proof from another plan/source/profile")
+        processes = load_json(attempt / "processes.json")
+        expected_image = {"sha256": plan["runtime"]["image_sha256"], "uuid": plan["runtime"]["image_uuid"]}
+        child = load_json(attempt / "child.json")
+        if (processes.get("running") is not False
+                or expected_image not in processes.get("observed_images", {}).values()
+                or processes.get("workspace") != str(authority.workers["one"] / plan["runtime"]["mode"])
+                or processes.get("root", {}).get("pid") != child["pid"]
+                or not processes.get("root", {}).get("start")):
+            raise ValueError("Local component process/image terminal proof is incomplete")
+        if plan["runtime"]["mode"] == "address":
+            memory = processes.get("resident_memory", {})
+            if (memory.get("kind") != "sampled-owned-process-rss-v1" or memory.get("failure") is not None
+                    or type(memory.get("helper_samples")) is not int or memory["helper_samples"] < 1
+                    or type(memory.get("samples")) is not int or memory["samples"] < memory["helper_samples"]
+                    or type(memory.get("high_water_bytes")) is not int or memory["high_water_bytes"] < 0
+                    or memory.get("budget_bytes") != authority.config["admission"]["peak_per_worker"]
+                    or memory["high_water_bytes"] > memory["budget_bytes"]):
+                raise ValueError("Local ASAN component lacks successful resident-budget evidence")
+            maxima.append(memory["high_water_bytes"])
+        receipts[shard["id"]] = {"path": str(attempt), "sha256": legacy.digest(attempt / "result.json")}
+        actual.extend(receipt["identity"]["methods"])
+    if Counter(actual) != Counter(plan["inventory"]):
+        raise ValueError("Local sanitizer component inventory is not exactly once")
+    result = {"schema": SCHEMA, "kind": "local-sanitizer-component-v1", "status": "qualified",
+              "head": authority.policy["approved_head"], "mode": plan["runtime"]["mode"],
+              "plan_sha256": digest, "policy_sha256": authority.policy_sha256,
+              "runtime_sha256": fingerprint(plan["runtime"]), "inventory_sha256": fingerprint(sorted(actual)),
+              "inventory_count": len(actual), "receipts": receipts,
+              "sampled_rss_high_water_bytes": max(maxima) if maxima else None,
+              "release_status": "pending full quality, coverage, leaks, other mode, main analysis and release gates"}
+    authority.check_session("validate")
+    if output.exists():
+        raise ValueError("Local component output already exists")
+    legacy.owned_directory(output)
+    durable_json(output / "component.json", result)
+    durable_json(output / "commit.json", {"sha256": legacy.digest(output / "component.json")})
+    seal(output)
+    return result
+
+
+def local_command(args):
+    stage = {"local-prepare": "prepare", "local-run": "execute", "local-validate": "validate"}[args.command]
+    if not args.policy or not args.local_session or not args.local_session_digest or args.mode not in MODES:
+        raise ValueError("Local operations require an owned policy/session, separate digest and exact mode")
+    if not 0 < positive(args.timeout) <= SHARD_MAX_SECONDS:
+        raise ValueError("Local sanitizer operations retain the two-hour shard bound")
+    authority = LocalAuthority(args.policy, args.local_session, args.local_session_digest, args.mode, stage)
+    # Fixed physical-owner storage, shared by both modes regardless of their separate policy/cache paths.
+    serial_root = authority.physical_home / "Library/EliteNativeCI"
+    legacy.owned_directory(serial_root)
+    with file_claim(serial_root / "recoverable-control.lock") as control:
+        authority.control_descriptors = (control.fileno(),)
+        authority.check_session(stage)
+        if stage == "prepare":
+            if (args.output is None or not args.output.is_absolute() or args.output != args.output.resolve()
+                    or args.output.is_relative_to(authority.root) or args.output.exists()):
+                raise ValueError("Local preparation requires a fresh physical plan output outside source")
+            legacy.owned_directory(args.output.parent)
+            authority.consume_launch()
+            destination = authority.cache / "builds" / authority.policy["approved_head"] / args.mode
+            builder = NativeBuilder(authority)
+            builder.build_only(args.mode, args.timeout)
+            build = builder.prepare(args.mode, destination)
+            hints = authority.config.get("planning", {}).get(args.mode, {})
+            plan = make_plan(build["runtime"], build["inventory"], build["shared_groups"],
+                workflow_history(build["inventory"], args.mode, build["shared_groups"], hints.get("history")),
+                hints.get("resources"), hints.get("budget_seconds", 600), max_methods=PACKED_ID_TARGET)
+            verify_local_plan(authority, plan)
+            authority.check_session("prepare")
+            durable_json(args.output, plan)
+            return {"plan_sha256": legacy.digest(args.output)}
+        if args.input is None or not args.digest:
+            raise ValueError("Local execution/validation requires its separately approved plan and digest")
+        plan = trusted_json(args.input, args.digest)
+        verify_local_plan(authority, plan, args.digest)
+        store = Store(authority.cache)
+        if stage == "validate":
+            if args.output is None:
+                raise ValueError("Local validation requires a fresh component output")
+            return local_component(authority, plan, args.digest, store, args.output)
+        executor = LocalExecutor(authority, "one")
+        results = []
+        for shard in plan["shards"]:
+            if shard["id"] not in authority.session["shards"]:
+                continue
+            observation = report_progress(plan, store, "starting local shard", shard)
+            executor.progress_context = {"validated_shards_completed": observation["completed"],
+                                         "shards_total": observation["total"]}
+            try:
+                results.append(run_shard(plan, shard["id"], store, executor, authority.policy["approved_head"],
+                                         args.timeout, authority.admission()))
+            except BaseException:
+                report_progress(plan, store, "local shard failed or interrupted", shard)
+                raise
+            report_progress(plan, store, "local shard completed or reused", shard)
+        return {"status": "assigned shards executed; explicit full local validation still required", "results": results}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("plan", "prepare", "worker", "pool", "export", "restore",
                                              "phase", "aggregate", "workflow-prepare", "workflow-load",
                                              "workflow-run", "workflow-build", "workflow-build-export", "workflow-checks", "workflow-checks-export", "workflow-phase", "workflow-export",
-                                             "workflow-phase-export", "workflow-aggregate"))
+                                             "workflow-phase-export", "workflow-aggregate",
+                                             "local-prepare", "local-run", "local-validate"))
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--digest")
@@ -2743,7 +3110,14 @@ def main():
     parser.add_argument("--artifact-id", type=int)
     parser.add_argument("--archive-digest")
     parser.add_argument("--include-failures", action="store_true")
+    parser.add_argument("--local-session", type=Path)
+    parser.add_argument("--local-session-digest")
     args = parser.parse_args()
+    if args.command.startswith("local-"):
+        legacy.progress(json.dumps(local_command(args)))
+        return
+    if args.local_session is not None or args.local_session_digest is not None:
+        parser.error("Local sessions cannot authorize GitHub or legacy commands")
     if args.command == "plan":
         if args.input is None or args.output is None:
             parser.error("plan requires --input and --output")
