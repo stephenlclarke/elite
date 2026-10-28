@@ -123,6 +123,7 @@ import Testing
     let wheel = try #require(SalvageCatalogue.profile(catalogueShipID: "SH141"))
     #expect(wheel.bounds.radius > 0)
     try expectActivatedOriginalTexturesAndHaflingerScale(diagnostic: diagnostic)
+    try expectDisabledProfileMeshesMatchResolvedRecords()
   }
 
   private func expectSameMesh(_ actual: Mesh, as expected: Mesh) {
@@ -164,6 +165,29 @@ import Testing
     expectSameMesh(cached, as: physical.physicalMesh)
     expectSameMesh(disabled.mesh, as: authored)
     diagnostic?.checkpoint(.haflingerDone, argument: "SH061")
+  }
+
+  private func expectDisabledProfileMeshesMatchResolvedRecords() throws {
+    for ship in ShipCatalogue.all
+    where SalvageCatalogue.profile(catalogueShipID: ship.id) == nil {
+      guard ship.game != nil else {
+        #expect(SalvageCatalogue.empProfile(catalogueShipID: ship.id) == nil)
+        continue
+      }
+      let profile = try #require(SalvageCatalogue.empProfile(catalogueShipID: ship.id))
+      let expected = ship.design.rawMesh
+      #expect(profile.catalogueShipID == ship.id)
+      #expect(profile.role == .disabledOrdinaryShip && profile.physicalScale == 1)
+      expectSameMesh(profile.mesh, as: expected)
+      guard ship.id != "SH061" else { continue }
+      let cached = try #require(ShipCatalogue.rawMesh(ship.id))
+      let sharesVertices = profile.mesh.vertices.withUnsafeBufferPointer { profileVertices in
+        cached.vertices.withUnsafeBufferPointer { cachedVertices in
+          !profileVertices.isEmpty && profileVertices.baseAddress == cachedVertices.baseAddress
+        }
+      }
+      #expect(sharesVertices)
+    }
   }
 
   @Test func workSurfaceIDsArePersistentAndTechnologyMetadataResolvesEveryCategory() throws {

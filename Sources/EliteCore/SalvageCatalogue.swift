@@ -231,7 +231,14 @@ public enum SalvageCatalogue {
   private static func makeProfile(_ entry: Entry) -> SalvageProfile? {
     guard let ship = ShipCatalogue.all.first(where: { $0.id == entry.id }) else { return nil }
     // previewMesh is showroom-normalised; native wreck geometry must use authoritative raw vertices.
-    let mesh = ship.design.rawMesh
+    let mesh: Mesh
+    if entry.role == .disabledOrdinaryShip, entry.id != "SH061",
+      let retained = ShipCatalogue.rawMesh(entry.id)
+    {
+      mesh = retained
+    } else {
+      mesh = ship.design.rawMesh
+    }
     guard !mesh.vertices.isEmpty else { return nil }
     let minimum = Vector3(
       mesh.vertices.map(\.x).min()!, mesh.vertices.map(\.y).min()!, mesh.vertices.map(\.z).min()!)
