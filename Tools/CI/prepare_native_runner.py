@@ -2,6 +2,7 @@
 
 import argparse
 from contextlib import contextmanager
+from contextvars import ContextVar
 import fcntl
 import hashlib
 import json
@@ -16,8 +17,10 @@ import tarfile
 import time
 import uuid
 
+import native_runner
+
 ROOT = Path(__file__).resolve().parents[2]
-HOME_ROOT = Path.home() / "Library/EliteNativeCI"
+HOME_ROOT = native_runner.diagnostic_custody_root().parent
 RUNNER = HOME_ROOT / "native-runner"
 AUTHORIZATION_ROOT = Path.home() / "Library/EliteNativeAuthorization"
 DEVELOPER = "/Applications/Xcode.app/Contents/Developer"
@@ -25,6 +28,7 @@ DEVELOPER = "/Applications/Xcode.app/Contents/Developer"
 
 def output(*args: str, environment: dict) -> str:
     """Capture non-secret tool identities without shell interpretation."""
+    _require_provisioning(executor=True)
     return subprocess.check_output(args, cwd=ROOT, env=environment, text=True,
                                    stderr=subprocess.PIPE).strip()
 
@@ -41,7 +45,7 @@ def ensure_owned_directory(path: Path) -> None:
         raise ValueError("Runner trust directory must be owned and not publicly writable.")
 
 
-def prepare(approved: str, archive: Path, archive_hash: str, reviewed_policy=None, policy_sha256=None, registered=False) -> Path:
+def _prepare_locked(approved: str, archive: Path, archive_hash: str, reviewed_policy=None, policy_sha256=None, registered=False) -> Path:
     """Install only a verified runner archive and reviewed guard into dedicated owned paths."""
     if not re.fullmatch(r"[0-9a-f]{40}", approved):
         raise ValueError("Invalid approved source identity.")
@@ -149,6 +153,16 @@ def prepare(approved: str, archive: Path, archive_hash: str, reviewed_policy=Non
     return policy
 
 
+def prepare(approved: str, archive: Path, archive_hash: str, reviewed_policy=None, policy_sha256=None, registered=False) -> Path:
+    """Acquire common custody before the first source/tool probe or installation."""
+    with recoverable_control(), quiescent_legacy():
+        if registered:
+            if reviewed_policy is None:
+                raise ValueError("A caller flag cannot authorize an existing registration.")
+            _registered_slot_proof(owned_json(reviewed_policy))
+        return _prepare_locked(approved, archive, archive_hash, reviewed_policy, policy_sha256, registered)
+
+
 def verify_installed_archive(root: Path, archive: Path) -> None:
     """Bind every reused archive file/link to the verified installation, not just its marker."""
     with tarfile.open(archive) as source:
@@ -174,8 +188,9 @@ def verify_installed_archive(root: Path, archive: Path) -> None:
                 raise ValueError("Runner archive has an unsupported member kind.")
 
 
-def register_and_run(run: bool, runner_name="elite-mbp-native", deadline=None, descriptors=()) -> None:
+def _register_locked(runner_name="elite-mbp-native", deadline=None, descriptors=()) -> None:
     """Use one repository registration token without printing or persisting it ourselves."""
+    _require_provisioning(executor=True)
     def bounds():
         if deadline is None:
             return {}
@@ -198,10 +213,25 @@ def register_and_run(run: bool, runner_name="elite-mbp-native", deadline=None, d
     if configured.returncode:
         raise ValueError("Ephemeral runner registration failed.")
     print("Ephemeral native runner registered with its host-owned exact-head hook.")
-    if run:
-        completed = subprocess.run([str(RUNNER / "run.sh"), "--once"], cwd=RUNNER, env=environment)
-        if completed.returncode:
-            raise ValueError("Ephemeral runner process failed.")
+
+
+def register_and_run(run: bool, runner_name="elite-mbp-native", deadline=None, descriptors=()) -> None:
+    """Configure under both leases, then release executor custody before listening."""
+    with recoverable_control() as control:
+        if run and _require_provisioning().executor is not None:
+            raise ValueError("A listener cannot inherit a parent-held executor lease.")
+        with quiescent_legacy():
+            _register_locked(runner_name, deadline, (*descriptors, control.fileno()))
+        if run:
+            _require_provisioning()
+            remaining = None if deadline is None else deadline - time.time()
+            if remaining is not None and remaining <= 0:
+                raise ValueError("Registration deadline expired before listening.")
+            completed = subprocess.run([str(RUNNER / "run.sh"), "--once"], cwd=RUNNER,
+                env={**{key: value for key, value in os.environ.items() if key not in ("GH_TOKEN", "GITHUB_TOKEN")},
+                     "DEVELOPER_DIR": DEVELOPER}, pass_fds=(control.fileno(),), timeout=remaining)
+            if completed.returncode:
+                raise ValueError("Ephemeral runner process failed.")
 
 
 
@@ -327,29 +357,89 @@ def reviewed_recoverable_policy(path, checksum, base):
     return value
 
 
+_PROVISIONING = ContextVar("native_provisioning_custody", default=None)
+_PROVISIONING_SEAL = object()
+
+
+class _ProvisioningCustody:
+    def __init__(self, lock, witness, seal):
+        if seal is not _PROVISIONING_SEAL:
+            raise ValueError("Untrusted provisioning custody.")
+        self.lock, self.controller = lock, witness
+        self.executor, self.executor_path = None, None
+
+
+def _require_provisioning(executor=False):
+    custody = _PROVISIONING.get()
+    if not isinstance(custody, _ProvisioningCustody):
+        raise ValueError("Provisioning requires witnessed controller custody.")
+    custody.controller.verify()
+    if executor:
+        if custody.executor is None:
+            raise ValueError("Provisioning requires witnessed executor custody.")
+        custody.executor.verify()
+    native_runner.require_diagnostic_custody_clear()
+    return custody
+
+
+def _operator_only():
+    # These entrypoints take controller custody. Actual NativeAuthority jobs do not.
+    job_keys = {"GITHUB_JOB", "GITHUB_RUN_ID", "GITHUB_WORKFLOW_REF"}
+    if (os.environ.get("GITHUB_ACTIONS") == "true" or job_keys.intersection(os.environ)
+            or any(key.startswith("RUNNER_") for key in os.environ)):
+        raise ValueError("Controller-needing provisioning is ineligible inside a listener job.")
+
+
 @contextmanager
 def recoverable_control():
-    """Serialize installation/renewal; the owned listener inherits this lease."""
+    """Reuse only a live in-process acquisition; the listener retains controller custody."""
+    _operator_only()
+    if _PROVISIONING.get() is not None:
+        yield _require_provisioning().lock
+        return
     ensure_owned_directory(HOME_ROOT)
     path = HOME_ROOT / "recoverable-control.lock"
     descriptor = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "a") as lock:
-        if os.fstat(lock.fileno()).st_uid != os.getuid() or os.fstat(lock.fileno()).st_mode & 0o022:
+        info = os.fstat(lock.fileno())
+        if path != path.resolve() or info.st_uid != os.getuid() or info.st_mode & 0o022:
             raise ValueError("Recoverable control lease is foreign.")
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        yield lock
+        with native_runner._diagnostic_lease_context(lock, "controller") as witness:
+            token = _PROVISIONING.set(_ProvisioningCustody(lock, witness, _PROVISIONING_SEAL))
+            try:
+                _require_provisioning()
+                yield lock
+            finally:
+                _PROVISIONING.reset(token)
 
 
 @contextmanager
-def quiescent_legacy(policy):
-    """Check the existing native executor lease; never create a substitute lock."""
-    path = Path(policy["recoverable_shards"]["legacy_cache"]) / "executor.lock"
+def quiescent_legacy(policy=None):
+    """Use the existing physical shared executor, always after controller acquisition."""
+    custody = _require_provisioning()
+    path = HOME_ROOT / "sanitizer-checkpoints/executor.lock"
+    if policy is not None and Path(policy["recoverable_shards"]["legacy_cache"]) / "executor.lock" != path:
+        raise ValueError("Reviewed provisioning must use the common physical executor lease.")
+    if custody.executor is not None:
+        if custody.executor_path != path:
+            raise ValueError("Nested executor custody differs.")
+        _require_provisioning(executor=True)
+        yield
+        return
     descriptor = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
     with os.fdopen(descriptor, "a") as lock:
-        if os.fstat(lock.fileno()).st_uid != os.getuid() or os.fstat(lock.fileno()).st_mode & 0o022:
+        info = os.fstat(lock.fileno())
+        if path != path.resolve() or info.st_uid != os.getuid() or info.st_mode & 0o022:
             raise ValueError("Existing physical executor lease is foreign.")
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        yield
+        with native_runner._diagnostic_lease_context(lock, "executor") as witness:
+            custody.executor, custody.executor_path = witness, path
+            try:
+                _require_provisioning(executor=True)
+                yield
+            finally:
+                custody.executor = custody.executor_path = None
 
 
 def session_hook(policy_path, guard_path):
@@ -370,6 +460,7 @@ def require_registration(policy):
 
 def session_run_active(policy, binding):
     """Read only this exact approved run; a new attempt requires a new session."""
+    _require_provisioning()
     result = subprocess.run(["gh", "api", "repos/stephenlclarke/elite/actions/runs/" + binding["run_id"]],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
                             timeout=min(60, max(1, binding["expires_at"] - time.time())))
@@ -393,7 +484,7 @@ def session_run_active(policy, binding):
     return True
 
 
-def renew_recoverable(policy_path, run_id, attempt, maximum, expires, register, listen, lock):
+def _renew_locked(policy_path, run_id, attempt, maximum, expires, register, listen, lock):
     """Consume a finite durable slot before registration; preserve ambiguous listeners."""
     from native_runner import policy_digest
     policy = owned_json(policy_path)
@@ -424,7 +515,9 @@ def renew_recoverable(policy_path, run_id, attempt, maximum, expires, register, 
     if state["phase"] == "running":
         raise ValueError("Listener outcome is unresolved; preserve it and do not renew.")
     while time.time() < expires:
-        if not session_run_active(policy, binding):
+        with quiescent_legacy(policy):
+            active = session_run_active(policy, binding)
+        if not active:
             return {"used": state["used"], "reason": "workflow completed"}
         if state["phase"] != "registered":
             if not register or state["used"] >= maximum:
@@ -445,7 +538,8 @@ def renew_recoverable(policy_path, run_id, attempt, maximum, expires, register, 
                     raise ValueError("Registration outcome is unresolved; no renewal authorized.") from None
             state["phase"] = "registered"
             publish_json(state_path, state)
-        require_registration(policy)
+        with quiescent_legacy(policy):
+            _registered_slot_proof(policy)
         if not listen:
             return {"used": state["used"], "reason": "registered only"}
         state["phase"] = "running"
@@ -467,10 +561,13 @@ def renew_recoverable(policy_path, run_id, attempt, maximum, expires, register, 
                 break
             except subprocess.TimeoutExpired:
                 if not session_run_active(policy, binding):
-                    # Signal only our unreaped listener, never a native helper or process group.
+                    # Signal only our unreaped listener, within this session, never a native helper/group.
+                    remaining = expires - time.time()
+                    if remaining <= 0:
+                        raise ValueError("Session expired with unresolved listener; no signal authorized.")
                     process.send_signal(signal.SIGINT)
                     try:
-                        process.wait(timeout=30)
+                        process.wait(timeout=min(30, remaining))
                     except subprocess.TimeoutExpired:
                         raise ValueError("Completed-run listener did not stop; no renewal authorized.") from None
                     state["phase"] = "stopped"
@@ -483,6 +580,45 @@ def renew_recoverable(policy_path, run_id, attempt, maximum, expires, register, 
         if not register:
             return {"used": state["used"], "reason": "registered slot completed"}
     return {"used": state["used"], "reason": "session expired"}
+
+
+def renew_recoverable(policy_path, run_id, attempt, maximum, expires, register, listen, lock=None):
+    """Direct and nested renewal share the same actual controller acquisition."""
+    with recoverable_control() as held:
+        if lock is not None and lock is not held:
+            raise ValueError("A supplied descriptor is not controller custody.")
+        return _renew_locked(policy_path, run_id, attempt, maximum, expires, register, listen, held)
+
+
+def _registered_slot_proof(policy):
+    """Bind existing registration to the current immutable ticket and finite consumed slot."""
+    from native_runner import policy_digest, require_owned_activation_file
+    root = HOME_ROOT / "recoverable-sessions"
+    ticket = owned_json(root / "ticket.json")
+    if set(ticket) != {"binding", "binding_sha256", "ordinal", "policy_sha256"}:
+        raise ValueError("Existing registration lacks an exact issued ticket.")
+    path = Path(ticket["binding"])
+    binding = owned_json(path)
+    state_path = path.with_suffix(".state")
+    require_owned_activation_file(state_path)
+    state = json.loads(state_path.read_text())
+    if (set(binding) != {"schema", "policy_sha256", "head", "run_id", "run_attempt", "max_jobs", "expires_at"}
+            or type(binding["schema"]) is not int or binding["schema"] != 1
+            or type(ticket["ordinal"]) is not int or binding["policy_sha256"] != policy_digest(policy)
+            or binding["head"] != policy["approved_head"] or path.parent != root
+            or path.name != policy_digest(policy) + "-" + binding["run_id"] + "-" + binding["run_attempt"] + ".json"
+            or not re.fullmatch(r"[1-9][0-9]*", binding["run_id"])
+            or not re.fullmatch(r"[1-9][0-9]*", binding["run_attempt"])
+            or type(binding["max_jobs"]) is not int or not 1 <= binding["max_jobs"] <= 256
+            or type(binding["expires_at"]) not in (int, float) or not math.isfinite(binding["expires_at"])
+            or not time.time() < binding["expires_at"] <= policy["recoverable_activation"]["expires_at"]
+            or set(state) != {"used", "phase"} or state["phase"] != "registered"
+            or type(state["used"]) is not int or not 1 <= state["used"] <= binding["max_jobs"]
+            or state_path.stat().st_mode & 0o777 != 0o600
+            or ticket != {"binding": str(path), "binding_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                          "ordinal": state["used"], "policy_sha256": policy_digest(policy)}):
+        raise ValueError("Existing registration/session/budget is not the current issued slot.")
+    require_registration(policy)
 
 
 def registered_session_slot(policy, args):

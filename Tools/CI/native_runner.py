@@ -2,6 +2,7 @@
 
 import argparse
 import base64
+from contextlib import contextmanager
 import hashlib
 import json
 import math
@@ -22,6 +23,243 @@ LOCAL_COMPONENTS_BACKEND = "owned-local-components-v1"
 GITHUB_BACKEND = "github-artifacts-v1"
 LOCAL_COMPONENT_ROLES = {"native_checks", "prepare_address", "native_local_components", "native_phase", "native_aggregate"}
 PHASE_BUILD_PROFILE = "jobs1-nonbatch-v1"
+
+CUSTODY_KIND = "owned-diagnostic-custody-v1"
+_CUSTODY_SEAL = object()
+
+
+def diagnostic_custody_root():
+    """No environment variable or checkout can redirect the physical shared guard."""
+    import pwd
+    return Path(pwd.getpwuid(os.getuid()).pw_dir) / "Library/EliteNativeCI/diagnostic-custody"
+
+
+def _custody_json(path, immutable=False):
+    path = Path(path)
+    if not path.is_absolute() or path != path.resolve() or path.is_symlink():
+        raise ValueError("Diagnostic custody path is not physical")
+    require_owned_activation_file(path)
+    info = path.lstat()
+    if (not path.is_file() or info.st_uid != os.getuid()
+            or info.st_mode & 0o777 != (0o400 if immutable else 0o600)
+            or info.st_size > 1024 * 1024):
+        raise ValueError("Diagnostic custody material is missing, foreign or malformed")
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("Duplicate custody field")
+            result[key] = value
+        return result
+    with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), "r") as stream:
+        opened = os.fstat(stream.fileno())
+        if (opened.st_dev, opened.st_ino, opened.st_uid, opened.st_mode, opened.st_size) != (
+                info.st_dev, info.st_ino, info.st_uid, info.st_mode, info.st_size):
+            raise ValueError("Diagnostic custody file changed while opening")
+        return json.load(stream, object_pairs_hook=unique,
+                         parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+
+
+def custody_digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                     allow_nan=False).encode()).hexdigest()
+
+
+def diagnostic_custody_registry():
+    """Missing state is not an empty registry; bootstrap is a separate reviewed operation."""
+    root = diagnostic_custody_root()
+    if (root != root.resolve() or root.is_symlink() or not root.is_dir()
+            or root.stat().st_uid != os.getuid() or root.stat().st_mode & 0o777 != 0o700):
+        raise ValueError("Shared diagnostic custody registry requires reviewed initialization")
+    value = _custody_json(root / "registry.json")
+    if (not isinstance(value, dict) or set(value) != {"schema", "kind", "generation", "records"}
+            or value["schema"] != 1 or type(value["schema"]) is not int or value["kind"] != CUSTODY_KIND
+            or type(value["generation"]) is not int or value["generation"] < 0
+            or not isinstance(value["records"], dict)):
+        raise ValueError("Invalid diagnostic custody registry")
+    fields = {"nonce", "attempt", "source_head", "policy_sha256", "session_sha256", "controller",
+              "identities", "state", "phase", "launches", "deadline", "last_verified", "terminal", "intents", "target"}
+    for nonce, record in value["records"].items():
+        if (not isinstance(record, dict) or set(record) != fields or record["nonce"] != nonce
+                or not isinstance(nonce, str) or not re.fullmatch(r"[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}", nonce)
+                or record["state"] not in ("ACTIVE", "UNKNOWN", "CLEAN")
+                or record["phase"] not in ("timed", "custody-only", "terminal")
+                or record["launches"] != 1 or type(record["launches"]) is not int
+                or not isinstance(record["source_head"], str) or not re.fullmatch(r"[0-9a-f]{40}", record["source_head"])
+                or any(not isinstance(record[key], str) or not re.fullmatch(r"[0-9a-f]{64}", record[key])
+                       for key in ("policy_sha256", "session_sha256"))
+                or not isinstance(record["attempt"], str) or not Path(record["attempt"]).is_absolute()
+                or type(record["deadline"]) not in (int, float) or not math.isfinite(record["deadline"])
+                or record["deadline"] <= 0 or not isinstance(record["controller"], dict)
+                or not isinstance(record["identities"], list) or not isinstance(record["intents"], list)):
+            raise ValueError("Invalid registered diagnostic custody record")
+        controller = record["controller"]
+        if (set(controller) != {"pid", "start", "command", "image", "image_sha256", "source_sha256"}
+                or type(controller["pid"]) is not int or controller["pid"] <= 0
+                or any(not isinstance(controller[key], str) or not controller[key]
+                       for key in ("start", "command", "image"))
+                or any(not isinstance(controller[key], str) or not re.fullmatch(r"[0-9a-f]{64}", controller[key])
+                       for key in ("image_sha256", "source_sha256"))):
+            raise ValueError("Invalid custody controller binding")
+        seen = set()
+        for identity in record["identities"]:
+            if (not isinstance(identity, dict)
+                    or set(identity) != {"pid", "parent", "group", "start", "command", "role"}
+                    or type(identity["pid"]) is not int or identity["pid"] <= 0 or identity["pid"] in seen
+                    or any(type(identity[key]) is not int or identity[key] < 0 for key in ("parent", "group"))
+                    or any(not isinstance(identity[key], str) or not identity[key] for key in ("start", "command"))
+                    or identity["role"] not in ("controller", "worker", "vmmap", "support")):
+                raise ValueError("Invalid or duplicate custody identity")
+            seen.add(identity["pid"])
+        roots = [row for row in record["identities"] if row["role"] == "controller"]
+        if (len(roots) != 1 or any(roots[0][key] != controller[key] for key in ("pid", "start", "command"))
+                or not Path(controller["image"]).is_absolute()):
+            raise ValueError("Custody lacks its exact sole controller identity")
+        target = record["target"]
+        if target is not None and (not isinstance(target, dict)
+                or set(target) != {"pid", "parent", "group", "start", "command", "role", "image", "image_sha256", "image_uuid"}
+                or target["role"] != "worker" or not isinstance(target["image"], str)
+                or not Path(target["image"]).is_absolute()
+                or any(not isinstance(target[key], str) or not re.fullmatch(r"[0-9a-f]{64}", target[key])
+                       for key in ("image_sha256", "image_uuid"))
+                or not any(all(target[key] == row[key] for key in ("pid", "start", "command", "role"))
+                           for row in record["identities"])):
+            raise ValueError("Invalid captured helper image/UUID identity binding")
+        if record["state"] == "CLEAN":
+            terminal = record["terminal"]
+            expected = [row for row in record["identities"] if row["role"] != "controller"]
+            if (record["phase"] != "terminal" or not isinstance(terminal, dict)
+                    or set(terminal) != {"absent", "reaped", "time"}
+                    or terminal["absent"] != expected or terminal["reaped"] is not True
+                    or type(terminal["time"]) not in (int, float) or not math.isfinite(terminal["time"])
+                    or not 0 <= terminal["time"] <= record["deadline"]
+                    or any(not isinstance(intent, dict) or intent.get("state") not in ("reaped", "not-launched")
+                           for intent in record["intents"])):
+                raise ValueError("Diagnostic CLEAN lacks bounded terminal proof")
+        elif record["terminal"] is not None:
+            raise ValueError("Unresolved diagnostic cannot claim terminal cleanup")
+        if record["state"] == "UNKNOWN" and record["phase"] != "custody-only":
+            raise ValueError("UNKNOWN cannot claim continued timed monitoring")
+        if record["state"] == "ACTIVE" and record["phase"] != "timed":
+            raise ValueError("ACTIVE requires its original timed phase")
+        sample = record["last_verified"]
+        if sample is not None and (not isinstance(sample, dict)
+                or set(sample) != {"time", "worker_bytes", "union_bytes", "roles", "status"}
+                or sample["status"] != "last-verified"
+                or type(sample["time"]) not in (int, float) or not math.isfinite(sample["time"])
+                or any(type(sample[key]) is not int or sample[key] < 0 for key in ("worker_bytes", "union_bytes"))
+                or not isinstance(sample["roles"], dict)
+                or set(sample["roles"]) != {"controller", "worker", "vmmap", "support"}
+                or any(type(n) is not int or n < 0 for n in sample["roles"].values())
+                or sample["union_bytes"] != sum(sample["roles"].values())
+                or sample["worker_bytes"] != sample["roles"]["worker"]
+                or not 0 <= sample["time"] <= record["deadline"]):
+            raise ValueError("Invalid last-verified diagnostic sample")
+        for intent in record["intents"]:
+            if (not isinstance(intent, dict) or set(intent) != {"role", "argv", "pid", "state"}
+                    or intent["role"] not in ("worker", "vmmap", "support")
+                    or intent["state"] not in ("planned", "spawned", "reaped", "not-launched")
+                    or not isinstance(intent["argv"], list) or not intent["argv"]
+                    or any(not isinstance(arg, str) or not arg for arg in intent["argv"])
+                    or (intent["pid"] is not None and (type(intent["pid"]) is not int or intent["pid"] <= 0))
+                    or (intent["state"] in ("spawned", "reaped")) != (intent["pid"] is not None)):
+                raise ValueError("Invalid registered diagnostic spawn intent")
+    return value
+
+
+def diagnostic_resolution(record):
+    """Only immutable, reviewed, exact terminal material resolves a persistent record."""
+    root = diagnostic_custody_root()
+    path = root / "resolutions" / (record["nonce"] + ".json")
+    if not path.exists() and not path.is_symlink():
+        return False
+    value = _custody_json(path, immutable=True)
+    keys = {"schema", "kind", "nonce", "attempt", "record_sha256", "source_head", "policy_sha256",
+            "session_sha256", "controller", "identities", "target", "evidence", "review"}
+    if (not isinstance(value, dict) or set(value) != keys or value["schema"] != 1
+            or type(value["schema"]) is not int
+            or value["kind"] != "reviewed-diagnostic-custody-resolution-v1"
+            or value["record_sha256"] != custody_digest(record)
+            or any(value[key] != record[key] for key in ("nonce", "attempt", "source_head", "policy_sha256",
+                                                        "session_sha256", "controller", "identities", "target"))):
+        raise ValueError("Resolution does not bind the current exact custody record")
+    materials = {}
+    for key in ("evidence", "review"):
+        descriptor = value[key]
+        if (not isinstance(descriptor, dict) or set(descriptor) != {"path", "sha256"}
+                or not isinstance(descriptor["path"], str)
+                or not Path(descriptor["path"]).is_absolute()
+                or not isinstance(descriptor["sha256"], str)
+                or not re.fullmatch(r"[0-9a-f]{64}", descriptor["sha256"])):
+            raise ValueError("Resolution requires separately bound reviewed material")
+        materials[key] = _custody_json(Path(descriptor["path"]), immutable=True)
+        if hashlib.sha256(Path(descriptor["path"]).read_bytes()).hexdigest() != descriptor["sha256"]:
+            raise ValueError("Resolution material changed")
+    evidence, review = materials["evidence"], materials["review"]
+    if not isinstance(evidence, dict) or not isinstance(review, dict):
+        raise ValueError("Malformed resolution evidence/review")
+    absent = [row for row in record["identities"] if row["role"] != "controller"]
+    expected_evidence = {"schema": 1, "kind": "diagnostic-terminal-absence-v1", "nonce": record["nonce"],
+                     "record_sha256": custody_digest(record), "identities": record["identities"],
+                     "absent": absent, "target": record["target"], "intents": record["intents"], "unobserved_spawns_resolved": True,
+                     "direct_children_reaped": True, "controller_absent": evidence.get("controller_absent")}
+    if (type(evidence.get("schema")) is not int or type(review.get("schema")) is not int
+            or not isinstance(evidence.get("controller_absent"), bool)
+            or (record["state"] == "ACTIVE" and evidence["controller_absent"] is not True)
+            or evidence != expected_evidence
+            or review != {"schema": 1, "kind": "diagnostic-custody-resolution-review-v1",
+                          "nonce": record["nonce"], "record_sha256": custody_digest(record),
+                          "evidence_sha256": value["evidence"]["sha256"], "approved": True}):
+        raise ValueError("Missing exact reviewed terminal/absence evidence")
+    return True
+
+
+def require_diagnostic_custody_clear():
+    """Every ordinary admission refuses unresolved custody, including a dead owner."""
+    registry = diagnostic_custody_registry()
+    for record in registry["records"].values():
+        if record["state"] != "CLEAN" and not diagnostic_resolution(record):
+            raise ValueError("INCOMPLETE/UNKNOWN diagnostic custody blocks admission")
+
+
+class _DiagnosticLease:
+    """Minted by the actual lock-acquisition context, never by a supplied fd number."""
+    def __init__(self, lock, role, seal):
+        if seal is not _CUSTODY_SEAL or role not in ("controller", "executor", "reservation"):
+            raise ValueError("Untrusted lease witness")
+        self.lock, self.role, self.fd = lock, role, lock.fileno()
+        self.duplicate = os.dup(self.fd)
+        self.identity = os.fstat(self.fd)
+        self.active, self.owner = True, os.getpid()
+
+    def verify(self):
+        if not self.active or self.owner != os.getpid() or self.lock.closed or self.lock.fileno() != self.fd:
+            raise ValueError("Lease lifetime ended")
+        info = os.fstat(self.fd)
+        if (info.st_dev, info.st_ino) != (self.identity.st_dev, self.identity.st_ino):
+            raise ValueError("Lease descriptor was replaced")
+        # A reopened same-inode fd is not the original open file description.
+        position = os.lseek(self.duplicate, 0, os.SEEK_CUR)
+        challenge = (time.monotonic_ns() & 0x3fffffff) + 1
+        try:
+            os.lseek(self.duplicate, challenge, os.SEEK_SET)
+            if os.lseek(self.fd, 0, os.SEEK_CUR) != challenge:
+                raise ValueError("Lease descriptor was closed/reused")
+        finally:
+            os.lseek(self.duplicate, position, os.SEEK_SET)
+
+    def revoke(self):
+        self.active = False
+        os.close(self.duplicate)
+
+
+@contextmanager
+def _diagnostic_lease_context(lock, role):
+    witness = _DiagnosticLease(lock, role, _CUSTODY_SEAL)
+    try:
+        yield witness
+    finally:
+        witness.revoke()
 
 
 def workflow_path(environment: dict) -> str:
@@ -317,6 +555,7 @@ def load_recoverable_guard(policy: dict):
 
 def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None, guard=None, now=None) -> dict:
     """Pre-job hook: authenticate GitHub source/plan, then issue one owned run-attempt assignment."""
+    require_diagnostic_custody_clear()
     current = time.time() if now is None else now
     activation, value = policy["recoverable_activation"], dict(environment)
     value.update(ELITE_RECOVERABLE_POLICY_SHA256=policy_digest(policy),
@@ -488,6 +727,7 @@ def require_recoverable_session(policy: dict, environment: dict, now=None) -> No
 
 def admit_recoverable(policy: dict, environment: dict, event: dict, now=None) -> Path:
     """Check the installed session and host; never infer or authorize a job request."""
+    require_diagnostic_custody_clear()
     activation = policy["recoverable_activation"]
     environment.update(ELITE_RECOVERABLE_POLICY_SHA256=policy_digest(policy),
                        ELITE_RECOVERABLE_WORKFLOW_SHA256=activation["workflow_sha256"],
@@ -583,6 +823,7 @@ def require_recoverable_host(policy: dict, environment: dict) -> Path:
 
 def validate(policy: dict, environment: dict) -> Path:
     """Validate the immutable pre-job metadata before any workflow checkout or action."""
+    require_diagnostic_custody_clear()
     event = json.loads(Path(environment["GITHUB_EVENT_PATH"]).read_text())
     if environment.get("GITHUB_JOB") in RECOVERABLE_JOBS:
         require_recoverable_job(policy, environment, event)

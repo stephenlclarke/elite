@@ -467,6 +467,8 @@ def batch_command(swift, flags, mode, attempt, methods, full_concurrent=False):
 
 def ensure_no_live_tests():
     """A disconnected legacy executor is still the owner until its helper exits."""
+    from native_runner import require_diagnostic_custody_clear
+    require_diagnostic_custody_clear()
     processes = subprocess.check_output(['ps', '-axo', 'pid=,command='], text=True)
     for line in processes.splitlines():
         if ('swiftpm-testing-helper' in line

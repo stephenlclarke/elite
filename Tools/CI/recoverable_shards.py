@@ -55,6 +55,8 @@ def execution_policy_digest(config):
     value = {"schema": SCHEMA, "policy": POLICY, "host": config["host"], "admission": config["admission"]}
     if "phase_profiles" in config:
         value["phase_profiles"] = config["phase_profiles"]
+    if "vmmap_diagnostic" in config:
+        value["vmmap_diagnostic"] = config["vmmap_diagnostic"]
     return fingerprint(value)
 
 
@@ -152,15 +154,15 @@ def physical_tree(root, read_only=False):
 
 
 @contextmanager
-def claim(root, name, shared=False, wait_seconds=0):
+def claim(root, name, shared=False, wait_seconds=0, diagnostic_role=None):
     legacy.owned_directory(root)
     path = root / (fingerprint(name) + ".lock")
-    with file_claim(path, shared, wait_seconds) as lock:
+    with file_claim(path, shared, wait_seconds, diagnostic_role=diagnostic_role) as lock:
         yield lock
 
 
 @contextmanager
-def file_claim(path, shared=False, wait_seconds=0):
+def file_claim(path, shared=False, wait_seconds=0, diagnostic_role=None):
     legacy.owned_directory(path.parent)
     descriptor = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "a") as lock:
@@ -177,7 +179,12 @@ def file_claim(path, shared=False, wait_seconds=0):
                 if time.monotonic() >= deadline:
                     raise
                 time.sleep(0.02)
-        yield lock
+        if diagnostic_role is None:
+            yield lock
+        else:
+            with native_runner._diagnostic_lease_context(lock, diagnostic_role) as witness:
+                lock._diagnostic_lease = witness
+                yield lock
 
 
 def validate_runtime(runtime):
@@ -433,6 +440,10 @@ def evidence_outputs(attempt, runtime, methods, read_only=False):
 
 
 def validate_success(attempt, identity, receipt_digest=None, immutable=True, read_only=False):
+    if VM_DIAGNOSTIC_ENV in identity.get("runtime", {}).get("environment", {}):
+        raise ValueError("Diagnostic evidence can never become ordinary PASS")
+    if (attempt / "diagnostic.json").exists():
+        raise ValueError("Diagnostic artifacts are not ordinary shard evidence")
     require_fields(identity, ("schema", "policy", "runtime", "methods", "atoms", "claims",
                               "audited", "resource_audits"))
     validate_runtime(identity["runtime"])
@@ -883,6 +894,8 @@ class ObservedTestProgress:
 def execute_process(command, workspace, attempt, timeout, descriptors, environment, observer=None,
                     isolate_environment=True, progress=None):
     """Terminate only this owned process session on timeout, never report timeout as success."""
+    if isinstance(observer, VmmapDiagnostic):
+        return observer.execute(command, timeout, descriptors, environment, progress)
     actual_environment = child_environment(attempt, environment) if isolate_environment else dict(environment)
     descriptor = os.open(attempt / "test.log", os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "wb") as log, ExitStack() as stack:
@@ -983,8 +996,8 @@ def admission_refusal(bounds, configured_cpu, observed_cpu, stage, error):
             "category": category, "sample": sample}
 
 
-def reservation_update(store, reservation, **changes):
-    with claim(store.root / "claims", "admission", wait_seconds=30):
+def reservation_update(store, reservation, *, wait_seconds=30, **changes):
+    with claim(store.root / "claims", "admission", wait_seconds=wait_seconds):
         current = load_json(reservation["path"])
         if current["nonce"] != reservation["nonce"]:
             raise ValueError("Reservation generation changed")
@@ -996,6 +1009,7 @@ def reservation_update(store, reservation, **changes):
 
 @contextmanager
 def reserve_worker(store, executor, runtime, admission, timeout):
+    native_runner.require_diagnostic_custody_clear()
     chosen, reservation = None, None
     with ExitStack() as held:
         with claim(store.root / "claims", "admission", wait_seconds=timeout):
@@ -1016,7 +1030,9 @@ def reserve_worker(store, executor, runtime, admission, timeout):
             active, candidates = 0, []
             legacy.owned_directory(store.root / "reservations")
             for slot in range(cap):
-                context = claim(store.root / "claims", "worker:" + str(slot))
+                diagnostic = getattr(getattr(executor, "authority", None), "config", {}).get("vmmap_diagnostic")
+                context = claim(store.root / "claims", "worker:" + str(slot),
+                                diagnostic_role="reservation" if diagnostic is not None else None)
                 try:
                     lock = context.__enter__()
                 except BlockingIOError:
@@ -1096,7 +1112,8 @@ def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
         executor.verify(plan["runtime"])
         if executor.unknown_live_helpers():
             raise ValueError("An unknown/disconnected live helper blocks replacement")
-        found = store.matching(identity)
+        diagnostic = getattr(getattr(executor, "authority", None), "config", {}).get("vmmap_diagnostic")
+        found = None if diagnostic is not None else store.matching(identity)
         if found:
             store.index([identity])
             return {"id": shard_id, "reused": True, "attempt": str(found[0]),
@@ -1123,8 +1140,9 @@ def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
                     raise ValueError("Incomplete attempt still has an unproven owner")
         attempt = parent / str(uuid.uuid4())
         legacy.owned_directory(attempt)
+        owner = executor.owner_identity()
         durable_json(attempt / "start.json", {"identity": identity, "tested_head": current_head, "timeout_seconds": timeout,
-                                             "owner": executor.owner_identity(),
+                                             "owner": owner,
                                              "paths": {"proof": str(attempt), "temporary": str(
                                                  store.root / "temporary" / attempt.name)}})
         if hasattr(executor, "authority"):
@@ -1133,10 +1151,18 @@ def run_shard(plan, shard_id, store, executor, current_head, timeout, admission,
         fault("before-execution")
         started = time.monotonic()
         reservation_update(store, reservation, state="launching")
-        executor.reservation_callback = lambda: reservation_update(store, reservation, state="running")
+        executor.reservation_callback = lambda: reservation_update(
+            store, reservation, wait_seconds=0 if diagnostic is not None else 30, state="running")
+        if diagnostic is not None:
+            executor.diagnostic_leases = [getattr(executor.authority, "controller_lease", None)] + [
+                getattr(lock, "_diagnostic_lease", None) for lock in locks
+                if getattr(lock, "_diagnostic_lease", None) is not None]
+            executor.owner_binding = owner
         # The executor must retain inherited claim descriptors in its owned child.
         exit_code = executor.execute(shard, attempt, timeout, [lock.fileno() for lock in locks])
         fault("after-exit")
+        if getattr(executor, "diagnostic_attempt", None) == attempt:
+            return validate_vmmap_evidence(attempt, identity)
         if type(exit_code) is not int or exit_code != 0:
             durable_json(attempt / "failure.json", {"status": "failed", "exit_code": exit_code})
             raise ValueError("Shard process failed or timed out")
@@ -1437,6 +1463,7 @@ class NativeAuthority:
     def __init__(self, policy_path, environment=None, read=native_output):
         # This must precede even file inspection, git, ps, SDK or hardware probes.
         require_physical_activation()
+        native_runner.require_diagnostic_custody_clear()
         self.environment = dict(os.environ if environment is None else environment)
         if (self.environment.get("GITHUB_JOB") not in native_runner.RECOVERABLE_JOBS
                 or self.environment.get("ELITE_RECOVERABLE_CODE_ENABLED") != "true"):
@@ -1466,8 +1493,10 @@ class NativeAuthority:
         """Retain the same disjoint owned storage and committed controller checks."""
         self.config = self.policy["recoverable_shards"]
         required = {"schema", "host", "cache", "legacy_cache", "workers", "admission"}
-        if not required <= set(self.config) or set(self.config) - required - {"planning", "phase_profiles"}:
+        if not required <= set(self.config) or set(self.config) - required - {"planning", "phase_profiles", "vmmap_diagnostic"}:
             raise ValueError("Unexpected native activation fields")
+        if "vmmap_diagnostic" in self.config and not isinstance(self, LocalAuthority):
+            raise ValueError("The diagnostic is restricted to its owned local session")
         native_runner.backend_descriptor(self.policy)
         if self.backend() == native_runner.LOCAL_COMPONENTS_BACKEND:
             native_runner.phase_profile(self.policy, "normal")
@@ -1516,6 +1545,7 @@ class NativeAuthority:
         return native_runner.phase_profile(self.policy, phase)
 
     def admission(self, phase=None):
+        native_runner.require_diagnostic_custody_clear()
         if phase is not None and self.phase_profile(phase) is None:
             raise ValueError("Independent phase admission was not approved")
         bounds = dict(self.config["admission"] if phase is None else self.phase_profile(phase)["admission"])
@@ -1637,9 +1667,202 @@ class NativeAuthority:
 
 
 LOCAL_POLICY_ENV = "ELITE_RECOVERABLE_LOCAL_POLICY_SHA256"
+VM_DIAGNOSTIC_ENV = "ELITE_RECOVERABLE_DIAGNOSTIC_KIND"
+VM_DIAGNOSTIC_KIND = "owned-vmmap-summary-v1"
+VM_SESSION_KIND = "local-vmmap-diagnostic-session-v1"
 LOCAL_SESSION_FIELDS = {"schema", "kind", "id", "head", "policy_sha256", "mode", "worker", "stage", "shards",
                         "expires_at", "plan_sha256", "max_launches"}
 
+
+
+def validate_vmmap_policy(config):
+    value = config.get("vmmap_diagnostic")
+    if "vmmap_diagnostic" not in config:
+        return None
+    require_fields(value, ("kind", "tool", "argv", "target_binding", "trigger_worker_rss_bytes", "max_captures",
+                           "capture_seconds", "cleanup_seconds", "output_limit_bytes", "accounting",
+                           "cohort_count", "cohort_methods_sha256", "game_test_inputs_sha256", "deployment"))
+    require_fields(value["tool"], ("path", "sha256"))
+    require_fields(value["deployment"], ("path", "sha256"))
+    if (value["kind"] != VM_DIAGNOSTIC_KIND or value["tool"]["path"] != "/usr/bin/vmmap"
+            or value["argv"] != ["/usr/bin/vmmap", "-summary", "-w", "{helper_pid}"]
+            or value["target_binding"] != "single-owned-prepared-image-v1"
+            or value["accounting"] != "controller-worker-vmmap-support-union-v1"
+            or any(type(value[key]) is not int or value[key] != expected for key, expected in (
+                ("trigger_worker_rss_bytes", 1879048192), ("max_captures", 1), ("capture_seconds", 10),
+                ("cleanup_seconds", 2), ("output_limit_bytes", 4 * 1024 * 1024), ("cohort_count", 16)))
+            or any(not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) for digest in (
+                value["tool"]["sha256"], value["deployment"]["sha256"], value["cohort_methods_sha256"],
+                value["game_test_inputs_sha256"]))
+            or not Path(value["deployment"]["path"]).is_absolute()
+            or type(config["admission"]["peak_per_worker"]) is not int
+            or type(config["admission"]["ram_reserve"]) is not int
+            or config["admission"]["peak_per_worker"] != 2415919104
+            or config["admission"]["ram_reserve"] != 2147483648):
+        raise ValueError("Unknown or weakened vmmap diagnostic contract")
+    return value
+
+
+def validate_vmmap_deployment(authority, runtime):
+    """Actual installed bytes and an independently approved closed launch surface are mandatory."""
+    descriptor = authority.config["vmmap_diagnostic"]["deployment"]
+    value = native_runner._custody_json(Path(descriptor["path"]), immutable=True)
+    if legacy.digest(Path(descriptor["path"])) != descriptor["sha256"]:
+        raise ValueError("Guard deployment proof changed")
+    require_fields(value, ("schema", "kind", "head", "entries", "supported_jobs", "controller_needing_jobs",
+                           "old_paths_quiesced", "review"))
+    if (value["schema"] != 1 or value["kind"] != "reviewed-diagnostic-launch-surface-v1"
+            or value["head"] != authority.policy["approved_head"]
+            or value["supported_jobs"] != sorted(native_runner.RECOVERABLE_JOBS)
+            or value["controller_needing_jobs"] != [] or value["old_paths_quiesced"] is not True):
+        raise ValueError("Unreviewed, old or controller-needing listener matrix is ineligible")
+    names = {"controller": "recoverable_shards.py", "guard": "native_runner.py",
+             "legacy": "sanitizer_checkpoints.py", "quality": "quality_phase_checkpoints.py",
+             "provisioner": "prepare_native_runner.py"}
+    roles = set()
+    for entry in value["entries"]:
+        require_fields(entry, ("role", "path", "sha256"))
+        role, path = entry["role"], Path(entry["path"])
+        if role in roles or not path.is_absolute() or path != path.resolve() or path.is_symlink():
+            raise ValueError("Duplicate or nonphysical guard deployment")
+        roles.add(role)
+        native_runner.require_owned_activation_file(path)
+        if legacy.digest(path) != entry["sha256"]:
+            raise ValueError("Configured entrypoint bytes changed")
+        prefix, _, component = role.partition("-")
+        if prefix not in ("source", "installed") or component not in {*names, "hook"}:
+            raise ValueError("Unknown deployed entrypoint role")
+        if component != "hook":
+            source = authority.root / "Tools/CI" / names[component]
+            if entry["sha256"] != legacy.digest(source) or (prefix == "source" and path != source):
+                raise ValueError("Old copied controller/guard remains configured")
+    required = {"source-" + name for name in names} | {
+        "installed-guard", "installed-controller", "installed-legacy", "installed-quality", "installed-hook"}
+    if not required <= roles:
+        raise ValueError("Shared admission deployment coverage is incomplete")
+    review = value["review"]
+    require_fields(review, ("path", "sha256"))
+    approved = native_runner._custody_json(Path(review["path"]), immutable=True)
+    if (legacy.digest(Path(review["path"])) != review["sha256"] or approved != {
+            "schema": 1, "kind": "diagnostic-launch-surface-review-v1", "head": value["head"],
+            "entries_sha256": fingerprint(value["entries"]), "matrix_sha256": fingerprint(value["supported_jobs"]),
+            "old_paths_quiesced": True}):
+        raise ValueError("Missing independent launch-surface review")
+    inputs = {name: digest for name, digest in runtime["inputs"].items() if name.startswith(("Sources/", "Tests/"))}
+    if fingerprint(inputs) != authority.config["vmmap_diagnostic"]["game_test_inputs_sha256"]:
+        raise ValueError("The approved game/test bytes changed")
+
+
+class _VmmapCapability:
+    """One consumed attempt, minted only inside the three real acquisition contexts."""
+    def __init__(self, authority, attempt, controller, leases, deadline, clock):
+        if (not isinstance(authority, LocalAuthority) or authority.session["kind"] != VM_SESSION_KIND
+                or authority.session["stage"] != "execute" or authority.session["max_launches"] != 1):
+            raise ValueError("No diagnostic attempt capability")
+        if (len(leases) != 3 or any(not isinstance(lease, native_runner._DiagnosticLease) for lease in leases)
+                or {lease.role for lease in leases} != {"controller", "executor", "reservation"}):
+            raise ValueError("All three witnessed lease lifetimes are required")
+        self.authority, self.attempt, self.leases = authority, attempt, tuple(leases)
+        self.controller = dict(controller)
+        self.deadline, self.clock, self.phase = deadline, clock, "timed"
+        self.nonce, self.active_sha = str(uuid.uuid4()), None
+        self.head, self.policy, self.session = authority.policy["approved_head"], authority.policy_sha256, authority.session_digest
+        self.source = authority.root / "Tools/CI/recoverable_shards.py"
+        self.source_sha = legacy.digest(self.source)
+        self.lease_bindings = tuple((lease.role, lease.fd, lease.identity.st_dev, lease.identity.st_ino) for lease in leases)
+        self.check_static()
+
+    def check_static(self):
+        if self.phase != "timed" or self.clock() >= self.deadline:
+            raise ValueError("Diagnostic capability expired or entered custody-only phase")
+        if (os.getpid() != self.controller["pid"] or str(Path(sys.executable).resolve()) != self.controller["image"]
+                or legacy.digest(Path(self.controller["image"])) != self.controller["image_sha256"]
+                or legacy.digest(self.source) != self.source_sha or self.source_sha != self.controller["source_sha256"]
+                or self.authority.policy["approved_head"] != self.head
+                or self.authority.policy_sha256 != self.policy or self.authority.session_digest != self.session):
+            raise ValueError("Controller PID/image/source/session capability drift")
+        for lease, binding in zip(self.leases, self.lease_bindings):
+            if (lease.role, lease.fd, lease.identity.st_dev, lease.identity.st_ino) != binding:
+                raise ValueError("Lease capability binding changed")
+            lease.verify()
+        self.authority.check_session("execute")
+        if self.authority.budget_state()[1]["used"] != 1:
+            raise ValueError("Capability cannot consume or replace a launch allowance")
+        if self.clock() >= self.deadline:
+            raise ValueError("Capability validation exhausted the original deadline")
+
+    def require_current(self):
+        self.check_static()
+        registry = native_runner.diagnostic_custody_registry()
+        record = registry["records"].get(self.nonce)
+        if (record is None or record["state"] != "ACTIVE" or record["phase"] != "timed"
+                or record["attempt"] != str(self.attempt) or record["controller"] != self.controller
+                or native_runner.custody_digest(record) != self.active_sha):
+            raise ValueError("Wrong/stale attempt, nonce or ACTIVE digest")
+        return registry
+
+    def publish(self, record):
+        if self.active_sha is None:
+            self.check_static()
+            native_runner.require_diagnostic_custody_clear()
+            registry = native_runner.diagnostic_custody_registry()
+            if self.nonce in registry["records"]:
+                raise ValueError("Duplicate diagnostic attempt nonce")
+        else:
+            registry = self.require_current()
+        registry["records"][self.nonce] = record
+        registry["generation"] += 1
+        if len(json.dumps(registry, indent=2, allow_nan=False).encode()) + 1 > 900000:
+            raise ValueError("Shared custody registry capacity reached")
+        durable_json(native_runner.diagnostic_custody_root() / "registry.json", registry)
+        self.active_sha = native_runner.custody_digest(record)
+
+    def unknown(self, record):
+        # Safety persistence is not reentry/admission and must still work at the deadline.
+        registry = native_runner.diagnostic_custody_registry()
+        prior = registry["records"].get(self.nonce)
+        if prior is None or native_runner.custody_digest(prior) != self.active_sha:
+            raise ValueError("Custody record changed before UNKNOWN persistence")
+        record.update(state="UNKNOWN", phase="custody-only", terminal=None)
+        registry["records"][self.nonce] = record
+        registry["generation"] += 1
+        durable_json(native_runner.diagnostic_custody_root() / "registry.json", registry)
+        self.active_sha, self.phase = native_runner.custody_digest(record), "custody-only"
+
+
+def diagnostic_cleanup_proved(attempt):
+    try:
+        records = [record for record in native_runner.diagnostic_custody_registry()["records"].values()
+                   if record["attempt"] == str(attempt)]
+        return (len(records) == 1 and (records[0]["state"] == "CLEAN"
+                                      or native_runner.diagnostic_resolution(records[0])))
+    except (ValueError, OSError, KeyError, TypeError):
+        return False
+
+
+def validate_vmmap_evidence(attempt, identity):
+    """A capture receipt is never a quality receipt, even when both commands exit zero."""
+    value = load_json(attempt / "diagnostic.json")
+    authorization = load_json(attempt / "authorization.json")
+    record = native_runner.diagnostic_custody_registry()["records"][value["custody_nonce"]]
+    if (record["attempt"] != str(attempt) or record["source_head"] != authorization.get("head")
+            or record["policy_sha256"] != authorization.get("policy_sha256")
+            or record["policy_sha256"] != authorization["session"].get("policy_sha256")
+            or VM_DIAGNOSTIC_ENV not in identity["runtime"]["environment"]
+            or authorization["session"]["kind"] != VM_SESSION_KIND
+            or value.get("kind") != VM_DIAGNOSTIC_KIND or value.get("ordinary_pass") is not False
+            or value.get("residency") != "UNAVAILABLE" or value.get("format") != "UNQUALIFIED"
+            or not diagnostic_cleanup_proved(attempt)):
+        raise ValueError("Incomplete or mismatched diagnostic evidence; not ordinary PASS")
+    if (attempt / "result.json").exists() or (attempt / "commit.json").exists():
+        raise ValueError("Diagnostic cannot carry an ordinary success receipt")
+    for name in ("vmmap.stdout", "vmmap.stderr"):
+        if name in value.get("outputs", {}):
+            path = attempt / name
+            if path.is_symlink() or path.stat().st_mode & 0o777 != 0o600 or legacy.digest(path) != value["outputs"][name]:
+                raise ValueError("Diagnostic raw output changed")
+    return {"id": fingerprint(identity), "attempt": str(attempt), "diagnostic_only": True,
+            "ordinary_pass": False, "status": value["status"], "residency": "UNAVAILABLE"}
 
 def local_control(path):
     path = Path(path)
@@ -1652,9 +1875,10 @@ def local_control(path):
 
 
 def validate_local_session(session):
-    require_fields(session, LOCAL_SESSION_FIELDS)
+    diagnostic = isinstance(session, dict) and session.get("kind") == VM_SESSION_KIND
+    require_fields(session, LOCAL_SESSION_FIELDS | ({"diagnostic_sha256"} if diagnostic else set()))
     if (type(session["schema"]) is not int or session["schema"] != SCHEMA
-            or session["kind"] != "local-sanitizer-session-v1"
+            or session["kind"] not in ("local-sanitizer-session-v1", VM_SESSION_KIND)
             or not isinstance(session["id"], str)
             or str(uuid.UUID(session["id"])) != session["id"]
             or not re.fullmatch(r"[0-9a-f]{40}", session["head"])
@@ -1664,6 +1888,11 @@ def validate_local_session(session):
             or type(session["max_launches"]) is not int
             or not 0 <= session["max_launches"] <= 256):
         raise ValueError("Invalid local sanitizer session")
+    if diagnostic and (session["mode"] != "address" or session["stage"] == "validate"
+            or session["max_launches"] != 1
+            or not re.fullmatch(r"[0-9a-f]{64}", session["diagnostic_sha256"])
+            or (session["stage"] == "execute" and len(session["shards"] or []) != 1)):
+        raise ValueError("Diagnostic sessions authorize one exact nonpromotable attempt")
     positive(session["expires_at"])
     if session["stage"] == "prepare":
         if session["plan_sha256"] is not None or session["max_launches"] != 1 or session["shards"] is not None:
@@ -1685,6 +1914,8 @@ def validate_local_authorization(record, runtime):
     require_fields(record, ("schema", "kind", "head", "host", "mode", "workspace", "policy_sha256",
                             "execution_policy_sha256", "authorized_at", "session", "session_content_sha256"))
     session = record["session"]
+    if session.get("kind") == VM_SESSION_KIND or VM_DIAGNOSTIC_ENV in runtime["environment"]:
+        raise ValueError("Diagnostic authorization cannot qualify ordinary evidence")
     validate_local_session(session)
     positive(record["authorized_at"])
     if any(not re.fullmatch(r"[0-9a-f]{64}", record[name] or "")
@@ -1707,7 +1938,7 @@ def validate_local_authorization(record, runtime):
 def local_environment(environment=None):
     value = dict(os.environ if environment is None else environment)
     if any(name.startswith(("GITHUB_", "RUNNER_")) or name in AUTHORIZATION_CONTROLS
-           or name in ("ELITE_NATIVE_POLICY", "ELITE_NATIVE_APPROVED_HEAD", LOCAL_POLICY_ENV,
+           or name in ("ELITE_NATIVE_POLICY", "ELITE_NATIVE_APPROVED_HEAD", VM_DIAGNOSTIC_ENV, LOCAL_POLICY_ENV,
                        "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256") for name in value):
         raise ValueError("Local sanitizer execution refuses GitHub or supplied authorization identities")
     return value
@@ -1719,6 +1950,7 @@ class LocalAuthority(NativeAuthority):
                  control_descriptors=()):
         import pwd
         require_physical_activation()  # Before control-file reads or any native/resource probe.
+        native_runner.require_diagnostic_custody_clear()
         self.environment = local_environment(environment)
         self.control_descriptors = tuple(control_descriptors)
         self.read, self.policy_path, self.session_path = read, Path(policy_path), Path(session_path)
@@ -1748,6 +1980,7 @@ class LocalAuthority(NativeAuthority):
                 or Path(__file__).resolve() != self.root / "Tools/CI/recoverable_shards.py"):
             raise ValueError("Local controller must execute its exact reviewed physical source")
         self.config = self.policy["recoverable_shards"]
+        self.vmmap_policy = validate_vmmap_policy(self.config)
         self.physical_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
         if self.config.get("legacy_cache") != str(self.physical_home / "Library/EliteNativeCI/sanitizer-checkpoints"):
             raise ValueError("Local modes must share the existing physical executor lease")
@@ -1800,6 +2033,10 @@ class LocalAuthority(NativeAuthority):
                 or not time.time() < session["expires_at"] <= self.activation["expires_at"]):
             raise ValueError("Local source/mode/policy/session stage or expiry changed")
         self.session = session
+        if (bool(self.config.get("vmmap_diagnostic")) != (session["kind"] == VM_SESSION_KIND)
+                or (session["kind"] == VM_SESSION_KIND
+                    and session["diagnostic_sha256"] != fingerprint(self.config["vmmap_diagnostic"]))):
+            raise ValueError("Policy/session diagnostic binding differs")
         return session
 
     def budget_state(self):
@@ -1826,6 +2063,8 @@ class LocalAuthority(NativeAuthority):
     def execution_environment(self):
         value = super().execution_environment()
         value[LOCAL_POLICY_ENV] = self.policy_sha256
+        if self.config.get("vmmap_diagnostic") is not None:
+            value[VM_DIAGNOSTIC_ENV] = VM_DIAGNOSTIC_KIND
         return value
 
     def build_flags(self, mode):
@@ -2158,6 +2397,474 @@ class NativeBuilder:
         marker.chmod(0o400)
 
 
+
+class _VmmapOwners:
+    """Explicit child roots plus verified descendants; names never grant ownership."""
+    def __init__(self, controller):
+        self.known = {controller["pid"]: dict(controller)}
+        self.pending, self.children = {}, {}
+        self.ambiguous = False
+
+    def spawned(self, child):
+        if child.pid in self.known or child.pid in self.pending:
+            self.ambiguous = True
+            raise ValueError("Owned PID reused before identity registration")
+        self.pending[child.pid] = child
+        self.children[child.pid] = child
+
+    def observe(self, rows):
+        selected = {}
+        for pid, known in self.known.items():
+            row = rows.get(pid)
+            if row is not None:
+                if not same_process(known, row):
+                    self.ambiguous = True
+                    raise ValueError("Owned PID/start/command drift")
+                selected[pid] = {**row, "role": known["role"]}
+        controller = next(pid for pid, row in self.known.items() if row["role"] == "controller")
+        if controller not in selected:
+            raise ValueError("Controller custody disappeared")
+        for pid, child in list(self.pending.items()):
+            row = rows.get(pid)
+            if row is None:
+                if child.code is not None:
+                    del self.pending[pid]
+                    continue
+                self.ambiguous = True
+                raise ValueError("Spawned child has no verified identity")
+            if row["parent"] != controller or row["group"] != pid:
+                self.ambiguous = True
+                raise ValueError("Spawned child is outside its owned session")
+            if child.role != "worker" and arguments(row) != child.argv:
+                self.ambiguous = True
+                raise ValueError("Spawned utility/support argv changed")
+            selected[pid] = {**row, "role": child.role}
+            del self.pending[pid]
+        while True:
+            added = False
+            for pid, row in rows.items():
+                if pid in selected:
+                    continue
+                parent = selected.get(row["parent"])
+                if parent is None:
+                    continue
+                if parent["role"] == "controller":
+                    self.ambiguous = True
+                    raise ValueError("Unregistered direct controller child")
+                if pid in self.known and not same_process(self.known[pid], row):
+                    self.ambiguous = True
+                    raise ValueError("Descendant PID reused")
+                selected[pid] = {**row, "role": parent["role"]}
+                added = True
+            if not added:
+                break
+        groups = set(self.children)  # A reaped root does not release unseen members of its original session.
+        if any(pid not in selected and row["group"] in groups for pid, row in rows.items()):
+            self.ambiguous = True
+            raise ValueError("Unverifiable/reparented unregistered session member")
+        for pid, row in selected.items():
+            self.known[pid] = {key: row[key] for key in ("parent", "group", "start", "command", "role")}
+            self.known[pid]["pid"] = pid
+        if any(type(row.get("rss_bytes")) is not int or row["rss_bytes"] < 0 for row in selected.values()):
+            raise ValueError("Incomplete diagnostic resident sample")
+        roles = {role: sum(row["rss_bytes"] for row in selected.values() if row["role"] == role)
+                 for role in ("controller", "worker", "vmmap", "support")}
+        return selected, roles, sum(row["rss_bytes"] for row in selected.values())
+
+    def active(self, live):
+        return {pid: row for pid, row in live.items() if row["role"] != "controller"
+                and not (pid in self.children and self.children[pid].code is not None)}
+
+
+class _VmmapChild:
+    """Two fair bounded pipe reads per tick; no communicate/wait or unbounded buffer."""
+    def __init__(self, role, argv, workspace, environment, descriptors, output, limit):
+        self.role, self.argv, self.output, self.limit = role, list(argv), output, limit
+        self.total, self.buffers, self.streams = 0, {}, {}
+        self.pty, self.code, self.closed = None, None, False
+        self.clock, self.deadline = time.monotonic, float("inf")
+        if role == "worker":
+            master, slave = os.openpty()
+            tty.setraw(slave)
+            try:
+                self.process = subprocess.Popen(argv, cwd=workspace, env=environment, stdout=slave,
+                    stderr=subprocess.STDOUT, pass_fds=tuple(descriptors), start_new_session=True, umask=0o077)
+            except BaseException:
+                os.close(master)
+                raise
+            finally:
+                os.close(slave)
+            self.streams["stdout"] = master
+            self.pty = master
+        else:
+            self.process = subprocess.Popen(argv, cwd=workspace, env=environment, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, pass_fds=tuple(descriptors), start_new_session=True, umask=0o077)
+            self.streams = {"stdout": self.process.stdout.fileno(), "stderr": self.process.stderr.fileno()}
+        self.pid = self.process.pid
+        for fd in self.streams.values():
+            os.set_blocking(fd, False)
+        self.open_streams = set(self.streams)
+        self.buffers = {name: bytearray() for name in self.streams}
+
+    def poll(self):
+        if self.code is None and self.clock() < self.deadline:
+            self.code = self.process.poll()  # WNOHANG reaps only this direct child.
+        return self.code
+
+    def drain(self):
+        if not self.open_streams or self.clock() >= self.deadline:
+            return
+        ready, _, _ = select.select([self.streams[key] for key in self.open_streams], [], [], 0)
+        for name in list(self.open_streams):
+            fd = self.streams[name]
+            if fd not in ready or self.clock() >= self.deadline:
+                continue
+            try:
+                data = os.read(fd, 16384)
+            except BlockingIOError:
+                continue
+            except OSError as error:
+                if self.role == "worker" and error.errno == errno.EIO:
+                    data = b""
+                else:
+                    raise
+            if not data:
+                self.open_streams.remove(name)
+                continue
+            self.total += len(data)
+            if self.limit is not None and self.total > self.limit:
+                available = max(0, len(data) - (self.total - self.limit))
+                if self.output is not None:
+                    self.output[name].write(data[:available])
+                    self.output[name].flush()
+                raise ValueError("Diagnostic combined output cap")
+            if self.output is None:
+                self.buffers[name].extend(data)
+            else:
+                self.output[name].write(data)
+                self.output[name].flush()
+
+    def close(self):
+        if self.closed:
+            return
+        self.closed = True
+        if self.pty is not None:
+            os.close(self.pty)
+            self.pty = None
+        else:
+            self.process.stdout.close()
+            self.process.stderr.close()
+
+
+class VmmapDiagnostic:
+    """One diagnostic attempt with inert same-controller custody on uncertain cleanup."""
+    def __init__(self, authority, attempt, workspace, runtime, image, leases, owner,
+                 clock=time.monotonic, sleep=time.sleep, spawn=_VmmapChild, send_signal=os.kill):
+        self.authority, self.attempt, self.workspace = authority, attempt, workspace
+        self.runtime, self.image, self.leases, self.owner = runtime, image, leases, owner
+        self.clock, self.sleep, self.spawn, self.send_signal = clock, sleep, spawn, send_signal
+        self.spec = validate_vmmap_policy(authority.config)
+        self.cap, self.record = None, None
+        self.children, self.live, self.rows = [], {}, {}
+        self.worker = self.utility = self.sampler = None
+        self.triggered, self.capture_complete, self.target = False, False, None
+        self.cancelled, self.errors, self.events = False, [], []
+        self.sample_due, self.bound_callback = 0, None
+        self.last_sample_started, self.utility_finished = None, None
+        self.outputs, self.handlers = {}, {}
+        self.memory = {"kind": "sampled-owned-diagnostic-rss-v1", "budget_bytes": 2415919104,
+                       "worker_trigger_bytes": 1879048192, "poll_wait_seconds": 0.1, "samples": 0,
+                       "high_water_bytes": 0, "last_bytes": None, "roles": None, "failure": None}
+
+    def persist(self, critical=False):
+        self.record["identities"] = [dict(self.owners.known[pid]) for pid in sorted(self.owners.known)]
+        # Leave bounded space for UNKNOWN and doubled terminal identities before any new spawn.
+        size = len(json.dumps(self.record, indent=2, allow_nan=False).encode()) + 1
+        if size > (700000 if critical else 250000):
+            raise ValueError("Diagnostic custody evidence capacity reached")
+        self.cap.publish(self.record)
+        durable_json(self.attempt / "processes.json", {"schema": SCHEMA, "workspace": str(self.workspace),
+            "controller": self.owner, "root": None if self.worker is None else {"pid": self.worker.pid},
+            "running": self.record["state"] == "ACTIVE", "diagnostic_only": True,
+            "resident_memory": self.memory, "processes": {str(pid): row for pid, row in self.owners.known.items()}})
+
+    def launch(self, role, argv, output=None, critical=False):
+        self.cap.require_current()
+        if self.clock() >= self.deadline - (0 if critical else 2):
+            raise ValueError("No time remains for bounded capture and cleanup")
+        intent = {"role": role, "argv": list(argv), "pid": None, "state": "planned"}
+        self.record["intents"].append(intent)
+        self.persist(critical)
+        try:
+            child = self.spawn(role, argv, self.workspace, self.environment, self.descriptors, output,
+                               None if role == "worker" else self.spec["output_limit_bytes"])
+        except OSError:
+            # A constructor may fail after spawning. Keep its planned intent unresolved.
+            self.persist(critical)
+            raise
+        intent.update(pid=child.pid, state="spawned")
+        child.intent = intent
+        child.clock, child.deadline = self.clock, self.deadline
+        child.started_at = self.clock()
+        self.children.append(child)
+        self.owners.spawned(child)
+        self.persist(critical)
+        self.events.append({"event": "spawn", "role": role, "pid": child.pid, "argv": list(argv), "time": self.clock()})
+        return child
+
+    def drain(self):
+        for child in self.children:
+            if self.clock() >= self.deadline:
+                return
+            child.drain()
+            if child.poll() is not None:
+                child.intent["state"] = "reaped"
+
+    def sample(self, critical=False):
+        now = self.clock()
+        if now >= self.deadline:
+            return False
+        if self.sampler is None and now >= self.sample_due:
+            self.sampler = self.launch("support", ["/bin/ps", "-axo", "pid=,ppid=,pgid=,stat=,lstart=,rss=,command="],
+                                       critical=critical)
+        if self.sampler is None or self.sampler.poll() is None or self.sampler.open_streams:
+            return False
+        sampler, self.sampler = self.sampler, None
+        if sampler.poll() != 0 or sampler.buffers.get("stderr"):
+            raise ValueError("Diagnostic identity/RSS snapshot failed")
+        self.rows = process_rows(bytes(sampler.buffers["stdout"]).decode("utf-8", "strict"), resident=True)
+        self.last_sample_started = sampler.started_at
+        sampler.buffers.clear()
+        sampler.close()
+        self.live, roles, total = self.owners.observe(self.rows)
+        self.memory.update(samples=self.memory["samples"] + 1, last_bytes=total, roles=roles,
+                           high_water_bytes=max(self.memory["high_water_bytes"], total))
+        self.record["last_verified"] = {"time": self.clock(), "worker_bytes": roles["worker"],
+            "union_bytes": total, "roles": roles, "status": "last-verified"}
+        self.sample_due = self.clock() + 0.1
+        self.persist(critical)
+        if total > self.memory["budget_bytes"]:
+            self.memory["failure"] = "owned diagnostic union exceeds budget"
+            if not critical:
+                raise ValueError(self.memory["failure"])
+        return True
+
+    def tool_identity(self):
+        path = Path(self.spec["tool"]["path"])
+        info = path.lstat()
+        if (path.is_symlink() or path != path.resolve() or not path.is_file() or info.st_uid != 0
+                or info.st_mode & 0o777 != 0o755 or legacy.digest(path) != self.spec["tool"]["sha256"]):
+            raise ValueError("Diagnostic utility identity drift")
+
+    def target_identity(self, expected=None):
+        candidates = []
+        for pid, row in self.live.items():
+            if row["role"] != "worker":
+                continue
+            argv = arguments(row)
+            if (len(argv) == 6 and Path(argv[0]).is_absolute()
+                    and Path(argv[0]).name == "swiftpm-testing-helper"
+                    and argv[1:] == ["--test-bundle-path", str(self.image), str(self.image),
+                                    "--testing-library", "swift-testing"]):
+                candidates.append({"pid": pid, **{key: row[key] for key in ("parent", "group", "start", "command", "role")}})
+        if len(candidates) != 1:
+            raise ValueError("Missing/ambiguous verified prepared helper")
+        target = candidates[0]
+        if expected is not None and (target["pid"] != expected["pid"] or not same_process(expected, target)):
+            raise ValueError("Diagnostic target PID/start drift")
+        if self.image != self.image.resolve() or self.image.is_symlink():
+            raise ValueError("Prepared target image is not physical")
+        confined(self.image, self.workspace / ".build")
+        if legacy.digest(self.image) != self.runtime["image_sha256"]:
+            raise ValueError("Prepared target image changed")
+        # Exact prepared bytes bind their already verified UUID; no unowned dwarfdump subprocess.
+        target.update(image=str(self.image), image_sha256=self.runtime["image_sha256"],
+                      image_uuid=self.runtime["image_uuid"])
+        if self.bound_callback is not None:
+            self.bound_callback()
+            self.bound_callback = None
+        return target
+
+    def begin_capture(self):
+        self.triggered = True  # No retry, including a failed binding/spawn.
+        if self.clock() >= self.deadline - 2:
+            raise ValueError("Capture cannot reserve cleanup within original deadline")
+        self.target = self.target_identity()
+        self.record["target"] = dict(self.target)
+        self.tool_identity()
+        for name in ("stdout", "stderr"):
+            fd = os.open(self.attempt / ("vmmap." + name), os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+            self.outputs[name] = os.fdopen(fd, "wb")
+        argv = ["/usr/bin/vmmap", "-summary", "-w", str(self.target["pid"])]
+        self.capture_deadline = min(self.clock() + 10, self.deadline - 2)
+        self.utility = self.launch("vmmap", argv, self.outputs)
+        self.events.append({"event": "target-before", "identity": self.target, "time": self.clock()})
+
+    def cleanup(self):
+        """All observations/signals/reaps end at the original cohort deadline."""
+        end = min(self.deadline, self.clock() + 2)
+        term_end = min(end, self.clock() + 1)
+        sent = set()
+        while self.clock() < end:
+            self.drain()
+            fresh = self.sample(critical=True)
+            if fresh:
+                active = self.owners.active(self.live)
+                if (not active and not self.owners.pending
+                        and all(child.poll() is not None for child in self.children)
+                        and all(intent["state"] in ("reaped", "not-launched") for intent in self.record["intents"])):
+                    return not self.owners.ambiguous
+                signum = signal.SIGTERM if self.clock() < term_end else signal.SIGKILL
+                for pid, row in active.items():
+                    key = (pid, row["start"], signum)
+                    if key in sent or self.clock() >= end:
+                        continue
+                    # Only a just-observed exact identity authorizes a signal, never a group/name.
+                    self.cap.require_current()
+                    if self.clock() >= end:
+                        break
+                    if not same_process(self.owners.known[pid], self.rows.get(pid)):
+                        raise ValueError("Cleanup identity changed")
+                    self.send_signal(pid, signum)
+                    sent.add(key)
+                    self.events.append({"event": "signal", "pid": pid, "signal": int(signum), "time": self.clock()})
+            self.sleep(min(0.01, max(0, end - self.clock())))
+        return False
+
+    def custody_hold(self):
+        self.record.update(state="UNKNOWN", phase="custody-only", terminal=None)
+        try:
+            self.cap.unknown(self.record)
+        except BaseException as error:
+            self.errors.append("UNKNOWN persistence: " + type(error).__name__)
+            # ACTIVE/missing/malformed state still refuses subsequent admission.
+            self.cap.phase = "custody-only"
+        try:
+            self.write_result("INCOMPLETE/UNKNOWN", None, post_deadline=True)
+        except BaseException:
+            # Failed evidence I/O cannot release live custody. The registry still blocks admission.
+            pass
+        while True:
+            try:
+                # Only immutable, exact reviewed operator files are read in this inert phase.
+                current = native_runner.diagnostic_custody_registry()["records"].get(self.cap.nonce)
+                if (current is not None and current["attempt"] == str(self.attempt)
+                        and current["controller"] == self.cap.controller
+                        and current["source_head"] == self.cap.head
+                        and current["policy_sha256"] == self.cap.policy
+                        and current["session_sha256"] == self.cap.session
+                        and native_runner.diagnostic_resolution(current)):
+                    return
+                self.sleep(0.1)
+            except BaseException:
+                # SIGINT/SystemExit/exception is not permission to unwind live lease custody.
+                continue
+
+    def write_result(self, status, code, post_deadline=False):
+        outputs = {}
+        for name, stream in self.outputs.items():
+            stream.flush()
+            outputs["vmmap." + name] = legacy.digest(self.attempt / ("vmmap." + name))
+        durable_json(self.attempt / "diagnostic.json", {"schema": SCHEMA, "kind": VM_DIAGNOSTIC_KIND,
+            "status": status, "ordinary_pass": False, "capture_complete": self.capture_complete,
+            "residency": "UNAVAILABLE", "format": "UNQUALIFIED", "custody_nonce": self.cap.nonce,
+            "worker_exit": code, "last_verified": self.record["last_verified"], "memory": self.memory,
+            "post_deadline": {"rss": "UNKNOWN", "identity": "UNKNOWN"} if post_deadline else None,
+            "target_before": self.target, "events": self.events, "errors": self.errors, "outputs": outputs})
+
+    def execute(self, command, timeout, descriptors, environment, progress=None):
+        validate_vmmap_deployment(self.authority, self.runtime)
+        self.environment = child_environment(self.attempt, environment)
+        self.descriptors = tuple(descriptors)
+        self.deadline = self.clock() + timeout
+        controller = {"pid": self.owner["pid"], "start": self.owner["start"], "command": self.owner["command"],
+            "image": str(Path(sys.executable).resolve()), "image_sha256": self.owner["image_sha256"],
+            "source_sha256": legacy.digest(self.authority.root / "Tools/CI/recoverable_shards.py")}
+        self.cap = _VmmapCapability(self.authority, self.attempt, controller, self.leases, self.deadline, self.clock)
+        seed = {"pid": controller["pid"], "parent": self.owner["parent"], "group": self.owner["group"],
+                "start": controller["start"], "command": controller["command"], "role": "controller"}
+        self.owners = _VmmapOwners(seed)
+        self.record = {"nonce": self.cap.nonce, "attempt": str(self.attempt), "source_head": self.cap.head,
+            "policy_sha256": self.cap.policy, "session_sha256": self.cap.session, "controller": controller,
+            "identities": [seed], "state": "ACTIVE", "phase": "timed", "launches": 1, "deadline": self.deadline,
+            "last_verified": None, "terminal": None, "intents": [], "target": None}
+        self.persist()  # Durable ACTIVE precedes every diagnostic worker/support spawn.
+        log, clean, code = None, False, None
+        try:
+            log = os.fdopen(os.open(self.attempt / "test.log", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600), "wb")
+            for signum in (signal.SIGINT, signal.SIGTERM):
+                self.handlers[signum] = signal.getsignal(signum)
+                signal.signal(signum, lambda number, frame: setattr(self, "cancelled", True))
+            self.worker = self.launch("worker", command, {"stdout": log})
+            durable_json(self.attempt / "child.json", {"pid": self.worker.pid, "command": command})
+            while self.clock() < self.deadline - 2:
+                if self.cancelled:
+                    raise ValueError("Diagnostic cancelled; bounded cleanup required")
+                self.drain()
+                fresh = self.sample()
+                if fresh and not self.triggered and self.record["last_verified"]["worker_bytes"] >= 1879048192:
+                    self.begin_capture()
+                if self.utility is not None and not self.capture_complete:
+                    if self.clock() >= self.capture_deadline:
+                        raise ValueError("Diagnostic capture deadline")
+                    if self.utility.poll() is not None and not self.utility.open_streams:
+                        if (self.utility.poll() != 0 or self.utility.total == 0
+                                or (self.attempt / "vmmap.stdout").stat().st_size == 0):
+                            raise ValueError("Diagnostic capture/permission/output failure")
+                        if self.utility_finished is None:
+                            self.utility_finished = self.clock()
+                        if not fresh or self.last_sample_started < self.utility_finished:
+                            self.sample_due = 0
+                        else:
+                            after = self.target_identity(self.target)
+                            self.tool_identity()
+                            (self.attempt / "vmmap.stdout").read_bytes().decode("utf-8", "strict")
+                            self.capture_complete = True
+                            self.events.append({"event": "target-after", "identity": after, "time": self.clock()})
+                if self.worker.poll() is not None:
+                    code = self.worker.poll()
+                    if not self.capture_complete:
+                        raise ValueError("Cohort ended without a complete verified capture")
+                    break
+                self.sleep(0.01)
+        except BaseException as error:
+            self.errors.append(type(error).__name__ + ": " + str(error))
+        # One cleanup budget only, including after capture, cancellation or sampling failure.
+        try:
+            if self.clock() < self.deadline:
+                clean = self.cleanup()
+        except BaseException as cleanup_error:
+            self.errors.append("cleanup: " + type(cleanup_error).__name__)
+        if clean:
+            try:
+                self.cap.require_current()
+                self.record.update(state="CLEAN", phase="terminal", terminal={
+                    "absent": [dict(self.owners.known[pid]) for pid in sorted(self.owners.known)
+                               if self.owners.known[pid]["role"] != "controller"],
+                    "reaped": all(child.code is not None for child in self.children), "time": self.clock()})
+                self.persist(critical=True)
+                self.cap.phase = "terminal"
+            except BaseException as error:
+                clean = False
+                self.errors.append("terminal persistence: " + type(error).__name__)
+        if not clean:
+            self.custody_hold()  # Does not unwind any enclosing lease context.
+        else:
+            self.write_result("capture-complete/question-unanswered" if self.capture_complete and not self.errors and code == 0
+                              else "diagnostic-incomplete", code)
+        # Only verified cleanup or an exact operator resolution permits these contexts to close.
+        for signum, previous in self.handlers.items():
+            signal.signal(signum, previous)
+        for child in self.children:
+            child.close()
+        for stream in self.outputs.values():
+            stream.close()
+        if log is not None:
+            log.close()
+        durable_json(self.attempt / "child-exit.json", {"pid": self.worker.pid if self.worker else None,
+                                                       "exit_code": code if code is not None else 125})
+        return 0 if clean and self.capture_complete and not self.errors and code == 0 else 125
+
 class NativeMonitor:
     """Persist verified descendants; reuse capture-quality cleanup's fresh identity checks."""
     def __init__(self, authority, attempt, workspace, expected_runtime=None, expected_image=None, phase=None):
@@ -2321,12 +3028,14 @@ class NativeExecutor:
         self.active_workspace, self.runtime = None, None
 
     def legacy_claim(self):
-        return file_claim(self.authority.legacy_cache / "executor.lock", shared=True)
+        return file_claim(self.authority.legacy_cache / "executor.lock", shared=True,
+                          diagnostic_role="executor" if self.authority.config.get("vmmap_diagnostic") else None)
 
     def observe_admission(self):
         return self.authority.admission()
 
     def reclaimable(self, reservation):
+        native_runner.require_diagnostic_custody_clear()
         rows = self.authority.snapshot()
         if same_process(reservation["owner"], rows.get(reservation["owner"]["pid"])):
             return False
@@ -2389,6 +3098,9 @@ class NativeExecutor:
 
     def proven_exited(self, attempt):
         start = load_json(attempt / "start.json")
+        if ((attempt / "diagnostic.json").exists()
+                or VM_DIAGNOSTIC_ENV in start.get("identity", {}).get("runtime", {}).get("environment", {})):
+            return diagnostic_cleanup_proved(attempt)
         rows = self.authority.snapshot()
         if self.unknown_live_helpers():
             return False
@@ -2415,6 +3127,18 @@ class NativeExecutor:
                                        attempt, shard["methods"])
         build = load_json(self.workspace / (self.runtime["mode"] + "-build.json"))
         image = self.active_workspace / build["image_relative"]
+        if self.authority.config.get("vmmap_diagnostic") is not None:
+            if (len(shard["methods"]) != 16
+                    or fingerprint(shard["methods"]) != self.authority.config["vmmap_diagnostic"]["cohort_methods_sha256"]):
+                raise ValueError("Diagnostic requires the complete approved Panel16 cohort")
+            self.diagnostic_attempt = attempt
+            monitor = VmmapDiagnostic(self.authority, attempt, self.active_workspace, self.runtime, image,
+                                      self.diagnostic_leases, self.owner_binding)
+            monitor.bound_callback = getattr(self, "reservation_callback", None)
+            context = {"mode": self.runtime["mode"], "shard": shard["id"],
+                       "selected_method_count": len(shard["methods"]), **getattr(self, "progress_context", {})}
+            return execute_process(command, self.active_workspace, attempt, timeout, descriptors,
+                                   self.authority.environment_for(self.runtime["mode"]), monitor, progress=context)
         monitor = NativeMonitor(self.authority, attempt, self.active_workspace, self.runtime, image)
         monitor.bound_callback = getattr(self, "reservation_callback", None)
         context = {"mode": self.runtime["mode"], "shard": shard["id"],
@@ -3509,13 +4233,19 @@ def local_command(args):
     if not 0 < positive(args.timeout) <= SHARD_MAX_SECONDS:
         raise ValueError("Local sanitizer operations retain the two-hour shard bound")
     require_physical_activation()
+    native_runner.require_diagnostic_custody_clear()
     environment = local_environment()
     # Fixed physical-owner storage, shared by both modes regardless of their separate policy/cache paths.
     serial_root = Path(pwd.getpwuid(os.getuid()).pw_dir) / "Library/EliteNativeCI"
-    with file_claim(serial_root / "recoverable-control.lock") as control:
+    candidate = local_control(args.policy)
+    diagnostic = candidate.get("recoverable_shards", {}).get("vmmap_diagnostic") is not None
+    with file_claim(serial_root / "recoverable-control.lock",
+                    diagnostic_role="controller" if diagnostic else None) as control:
         authority = LocalAuthority(args.policy, args.local_session, args.local_session_digest, args.mode, stage,
                                    environment=environment, control_descriptors=(control.fileno(),))
         authority.control_descriptors = (control.fileno(),)
+        if authority.config.get("vmmap_diagnostic") is not None:
+            authority.controller_lease = getattr(control, "_diagnostic_lease", None)
         authority.check_session(stage)
         if stage == "prepare":
             if (args.output is None or not args.output.is_absolute() or args.output != args.output.resolve()
@@ -3541,6 +4271,8 @@ def local_command(args):
         verify_local_plan(authority, plan, args.digest)
         store = Store(authority.cache)
         if stage == "validate":
+            if authority.config.get("vmmap_diagnostic") is not None:
+                raise ValueError("Diagnostic execution cannot create a local quality component")
             if args.output is None:
                 raise ValueError("Local validation requires a fresh component output")
             return local_component(authority, plan, args.digest, store, args.output)
@@ -3555,6 +4287,8 @@ def local_command(args):
             try:
                 results.append(run_shard(plan, shard["id"], store, executor, authority.policy["approved_head"],
                                          args.timeout, authority.admission()))
+                if authority.config.get("vmmap_diagnostic") is not None:
+                    return {"status": "diagnostic-only; stop after one attempt", "results": results}
             except BaseException:
                 report_progress(plan, store, "local shard failed or interrupted", shard, packed_target=LOCAL_PACKED_ID_TARGET)
                 raise
