@@ -34,7 +34,7 @@ This development line targets the current model. Existing saves are disposable; 
 
 The [completion ledger](docs/COMPLETION-LEDGER.md) is the current player-facing milestone roadmap, complete mission inventory and owned work queue. It separates prepared source, usable local builds and published delivery, and uses focused unit tests with broader checks batched after several deliveries.
 
-Current quality work has one sealed 16-method ASAN cohort pass. The next cohort exceeded its memory guard, so native execution is paused. A reviewed controller change prepares one bounded memory-region diagnostic; it still needs reviewed registry/guard deployment and actual execution inputs. It does not qualify the full sanitizer suite or change the published app. See the [diagnostic handoff](docs/PR-m01-vmmap-snapshot.md).
+Current quality work retains one sealed 16-method ASAN cohort pass. A bounded diagnostic attempt stopped before its memory snapshot because its helper selector rejected forwarded test options. The reviewed correction now needs its installed-generation and fresh execution inputs cleared. Native execution is paused; the full sanitizer suite and published app are unchanged. See the [diagnostic handoff](docs/PR-m01-vmmap-snapshot.md).
 
 ![Elite gameplay](docs/elite.png)
 

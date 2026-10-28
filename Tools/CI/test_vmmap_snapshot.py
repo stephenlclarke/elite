@@ -25,6 +25,48 @@ START = "Mon Oct 28 10:00:00 2026"
 RAW = b"REGION TYPE         VIRTUAL SIZE\nMALLOC              14M\n"  # Deliberately no residency field.
 
 
+# Saved helper30355/worker30051, processes.json SHA ff233ddb0241a74779baa2ab8f6805617d16b7c30f7335f42592823f7d90c0bd.
+# Keep raw ps backslashes and SwiftPM's report/filter order; these are data, never executed.
+SAVED_HELPER_COMMAND = (
+    '/Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper'
+    ' --test-bundle-path'
+    ' /Users/sclarke/Library/EliteNativeCI/local-sanitizer-workers/c3ceac57d064f3262503b154150c47f9eeb5e770/local16-jobs1-nonbatch-asan225-vmmap-summary-v1/address/one/address/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests'
+    ' --scratch-path'
+    ' .build/asan'
+    ' --sanitize=address'
+    ' --jobs'
+    ' 1'
+    ' -Xswiftc'
+    ' -disable-batch-mode'
+    ' --skip-build'
+    ' --no-parallel'
+    ' --filter'
+    ' ^(?:EliteCoreTests\\.HaflingerPhysicalContractUnitTests/|EliteCoreTests\\.MarketDisplayOrderUnitTests/|EliteCoreTests\\.NativeMissionStationTests/|EliteCoreTests\\.NativeSalvageAuthorityTests/|EliteCoreTests\\.PanelClippingTests/|EliteCoreTests\\.ScriptFinanceCalendarDeclarationTests/)'
+    ' --xunit-output'
+    ' /Users/sclarke/Library/EliteNativeCI/local-sanitizer-cache/c3ceac57d064f3262503b154150c47f9eeb5e770/local16-jobs1-nonbatch-asan225-vmmap-summary-v1/address/attempts/a565b3d0394434ccd39b76c938349dc4f99d4a4842d632b1e4cdcf11dbe602e7/b4a18f33-7b4d-462c-9245-1cc33359c96b/tests-swift-testing.xml'
+    ' /Users/sclarke/Library/EliteNativeCI/local-sanitizer-workers/c3ceac57d064f3262503b154150c47f9eeb5e770/local16-jobs1-nonbatch-asan225-vmmap-summary-v1/address/one/address/.build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests'
+    ' --testing-library'
+    ' swift-testing'
+)
+SAVED_WORKER_COMMAND = [
+    '/Users/sclarke/.swiftly/bin/swift',
+    'test',
+    '--scratch-path',
+    '.build/asan',
+    '--sanitize=address',
+    '--jobs',
+    '1',
+    '-Xswiftc',
+    '-disable-batch-mode',
+    '--skip-build',
+    '--no-parallel',
+    '--xunit-output',
+    '/Users/sclarke/Library/EliteNativeCI/local-sanitizer-cache/c3ceac57d064f3262503b154150c47f9eeb5e770/local16-jobs1-nonbatch-asan225-vmmap-summary-v1/address/attempts/a565b3d0394434ccd39b76c938349dc4f99d4a4842d632b1e4cdcf11dbe602e7/b4a18f33-7b4d-462c-9245-1cc33359c96b/tests.xml',
+    '--filter',
+    '^(?:EliteCoreTests\\.HaflingerPhysicalContractUnitTests/|EliteCoreTests\\.MarketDisplayOrderUnitTests/|EliteCoreTests\\.NativeMissionStationTests/|EliteCoreTests\\.NativeSalvageAuthorityTests/|EliteCoreTests\\.PanelClippingTests/|EliteCoreTests\\.ScriptFinanceCalendarDeclarationTests/)',
+]
+
+
 def write_json(path, value, immutable=False):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.exists():
@@ -102,6 +144,7 @@ class Fixture(unittest.TestCase):
                 "game_test_inputs_sha256": shards.fingerprint({"Sources/Game.swift": SHA, "Tests/Game.swift": SHA}),
                 "deployment": {"path": str(self.root / "deployment.json"), "sha256": SHA}}}
         self.runtime = {"inputs": {"Sources/Game.swift": SHA, "Tests/Game.swift": SHA},
+            "flags": shards.local_sanitizer_flags("address"),
             "image_sha256": legacy.digest(self.image), "image_uuid": "d" * 64,
             "environment": {shards.VM_DIAGNOSTIC_ENV: SHA}}
         self.deploy()
@@ -109,6 +152,12 @@ class Fixture(unittest.TestCase):
         self.attempt.mkdir(mode=0o700)
         self.owner = row(os.getpid(), 1, command="/fake/controller", role="controller")
         self.owner["image_sha256"] = legacy.digest(self.python)
+
+    def command(self):
+        command = list(SAVED_WORKER_COMMAND)
+        command[0] = "/fake/swift"
+        command[command.index("--xunit-output") + 1] = str(self.attempt / "tests.xml")
+        return command
 
     def empty_registry(self):
         write_json(self.custody / "registry.json", {"schema": 1, "kind": guard.CUSTODY_KIND,
@@ -413,8 +462,12 @@ class FakeWorld:
         worker = next((child for child in self.children if child.role == "worker"), None)
         if worker is not None and worker.code is None and self.helper_live:
             image = str(self.fixture.image)
-            command = shlex.join(["/fake/swiftpm-testing-helper", "--test-bundle-path", image, image,
-                                  "--testing-library", "swift-testing"])
+            forwarded = list(worker.argv[2:])
+            report = forwarded.index("--xunit-output")
+            del forwarded[report:report + 2]
+            command = " ".join(["/fake/swiftpm-testing-helper", "--test-bundle-path", image, *forwarded,
+                                "--xunit-output", str(self.fixture.attempt / "tests-swift-testing.xml"),
+                                image, "--testing-library", "swift-testing"])
             rows.append(row(30000, worker.pid, worker.pid, command, rss=self.helper_rss))
         if self.union_over:
             rows[0] = dict(rows[0], rss_bytes=2415919104)
@@ -490,7 +543,7 @@ class ControllerTests(Fixture):
 
     def test_one_threshold_capture_raw_units_clean_exit_and_no_promotion(self):
         monitor, world = self.execute()
-        result = monitor.execute(["/fake/swift", "test", "--skip-build"], 6, (), {})
+        result = monitor.execute(self.command(), 6, (), {})
         self.assertEqual(result, 0, monitor.errors)
         self.assertEqual(sum(child.role == "vmmap" for child in world.children), 1)
         self.assertGreaterEqual(monitor.last_sample_started, monitor.utility_finished)
@@ -513,7 +566,7 @@ class ControllerTests(Fixture):
 
     def test_union_overflow_aborts_capture_but_still_cleans(self):
         monitor, world = self.execute(union_over=True)
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 6, (), {}), 125)
         self.assertFalse(monitor.triggered)
         self.assertIn("budget", monitor.memory["failure"])
         self.assertTrue(world.signals)
@@ -533,7 +586,7 @@ class ControllerTests(Fixture):
                     raise KeyboardInterrupt()
                 self.resolve(guard.diagnostic_custody_registry()["records"][monitor.cap.nonce])
         self.clock.on_sleep = resolution_after_hold
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 5, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 5, (), {}), 125)
         self.assertTrue(hold_actions)
         self.assertTrue(any(item[1] == signal.SIGTERM for item in world.signals))
         self.assertTrue(any(item[1] == signal.SIGKILL for item in world.signals))
@@ -546,21 +599,21 @@ class ControllerTests(Fixture):
 
     def test_raw_invalid_utf8_is_retained_and_incomplete(self):
         monitor, world = self.execute(raw=b"\xff original bytes")
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 6, (), {}), 125)
         self.assertFalse(monitor.capture_complete)
         self.assertEqual((self.attempt / "vmmap.stdout").read_bytes(), b"\xff original bytes")
 
     def test_tool_drift_before_capture_is_not_retried(self):
         monitor, world = self.execute()
         monitor.tool_identity = lambda: (_ for _ in ()).throw(ValueError("fake tool drift"))
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 6, (), {}), 125)
         self.assertTrue(monitor.triggered)
         self.assertFalse(any(child.role == "vmmap" for child in world.children))
 
 
     def test_worker_threshold_excludes_controller_and_no_trigger_is_incomplete(self):
         monitor, world = self.execute(helper_rss=1024, controller_rss=1879048192)
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 4, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 4, (), {}), 125)
         self.assertFalse(monitor.triggered)
         self.assertFalse(any(child.role == "vmmap" for child in world.children))
         guard.require_diagnostic_custody_clear()
@@ -568,7 +621,7 @@ class ControllerTests(Fixture):
     def test_capture_has_own_ten_second_limit_and_only_one_cleanup_window(self):
         monitor, world = self.execute(worker_exit=False, utility_hang=True)
         start = self.clock()
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 20, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 20, (), {}), 125)
         self.assertLessEqual(self.clock() - start, 12.1)
         self.assertEqual(sum(child.role == "vmmap" for child in world.children), 1)
         self.assertTrue(any("capture deadline" in error for error in monitor.errors))
@@ -588,7 +641,7 @@ class ControllerTests(Fixture):
                 held.extend(lease.verify() for lease in monitor.leases)
                 self.resolve(guard.diagnostic_custody_registry()["records"][monitor.cap.nonce])
         self.clock.on_sleep = resolve_hold
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 6, (), {}), 125)
         self.assertEqual(len(held), 3)
         self.assertTrue(any("terminal persistence" in error for error in monitor.errors))
 
@@ -609,7 +662,7 @@ class ControllerTests(Fixture):
                     lease.verify()
                 self.resolve(record)
         self.clock.on_sleep = resolve_hold
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 6, (), {}), 125)
         self.assertEqual(seen[0]["state"], "planned")
         self.assertIsNone(seen[0]["pid"])
 
@@ -623,6 +676,117 @@ class ControllerTests(Fixture):
         self.assertFalse(executor.proven_exited(self.attempt))
         self.resolve(record)
         self.assertTrue(executor.proven_exited(self.attempt))
+
+
+class HelperIdentityTests(Fixture):
+    def monitor(self):
+        monitor, _ = ControllerTests.execute(self)
+        worker = type("Worker", (), dict(pid=30051, argv=self.command(), role="worker", code=None))()
+        monitor.worker = worker
+        saved_image = SAVED_HELPER_COMMAND.split(" --test-bundle-path ", 1)[1].split(" ", 1)[0]
+        saved_attempt = str(Path(SAVED_WORKER_COMMAND[SAVED_WORKER_COMMAND.index("--xunit-output") + 1]).parent)
+        raw = SAVED_HELPER_COMMAND.replace(saved_image, str(self.image)).replace(saved_attempt, str(self.attempt))
+        rows = {self.owner["pid"]: self.owner,
+                30051: row(30051, self.owner["pid"], command=" ".join(worker.argv)),
+                30054: row(30054, 30051, 30051, command="/fake/swift-test"),
+                30355: row(30355, 30054, 30355, command=raw)}
+        owners = shards._VmmapOwners(identity(self.owner))
+        owners.spawned(worker)
+        monitor.live, _, _ = owners.observe(rows)
+        return monitor
+
+    def test_saved_actual_forwarded_vector_preserves_raw_filter_and_image_binding(self):
+        self.assertEqual(hashlib.sha256(SAVED_HELPER_COMMAND.encode()).hexdigest(),
+                         "eaead1b37a09ae40f5ad59c1085dd1ea51fb73f5f22dbf8116ce4864fb59a88c")
+        self.assertEqual(len(SAVED_HELPER_COMMAND.split(" ")), 19)
+        monitor = self.monitor()
+        target = monitor.target_identity()
+        self.assertEqual(target["pid"], 30355)
+        self.assertEqual(target["parent"], 30054)
+        self.assertEqual(target["image_sha256"], self.runtime["image_sha256"])
+        self.assertEqual(target["image_uuid"], self.runtime["image_uuid"])
+        self.assertIn(SAVED_WORKER_COMMAND[-1], target["command"])
+        self.assertNotIn(SAVED_WORKER_COMMAND[-1], shards.arguments(target))
+        self.assertEqual(monitor.target_identity(target), target)
+
+    def test_altered_filter_report_image_and_forwarded_options_refuse(self):
+        monitor = self.monitor()
+        raw = monitor.live[30355]["command"]
+        filter_value = self.command()[-1]
+        mutations = {
+            "unescaped-filter": raw.replace(filter_value, filter_value.replace("\\.", ".")),
+            "other-filter": raw.replace(filter_value, "^(?:EliteCoreTests.OtherTests/)"),
+            "worker-report": raw.replace(str(self.attempt / "tests-swift-testing.xml"), str(self.attempt / "tests.xml")),
+            "foreign-report": raw.replace(str(self.attempt), str(self.attempt) + "-other"),
+            "bundle-image": raw.replace(str(self.image), str(self.image) + "-other", 1),
+            "final-image": raw.replace(str(self.image) + " --testing-library", str(self.image) + "-other --testing-library"),
+            "scratch": raw.replace(".build/asan", ".build/other"),
+            "sanitizer": raw.replace("--sanitize=address", "--sanitize=thread"),
+            "jobs": raw.replace("--jobs 1", "--jobs 2"),
+            "batch-mode": raw.replace(" -Xswiftc -disable-batch-mode", ""),
+            "skip-build": raw.replace(" --skip-build", ""),
+            "parallelism": raw.replace("--no-parallel", "--parallel"),
+            "library": raw.replace("--testing-library swift-testing", "--testing-library xctest"),
+            "extra-option": raw.replace(" --skip-build", " --unknown-option --skip-build"),
+            "helper-path": raw.replace(raw.split(" ", 1)[0], "/fake/other-helper", 1),
+            "quoted-filter": raw.replace(filter_value, shlex.quote(filter_value)),
+            "report-before-filter": raw.replace("--filter " + filter_value + " --xunit-output " + str(self.attempt / "tests-swift-testing.xml"),
+                "--xunit-output " + str(self.attempt / "tests-swift-testing.xml") + " --filter " + filter_value),
+        }
+        for name, command in mutations.items():
+            self.assertNotEqual(command, raw, name)
+            monitor.live[30355]["command"] = command
+            with self.subTest(change=name), self.assertRaisesRegex(ValueError, "Missing/ambiguous"):
+                monitor.target_identity()
+        monitor.live[30355]["command"] = raw
+        monitor.target_identity()
+
+    def test_duplicate_or_nonworker_candidate_refuses(self):
+        monitor = self.monitor()
+        monitor.live[30356] = dict(monitor.live[30355])
+        with self.assertRaisesRegex(ValueError, "Missing/ambiguous"):
+            monitor.target_identity()
+        del monitor.live[30356]
+        monitor.live[30355]["role"] = "support"
+        with self.assertRaisesRegex(ValueError, "Missing/ambiguous"):
+            monitor.target_identity()
+
+    def test_pid_start_and_observed_helper_path_stay_bound_after_capture(self):
+        monitor = self.monitor()
+        before = monitor.target_identity()
+        original = dict(monitor.live[30355])
+        monitor.live[30356] = monitor.live.pop(30355)
+        with self.assertRaisesRegex(ValueError, "PID/start drift"):
+            monitor.target_identity(before)
+        monitor.live[30355] = monitor.live.pop(30356)
+        monitor.live[30355]["start"] = "different start"
+        with self.assertRaisesRegex(ValueError, "PID/start drift"):
+            monitor.target_identity(before)
+        monitor.live[30355] = dict(original)
+        monitor.live[30355]["command"] = original["command"].replace(original["command"].split(" ", 1)[0],
+                                                                  "/other/swiftpm-testing-helper", 1)
+        with self.assertRaisesRegex(ValueError, "PID/start drift"):
+            monitor.target_identity(before)
+        monitor.live[30355] = original
+        self.image.write_bytes(b"changed prepared bytes")
+        with self.assertRaisesRegex(ValueError, "image changed"):
+            monitor.target_identity(before)
+
+    def test_unknown_worker_option_order_or_ambiguous_raw_argument_shape_refuses(self):
+        monitor = self.monitor()
+        original = list(monitor.worker.argv)
+        monitor.worker.argv += ["--other-option"]
+        with self.assertRaisesRegex(ValueError, "worker command/report shape"):
+            monitor.target_identity()
+        monitor.worker.argv = list(original)
+        index = monitor.worker.argv.index("--xunit-output")
+        monitor.worker.argv[index + 1] = str(self.attempt / "foreign.xml")
+        with self.assertRaisesRegex(ValueError, "worker command/report shape"):
+            monitor.target_identity()
+        monitor.worker.argv = list(original)
+        monitor.worker.argv[-1] = "filter with spaces"
+        with self.assertRaisesRegex(ValueError, "worker command/report shape"):
+            monitor.target_identity()
 
 
 class CorrectionTests(Fixture):
@@ -662,7 +826,7 @@ class CorrectionTests(Fixture):
                 held.append(self.clock())
                 self.resolve(guard.diagnostic_custody_registry()["records"][monitor.cap.nonce])
         self.clock.on_sleep = rescue_old_failure
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 20, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 20, (), {}), 125)
         self.assertEqual(len(failed_reads), 1)
         self.assertEqual(held, [], "Output failure alone must not abandon verified cleanup")
         self.assertEqual(monitor.failed_output, {monitor.utility.pid})
@@ -693,7 +857,7 @@ class CorrectionTests(Fixture):
             monitor.worker.drain = failed_output
             return original_cleanup()
         monitor.cleanup = cleanup
-        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(monitor.execute(self.command(), 6, (), {}), 125)
         self.assertEqual(len(failures), 1)
         self.assertTrue(any(error.startswith("cleanup output: OSError") for error in monitor.errors))
         self.assertEqual(monitor.failed_output, {monitor.worker.pid})

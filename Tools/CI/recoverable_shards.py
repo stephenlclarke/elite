@@ -2668,15 +2668,28 @@ class VmmapDiagnostic:
             raise ValueError("Diagnostic utility identity drift")
 
     def target_identity(self, expected=None):
+        launch = self.worker.argv if self.worker is not None else []
+        flags = self.runtime["flags"]
+        prefix = [launch[0], "test", *flags, "--skip-build", "--no-parallel",
+                  "--xunit-output", str(self.attempt / "tests.xml"), "--filter"] if launch else []
+        if (not launch or len(launch) != len(prefix) + 1 or launch[:-1] != prefix
+                or any(not arg or any(character.isspace() for character in arg)
+                       for arg in [*launch, str(self.image)])):
+            raise ValueError("Unsupported diagnostic worker command/report shape")
+        # SwiftPM forwards these exact options, moves filter before xunit, and names its own report.
+        forwarded = [*flags, "--skip-build", "--no-parallel", "--filter", launch[-1],
+                     "--xunit-output", str(self.attempt / "tests-swift-testing.xml")]
         candidates = []
         for pid, row in self.live.items():
             if row["role"] != "worker":
                 continue
-            argv = arguments(row)
-            if (len(argv) == 6 and Path(argv[0]).is_absolute()
-                    and Path(argv[0]).name == "swiftpm-testing-helper"
-                    and argv[1:] == ["--test-bundle-path", str(self.image), str(self.image),
-                                    "--testing-library", "swift-testing"]):
+            executable, separator, _ = row["command"].partition(" ")
+            command = " ".join([executable, "--test-bundle-path", str(self.image), *forwarded,
+                                str(self.image), "--testing-library", "swift-testing"])
+            # ps text is not shell-quoted: preserve regex backslashes instead of using shlex equivalence.
+            if (separator and not any(character.isspace() for character in executable)
+                    and Path(executable).is_absolute() and Path(executable).name == "swiftpm-testing-helper"
+                    and row["command"] == command):
                 candidates.append({"pid": pid, **{key: row[key] for key in ("parent", "group", "start", "command", "role")}})
         if len(candidates) != 1:
             raise ValueError("Missing/ambiguous verified prepared helper")
