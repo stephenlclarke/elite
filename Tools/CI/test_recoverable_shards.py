@@ -2909,6 +2909,7 @@ class LocalSanitizerTests(Fixture):
                      patch.object(shards.subprocess, "Popen", side_effect=AssertionError("No real native spawn in local fakes")),
                      patch.object(shards.subprocess, "run", side_effect=AssertionError("No real API/native command in local fakes")),
                      patch.object(shards.subprocess, "check_output", side_effect=AssertionError("No real probe in local fakes")),
+                     patch.dict(os.environ, environment, clear=True),
                      patch("pwd.getpwuid", return_value=SimpleNamespace(pw_dir=str(home)))):
             item.start()
             self.addCleanup(item.stop)
@@ -3276,6 +3277,74 @@ class LocalSanitizerTests(Fixture):
                 with self.subTest(mutation=mutation), self.assertRaises(ValueError):
                     shards.local_component(validation, value.plan, value.session["plan_sha256"], store,
                                            value.plan_path.with_name("component"))
+
+
+class LocalControllerLeaseTests(Fixture):
+    # Reuse the reviewed fake fixture; only these new methods are selected for this delta.
+    controls = LocalSanitizerTests.controls
+    control_write = staticmethod(LocalSanitizerTests.control_write)
+    args = LocalSanitizerTests.args
+
+    def test_held_common_controller_lease_prevents_authority_metadata_and_mode_storage(self):
+        value = self.controls(stage="prepare")
+        args = self.args(value, "local-prepare")
+        cache = Path(value.policy["recoverable_shards"]["cache"])
+        worker = Path(value.policy["recoverable_shards"]["workers"]["one"])
+        self.assertFalse(cache.exists())
+        self.assertFalse(worker.exists())
+        with shards.file_claim(value.home / "Library/EliteNativeCI/recoverable-control.lock"), patch.dict(
+                os.environ, value.environment, clear=True), patch.object(shards, "LocalAuthority", wraps=shards.LocalAuthority) as constructor:
+            with self.assertRaises(BlockingIOError):
+                shards.local_command(args)
+        constructor.assert_not_called()
+        self.assertEqual(value.calls, [])
+        self.assertFalse(cache.exists())
+        self.assertFalse(worker.exists())
+        self.assertEqual(shards.load_json(value.state)["used"], 0)
+
+    def test_first_real_authority_metadata_has_live_shared_controller_descriptor(self):
+        value = self.controls(stage="prepare")
+        args = self.args(value, "local-prepare")
+        args.output = value.plan_path.with_name("fresh-plan.json")
+        original, inherited = shards.LocalAuthority, []
+        cache = Path(value.policy["recoverable_shards"]["cache"])
+        worker = Path(value.policy["recoverable_shards"]["workers"]["one"])
+        def read(command, workspace, environment, descriptors):
+            self.assertEqual(len(descriptors), 1)
+            self.assertEqual(os.fstat(descriptors[0]).st_uid, os.getuid())
+            with self.assertRaises(BlockingIOError), shards.file_claim(value.home / "Library/EliteNativeCI/recoverable-control.lock"):
+                self.fail("First metadata child must inherit the held common controller lease")
+            if not inherited:
+                self.assertFalse(cache.exists())
+                self.assertFalse(worker.exists())
+                self.assertEqual(command, ["sysctl", "-n", "hw.model"])
+            inherited.append(tuple(descriptors))
+            return value.read(command, workspace, environment, descriptors)
+        def construct(*args, **kwargs):
+            return original(*args, read=read, **kwargs)
+        build = {"runtime": value.plan["runtime"], "inventory": METHODS, "shared_groups": []}
+        builder = SimpleNamespace(build_only=lambda mode, timeout: None, prepare=lambda mode, path: build)
+        # The builder is a deliberate fake: this test exercises real startup, not native preparation.
+        with patch.dict(os.environ, value.environment, clear=True), patch.object(shards, "LocalAuthority", side_effect=construct), patch.object(
+                shards, "NativeBuilder", return_value=builder):
+            result = shards.local_command(args)
+        self.assertEqual(result["plan_sha256"], shards.legacy.digest(args.output))
+        self.assertTrue(inherited)
+        self.assertTrue(all(descriptors == inherited[0] for descriptors in inherited))
+        self.assertTrue(cache.exists())
+        self.assertTrue(worker.exists())
+        with self.assertRaises(OSError):
+            os.fstat(inherited[0][0])
+
+    def test_supplied_identity_is_refused_before_controller_storage_or_authority(self):
+        args = SimpleNamespace(command="local-run", policy=Path("/missing"), local_session=Path("/missing-session"),
+                               local_session_digest="a"*64, mode="address", timeout=5)
+        with patch.dict(os.environ, {"GITHUB_JOB": "pretend"}, clear=True), patch.object(shards, "file_claim") as never, patch.object(
+                shards, "LocalAuthority") as authority:
+            with self.assertRaisesRegex(ValueError, "supplied authorization identities"):
+                shards.local_command(args)
+        never.assert_not_called()
+        authority.assert_not_called()
 
 
 if __name__ == "__main__":

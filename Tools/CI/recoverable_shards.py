@@ -1589,17 +1589,23 @@ def validate_local_authorization(record, runtime):
         raise ValueError("Local authorization differs from the actual source/mode/profile")
 
 
+def local_environment(environment=None):
+    value = dict(os.environ if environment is None else environment)
+    if any(name.startswith(("GITHUB_", "RUNNER_")) or name in AUTHORIZATION_CONTROLS
+           or name in ("ELITE_NATIVE_POLICY", "ELITE_NATIVE_APPROVED_HEAD", LOCAL_POLICY_ENV,
+                       "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256") for name in value):
+        raise ValueError("Local sanitizer execution refuses GitHub or supplied authorization identities")
+    return value
+
+
 class LocalAuthority(NativeAuthority):
     """A genuine local, finite sanitizer approval; never a simulated Actions job."""
-    def __init__(self, policy_path, session_path, session_digest, mode, stage, environment=None, read=native_output):
+    def __init__(self, policy_path, session_path, session_digest, mode, stage, environment=None, read=native_output,
+                 control_descriptors=()):
         import pwd
         require_physical_activation()  # Before control-file reads or any native/resource probe.
-        self.environment = dict(os.environ if environment is None else environment)
-        if any(name.startswith(("GITHUB_", "RUNNER_")) or name in AUTHORIZATION_CONTROLS
-               or name in ("ELITE_NATIVE_POLICY", "ELITE_NATIVE_APPROVED_HEAD", LOCAL_POLICY_ENV,
-                           "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256")
-               for name in self.environment):
-            raise ValueError("Local sanitizer execution refuses GitHub or supplied authorization identities")
+        self.environment = local_environment(environment)
+        self.control_descriptors = tuple(control_descriptors)
         self.read, self.policy_path, self.session_path = read, Path(policy_path), Path(session_path)
         self.policy = local_control(self.policy_path)
         require_fields(self.policy, ("approved_head", "developer_dir", "swift", "sdk", "recoverable_shards", "local_activation"))
@@ -3030,16 +3036,19 @@ def local_component(authority, plan, digest, store, output):
 
 
 def local_command(args):
+    import pwd
     stage = {"local-prepare": "prepare", "local-run": "execute", "local-validate": "validate"}[args.command]
     if not args.policy or not args.local_session or not args.local_session_digest or args.mode not in MODES:
         raise ValueError("Local operations require an owned policy/session, separate digest and exact mode")
     if not 0 < positive(args.timeout) <= SHARD_MAX_SECONDS:
         raise ValueError("Local sanitizer operations retain the two-hour shard bound")
-    authority = LocalAuthority(args.policy, args.local_session, args.local_session_digest, args.mode, stage)
+    require_physical_activation()
+    environment = local_environment()
     # Fixed physical-owner storage, shared by both modes regardless of their separate policy/cache paths.
-    serial_root = authority.physical_home / "Library/EliteNativeCI"
-    legacy.owned_directory(serial_root)
+    serial_root = Path(pwd.getpwuid(os.getuid()).pw_dir) / "Library/EliteNativeCI"
     with file_claim(serial_root / "recoverable-control.lock") as control:
+        authority = LocalAuthority(args.policy, args.local_session, args.local_session_digest, args.mode, stage,
+                                   environment=environment, control_descriptors=(control.fileno(),))
         authority.control_descriptors = (control.fileno(),)
         authority.check_session(stage)
         if stage == "prepare":
