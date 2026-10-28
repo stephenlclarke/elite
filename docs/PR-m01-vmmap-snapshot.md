@@ -29,11 +29,21 @@ Provisioning now acquires controller then the existing physical executor before 
 
 ## Validation
 
-`python3 -B -m unittest discover -s Tools/CI -p test_vmmap_snapshot.py -v` passes 31 focused test methods and also exercises three selected existing fake ordinary reuse/runtime regression cases. All process creation, process probes and signal paths are faked; fixture files and lease FDs are temporary.
+The saved `db197d77` run of `python3 -B -m unittest discover -s Tools/CI -p test_vmmap_snapshot.py -v` passed 31 focused test methods and exercised three selected existing fake ordinary reuse/runtime regression cases. That reviewed baseline is retained without a broad replay. All process creation, process probes and signal paths are faked; fixture files and lease FDs are temporary.
 
 The cases cover closed policy/session rules, empty/missing/malformed/unresolved registry state, exact reviewed resolution and stale-record rejection, lease lifetime and same-inode FD reuse, consumed allowance and phase/deadline revocation, installed-byte/job-matrix drift, worker-only trigger, union accounting/reparent/PID drift, one capture and raw units, fair combined output cap, post-capture target sampling, invalid output/tool drift, aggregate refusal with cleanup, ten-second capture and original-deadline cleanup, TERM/KILL, interrupted inert custody, uncertain spawn and terminal persistence failure, missing-output reclaim without a native fallback, ordinary nonpromotion, nested/direct provisioning order, finite renewal and executor release before listener.
 
 `git diff --check`, Python source compilation without bytecode output and Markdown lint pass for the frozen packet. Coverage measurement with the optional `coverage` module was unavailable in this interpreter; no percentage is claimed. `make ci`, native Swift assertions, sanitizers, leak gates, hosted checks, independent review, protected merge and release remain UNRUN/pending under Root/G1 ownership. No source-only result promotes the retained first Catalogue16 qualification or repairs the refused Panel16 result.
+
+## Bounded review corrections
+
+Review `557c727aecb2bf2b03ee2edfe2a5aea64f832b97ae61d2d9967ca6934ba6eb23` requested two corrections against `db197d77`; the other reviewed scope is retained. A worker/utility output error is recorded once and its acquisition stops, preserving the capped raw prefix. Cleanup still drains its independent identity sampler, polls owned direct children and uses fresh verified identities for the existing finite TERM/KILL/reap window. Output failure alone does not abandon those stop attempts. Failure to acquire trusted identity evidence still refuses signalling and retains unresolved custody.
+
+The inert custody loop now waits after every unresolved check, including missing/malformed registry and invalid/stale resolution failures. An interrupted wait retries the wait before another file check. It retains all three lease lifetimes and performs no post-deadline native sampling, signals or work.
+
+Five new correction methods plus four affected existing controller cases pass in one nine-method fake-only run. The new integrated cap case drives the actual bounded pipe-drain logic against fake ready descriptors until the combined 4 MiB limit, keeps output persistently available, ignores TERM and verifies fresh sampled KILL/reap inside the original cleanup window. It retains the exact raw prefix, returns diagnostic failure and avoids unjustified UNKNOWN. Missing/malformed/stale-resolution cases verify paced retries and held descriptors across an interrupted wait. A cleanup-only output exception case covers the separate cleanup catch path.
+
+For a negative control, the reviewed old `drain`, `cleanup` and `custody_hold` methods were loaded into memory without changing tracked source. The persistent-cap and three hold regressions all failed as expected. Corrected methods pass. No unrelated tests, native probe, operator bootstrap/deployment or policy/session/resolution action was performed. The narrow correction packet changes only the affected controller, focused fake tests and this note pair; independent correction review is pending.
 
 ## Review handoff
 

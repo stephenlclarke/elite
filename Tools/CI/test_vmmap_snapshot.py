@@ -625,6 +625,147 @@ class ControllerTests(Fixture):
         self.assertTrue(executor.proven_exited(self.attempt))
 
 
+class CorrectionTests(Fixture):
+    execute = ControllerTests.execute
+
+    def test_persistent_output_cap_still_samples_signals_and_reaps(self):
+        monitor, world = self.execute(worker_exit=False)
+        original_spawn = monitor.spawn
+        failed_reads = []
+        held = []
+        block = {101: b"O" * 16384, 102: b"E" * 16384}
+        def spawn(role, *args):
+            child = original_spawn(role, *args)
+            if role == "vmmap":
+                child.streams = {"stdout": 101, "stderr": 102}
+                def drain():
+                    with patch.object(shards.select, "select", return_value=([101, 102], [], [])), \
+                            patch.object(shards.os, "read", side_effect=lambda fd, size: block[fd][:size]):
+                        try:
+                            shards._VmmapChild.drain(child)
+                        except ValueError:
+                            failed_reads.append(self.clock())
+                            raise  # Repeats forever if cleanup tries failed acquisition again.
+                child.drain = drain
+            return child
+        monitor.spawn = spawn
+        original_signal = world.signal
+        def signal_after_grace(pid, signum):
+            if signum == signal.SIGTERM:
+                world.actions.append(("signal", self.clock(), pid))
+                world.signals.append((pid, signum, self.clock()))
+            else:
+                original_signal(pid, signum)
+        monitor.send_signal = signal_after_grace
+        def rescue_old_failure():
+            if monitor.cap is not None and monitor.cap.phase == "custody-only":
+                held.append(self.clock())
+                self.resolve(guard.diagnostic_custody_registry()["records"][monitor.cap.nonce])
+        self.clock.on_sleep = rescue_old_failure
+        self.assertEqual(monitor.execute(["/fake/swift", "test"], 20, (), {}), 125)
+        self.assertEqual(len(failed_reads), 1)
+        self.assertEqual(held, [], "Output failure alone must not abandon verified cleanup")
+        self.assertEqual(monitor.failed_output, {monitor.utility.pid})
+        self.assertEqual({signum for _, signum, _ in world.signals}, {signal.SIGTERM, signal.SIGKILL})
+        self.assertEqual({pid for pid, _, _ in world.signals}, {monitor.worker.pid, monitor.utility.pid, 30000})
+        self.assertTrue(all(child.code is not None for child in world.children))
+        self.assertLess(self.clock(), min(monitor.deadline, failed_reads[0] + 2))
+        self.assertTrue(all(time < monitor.deadline for _, _, time in world.signals))
+        after_failure = [a for a in world.actions if a[1] > failed_reads[0]]
+        self.assertTrue(any(a[0] == "spawn" and a[2] == "support" for a in after_failure))
+        output = {name: (self.attempt / ("vmmap." + name)).read_bytes() for name in ("stdout", "stderr")}
+        self.assertEqual(sum(map(len, output.values())), 4 * 1024 * 1024)
+        for name, byte in (("stdout", b"O"), ("stderr", b"E")):
+            self.assertEqual(output[name], byte * len(output[name]))
+        self.assertFalse(monitor.capture_complete)
+        self.assertTrue(any("combined output cap" in error for error in monitor.errors))
+        self.assertFalse(any(error.startswith("cleanup:") for error in monitor.errors))
+        guard.require_diagnostic_custody_clear()
+
+    def test_cleanup_output_exception_does_not_abort_fresh_identity_checks(self):
+        monitor, world = self.execute()
+        original_cleanup = monitor.cleanup
+        failures = []
+        def cleanup():
+            def failed_output():
+                failures.append(self.clock())
+                raise OSError("fixture persistent worker output failure during cleanup")
+            monitor.worker.drain = failed_output
+            return original_cleanup()
+        monitor.cleanup = cleanup
+        self.assertEqual(monitor.execute(["/fake/swift", "test"], 6, (), {}), 125)
+        self.assertEqual(len(failures), 1)
+        self.assertTrue(any(error.startswith("cleanup output: OSError") for error in monitor.errors))
+        self.assertEqual(monitor.failed_output, {monitor.worker.pid})
+        self.assertTrue(all(child.code is not None for child in world.children))
+        guard.require_diagnostic_custody_clear()
+
+    def _assert_paced_hold(self, failure):
+        cap, record = self.capability()
+        world = FakeWorld(self)
+        monitor = shards.VmmapDiagnostic(self.authority, self.attempt, self.image.parents[5], self.runtime,
+            self.image, cap.leases, self.owner, self.clock, self.clock.sleep, world.spawn, world.signal)
+        monitor.cap, monitor.record = cap, record
+        self.clock.now = cap.deadline
+        original_registry = guard.diagnostic_custody_registry
+        original = original_registry()
+        registry_path = self.custody / "registry.json"
+        if failure == "missing":
+            registry_path.unlink()
+        elif failure == "malformed":
+            write_json(registry_path, {"schema": "invalid"})
+        else:
+            unknown = dict(record, state="UNKNOWN", phase="custody-only", terminal=None)
+            path = self.resolve(unknown)
+            value = json.loads(path.read_text())
+            value["record_sha256"] = "e" * 64
+            write_json(path, value, immutable=True)
+        reads, waits = [], []
+        def resolve():
+            if failure in ("missing", "malformed"):
+                write_json(registry_path, original)
+            self.resolve(original_registry()["records"][cap.nonce])
+        def read_registry():
+            reads.append(self.clock())
+            if len(reads) == 6:
+                resolve()  # Let the old busy loop return, so its missing waits fail assertions.
+            return original_registry()
+        def wait(seconds):
+            waits.append((self.clock(), seconds))
+            for lease in cap.leases:
+                lease.verify()
+            self.assertEqual(world.actions, [])
+            self.clock.sleep(seconds)
+            if len(waits) == 1:
+                raise KeyboardInterrupt()  # The interrupted wait must not unwind custody or read again.
+            if len(waits) == 3:
+                resolve()
+        monitor.sleep = wait
+        with patch.object(guard, "diagnostic_custody_registry", side_effect=read_registry):
+            monitor.custody_hold()
+        self.assertEqual(len(reads), 4)  # UNKNOWN publication plus three paced resolution checks.
+        self.assertEqual(len(waits), 3)
+        self.assertTrue(all(seconds == 0.1 for _, seconds in waits))
+        self.assertTrue(all(later - earlier >= 0.1 - 1e-9 for earlier, later in zip(reads[1:], reads[2:])))
+        for lease in cap.leases:
+            lease.verify()
+        self.assertEqual(world.actions, [])
+        receipt = json.loads((self.attempt / "diagnostic.json").read_text())
+        self.assertEqual(receipt["post_deadline"], {"rss": "UNKNOWN", "identity": "UNKNOWN"})
+        self.assertEqual(receipt["status"], "INCOMPLETE/UNKNOWN")
+        self.assertEqual(cap.phase, "custody-only")
+        guard.require_diagnostic_custody_clear()
+
+    def test_missing_registry_hold_retries_are_paced_with_leases_retained(self):
+        self._assert_paced_hold("missing")
+
+    def test_malformed_registry_hold_retries_are_paced_with_leases_retained(self):
+        self._assert_paced_hold("malformed")
+
+    def test_stale_resolution_hold_retries_are_paced_with_leases_retained(self):
+        self._assert_paced_hold("stale-resolution")
+
+
 class StreamTests(Fixture):
     def test_nonblocking_fair_drain_combined_cap_and_original_bytes(self):
         child = object.__new__(shards._VmmapChild)

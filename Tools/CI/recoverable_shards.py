@@ -2572,6 +2572,7 @@ class VmmapDiagnostic:
         self.sample_due, self.bound_callback = 0, None
         self.last_sample_started, self.utility_finished = None, None
         self.outputs, self.handlers = {}, {}
+        self.failed_output = set()
         self.memory = {"kind": "sampled-owned-diagnostic-rss-v1", "budget_bytes": 2415919104,
                        "worker_trigger_bytes": 1879048192, "poll_wait_seconds": 0.1, "samples": 0,
                        "high_water_bytes": 0, "last_bytes": None, "roles": None, "failure": None}
@@ -2612,11 +2613,21 @@ class VmmapDiagnostic:
         self.events.append({"event": "spawn", "role": role, "pid": child.pid, "argv": list(argv), "time": self.clock()})
         return child
 
-    def drain(self):
+    def drain(self, cleanup=False):
         for child in self.children:
             if self.clock() >= self.deadline:
                 return
-            child.drain()
+            if child.pid not in self.failed_output:
+                try:
+                    child.drain()
+                except Exception as error:
+                    if child.role == "support":
+                        raise  # Failed identity acquisition cannot authorize cleanup signals.
+                    self.failed_output.add(child.pid)
+                    if not cleanup:
+                        raise
+                    self.errors.append("cleanup output: " + type(error).__name__ + ": " + str(error))
+            # Failed output acquisition does not prevent nonblocking reap or fresh identity sampling.
             if child.poll() is not None:
                 child.intent["state"] = "reaped"
 
@@ -2706,7 +2717,7 @@ class VmmapDiagnostic:
         term_end = min(end, self.clock() + 1)
         sent = set()
         while self.clock() < end:
-            self.drain()
+            self.drain(cleanup=True)
             fresh = self.sample(critical=True)
             if fresh:
                 active = self.owners.active(self.live)
@@ -2755,10 +2766,16 @@ class VmmapDiagnostic:
                         and current["session_sha256"] == self.cap.session
                         and native_runner.diagnostic_resolution(current)):
                     return
-                self.sleep(0.1)
             except BaseException:
                 # SIGINT/SystemExit/exception is not permission to unwind live lease custody.
-                continue
+                pass
+            # Every failed check waits too. An interrupted wait must finish before another read.
+            while True:
+                try:
+                    self.sleep(0.1)
+                    break
+                except BaseException:
+                    continue
 
     def write_result(self, status, code, post_deadline=False):
         outputs = {}

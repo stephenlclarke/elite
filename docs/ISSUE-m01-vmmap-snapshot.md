@@ -28,3 +28,9 @@ The seven owned paths are the recoverable controller, shared native guard, legac
 This is source and fake validation only. No vmmap invocation, native probe, Swift build/test, bootstrap, deployment, operator policy/session/resolution write or release action is authorized by this packet. Missing registry state deliberately refuses admission until a separately reviewed operator bootstrap. Independent source review and all final native/CI/release gates remain pending.
 
 See [the implementation and validation note](PR-m01-vmmap-snapshot.md).
+
+## Bounded source review correction
+
+Independent review of `db197d77` retained the other reviewed scope and found two error paths. A persistent utility output-cap failure aborted cleanup before a fresh identity check or stop attempt. Registry/resolution exceptions in the inert hold skipped its wait and could busy-spin. Root selected only these corrections from review `557c727aecb2bf2b03ee2edfe2a5aea64f832b97ae61d2d9967ca6934ba6eb23`.
+
+Failed worker/utility output acquisition now stops reading that child while bounded fresh identity sampling, TERM/grace/revalidated KILL and nonblocking reap continue. Identity-sampler failures still refuse unverified signalling. Every unresolved hold check now waits, including missing/malformed registry and stale resolution errors; an interrupted wait must complete before the next check. Raw partial output, the 4 MiB cap, original deadlines, held leases and nonpromotion remain intact. Five new focused regression methods and four affected existing cases pass; independent correction review remains pending.
