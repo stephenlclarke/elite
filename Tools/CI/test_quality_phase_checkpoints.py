@@ -270,5 +270,102 @@ class QualityPhaseTests(unittest.TestCase):
                 runner.validate_coverage(file, {'Sources/fake.swift': 'fixed'})
 
 
+
+class OwnedPhaseBuildTests(unittest.TestCase):
+    setUp = QualityPhaseTests.setUp
+    context = QualityPhaseTests.context
+    output = QualityPhaseTests.output
+    fake_run = QualityPhaseTests.fake_run
+
+    def profile(self, phase):
+        return dict(kind='owned-phase-build-v1', phase=phase, profile='jobs1-nonbatch-v1',
+                    policy_sha256='c' * 64,
+                    admission=dict(explicit=1, cpu_budget=1, ram_capacity=8, ram_reserve=2,
+                                   peak_per_worker=2 if phase == 'normal' else 3,
+                                   disk_capacity=100, disk_reserve=10, disk_per_worker=20),
+                    flags=['--jobs', '1', '-Xswiftc', '-disable-batch-mode'])
+
+    def test_each_phase_changes_only_build_argv_and_seals_its_actual_log_and_profile(self):
+        self.fail_leaks = False
+        for phase in ('normal', 'leaks'):
+            profile = self.profile(phase)
+            self.calls = []
+            with self.context(), patch.dict(os.environ, {'GITHUB_SHA': self.head}), \
+                    patch.object(runner, 'reviewed_build_profile', return_value=profile) as reviewed, \
+                    patch('m01_normal_attestation.qualify') as old_attestation:
+                runner.run_phase(phase, self.root / ('owned-' + phase), '/owned/policy', 'f' * 64)
+            self.assertEqual(reviewed.call_count, 2)
+            old_attestation.assert_not_called()
+            build = self.calls[0]
+            expected = ['/toolchain/swift', 'build']
+            expected += ['--build-tests', '--enable-code-coverage'] if phase == 'normal' else []
+            self.assertEqual(build, expected + profile['flags'])
+            result = json.loads(next((self.root / ('owned-' + phase)).glob('phases/*/*/result.json')).read_text())
+            self.assertEqual(result['identity']['build_profile'], {**profile, 'argv': build})
+            self.assertIn('build.log', result['outputs'])
+            if phase == 'normal':
+                test = next(c for c in self.calls if c[1] == 'test')
+                self.assertEqual(test[:4], ['/toolchain/swift', 'test', '--enable-code-coverage', '--skip-build'])
+                self.assertNotIn('--jobs', test)
+                self.assertNotIn('--no-parallel', test)
+                self.assertEqual(result['validation']['percent'], 100.0)
+            else:
+                leak = next(c for c in self.calls if c[0] == '/usr/bin/leaks')
+                self.assertEqual(leak, ['/usr/bin/leaks', '--atExit', '--', str(self.bins / 'Elite'), '--diagnostics'])
+            self.assertTrue(result['identity']['parallel'] == (phase == 'normal'))
+
+    def test_selected_phase_rejects_other_source_and_rechecks_policy_before_success(self):
+        profile = self.profile('normal')
+        with self.context(), patch.dict(os.environ, {'GITHUB_SHA': 'b' * 40}), \
+                patch.object(runner, 'reviewed_build_profile', return_value=profile), \
+                self.assertRaisesRegex(ValueError, 'actual current-CI source'):
+            runner.run_phase('normal', self.root / 'wrong-head', '/owned/policy', 'f' * 64)
+        self.assertFalse(self.calls)
+        with self.context(), patch.dict(os.environ, {'GITHUB_SHA': self.head}), \
+                patch.object(runner, 'reviewed_build_profile', side_effect=[profile, ValueError('policy drift')]), \
+                self.assertRaisesRegex(ValueError, 'policy drift'):
+            runner.run_phase('normal', self.root / 'policy-drift', '/owned/policy', 'f' * 64)
+
+    def test_profile_loader_requires_real_parent_and_immutable_exact_policy_bytes(self):
+        import native_runner
+        path = self.root / 'profile.json'
+        policy = dict(approved_head=self.head)
+        path.write_text(json.dumps(policy))
+        path.chmod(0o400)
+        checksum = runner.digest(path)
+        environment = dict(GITHUB_JOB='native_phase', GITHUB_SHA=self.head,
+                           ELITE_NATIVE_APPROVED_HEAD=self.head, ELITE_NATIVE_POLICY=str(path))
+        profile = dict(build_profile='jobs1-nonbatch-v1', admission=self.profile('normal')['admission'])
+        with patch.object(native_runner, 'read_local_components_binding') as binding, \
+                patch.object(native_runner, 'phase_profile', return_value=profile):
+            actual = runner.reviewed_build_profile(path, checksum, 'normal', environment)
+            self.assertEqual(actual['admission'], profile['admission'])
+            binding.assert_called_once_with(policy)
+            for name in environment:
+                with self.subTest(control=name), self.assertRaises(ValueError):
+                    runner.reviewed_build_profile(path, checksum, 'normal', {**environment, name: 'wrong'})
+            with self.assertRaises(ValueError):
+                runner.reviewed_build_profile(path, 'e' * 64, 'normal', environment)
+            path.chmod(0o600)
+            with self.assertRaises(ValueError):
+                runner.reviewed_build_profile(path, checksum, 'normal', environment)
+        self.assertIsNone(runner.reviewed_build_profile(None, None, 'normal', {}))
+        with self.assertRaises(ValueError):
+            runner.reviewed_build_profile(None, checksum, 'normal', {})
+    def test_selected_leak_command_uses_the_same_physical_image_as_its_identity(self):
+        self.fail_leaks = False
+        alias = self.root / 'bin-alias'
+        alias.symlink_to(self.bins, target_is_directory=True)
+        def output(command, *args):
+            return str(alias) if '--show-bin-path' in command else self.output(command, *args)
+        with self.context(), patch.dict(os.environ, {'GITHUB_SHA': self.head}), \
+                patch.object(runner, 'reviewed_build_profile', return_value=self.profile('leaks')), \
+                patch.object(runner, 'output', side_effect=output):
+            runner.run_phase('leaks', self.root / 'physical-leaks', '/owned/policy', 'f' * 64)
+        result = json.loads(next((self.root / 'physical-leaks').glob('phases/*/*/result.json')).read_text())
+        self.assertEqual(result['identity']['phase_image'], str(self.bins / 'Elite'))
+        self.assertEqual(result['command'], ['/usr/bin/leaks', '--atExit', '--', str(self.bins / 'Elite'), '--diagnostics'])
+
+
 if __name__ == '__main__':
     unittest.main()

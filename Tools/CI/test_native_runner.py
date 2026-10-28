@@ -1022,7 +1022,7 @@ class SplitAuthorizationTests(unittest.TestCase):
         from pathlib import Path
         from unittest.mock import patch
         import native_runner as native
-        for role in sorted(native.RECOVERABLE_JOBS):
+        for role in sorted(native.RECOVERABLE_JOBS - {"native_local_components"}):
             with self.subTest(role=role):
                 policy, env, event, api, guard, requests = self.request_fixture(role)
                 hook_env = {name: value for name, value in env.items() if name.startswith(("GITHUB_", "RUNNER_", "ELITE_NATIVE_"))}
@@ -1041,7 +1041,7 @@ class SplitAuthorizationTests(unittest.TestCase):
     def test_full_authorizer_requires_actual_role_request_for_every_role(self):
         from pathlib import Path
         import native_runner as native
-        for role in sorted(native.RECOVERABLE_JOBS):
+        for role in sorted(native.RECOVERABLE_JOBS - {"native_local_components"}):
             with self.subTest(role=role):
                 policy, env, event, api, guard, requests = self.request_fixture(role)
                 issued = native.authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
@@ -1679,3 +1679,217 @@ class HookDispatchTests(unittest.TestCase):
             with patch("prepare_native_runner.AUTHORIZATION_ROOT", home / "unsafe authorization"):
                 with self.assertRaises(ValueError):
                     prepare(SHA, archive, digest)
+
+
+class OwnedQualityAuthorizationTests(unittest.TestCase):
+    contract = RecoverableAuthorizationTests.contract
+    request_fixture = SplitAuthorizationTests.request_fixture
+    recoverable_installation_fixture = RecoverableAuthorizationTests.recoverable_installation_fixture
+
+    def selected(self):
+        import hashlib
+        import json
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import native_runner as native
+        values = self.recoverable_installation_fixture()
+        stack, home, archive, archive_hash, reviewed, checksum, policy = values
+        stack.enter_context(patch('pwd.getpwuid', return_value=SimpleNamespace(pw_dir=str(home.parent))))
+        stack.enter_context(patch('native_runner.time.time', return_value=100))
+        activation, config = policy['recoverable_activation'], policy['recoverable_shards']
+        config['legacy_cache'] = str(home.parent / 'Library/EliteNativeCI/sanitizer-checkpoints')
+        activation['sanitizer_backend'] = native.LOCAL_COMPONENTS_BACKEND
+        activation['runners']['elite-mbp-native']['jobs'] = sorted(native.LOCAL_COMPONENT_ROLES)
+        config['phase_profiles'] = {phase: dict(build_profile=native.PHASE_BUILD_PROFILE,
+            admission={**config['admission'], 'peak_per_worker': peak}) for phase, peak in [('normal', 3), ('leaks', 4)]}
+        binding_path = home.parent / 'Library/EliteNativeAuthorization/local-quality-bindings' / SHA / 'binding.json'
+        binding_path.parent.mkdir(parents=True, mode=0o700)
+        binding = dict(schema=1, kind=native.LOCAL_COMPONENTS_BACKEND, expires_at=9000,
+            target=dict(head=SHA, ref='refs/heads/main', tree='b' * 40), original=dict(head='c' * 40, tree='b' * 40),
+            inputs={'Sources/Game.swift': '1' * 64}, semantic_environment={}, ci_admission=config['admission'],
+            phase_profiles=config['phase_profiles'], modes={'address': {}, 'thread': {}})
+        binding_path.write_text(json.dumps(binding))
+        binding_path.chmod(0o400)
+        activation['local_components'] = dict(path=str(binding_path), sha256=hashlib.sha256(binding_path.read_bytes()).hexdigest())
+        return stack, home, reviewed, policy, binding_path, binding
+
+    def write_policy(self, reviewed, policy):
+        import hashlib
+        import json
+        import native_runner as native
+        a = policy['recoverable_activation']
+        manifest = {name: a[name] for name in ('schema', 'enabled', 'revoked', 'expires_at', 'head',
+            'workflow_sha256', 'reusable_workflow_sha256', 'runners', 'assignment_root', 'sanitizer_backend', 'local_components')}
+        manifest.update(ref='refs/heads/main', workflow_file='ci.yml')
+        a['manifest_sha256'] = native.policy_digest(manifest)
+        reviewed.chmod(0o600)
+        reviewed.write_text(json.dumps(policy))
+        reviewed.chmod(0o400)
+        return hashlib.sha256(reviewed.read_bytes()).hexdigest()
+
+    def test_installer_accepts_only_exact_local_roles_and_full_independent_profiles(self):
+        import prepare_native_runner as install
+        import native_runner as native
+        stack, home, reviewed, policy, path, binding = self.selected()
+        with stack:
+            base = {k: v for k, v in policy.items() if k not in ('recoverable_activation', 'recoverable_shards')}
+            checksum = self.write_policy(reviewed, policy)
+            self.assertEqual(install.reviewed_recoverable_policy(reviewed, checksum, base), policy)
+            jobs = sorted(native.LOCAL_COMPONENT_ROLES)
+            for invalid in (jobs[:-1], jobs + ['thread_shards'], jobs + [jobs[0]], sorted(install.RECOVERABLE_ROLES)):
+                policy['recoverable_activation']['runners']['elite-mbp-native']['jobs'] = invalid
+                checksum = self.write_policy(reviewed, policy)
+                with self.subTest(jobs=invalid), self.assertRaisesRegex(ValueError, 'role reservation'):
+                    install.reviewed_recoverable_policy(reviewed, checksum, base)
+            self.assertFalse((home / 'native-runner').exists())
+
+    def test_binding_expiry_target_tree_ref_profile_and_raw_hash_drift_refuse(self):
+        import hashlib
+        import json
+        import native_runner as native
+        stack, home, reviewed, policy, path, binding = self.selected()
+        with stack:
+            self.assertEqual(native.read_local_components_binding(policy), binding)
+            mutations = [lambda v: v.update(expires_at=100), lambda v: v.update(expires_at=float('inf')),
+                         lambda v: v['target'].update(head='e' * 40), lambda v: v['target'].update(ref='refs/heads/other'),
+                         lambda v: v['original'].update(tree='e' * 40), lambda v: v['modes'].pop('thread'),
+                         lambda v: v['ci_admission'].update(peak_per_worker=1),
+                         lambda v: v['phase_profiles']['normal']['admission'].update(peak_per_worker=1)]
+            for mutation in mutations:
+                changed = copy.deepcopy(binding)
+                mutation(changed)
+                path.chmod(0o600)
+                path.write_text(json.dumps(changed))
+                path.chmod(0o400)
+                policy['recoverable_activation']['local_components']['sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
+                with self.subTest(binding=changed), self.assertRaises(ValueError):
+                    native.read_local_components_binding(policy)
+            policy['recoverable_activation']['local_components']['sha256'] = 'f' * 64
+            with self.assertRaises(ValueError):
+                native.read_local_components_binding(policy)
+
+    def test_backend_is_closed_and_assignment_pins_local_descriptor_without_other_mode_plan(self):
+        import native_runner as native
+        stack, home, reviewed, policy, path, binding = self.selected()
+        with stack:
+            self.assertEqual(native.phase_profile(policy, 'leaks')['admission']['peak_per_worker'], 4)
+            env = dict(GITHUB_RUN_ID='123', GITHUB_RUN_ATTEMPT='1', GITHUB_JOB='native_aggregate',
+                       RUNNER_NAME='elite-mbp-native', GITHUB_WORKSPACE='/owned/work', PLAN_DIGEST='e' * 64,
+                       ELITE_NATIVE_POLICY=str(reviewed))
+            payload = native.assignment_payload(policy, env)
+            self.assertEqual(payload['local_components'], policy['recoverable_activation']['local_components'])
+            self.assertEqual(payload['sanitizer_backend'], native.LOCAL_COMPONENTS_BACKEND)
+            self.assertNotIn('other_plan_sha256', payload)
+            for mutation in [lambda p: p['recoverable_activation'].update(sanitizer_backend='unknown'),
+                             lambda p: p['recoverable_activation']['local_components'].update(path=str(path.parent / 'other.json')),
+                             lambda p: p['recoverable_shards']['phase_profiles'].pop('leaks'),
+                             lambda p: p['recoverable_shards']['phase_profiles']['normal'].update(build_profile='unreviewed'),
+                             lambda p: p['recoverable_shards']['phase_profiles']['normal']['admission'].update(explicit=2),
+                             lambda p: p['recoverable_shards']['phase_profiles']['normal']['admission'].update(peak_per_worker=100)]:
+                changed = copy.deepcopy(policy)
+                mutation(changed)
+                with self.assertRaises(ValueError):
+                    native.phase_profile(changed, 'normal')
+            default = copy.deepcopy(policy)
+            default['recoverable_activation'].pop('sanitizer_backend')
+            default['recoverable_activation'].pop('local_components')
+            default['recoverable_shards'].pop('phase_profiles')
+            self.assertEqual(native.backend_descriptor(default), (native.GITHUB_BACKEND, None))
+            self.assertIsNone(native.phase_profile(default, 'normal'))
+            default['recoverable_shards']['phase_profiles'] = {}
+            with self.assertRaises(ValueError):
+                native.backend_descriptor(default)
+
+    def test_real_selected_job_requires_current_binding_and_exact_owned_assignment(self):
+        import json
+        from pathlib import Path
+        import native_runner as native
+        stack, home, reviewed, policy, path, binding = self.selected()
+        with stack:
+            self.write_policy(reviewed, policy)
+            a = policy['recoverable_activation']
+            env, event = fixture()
+            env.update(GITHUB_JOB='native_local_components', GITHUB_EVENT_NAME='workflow_dispatch',
+                GITHUB_SHA=SHA, GITHUB_REF='refs/heads/main', GITHUB_WORKFLOW_REF=a['workflow_ref'],
+                RUNNER_NAME='elite-mbp-native', GITHUB_WORKSPACE=a['runners']['elite-mbp-native']['workspace'],
+                GITHUB_RUN_ID='123', GITHUB_RUN_ATTEMPT='1', PLAN_DIGEST='e' * 64,
+                ELITE_RECOVERABLE_PLAN_SHA256='e' * 64, ELITE_RECOVERABLE_CODE_ENABLED='true',
+                ELITE_NATIVE_APPROVED_HEAD=SHA, ELITE_NATIVE_POLICY=str(reviewed),
+                ELITE_RECOVERABLE_POLICY_SHA256=native.policy_digest(policy),
+                ELITE_RECOVERABLE_WORKFLOW_SHA256=a['workflow_sha256'],
+                ELITE_RECOVERABLE_ACTIVATION_SHA256=a['manifest_sha256'])
+            assignment = {**native.assignment_payload(policy, env), 'expires_at': 8000, 'revoked': False}
+            assignment_path = Path(a['assignment_root']) / (native.assignment_digest(env) + '.json')
+            assignment_path.parent.mkdir(mode=0o700)
+            assignment_path.write_text(json.dumps(assignment))
+            assignment_path.chmod(0o400)
+            env.update(ELITE_RECOVERABLE_ASSIGNMENT_PATH=str(assignment_path),
+                       ELITE_RECOVERABLE_ASSIGNMENT_SHA256=native.policy_digest(assignment))
+            self.assertEqual(native.require_recoverable_job(policy, env, event, now=100), a)
+            for change in ({'GITHUB_JOB': 'thread_shards'}, {'ELITE_RECOVERABLE_REQUEST_MODE': 'address'},
+                           {'PLAN_DIGEST': 'f' * 64}, {'ELITE_RECOVERABLE_ASSIGNMENT_SHA256': 'f' * 64},
+                           {'GITHUB_SHA': 'f' * 40}):
+                with self.subTest(change=change), self.assertRaises(ValueError):
+                    native.require_recoverable_job(policy, {**env, **change}, event, now=100)
+
+    def test_prejob_selected_roles_load_one_real_address_anchor_and_bind_the_owned_descriptor(self):
+        import hashlib
+        import json
+        from pathlib import Path
+        import native_runner as native
+        stack, home, reviewed, selected, path, binding = self.selected()
+        with stack:
+            for role in ('native_local_components', 'native_phase', 'native_aggregate'):
+                policy, env, event, api, guard, requests = self.request_fixture(role)
+                a, config = policy['recoverable_activation'], policy['recoverable_shards']
+                config.update(legacy_cache=selected['recoverable_shards']['legacy_cache'],
+                              admission=selected['recoverable_shards']['admission'],
+                              phase_profiles=selected['recoverable_shards']['phase_profiles'])
+                a['runners']['owned-one']['jobs'] = sorted(native.LOCAL_COMPONENT_ROLES)
+                a['sanitizer_backend'] = native.LOCAL_COMPONENTS_BACKEND
+                binding['target']['ref'] = env['GITHUB_REF']
+                binding['expires_at'] = 190
+                path.chmod(0o600)
+                path.write_text(json.dumps(binding))
+                path.chmod(0o400)
+                a['local_components'] = dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+                manifest = json.loads(env['ACTIVATION'])
+                manifest.update(sanitizer_backend=a['sanitizer_backend'], local_components=a['local_components'], runners=a['runners'])
+                a['manifest_sha256'] = native.policy_digest(manifest)
+                env.update(ACTIVATION=json.dumps(manifest), POLICY_DIGESTS=json.dumps({'owned-one': native.policy_digest(policy)}),
+                           ELITE_RECOVERABLE_POLICY_SHA256=native.policy_digest(policy),
+                           ELITE_RECOVERABLE_ACTIVATION_SHA256=a['manifest_sha256'])
+                for key in ('OTHER_PLAN_ID', 'OTHER_PLAN_ARCHIVE', 'OTHER_PLAN_DIGEST'):
+                    env.pop(key, None)
+                mode = 'address'
+                class Workflow:
+                    def __init__(self, authority, remote):
+                        pass  # This fake supplies a separately authenticated real-format anchor.
+                    def plans(self, bundle, digest):
+                        return [dict(runtime=dict(mode=mode))], dict(host=config['host'], phases=['normal', 'leaks'])
+                guard.NativeWorkflow = Workflow
+                issued = native.authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+                native.require_recoverable_job(policy, issued, event, now=100)
+                assignment = Path(issued['ELITE_RECOVERABLE_ASSIGNMENT_PATH'])
+                content = json.loads(assignment.read_text())
+                self.assertEqual(content['local_components'], a['local_components'])
+                self.assertNotIn('other_plan_sha256', content)
+                assignment.unlink()
+                mode = 'thread'
+                with self.assertRaisesRegex(ValueError, 'actual address anchor'):
+                    native.authorize_recoverable(policy, env, event, api=api, guard=guard, now=100)
+                self.assertFalse(assignment.exists())
+
+    def test_selected_backend_requires_common_physical_lease_and_disjoint_binding_storage(self):
+        import native_runner as native
+        stack, home, reviewed, policy, path, binding = self.selected()
+        with stack:
+            legacy = policy['recoverable_shards']['legacy_cache']
+            policy['recoverable_shards']['legacy_cache'] = str(home / 'alternate-lease')
+            with self.assertRaisesRegex(ValueError, 'existing physical executor lease'):
+                native.read_local_components_binding(policy)
+            policy['recoverable_shards']['legacy_cache'] = legacy
+            policy['recoverable_shards']['cache'] = str(path.parent)
+            with self.assertRaisesRegex(ValueError, 'overlaps mutable CI'):
+                native.read_local_components_binding(policy)

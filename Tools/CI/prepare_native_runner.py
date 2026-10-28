@@ -244,7 +244,7 @@ def publish_json(path, value, immutable=False):
 
 def reviewed_recoverable_policy(path, checksum, base):
     """Install an explicitly reviewed contract; never synthesize a broader authorization."""
-    from native_runner import policy_digest
+    from native_runner import policy_digest, backend_descriptor, read_local_components_binding, LOCAL_COMPONENTS_BACKEND, LOCAL_COMPONENT_ROLES
     path = Path(path)
     if path.is_relative_to(ROOT) or path.is_relative_to(RUNNER):
         raise ValueError("Reviewed policy must be outside checkout and runner data.")
@@ -257,7 +257,7 @@ def reviewed_recoverable_policy(path, checksum, base):
     activation, config = value["recoverable_activation"], value["recoverable_shards"]
     required = {"schema", "enabled", "revoked", "expires_at", "head", "workflow_ref", "workflow_sha256",
                 "reusable_workflow_sha256", "manifest_sha256", "runners", "assignment_root", "guard_files"}
-    if (not required <= set(activation) or set(activation) - required - {"pr_head"}
+    if (not required <= set(activation) or set(activation) - required - {"pr_head", "sanitizer_backend", "local_components"}
             or type(activation["schema"]) is not int or activation["schema"] != 1
             or activation["enabled"] is not True or activation["revoked"] is not False
             or type(activation["expires_at"]) not in (int, float) or not math.isfinite(activation["expires_at"])
@@ -288,13 +288,15 @@ def reviewed_recoverable_policy(path, checksum, base):
     if len(activation["runners"]) != 1:
         raise ValueError("This installer reserves exactly one physical runner.")
     runner_name, instance = next(iter(activation["runners"].items()))
+    backend, _ = backend_descriptor(value)
+    allowed_roles = (LOCAL_COMPONENT_ROLES,) if backend == LOCAL_COMPONENTS_BACKEND else (RECOVERABLE_ROLES, ASAN_RECOVERABLE_ROLES)
     if (not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", runner_name)
             or set(instance) != {"workspace", "jobs"}
             or instance["workspace"] != str(RUNNER / "_work/elite/elite")
-            or set(instance["jobs"]) not in (RECOVERABLE_ROLES, ASAN_RECOVERABLE_ROLES)
+            or set(instance["jobs"]) not in allowed_roles
             or len(instance["jobs"]) != len(set(instance["jobs"]))):
         raise ValueError("Recoverable runner/workspace/role reservation differs.")
-    if (type(config.get("schema")) is not int or config.get("schema") != 1 or set(config) - {"schema", "host", "cache", "legacy_cache", "workers", "admission", "planning"}
+    if (type(config.get("schema")) is not int or config.get("schema") != 1 or set(config) - {"schema", "host", "cache", "legacy_cache", "workers", "admission", "planning", "phase_profiles"}
             or set(config.get("workers", {})) != {"one"}
             or config.get("admission", {}).get("explicit") != 1
             or not re.fullmatch(r"[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}", config.get("host", ""))):
@@ -315,8 +317,13 @@ def reviewed_recoverable_policy(path, checksum, base):
     manifest.update(ref=ref, workflow_file="ci.yml")
     if "pr_head" in activation:
         manifest["pr_head"] = activation["pr_head"]
+    for name in ("sanitizer_backend", "local_components"):
+        if name in activation:
+            manifest[name] = activation[name]
     if policy_digest(manifest) != activation["manifest_sha256"]:
         raise ValueError("Reviewed published activation manifest is inconsistent.")
+    if backend == LOCAL_COMPONENTS_BACKEND:
+        read_local_components_binding(value)
     return value
 
 

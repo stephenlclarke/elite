@@ -52,7 +52,10 @@ AUTHORIZATION_CONTROLS = (
 
 def execution_policy_digest(config):
     """Shared execution limits matter; planning hints and physical worker assignment do not."""
-    return fingerprint({"schema": SCHEMA, "policy": POLICY, "host": config["host"], "admission": config["admission"]})
+    value = {"schema": SCHEMA, "policy": POLICY, "host": config["host"], "admission": config["admission"]}
+    if "phase_profiles" in config:
+        value["phase_profiles"] = config["phase_profiles"]
+    return fingerprint(value)
 
 
 def fingerprint(value):
@@ -126,9 +129,14 @@ def sync_directory(path):
         os.close(descriptor)
 
 
-def physical_tree(root):
+def physical_tree(root, read_only=False):
     """Inspect every child, including directories, without following links."""
-    legacy.owned_directory(root)
+    if read_only:
+        owned_bridge_path(root)
+        if not root.is_dir():
+            raise ValueError("Original evidence directory is missing")
+    else:
+        legacy.owned_directory(root)
     result = {}
     for directory, names, files in os.walk(root, followlinks=False):
         for name in names + files:
@@ -348,9 +356,9 @@ def validate_plan(plan):
     return plan
 
 
-def evidence_outputs(attempt, runtime, methods):
+def evidence_outputs(attempt, runtime, methods, read_only=False):
     """Reuse strict native XML and opt-in validation, without promoting old schemas."""
-    entries = physical_tree(attempt)
+    entries = physical_tree(attempt, read_only=read_only)
     allowed = {"test.log", "tests.xml", "tests-swift-testing.xml", "start.json", "result.json",
                "commit.json", "child.json", "child-exit.json", "processes.json", "environment.json", "authorization.json",
                "test-events.jsonl", "test-progress.json"}
@@ -424,13 +432,13 @@ def evidence_outputs(attempt, runtime, methods):
             if name not in ("result.json", "commit.json")}
 
 
-def validate_success(attempt, identity, receipt_digest=None, immutable=True):
+def validate_success(attempt, identity, receipt_digest=None, immutable=True, read_only=False):
     require_fields(identity, ("schema", "policy", "runtime", "methods", "atoms", "claims",
                               "audited", "resource_audits"))
     validate_runtime(identity["runtime"])
     if type(identity["schema"]) is not int or identity["schema"] != SCHEMA or identity["policy"] != POLICY:
         raise ValueError("Unknown shard identity protocol")
-    physical_tree(attempt)
+    physical_tree(attempt, read_only=read_only)
     if immutable:
         require_sealed(attempt)
     receipt_path = attempt / "result.json"
@@ -454,7 +462,7 @@ def validate_success(attempt, identity, receipt_digest=None, immutable=True):
     start = load_json(attempt / "start.json")
     if start["identity"] != identity or start["tested_head"] != result["tested_head"]:
         raise ValueError("Attempt identity differs from terminal proof")
-    if result["outputs"] != evidence_outputs(attempt, identity["runtime"], identity["methods"]):
+    if result["outputs"] != evidence_outputs(attempt, identity["runtime"], identity["methods"], read_only=read_only):
         raise ValueError("Missing, extra or tampered evidence")
     return result
 
@@ -491,21 +499,29 @@ def atomic_copy(source, destination):
 
 
 class Store:
-    def __init__(self, root):
-        self.root = Path(root)
-        legacy.owned_directory(self.root)
+    def __init__(self, root, read_only=False):
+        self.root, self.read_only = Path(root), read_only
+        if read_only:
+            owned_bridge_path(self.root)
+            if not self.root.is_dir():
+                raise ValueError("Original read-only store is missing")
+        else:
+            legacy.owned_directory(self.root)
 
     def matching(self, identity):
         parent = self.root / "attempts" / fingerprint(identity)
         if not parent.exists():
             return None
-        legacy.owned_directory(parent)
+        if self.read_only:
+            owned_bridge_path(parent)
+        else:
+            legacy.owned_directory(parent)
         for attempt in sorted(parent.iterdir()):
             if attempt.is_symlink() or not attempt.is_dir():
                 raise ValueError("Unexpected attempt storage entry")
             if attempt.is_dir() and (attempt / "result.json").exists():
                 try:
-                    return attempt, validate_success(attempt, identity)
+                    return attempt, validate_success(attempt, identity, read_only=self.read_only)
                 except (ValueError, OSError, KeyError, TypeError, ET.ParseError):
                     continue
         return None
@@ -1189,7 +1205,7 @@ def canonical_inputs(inputs):
     return result
 
 
-def phase_matches_runtime(identity, runtime, inventory):
+def phase_matches_runtime(identity, runtime, inventory, phase_profile=None):
     if (identity["phase"] not in ("normal", "leaks")
             or canonical_inputs(identity["inputs"]) != canonical_inputs(runtime["inputs"])
             or identity["swift"] != runtime["toolchain"]
@@ -1198,6 +1214,20 @@ def phase_matches_runtime(identity, runtime, inventory):
             or identity["architecture"] != runtime["architecture"]
             or identity["environment"] != runtime["phase_environment"]):
         raise ValueError("Full phase belongs to different executable inputs or runtime")
+    build = identity.get("build_profile")
+    if phase_profile is None:
+        if build is not None:
+            raise ValueError("A phase build profile was not independently approved")
+    else:
+        require_fields(build, ("kind", "phase", "profile", "policy_sha256", "admission", "flags", "argv"))
+        expected_flags = ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+        expected = [identity["swift_executable"], "build", *(["--build-tests"] if identity["phase"] == "normal" else []),
+                    *identity["flags"], *expected_flags]
+        if (build["kind"] != "owned-phase-build-v1" or build["phase"] != identity["phase"]
+                or build["profile"] != phase_profile["build_profile"] or build["admission"] != phase_profile["admission"]
+                or build["flags"] != expected_flags or build["argv"] != expected
+                or not re.fullmatch(r"[0-9a-f]{64}", build["policy_sha256"])):
+            raise ValueError("Actual phase build argv/profile/allocation differs")
     if identity["phase"] == "normal":
         if (identity["inventory"] != inventory or identity["opt_in_policy"] != runtime["opt_in_policy"]
                 or identity["policy"] != "normal-coverage-80-v1"
@@ -1208,11 +1238,11 @@ def phase_matches_runtime(identity, runtime, inventory):
         raise ValueError("Full leak phase policy was weakened")
 
 
-def freeze_phase(attempt, identity, runtime, inventory, verifier, destination):
+def freeze_phase(attempt, identity, runtime, inventory, verifier, destination, phase_profile=None, phase_memory=None):
     """An authorized adapter must verify the actual host at capture, never infer it from old receipts."""
     verifier.verify(runtime)
     origin = verifier.phase_origin(Path(attempt), identity)
-    phase_matches_runtime(identity, runtime, inventory)
+    phase_matches_runtime(identity, runtime, inventory, phase_profile)
     if not phases.successful_phase(Path(attempt), identity):
         raise ValueError("Full phase proof is incomplete")
     physical_tree(Path(attempt))
@@ -1227,6 +1257,13 @@ def freeze_phase(attempt, identity, runtime, inventory, verifier, destination):
     shutil.copytree(attempt, destination / "attempt")
     manifest = {"schema": SCHEMA, "host": runtime["host"], "identity": identity, "origin": origin,
                 "receipt_sha256": legacy.digest(destination / "attempt" / "result.json")}
+    if phase_profile is not None:
+        if identity["build_profile"]["policy_sha256"] != origin["authorization"]["policy_sha256"]:
+            raise ValueError("Phase build policy differs from actual parent authorization")
+        validate_phase_command(result, load_json(Path(attempt) / "start.json"))
+        validate_phase_memory(phase_memory, identity, phase_profile, origin)
+        durable_json(destination / "phase-memory.json", phase_memory)
+        manifest["phase_memory_sha256"] = legacy.digest(destination / "phase-memory.json")
     durable_json(destination / "index.json", manifest)
     checksum = legacy.digest(destination / "index.json")
     durable_json(destination / "commit.json", {"sha256": checksum})
@@ -1234,15 +1271,19 @@ def freeze_phase(attempt, identity, runtime, inventory, verifier, destination):
     return checksum
 
 
-def validate_phase(bundle, trusted_digest, phase, runtime, inventory):
+def validate_phase(bundle, trusted_digest, phase, runtime, inventory, phase_profile=None):
     bundle = Path(bundle)
+    if phase_profile is not None:
+        require_sealed(bundle)
     physical_tree(bundle)
     if (legacy.digest(bundle / "index.json") != trusted_digest
-            or {item.name for item in bundle.iterdir()} != {"index.json", "attempt", "commit.json"}
+            or {item.name for item in bundle.iterdir()} != ({"index.json", "attempt", "commit.json"}
+                | ({"phase-memory.json"} if phase_profile is not None else set()))
             or load_json(bundle / "commit.json") != {"sha256": trusted_digest}):
         raise ValueError("Phase index differs from trusted host capture")
     manifest = load_json(bundle / "index.json")
-    require_fields(manifest, ("schema", "host", "identity", "origin", "receipt_sha256"))
+    require_fields(manifest, {"schema", "host", "identity", "origin", "receipt_sha256"}
+                   | ({"phase_memory_sha256"} if phase_profile is not None else set()))
     identity = manifest["identity"]
     origin = manifest["origin"]
     require_fields(origin, ("schema", "host", "phase", "tested_head", "receipt_sha256", "exit_code", "authorization"))
@@ -1255,14 +1296,71 @@ def validate_phase(bundle, trusted_digest, phase, runtime, inventory):
             or origin["receipt_sha256"] != manifest["receipt_sha256"]
             or legacy.digest(bundle / "attempt" / "result.json") != manifest["receipt_sha256"]):
         raise ValueError("Phase host, identity or receipt changed")
-    phase_matches_runtime(identity, runtime, inventory)
+    phase_matches_runtime(identity, runtime, inventory, phase_profile)
+    if phase_profile is not None:
+        if (identity["build_profile"]["policy_sha256"] != origin["authorization"]["policy_sha256"]
+                or legacy.digest(bundle / "phase-memory.json") != manifest["phase_memory_sha256"]):
+            raise ValueError("Phase profile policy or captured memory hash changed")
+        validate_phase_memory(load_json(bundle / "phase-memory.json"), identity, phase_profile, origin)
     if not phases.successful_phase(bundle / "attempt", identity):
         raise ValueError("Full normal/zero-leak proof is missing or changed")
     result = load_json(bundle / "attempt" / "result.json")
+    if phase_profile is not None:
+        if "build.log" not in result["outputs"]:
+            raise ValueError("The selected phase profile requires its actual build log")
+        validate_phase_command(result, load_json(bundle / "attempt" / "start.json"))
     if (type(result["exit_code"]) is not int or result["exit_code"] != 0
             or type(result.get("native_exit_code")) is not int or result["native_exit_code"] != 0
             or origin["tested_head"] != result["tested_head"]):
         raise ValueError("Phase needs explicit successful native and overall exits")
+
+
+def validate_phase_command(result, start):
+    identity, command = result["identity"], result["command"]
+    if start["identity"] != identity or start["command"] != command or start["tested_head"] != result["tested_head"]:
+        raise ValueError("Actual phase command/source provenance changed")
+    image = Path(identity["phase_image"])
+    if not image.is_absolute() or image != image.resolve():
+        raise ValueError("Actual phase image must be a physical absolute path")
+    if identity["phase"] == "leaks":
+        expected = ["/usr/bin/leaks", "--atExit", "--", str(image), "--diagnostics"]
+    else:
+        report = Path(command[-1])
+        if not report.is_absolute() or report.name != "tests.xml" or report != report.resolve():
+            raise ValueError("Actual normal phase report path changed")
+        expected = [identity["swift_executable"], "test", "--enable-code-coverage", "--skip-build",
+                    "--xunit-output", str(report)]
+    if command != expected:
+        raise ValueError("Actual native phase command or diagnostics were weakened")
+
+
+def validate_phase_memory(value, identity, profile, origin):
+    require_fields(value, ("processes", "child", "terminal"))
+    record, child, terminal = value["processes"], value["child"], value["terminal"]
+    memory = record.get("resident_memory", {})
+    if (origin["authorization"]["role"] != "native_phase" or origin["authorization"]["phase"] != identity["phase"]
+            or origin["authorization"]["head"] != origin["tested_head"]
+            or record.get("running") is not False or record.get("workspace") != origin["authorization"]["workspace"]
+            or type(child.get("pid")) is not int or child["pid"] <= 0 or terminal.get("pid") != child["pid"]
+            or type(terminal.get("exit_code")) is not int or terminal["exit_code"] != 0
+            or record.get("root", {}).get("pid") != child["pid"] or not record["root"].get("start")
+            or not same_process(record["root"], record.get("processes", {}).get(str(child["pid"])))
+            or memory.get("kind") != "sampled-owned-process-rss-v1" or memory.get("mode") != identity["phase"]
+            or memory.get("phase_profile_sha256") != fingerprint(profile) or memory.get("failure") is not None
+            or memory.get("budget_bytes") != profile["admission"]["peak_per_worker"]
+            or type(memory.get("samples")) is not int or memory["samples"] < 1
+            or type(memory.get("high_water_bytes")) is not int or not 0 <= memory["high_water_bytes"] <= memory["budget_bytes"]
+            or type(memory.get("helper_samples")) is not int or not 0 <= memory["helper_samples"] <= memory["samples"]
+            or (identity["phase"] == "normal" and memory["helper_samples"] < 1)):
+        raise ValueError("Phase process/image lifecycle or independent RSS budget proof is incomplete")
+    if identity["phase"] == "normal":
+        parsed = {}
+        for uuid_value, architecture in re.findall(r"UUID: ([0-9A-Fa-f-]{36}) \(([^)]+)\)", identity["image_uuid"]):
+            if architecture in parsed:
+                raise ValueError("Duplicate normal image architecture")
+            parsed[architecture] = uuid_value.upper()
+        if not parsed or {"sha256": identity["image_sha256"], "uuid": fingerprint(parsed)} not in record["observed_images"].values():
+            raise ValueError("Normal memory capture did not observe its exact native helper image")
 
 
 def aggregate(plans, store, normal_bundle, normal_digest, leaks_bundle, leaks_digest):
@@ -1368,8 +1466,11 @@ class NativeAuthority:
         """Retain the same disjoint owned storage and committed controller checks."""
         self.config = self.policy["recoverable_shards"]
         required = {"schema", "host", "cache", "legacy_cache", "workers", "admission"}
-        if not required <= set(self.config) or set(self.config) - required - {"planning"}:
+        if not required <= set(self.config) or set(self.config) - required - {"planning", "phase_profiles"}:
             raise ValueError("Unexpected native activation fields")
+        native_runner.backend_descriptor(self.policy)
+        if self.backend() == native_runner.LOCAL_COMPONENTS_BACKEND:
+            native_runner.phase_profile(self.policy, "normal")
         if type(self.config["schema"]) is not int or self.config["schema"] != SCHEMA or not self.config["workers"]:
             raise ValueError("Reviewed native workspace activation is required")
         self.cache = Path(self.config["cache"])
@@ -1408,8 +1509,16 @@ class NativeAuthority:
             raise ValueError("Physical hardware identity differs from host activation")
         return matches[0].upper()
 
-    def admission(self):
-        bounds = dict(self.config["admission"])
+    def backend(self):
+        return native_runner.backend_descriptor(self.policy)[0]
+
+    def phase_profile(self, phase):
+        return native_runner.phase_profile(self.policy, phase)
+
+    def admission(self, phase=None):
+        if phase is not None and self.phase_profile(phase) is None:
+            raise ValueError("Independent phase admission was not approved")
+        bounds = dict(self.config["admission"] if phase is None else self.phase_profile(phase)["admission"])
         configured_cpu, cpus, stage = bounds.get("cpu_budget"), None, "configuration"
         observed = {}
         try:
@@ -1440,6 +1549,8 @@ class NativeAuthority:
         except (KeyError, OSError, TypeError, ValueError, subprocess.SubprocessError) as error:
             sample = {**bounds, **{name: observed.get(name) for name in ("cpu_budget", "ram_available", "disk_available")}}
             record = admission_refusal(sample, configured_cpu, cpus, stage, error)
+            if phase is not None:
+                record["phase"] = phase
             retained = False
             try:
                 report = self.cache / "preparation" / str(uuid.uuid4())
@@ -1720,10 +1831,7 @@ class LocalAuthority(NativeAuthority):
     def build_flags(self, mode):
         if mode != self.activation["mode"]:
             raise ValueError("Local build mode differs from its reviewed profile")
-        flags = super().build_flags(mode)
-        if mode == "thread":
-            flags += ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
-        return flags
+        return local_sanitizer_flags(mode)
 
     def output(self, command, workspace=None, environment=None, descriptors=()):
         return super().output(command, workspace, environment,
@@ -1762,9 +1870,14 @@ def copy_build_tree(source, destination):
     shutil.copytree(source, destination, symlinks=True)
 
 
-def build_entries(root):
+def build_entries(root, read_only=False):
     """Hash complete SwiftPM layout, including confined relative links and executable bits."""
-    legacy.owned_directory(root)
+    if read_only:
+        owned_bridge_path(root)
+        if not root.is_dir():
+            raise ValueError("Original frozen scratch is missing")
+    else:
+        legacy.owned_directory(root)
     entries = {}
     for directory, names, files in os.walk(root, followlinks=False):
         for name in names + files:
@@ -1801,6 +1914,33 @@ def sanitizer_build_flags(mode):
     if mode == "address":
         flags += ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
     return flags
+
+
+def local_sanitizer_flags(mode):
+    flags = sanitizer_build_flags(mode)
+    if mode == "thread":
+        flags += ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+    return flags
+
+
+def frozen_build_content(build, destination):
+    """Check original immutable build bytes without constructing another authority/runtime."""
+    validate_runtime(build["runtime"])
+    require_sealed(destination)
+    if (load_json(destination / "build-commit.json") != {"sha256": legacy.digest(destination / "build.json")}
+            or build_entries(destination / "scratch", read_only=True) != build["scratch"]):
+        raise ValueError("Original frozen build manifest/layout changed")
+    runtime, scratch = build["runtime"], Path(build["runtime"]["flags"][1])
+    relative = Path(build["image_relative"])
+    if relative.is_absolute() or ".." in relative.parts or not relative.is_relative_to(scratch):
+        raise ValueError("Original frozen image escaped its scratch")
+    image = destination / "scratch" / relative.relative_to(scratch)
+    if image != image.resolve() or image.is_symlink() or legacy.digest(image) != runtime["image_sha256"]:
+        raise ValueError("Original frozen image bytes changed")
+    for name, digest in runtime["inputs"].items():
+        if name.startswith(".build/") and legacy.digest(destination / "scratch" / Path(name).relative_to(scratch)) != digest:
+            raise ValueError("Original frozen dependency input changed")
+    return image
 
 
 class NativeBuilder:
@@ -1849,7 +1989,7 @@ class NativeBuilder:
             raise ValueError("Durable image/toolchain/host/environment changed")
 
     @contextmanager
-    def preparation_claim(self):
+    def preparation_claim(self, phase=None):
         with file_claim(self.authority.legacy_cache / "executor.lock") as lock, claim(
                 self.authority.cache / "claims", "preparation"):
             self.lock = lock
@@ -1860,7 +2000,7 @@ class NativeBuilder:
                        or ".xctest/Contents/MacOS/Elite" in row["command"]
                        for row in self.authority.snapshot().values()):
                     raise ValueError("A live test helper blocks exclusive preparation")
-                self.authority.admission()
+                self.authority.admission() if phase is None else self.authority.admission(phase=phase)
                 yield lock
             finally:
                 self.lock = None
@@ -2020,7 +2160,7 @@ class NativeBuilder:
 
 class NativeMonitor:
     """Persist verified descendants; reuse capture-quality cleanup's fresh identity checks."""
-    def __init__(self, authority, attempt, workspace, expected_runtime=None, expected_image=None):
+    def __init__(self, authority, attempt, workspace, expected_runtime=None, expected_image=None, phase=None):
         self.authority, self.attempt, self.workspace = authority, attempt, workspace
         self.known, self.errors = {}, []
         self.controller, self.root_identity = None, None
@@ -2029,18 +2169,23 @@ class NativeMonitor:
         self.bound_callback = None
         self.stop, self.thread = threading.Event(), None
         self.memory = None
-        if expected_runtime is not None and (expected_runtime["mode"] == "address" or (
+        profile = authority.phase_profile(phase) if phase is not None else None
+        if phase is not None and profile is None:
+            raise ValueError("Phase RSS monitoring requires its own approved profile")
+        if profile is not None or (expected_runtime is not None and (expected_runtime["mode"] == "address" or (
                 expected_runtime["mode"] == "thread" and isinstance(authority, LocalAuthority)
                 and expected_runtime["environment"].get(LOCAL_POLICY_ENV) == hashlib.sha256(
-                    authority.policy_sha256.encode()).hexdigest())):
-            budget = authority.config["admission"]["peak_per_worker"]
+                    authority.policy_sha256.encode()).hexdigest()))):
+            budget = (profile["admission"] if profile is not None else authority.config["admission"])["peak_per_worker"]
             if type(budget) is not int or budget <= 0:
                 raise ValueError("Sanitizer resident budget must be positive integer bytes")
             self.memory = {"kind": "sampled-owned-process-rss-v1", "budget_bytes": budget,
-                           "mode": expected_runtime["mode"],
+                           "mode": phase if profile is not None else expected_runtime["mode"],
                            "poll_wait_seconds": 0.1, "samples": 0, "helper_samples": 0,
                            "last_bytes": 0, "high_water_bytes": 0, "failure": None,
                            "authority": "sampled RSS sum; not physical footprint or an OS hard limit"}
+            if profile is not None:
+                self.memory["phase_profile_sha256"] = fingerprint(profile)
 
     def persist(self):
         record = {"schema": SCHEMA, "workspace": str(self.workspace), "controller": self.controller,
@@ -2054,7 +2199,7 @@ class NativeMonitor:
     def memory_failure(self, reason):
         if self.memory["failure"] is None:
             self.memory["failure"] = reason
-            label = "ASAN" if self.memory["mode"] == "address" else "TSAN"
+            label = {"address": "ASAN", "thread": "TSAN", "normal": "NORMAL", "leaks": "LEAKS"}[self.memory["mode"]]
             self.errors.append(label + " resident memory: " + reason)
             self.persist()
             legacy.progress(json.dumps({label.lower() + "_resident_memory_refused": self.memory}, sort_keys=True))
@@ -2155,8 +2300,10 @@ class NativeMonitor:
         while live and time.monotonic() < deadline:
             time.sleep(0.05)
             live = self.observe()
-        if self.memory is not None and not self.memory["helper_samples"]:
+        if self.memory is not None and self.memory["mode"] != "leaks" and not self.memory["helper_samples"]:
             self.memory_failure("no resident helper sample")
+        if self.memory is not None and not self.memory["samples"]:
+            self.memory_failure("no resident process sample")
         self.persist()
         clean = not live and not self.errors and (self.expected_runtime is None or bool(self.observed))
         for pid, row in live.items():
@@ -2306,18 +2453,19 @@ class NativePhaseRunner:
 
     def run(self, phase, plan, destination, timeout, fault=lambda stage: None):
         validate_plan(plan)
-        with NativeBuilder(self.authority).preparation_claim() as lock:
+        profile = self.authority.phase_profile(phase)
+        with NativeBuilder(self.authority).preparation_claim(**({"phase": phase} if profile is not None else {})) as lock:
             self.verify(plan["runtime"])
             runtime = plan["runtime"]
-            durable = self.authority.cache / "full-phases" / phase_key(runtime, plan["inventory"], phase)
+            durable = self.authority.cache / "full-phases" / phase_key(runtime, plan["inventory"], phase, profile)
             legacy.owned_directory(durable.parent)
             def deliver():
                 require_sealed(durable)
                 checksum = load_json(durable / "commit.json")["sha256"]
-                validate_phase(durable, checksum, phase, runtime, plan["inventory"])
+                validate_phase(durable, checksum, phase, runtime, plan["inventory"], profile)
                 target = Path(destination)
                 if target.exists():
-                    validate_phase(target, checksum, phase, runtime, plan["inventory"])
+                    validate_phase(target, checksum, phase, runtime, plan["inventory"], profile)
                 else:
                     atomic_copy(durable, target)
                 return checksum
@@ -2325,7 +2473,7 @@ class NativePhaseRunner:
                 for stage in sorted(durable.parent.glob(durable.name + ".pending-*")):
                     try:
                         checksum = load_json(stage / "commit.json")["sha256"]
-                        validate_phase(stage, checksum, phase, runtime, plan["inventory"])
+                        validate_phase(stage, checksum, phase, runtime, plan["inventory"], profile)
                         seal(stage)
                         stage.rename(durable)
                         sync_directory(durable.parent)
@@ -2345,7 +2493,11 @@ class NativePhaseRunner:
             fresh_cache = execution / "fresh-cache"
             command = [sys.executable, str(self.authority.root / "Tools/CI/quality_phase_checkpoints.py"),
                        phase, "--cache", str(fresh_cache)]
-            monitor = NativeMonitor(self.authority, execution, self.authority.root)
+            if profile is not None:
+                path = Path(self.authority.environment["ELITE_NATIVE_POLICY"])
+                native_runner.require_owned_activation_file(path)
+                command += ["--profile-policy", str(path), "--profile-policy-sha256", legacy.digest(path)]
+            monitor = NativeMonitor(self.authority, execution, self.authority.root, phase=phase if profile is not None else None)
             code = execute_process(command, self.authority.root, execution, timeout, [lock.fileno()],
                                    self.authority.execution_environment(), monitor,
                                    isolate_environment=False)
@@ -2371,8 +2523,11 @@ class NativePhaseRunner:
             self.origin = {"schema": SCHEMA, "host": host, "phase": phase,
                            "tested_head": head, "receipt_sha256": legacy.digest(receipts[0]), "exit_code": code,
                            "authorization": self.authority.authorization()}
+            memory = ({name: load_json(execution / file) for name, file in (
+                ("processes", "processes.json"), ("child", "child.json"), ("terminal", "child-exit.json"))}
+                if profile is not None else None)
             pending = durable.with_name(durable.name + ".pending-" + str(uuid.uuid4()))
-            freeze_phase(self.attempt, result["identity"], runtime, plan["inventory"], self, pending)
+            freeze_phase(self.attempt, result["identity"], runtime, plan["inventory"], self, pending, profile, memory)
             pending.rename(durable)
             sync_directory(durable.parent)
             fault("after-capture")
@@ -2660,10 +2815,12 @@ def report_phase_progress(phase, state):
         with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
             summary.write("## " + phase + "\n\n" + state + ". Full phase; partial XML is never qualified.\n")
 
-def phase_key(runtime, inventory, phase):
+def phase_key(runtime, inventory, phase, phase_profile=None):
     common = {key: runtime[key] for key in ("toolchain", "sdk", "host", "os", "architecture",
                                            "phase_environment", "opt_in_policy", "policy")}
     common.update(inputs=canonical_inputs(runtime["inputs"]), inventory=inventory, phase=phase)
+    if phase_profile is not None:
+        common["phase_profile"] = phase_profile
     return fingerprint(common)
 
 
@@ -2677,6 +2834,173 @@ def portable_build(source, destination):
             path = Path(directory) / name
             if not path.is_symlink():
                 shutil.copy2(path, target / name)
+
+
+BRIDGE_AUTHORITY_ENV = {"ELITE_NATIVE_POLICY", "ELITE_NATIVE_APPROVED_HEAD",
+                        "ELITE_RECOVERABLE_LOCAL_POLICY_SHA256", "ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"}
+
+
+def bridge_semantics(environment):
+    """Only these independently verified identity fields vary; unknown controls remain exact."""
+    return {name: value for name, value in environment.items() if name not in BRIDGE_AUTHORITY_ENV}
+
+
+def owned_bridge_path(path):
+    path = Path(path)
+    if not path.is_absolute() or path != path.resolve():
+        raise ValueError("Original bridge data must be an absolute physical path")
+    native_runner.require_owned_activation_file(path)
+    return path
+
+
+def pinned_bridge_json(entry, filename=None):
+    require_fields(entry, ("path", "sha256"))
+    path = owned_bridge_path(entry["path"])
+    file = path / filename if filename else path
+    owned_bridge_path(file)
+    if file.stat().st_mode & 0o777 != 0o400:
+        raise ValueError("Original bridge JSON must be immutable")
+    return path, trusted_json(file, entry["sha256"])
+
+
+def verify_owned_local_components(authority, anchor):
+    """Read original H evidence in place under current M authority, never relabel/import it."""
+    binding = native_runner.read_local_components_binding(authority.policy)
+    if authority.environment.get("GITHUB_JOB") not in ("native_local_components", "native_aggregate"):
+        raise ValueError("This role cannot verify local components for CI")
+    validate_plan(anchor)
+    if anchor["runtime"]["mode"] != "address":
+        raise ValueError("A real current-CI address anchor is required")
+    executor = NativeExecutor(authority, "one")
+    executor.verify(anchor["runtime"])
+    if executor.unknown_live_helpers():
+        raise ValueError("Live native helpers block bridge verification")
+    current_authorization = authority.authorization()
+    validate_authorization(current_authorization, anchor["runtime"])
+    if current_authorization["head"] != binding["target"]["head"]:
+        raise ValueError("Current bridge authority is for another target")
+    if authority.output(["git", "rev-parse", binding["target"]["head"] + "^{tree}"]) != binding["target"]["tree"]:
+        raise ValueError("Current bridge tree differs from the exact reviewed target object")
+    if (authority.output(["git", "rev-parse", "HEAD"]) != binding["target"]["head"]
+            or authority.output(["git", "status", "--porcelain"])):
+        raise ValueError("Current bridge checkout is not the clean committed target")
+    if (canonical_inputs(anchor["runtime"]["inputs"]) != binding["inputs"]
+            or canonical_inputs(legacy.executable_inputs(authority.root, anchor["runtime"]["flags"][1])) != binding["inputs"]
+            or bridge_semantics(anchor["runtime"]["phase_environment"]) != binding["semantic_environment"]):
+        raise ValueError("Current source/dependency blobs or semantic environment drifted")
+    ci_spaces = [authority.root, authority.cache, *authority.workers.values()]
+    original_spaces, verified = [], {}
+    for mode in MODES:
+        entry = binding["modes"][mode]
+        require_fields(entry, ("policy", "plan", "component", "build", "cache", "worker", "runtime_sha256", "admission"))
+        policy_path, original_policy = pinned_bridge_json(entry["policy"])
+        require_fields(original_policy, ("approved_head", "developer_dir", "swift", "sdk", "recoverable_shards", "local_activation"))
+        config, activation = original_policy["recoverable_shards"], original_policy["local_activation"]
+        require_fields(activation, ("schema", "kind", "mode", "workspace", "sources", "expires_at",
+                                    "inventory_sha256", "inventory_count", "shard_count", "environment"))
+        if (original_policy["approved_head"] != binding["original"]["head"]
+                or any(original_policy[name] != authority.policy[name] for name in ("developer_dir", "swift", "sdk"))
+                or activation.get("kind") != "local-sanitizer-activation-v1" or activation.get("mode") != mode
+                or activation.get("schema") != SCHEMA or type(activation.get("schema")) is not int
+                or config["host"] != authority.config["host"] or config["admission"] != entry["admission"]
+                or config["legacy_cache"] != authority.config["legacy_cache"]
+                or set(config["workers"]) != {"one"} or config["admission"]["explicit"] != 1
+                or config["admission"]["cpu_budget"] != 1):
+            raise ValueError("Original local policy/source/mode/allocation differs")
+        if set(config) - {"schema", "host", "cache", "legacy_cache", "workers", "admission", "planning"}:
+            raise ValueError("Original local profile has unknown controls")
+        worker_limit(**config["admission"], ram_available=config["admission"]["ram_capacity"],
+                     disk_available=config["admission"]["disk_capacity"])
+        positive(activation["expires_at"])
+        for name, digest in activation["sources"].items():
+            if name not in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
+                            "quality_phase_checkpoints.py", "crash_artifacts.py"):
+                raise ValueError("Unknown original helper source pin")
+            current = authority.root / "Tools/CI" / name
+            if current.is_symlink() or legacy.digest(current) != digest:
+                raise ValueError("Current helper differs from original local source")
+        if set(activation["sources"]) != {"native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
+                                         "quality_phase_checkpoints.py", "crash_artifacts.py"}:
+            raise ValueError("Original local source pins are incomplete")
+        source_root = owned_bridge_path(activation["workspace"])
+        if (authority.output(["git", "rev-parse", "HEAD"], source_root) != binding["original"]["head"]
+                or authority.output(["git", "status", "--porcelain"], source_root)
+                or authority.output(["git", "rev-parse", binding["original"]["head"] + "^{tree}"], source_root) != binding["original"]["tree"]):
+            raise ValueError("Original source checkout/tree is no longer clean committed H")
+        cache, worker = owned_bridge_path(entry["cache"]), owned_bridge_path(entry["worker"])
+        if (str(cache) != config["cache"] or str(worker) != config["workers"]["one"] or not cache.is_dir()
+                or any(a.is_relative_to(b) or b.is_relative_to(a)
+                       for a in (source_root, cache, worker) for b in ci_spaces)
+                or any(a.is_relative_to(b) or b.is_relative_to(a) for a in (cache, worker) for b in original_spaces)):
+            raise ValueError("Original local data overlaps current or another mode's mutable execution storage")
+        original_spaces += [cache, worker]
+        plan_path, plan = pinned_bridge_json(entry["plan"])
+        validate_plan(plan)
+        runtime = plan["runtime"]
+        if (runtime["mode"] != mode or runtime["flags"] != local_sanitizer_flags(mode)
+                or fingerprint(runtime) != entry["runtime_sha256"]
+                or canonical_inputs(runtime["inputs"]) != binding["inputs"]
+                or plan["inventory"] != anchor["inventory"] or plan["shared_groups"] != anchor["shared_groups"]
+                or fingerprint(plan["inventory"]) != activation["inventory_sha256"]
+                or len(plan["inventory"]) != activation["inventory_count"]
+                or len(plan["shards"]) != activation["shard_count"]
+                or any(len(row["methods"]) > LOCAL_PACKED_ID_TARGET and len(row["atoms"]) != 1 for row in plan["shards"])
+                or any(runtime[key] != anchor["runtime"][key] for key in ("toolchain", "sdk", "host", "os", "architecture", "opt_in_policy"))):
+            raise ValueError("Original mode's full source/dependency/inventory/profile/runtime changed")
+        parent = dict(activation["environment"])
+        parent["ELITE_RECOVERABLE_EXECUTION_POLICY_SHA256"] = hashlib.sha256(execution_policy_digest(config).encode()).hexdigest()
+        parent[LOCAL_POLICY_ENV] = hashlib.sha256(entry["policy"]["sha256"].encode()).hexdigest()
+        expected_environment = dict(parent)
+        if mode == "address":
+            expected_environment["ASAN_OPTIONS"] = hashlib.sha256(b"detect_leaks=0").hexdigest()
+        if (runtime["phase_environment"] != parent or runtime["environment"] != expected_environment
+                or bridge_semantics(parent) != binding["semantic_environment"]):
+            raise ValueError("Original semantic controls or independently validated authority identities changed")
+        build_path, build = pinned_bridge_json(entry["build"], "build.json")
+        if build_path != cache / "builds" / binding["original"]["head"] / mode or build["runtime"] != runtime:
+            raise ValueError("Original frozen build/profile is not the declared local build")
+        frozen_build_content(build, build_path)
+        marker = worker / (mode + "-build.json")
+        if (local_control(marker) != build or build["tested_head"] != binding["original"]["head"]
+                or build["inventory"] != plan["inventory"] or build["shared_groups"] != plan["shared_groups"]):
+            raise ValueError("Original private build marker or frozen full inventory changed")
+        private = owned_bridge_path(worker / mode)
+        image = owned_bridge_path(private / build["image_relative"])
+        if (legacy.digest(image) != runtime["image_sha256"]
+                or canonical_inputs(legacy.executable_inputs(private, runtime["flags"][1])) != binding["inputs"]
+                or authority.output(["git", "rev-parse", "HEAD"], private) != binding["original"]["head"]
+                or authority.output(["git", "status", "--porcelain"], private)):
+            raise ValueError("Original private source/image/dependencies changed")
+        component_path, component = pinned_bridge_json(entry["component"], "component.json")
+        if any(a.is_relative_to(b) or b.is_relative_to(a)
+               for a in (policy_path, plan_path, component_path, build_path) for b in ci_spaces):
+            raise ValueError("Current CI mutable storage overlaps original bound proof")
+        require_sealed(component_path)
+        if ({p.name for p in component_path.iterdir()} != {"component.json", "commit.json"}
+                or load_json(component_path / "commit.json") != {"sha256": entry["component"]["sha256"]}):
+            raise ValueError("Original component commit is incomplete")
+        computed = local_component_content(plan, entry["plan"]["sha256"], Store(cache, read_only=True), binding["original"]["head"],
+                                           entry["policy"]["sha256"], config["admission"], worker)
+        if component != computed:
+            raise ValueError("Original component metadata differs from fully reverified content")
+        for shard in plan["shards"]:
+            reference = computed["receipts"][shard["id"]]
+            attempt = Path(reference["path"])
+            receipt = trusted_json(attempt / "result.json", reference["sha256"])
+            authorization = trusted_json(attempt / "authorization.json", receipt["outputs"]["authorization.json"])
+            if (authorization["session"]["expires_at"] > activation["expires_at"]
+                    or authorization["workspace"] != str(source_root)
+                    or authorization["execution_policy_sha256"] != execution_policy_digest(config)
+                    or authorization["authorized_at"] >= activation["expires_at"]):
+                raise ValueError("Original historical local authority was invalid at native execution")
+        verified[mode] = {"original_tested_head": binding["original"]["head"], "component_sha256": entry["component"]["sha256"],
+                          "plan_sha256": entry["plan"]["sha256"], "runtime_sha256": fingerprint(runtime),
+                          "inventory_count": component["inventory_count"], "admission": config["admission"],
+                          "sampled_rss_high_water_bytes": component["sampled_rss_high_water_bytes"]}
+    return {"schema": SCHEMA, "kind": "owned-local-components-verification-v1", "status": "qualified",
+            "target_ci_head": binding["target"]["head"], "original_tested_head": binding["original"]["head"],
+            "exact_source_tree": binding["target"]["tree"], "binding_sha256": native_runner.backend_descriptor(authority.policy)[1]["sha256"],
+            "modes": verified, "qualification": "Original H sanitizer execution, exact-source-equivalent to M; not sanitizer execution at M"}
 
 
 class NativeWorkflow:
@@ -2695,6 +3019,10 @@ class NativeWorkflow:
             raise ValueError("Workflow plan is not this approved source")
         if not manifest["plans"] or not set(manifest["plans"]) <= set(MODES):
             raise ValueError("Invalid workflow modes")
+        local_backend = native_runner.backend_descriptor(self.authority.policy)[0] == native_runner.LOCAL_COMPONENTS_BACKEND
+        if ((local_backend and (set(manifest["plans"]) != {"address"} or manifest.get("anchor_only") is not True))
+                or (not local_backend and "anchor_only" in manifest)):
+            raise ValueError("Current-CI anchor/backend declaration differs")
         for mode in MODES:
             if mode not in manifest["plans"]:
                 continue
@@ -2767,12 +3095,55 @@ class NativeWorkflow:
             after = legacy.executable_inputs(self.authority.root, ".build")
             if any(after.get(name) != value for name, value in before.items()):
                 code = code or 126
-            durable_json(output / "result.json", {"head": self.authority.policy["approved_head"], "exit_code": code,
-                                                  "inputs": before, "command": command})
+            result = {"head": self.authority.policy["approved_head"], "exit_code": code,
+                      "inputs": before, "command": command}
+            local_backend = self.authority.backend() == native_runner.LOCAL_COMPONENTS_BACKEND
+            if local_backend:
+                result["outputs"] = physical_tree(output)
+            durable_json(output / "result.json", result)
+            if local_backend:
+                durable_json(output / "commit.json", {"sha256": legacy.digest(output / "result.json")})
             seal(output)
             if code != 0:
                 raise ValueError("Required make-ci prerequisite failed; raw output retained")
+            if local_backend:
+                if self.authority.environment.get("GITHUB_JOB") != "native_checks":
+                    raise ValueError("Only the actual checks job can capture prerequisite origin")
+                target = self.prerequisites_path()
+                if target.exists():
+                    if physical_tree(target) != physical_tree(output):
+                        raise ValueError("Existing current-run prerequisite proof differs")
+                else:
+                    atomic_copy(output, target)
         return {"checks_exit_code": code}
+
+    def prerequisites_path(self):
+        e = self.authority.environment
+        return self.authority.cache / "ci-prerequisites" / self.authority.policy["approved_head"] / e["GITHUB_RUN_ID"] / e["GITHUB_RUN_ATTEMPT"]
+
+    def require_prerequisites(self, anchor):
+        path = self.prerequisites_path()
+        require_sealed(path)
+        result = trusted_json(path / "result.json", load_json(path / "commit.json")["sha256"])
+        launch = load_json(path / "launch.json")
+        authorization = launch["authorization"]
+        validate_authorization(authorization, anchor["runtime"])
+        expected = ["make", "native-runner-check", "instance-equality-check", "ci-capture-check", "flight-controls-check",
+                    "homebrew-cask-check", "ships-check", "showroom-check", "mission-packs-check", "sanitizer-checkpoints-check"]
+        outputs = physical_tree(path)
+        if (result["head"] != self.authority.policy["approved_head"] or result["command"] != expected
+                or launch["command"] != expected or type(result["exit_code"]) is not int or result["exit_code"] != 0
+                or authorization["role"] != "native_checks" or authorization["head"] != result["head"]
+                or authorization["policy_sha256"] != native_runner.policy_digest(self.authority.policy)
+                or any(authorization[name] != self.authority.environment[key] for name, key in (
+                    ("run_id", "GITHUB_RUN_ID"), ("run_attempt", "GITHUB_RUN_ATTEMPT")))
+                or result["outputs"] != {k: v for k, v in outputs.items() if k not in ("result.json", "commit.json")}
+                or {k: v for k, v in result["inputs"].items() if not k.startswith(".build/")}
+                   != {k: v for k, v in anchor["runtime"]["inputs"].items() if not k.startswith(".build/")}
+                or load_json(path / "child-exit.json")["exit_code"] != 0
+                or load_json(path / "processes.json")["running"] is not False):
+            raise ValueError("Real current-run make-ci prerequisite proof is missing or changed")
+        return legacy.digest(path / "result.json")
 
     def export_preparation(self, mode, output):
         legacy.owned_directory(output)
@@ -2866,6 +3237,10 @@ class NativeWorkflow:
             portable_build(frozen, output / "builds" / mode)
         manifest = workflow_manifest(plans, sorted(self.authority.workers), self.store,
                                      self.authority.policy["approved_head"])
+        if self.authority.backend() == native_runner.LOCAL_COMPONENTS_BACKEND:
+            if modes != ("address",):
+                raise ValueError("Owned local-components backend prepares only its actual CI address anchor")
+            manifest["anchor_only"] = True
         manifest["plans"] = {mode: {"path": mode + ".json", "sha256": legacy.digest(output / (mode + ".json"))}
                              for mode in modes}
         durable_json(output / "workflow-plan.json", manifest)
@@ -2898,18 +3273,19 @@ class NativeWorkflow:
             atomic_copy(source, output)
 
     def restore_phase(self, plan, phase):
-        target = self.authority.cache / "full-phases" / phase_key(plan["runtime"], plan["inventory"], phase)
+        profile = self.authority.phase_profile(phase)
+        target = self.authority.cache / "full-phases" / phase_key(plan["runtime"], plan["inventory"], phase, profile)
         if target.exists():
             require_sealed(target)
             validate_phase(target, load_json(target / "commit.json")["sha256"], phase,
-                           plan["runtime"], plan["inventory"])
+                           plan["runtime"], plan["inventory"], profile)
             return target
         for artifact in self.artifacts().artifacts("native-phase-" + phase + "-"):
             bundle = self.artifacts().fetch(artifact)
             if (bundle / "failure.json").exists():
                 continue
             checksum = legacy.digest(bundle / "index.json")
-            validate_phase(bundle, checksum, phase, plan["runtime"], plan["inventory"])
+            validate_phase(bundle, checksum, phase, plan["runtime"], plan["inventory"], profile)
             legacy.owned_directory(target.parent)
             atomic_copy(bundle, target)
             return target
@@ -2930,7 +3306,68 @@ class NativeWorkflow:
         seal(output)
         return result
 
+    def owned_components(self, plans, output):
+        if self.authority.backend() != native_runner.LOCAL_COMPONENTS_BACKEND or len(plans) != 1:
+            raise ValueError("Owned local verification requires its explicit backend and one real CI anchor")
+        if output.exists():
+            raise ValueError("Bridge verification output already exists")
+        legacy.owned_directory(output)
+        try:
+            with NativeBuilder(self.authority).preparation_claim():
+                result = verify_owned_local_components(self.authority, plans[0])
+        except BaseException as error:
+            durable_json(output / "result.json", {"status": "failed", "failure": type(error).__name__,
+                                                  "target_ci_head": self.authority.policy["approved_head"]})
+            seal(output)
+            raise
+        durable_json(output / "result.json", result)
+        durable_json(output / "commit.json", {"sha256": legacy.digest(output / "result.json")})
+        seal(output)
+        return result
+
+    def aggregate_owned(self, plans, output):
+        if (self.authority.backend() != native_runner.LOCAL_COMPONENTS_BACKEND or len(plans) != 1
+                or self.authority.environment.get("GITHUB_JOB") != "native_aggregate"):
+            raise ValueError("Only the real current-CI aggregate uses the owned full-quality backend")
+        if output.exists():
+            raise ValueError("Full-quality bridge output already exists")
+        legacy.owned_directory(output)
+        try:
+            with NativeBuilder(self.authority).preparation_claim():
+                anchor = plans[0]
+                components = verify_owned_local_components(self.authority, anchor)
+                prerequisites = self.require_prerequisites(anchor)
+                phases_verified = {}
+                for phase in ("normal", "leaks"):
+                    bundle = self.restore_phase(anchor, phase)
+                    if bundle is None:
+                        raise ValueError("Actual current-CI normal/coverage or leak phase is missing")
+                    checksum = legacy.digest(bundle / "index.json")
+                    validate_phase(bundle, checksum, phase, anchor["runtime"], anchor["inventory"], self.authority.phase_profile(phase))
+                    origin = load_json(bundle / "index.json")["origin"]
+                    if (origin["tested_head"] != self.authority.policy["approved_head"]
+                            or origin["authorization"]["policy_sha256"] != native_runner.policy_digest(self.authority.policy)):
+                        raise ValueError("Full-quality phases are not actual current-target/current-policy execution")
+                    phases_verified[phase] = {"path": str(bundle), "sha256": checksum, "actual_tested_head": origin["tested_head"]}
+                    if phase == "normal":
+                        for name in ("coverage.xml", "coverage.lcov"):
+                            shutil.copyfile(bundle / "attempt" / name, self.authority.root / name)
+                result = {"status": "components-prerequisites-and-phases-qualified", "current_ci_head": self.authority.policy["approved_head"],
+                          "original_sanitizer_tested_head": components["original_tested_head"], "components": components,
+                          "prerequisites_sha256": prerequisites, "phases": phases_verified,
+                          "qualification": "Full content verified; real job/fake outcomes and actual-main Sonar must also succeed before quality passes"}
+                durable_json(output / "result.json", result)
+                seal(output)
+                return result
+        except BaseException as error:
+            durable_json(output / "result.json", {"status": "failed", "current_ci_head": self.authority.policy["approved_head"],
+                                                  "failure": type(error).__name__})
+            seal(output)
+            raise
+
     def aggregate(self, plans):
+        if self.authority.backend() == native_runner.LOCAL_COMPONENTS_BACKEND:
+            raise ValueError("Local components require their explicit aggregate, not invented GitHub mode plans")
         if len(plans) != 2 or {plan["runtime"]["mode"] for plan in plans} != set(MODES):
             raise ValueError("Both independent sanitizer plans are required")
         for plan in plans:
@@ -2954,7 +3391,8 @@ class NativeWorkflow:
         if complete is not None:
             if not output.exists():
                 atomic_copy(complete, output)
-            validate_phase(output, legacy.digest(complete / "index.json"), phase, plan["runtime"], plan["inventory"])
+            validate_phase(output, legacy.digest(complete / "index.json"), phase, plan["runtime"], plan["inventory"],
+                           self.authority.phase_profile(phase))
             return {"status": "passed"}
         legacy.owned_directory(output)
         if (output / "failure.json").exists():
@@ -2994,6 +3432,53 @@ def verify_local_plan(authority, plan, digest=None):
         raise ValueError("Local assigned shards are outside the exact full plan")
 
 
+def local_component_content(plan, digest, store, head, policy_sha256, admission, worker):
+    """Rehash original sealed content in place; no execution, copied receipts or changed identities."""
+    receipts, actual, maxima = {}, [], []
+    for shard in plan["shards"]:
+        found = store.matching(shard_identity(plan["runtime"], shard))
+        if found is None:
+            raise ValueError("Local component has a missing/failed/incomplete shard: " + shard["id"])
+        attempt, receipt = found
+        authorization = load_json(attempt / "authorization.json")
+        if (authorization["kind"] != "validated-local-sanitizer-v1"
+                or authorization["session"]["plan_sha256"] != digest
+                or authorization["policy_sha256"] != policy_sha256
+                or receipt["tested_head"] != head):
+            raise ValueError("Local component contains proof from another plan/source/profile")
+        processes = load_json(attempt / "processes.json")
+        expected_image = {"sha256": plan["runtime"]["image_sha256"], "uuid": plan["runtime"]["image_uuid"]}
+        child = load_json(attempt / "child.json")
+        if (processes.get("running") is not False
+                or expected_image not in processes.get("observed_images", {}).values()
+                or processes.get("workspace") != str(worker / plan["runtime"]["mode"])
+                or processes.get("root", {}).get("pid") != child["pid"]
+                or not processes.get("root", {}).get("start")):
+            raise ValueError("Local component process/image terminal proof is incomplete")
+        memory = processes.get("resident_memory", {})
+        if (memory.get("kind") != "sampled-owned-process-rss-v1" or memory.get("failure") is not None
+                or memory.get("mode") != plan["runtime"]["mode"]
+                or type(memory.get("helper_samples")) is not int or memory["helper_samples"] < 1
+                or type(memory.get("samples")) is not int or memory["samples"] < memory["helper_samples"]
+                or type(memory.get("high_water_bytes")) is not int or memory["high_water_bytes"] < 0
+                or memory.get("budget_bytes") != admission["peak_per_worker"]
+                or memory["high_water_bytes"] > memory["budget_bytes"]):
+            raise ValueError("Local sanitizer component lacks successful mode-specific resident-budget evidence")
+        maxima.append(memory["high_water_bytes"])
+        receipts[shard["id"]] = {"path": str(attempt), "sha256": legacy.digest(attempt / "result.json")}
+        actual.extend(receipt["identity"]["methods"])
+    if Counter(actual) != Counter(plan["inventory"]):
+        raise ValueError("Local sanitizer component inventory is not exactly once")
+    result = {"schema": SCHEMA, "kind": "local-sanitizer-component-v1", "status": "qualified",
+              "head": head, "mode": plan["runtime"]["mode"],
+              "plan_sha256": digest, "policy_sha256": policy_sha256,
+              "runtime_sha256": fingerprint(plan["runtime"]), "inventory_sha256": fingerprint(sorted(actual)),
+              "inventory_count": len(actual), "receipts": receipts,
+              "sampled_rss_high_water_bytes": max(maxima) if maxima else None,
+              "release_status": "pending full quality, coverage, leaks, other mode, main analysis and release gates"}
+    return result
+
+
 def local_component(authority, plan, digest, store, output):
     """Validate a full local sanitizer component; never manufacture a full quality/release pass."""
     authority.check_session("validate")
@@ -3004,48 +3489,8 @@ def local_component(authority, plan, digest, store, output):
     executor.verify(plan["runtime"])
     if executor.unknown_live_helpers():
         raise ValueError("Unknown live native helpers block local component qualification")
-    receipts, actual, maxima = {}, [], []
-    for shard in plan["shards"]:
-        found = store.matching(shard_identity(plan["runtime"], shard))
-        if found is None:
-            raise ValueError("Local component has a missing/failed/incomplete shard: " + shard["id"])
-        attempt, receipt = found
-        authorization = load_json(attempt / "authorization.json")
-        if (authorization["kind"] != "validated-local-sanitizer-v1"
-                or authorization["session"]["plan_sha256"] != digest
-                or authorization["policy_sha256"] != authority.policy_sha256
-                or receipt["tested_head"] != authority.policy["approved_head"]):
-            raise ValueError("Local component contains proof from another plan/source/profile")
-        processes = load_json(attempt / "processes.json")
-        expected_image = {"sha256": plan["runtime"]["image_sha256"], "uuid": plan["runtime"]["image_uuid"]}
-        child = load_json(attempt / "child.json")
-        if (processes.get("running") is not False
-                or expected_image not in processes.get("observed_images", {}).values()
-                or processes.get("workspace") != str(authority.workers["one"] / plan["runtime"]["mode"])
-                or processes.get("root", {}).get("pid") != child["pid"]
-                or not processes.get("root", {}).get("start")):
-            raise ValueError("Local component process/image terminal proof is incomplete")
-        memory = processes.get("resident_memory", {})
-        if (memory.get("kind") != "sampled-owned-process-rss-v1" or memory.get("failure") is not None
-                or memory.get("mode") != plan["runtime"]["mode"]
-                or type(memory.get("helper_samples")) is not int or memory["helper_samples"] < 1
-                or type(memory.get("samples")) is not int or memory["samples"] < memory["helper_samples"]
-                or type(memory.get("high_water_bytes")) is not int or memory["high_water_bytes"] < 0
-                or memory.get("budget_bytes") != authority.config["admission"]["peak_per_worker"]
-                or memory["high_water_bytes"] > memory["budget_bytes"]):
-            raise ValueError("Local sanitizer component lacks successful mode-specific resident-budget evidence")
-        maxima.append(memory["high_water_bytes"])
-        receipts[shard["id"]] = {"path": str(attempt), "sha256": legacy.digest(attempt / "result.json")}
-        actual.extend(receipt["identity"]["methods"])
-    if Counter(actual) != Counter(plan["inventory"]):
-        raise ValueError("Local sanitizer component inventory is not exactly once")
-    result = {"schema": SCHEMA, "kind": "local-sanitizer-component-v1", "status": "qualified",
-              "head": authority.policy["approved_head"], "mode": plan["runtime"]["mode"],
-              "plan_sha256": digest, "policy_sha256": authority.policy_sha256,
-              "runtime_sha256": fingerprint(plan["runtime"]), "inventory_sha256": fingerprint(sorted(actual)),
-              "inventory_count": len(actual), "receipts": receipts,
-              "sampled_rss_high_water_bytes": max(maxima) if maxima else None,
-              "release_status": "pending full quality, coverage, leaks, other mode, main analysis and release gates"}
+    result = local_component_content(plan, digest, store, authority.policy["approved_head"],
+                                     authority.policy_sha256, authority.config["admission"], authority.workers["one"])
     authority.check_session("validate")
     if output.exists():
         raise ValueError("Local component output already exists")
@@ -3123,7 +3568,8 @@ def main():
                                              "phase", "aggregate", "workflow-prepare", "workflow-load",
                                              "workflow-run", "workflow-build", "workflow-build-export", "workflow-checks", "workflow-checks-export", "workflow-phase", "workflow-export",
                                              "workflow-phase-export", "workflow-aggregate",
-                                             "local-prepare", "local-run", "local-validate"))
+                                             "local-prepare", "local-run", "local-validate",
+                                             "workflow-verify-local-components", "workflow-owned-aggregate"))
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--digest")
@@ -3205,7 +3651,15 @@ def main():
             if args.input is None or not args.digest:
                 parser.error("workflow operation requires plan bundle --input and trusted --digest")
             plans, manifest = workflow.plans(args.input, args.digest)
-            if args.command == "workflow-aggregate":
+            if args.command == "workflow-verify-local-components":
+                if args.output is None:
+                    parser.error("Owned component verification requires output")
+                result = workflow.owned_components(plans, args.output)
+            elif args.command == "workflow-owned-aggregate":
+                if args.output is None:
+                    parser.error("Owned full-quality aggregate requires output")
+                result = workflow.aggregate_owned(plans, args.output)
+            elif args.command == "workflow-aggregate":
                 if authority.environment.get("GITHUB_JOB") == "native_aggregate" and (
                         not args.other_input or args.other_digest != authority.environment.get("OTHER_PLAN_DIGEST")):
                     raise ValueError("Second aggregate plan differs from the owned assignment")

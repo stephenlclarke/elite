@@ -15,9 +15,13 @@ import time
 REPOSITORY = "stephenlclarke/elite"
 ACTOR = "22142777"
 RECOVERABLE_JOBS = {"prepare_native", "prepare_thread", "prepare_address", "native_checks", "native_phase",
-                    "native_shards", "thread_shards", "address_shards", "native_aggregate"}
+                    "native_shards", "thread_shards", "address_shards", "native_aggregate", "native_local_components"}
 PREPARE_JOBS = {"prepare_native", "prepare_thread", "prepare_address", "native_checks"}
 SHARD_JOBS = {"native_shards", "thread_shards", "address_shards"}
+LOCAL_COMPONENTS_BACKEND = "owned-local-components-v1"
+GITHUB_BACKEND = "github-artifacts-v1"
+LOCAL_COMPONENT_ROLES = {"native_checks", "prepare_address", "native_local_components", "native_phase", "native_aggregate"}
+PHASE_BUILD_PROFILE = "jobs1-nonbatch-v1"
 
 
 def workflow_path(environment: dict) -> str:
@@ -77,7 +81,10 @@ def assignment_payload(policy: dict, environment: dict) -> dict:
             "worker": environment.get("ELITE_RECOVERABLE_REQUEST_WORKER", ""),
             "phase": environment.get("ELITE_RECOVERABLE_REQUEST_PHASE", ""),
             "plan_sha256": environment.get("PLAN_DIGEST") or None}
-    if environment.get("GITHUB_JOB") == "native_aggregate":
+    backend, descriptor = backend_descriptor(policy)
+    if backend == LOCAL_COMPONENTS_BACKEND:
+        payload.update(sanitizer_backend=backend, local_components=descriptor)
+    if environment.get("GITHUB_JOB") == "native_aggregate" and backend == GITHUB_BACKEND:
         payload["other_plan_sha256"] = environment.get("OTHER_PLAN_DIGEST") or None
     return payload
 
@@ -112,6 +119,89 @@ def policy_digest(policy: dict) -> str:
                                      allow_nan=False).encode()).hexdigest()
 
 
+def backend_descriptor(policy):
+    """Only an installed immutable approval selects the alternate full-quality backend."""
+    import pwd
+    activation = policy.get("recoverable_activation", {})
+    backend = activation.get("sanitizer_backend", GITHUB_BACKEND)
+    descriptor = activation.get("local_components")
+    if backend == GITHUB_BACKEND:
+        if "local_components" in activation or "phase_profiles" in policy.get("recoverable_shards", {}):
+            raise ValueError("Default backend cannot carry local proof or phase profiles")
+        return backend, None
+    if backend != LOCAL_COMPONENTS_BACKEND or not isinstance(descriptor, dict) or set(descriptor) != {"path", "sha256"}:
+        raise ValueError("Unknown or incomplete sanitizer backend")
+    root = Path(pwd.getpwuid(os.getuid()).pw_dir) / "Library/EliteNativeAuthorization/local-quality-bindings"
+    expected = root / policy["approved_head"] / "binding.json"
+    if (Path(descriptor["path"]) != expected or expected != expected.resolve()
+            or not re.fullmatch(r"[0-9a-f]{64}", descriptor["sha256"])):
+        raise ValueError("Local components binding is outside its exact owned target namespace")
+    return backend, descriptor
+
+
+def phase_profile(policy, phase):
+    backend, _ = backend_descriptor(policy)
+    if backend != LOCAL_COMPONENTS_BACKEND:
+        return None
+    profiles = policy["recoverable_shards"].get("phase_profiles", {})
+    if not isinstance(profiles, dict) or set(profiles) != {"normal", "leaks"} or phase not in profiles:
+        raise ValueError("Both independent phase profiles are mandatory")
+    for value in profiles.values():
+        if (not isinstance(value, dict) or set(value) != {"build_profile", "admission"}
+                or value["build_profile"] != PHASE_BUILD_PROFILE):
+            raise ValueError("Unknown phase build profile")
+        bounds = value["admission"]
+        if (not isinstance(bounds, dict) or set(bounds) != {"explicit", "cpu_budget", "ram_capacity", "ram_reserve", "peak_per_worker",
+                           "disk_capacity", "disk_reserve", "disk_per_worker"}
+                or any(type(n) not in (int, float) or not math.isfinite(n) or n <= 0 for n in bounds.values())
+                or bounds["explicit"] != 1 or bounds["cpu_budget"] != 1
+                or bounds["ram_capacity"] < bounds["ram_reserve"] + bounds["peak_per_worker"]
+                or bounds["disk_capacity"] < bounds["disk_reserve"] + bounds["disk_per_worker"]):
+            raise ValueError("Each phase requires its own complete serial resource allocation")
+    return profiles[phase]
+
+
+def read_local_components_binding(policy, now=None):
+    backend, descriptor = backend_descriptor(policy)
+    if backend != LOCAL_COMPONENTS_BACKEND:
+        raise ValueError("The local-components backend is not authorized")
+    path = Path(descriptor["path"])
+    require_owned_activation_file(path)
+    if path.stat().st_mode & 0o777 != 0o400 or hashlib.sha256(path.read_bytes()).hexdigest() != descriptor["sha256"]:
+        raise ValueError("Local components binding bytes or ownership changed")
+    config = policy["recoverable_shards"]
+    import pwd
+    physical_lease = Path(pwd.getpwuid(os.getuid()).pw_dir) / "Library/EliteNativeCI/sanitizer-checkpoints"
+    if config.get("legacy_cache") != str(physical_lease):
+        raise ValueError("The selected backend must share the existing physical executor lease")
+    spaces = [Path(config[name]) for name in ("cache", "legacy_cache") if name in config]
+    spaces += [Path(item) for item in config.get("workers", {}).values()]
+    spaces += [Path(item["workspace"]) for item in policy["recoverable_activation"].get("runners", {}).values()]
+    if any(path.is_relative_to(space) or space.is_relative_to(path.parent) for space in spaces):
+        raise ValueError("Local components binding overlaps mutable CI execution storage")
+    value = json.loads(path.read_text())
+    required = {"schema", "kind", "expires_at", "target", "original", "inputs", "semantic_environment",
+                "ci_admission", "phase_profiles", "modes"}
+    current = time.time() if now is None else now
+    activation = policy["recoverable_activation"]
+    if (not isinstance(value, dict) or set(value) != required or type(value["schema"]) is not int or value["schema"] != 1
+            or value["kind"] != LOCAL_COMPONENTS_BACKEND
+            or type(value["expires_at"]) not in (int, float) or not math.isfinite(value["expires_at"])
+            or not current < value["expires_at"] <= activation["expires_at"]
+            or set(value["target"]) != {"head", "ref", "tree"} or set(value["original"]) != {"head", "tree"}
+            or value["target"]["head"] != policy["approved_head"]
+            or value["target"]["ref"] != activation["workflow_ref"].split("@", 1)[1]
+            or value["target"]["tree"] != value["original"]["tree"]
+            or any(not re.fullmatch(r"[0-9a-f]{40}", v) for v in (
+                value["target"]["head"], value["original"]["head"], value["target"]["tree"]))
+            or set(value["modes"]) != {"address", "thread"}
+            or value["ci_admission"] != policy["recoverable_shards"]["admission"]
+            or value["phase_profiles"] != policy["recoverable_shards"].get("phase_profiles")):
+        raise ValueError("Local components binding is stale or differs from the exact CI target/profile")
+    phase_profile(policy, "normal")
+    return value
+
+
 def require_recoverable_identity(policy: dict, environment: dict, event: dict, now=None) -> dict:
     """Admit only the exact approved execution, role, runner and workspace without a job request."""
     activation = policy.get("recoverable_activation", {})
@@ -136,6 +226,12 @@ def require_recoverable_identity(policy: dict, environment: dict, event: dict, n
             or environment.get("GITHUB_JOB") not in RECOVERABLE_JOBS):
         raise ValueError("Recoverable native job is not explicitly activated.")
     require_recoverable_event(activation, environment, event)
+    backend, _ = backend_descriptor(policy)
+    if ((backend == LOCAL_COMPONENTS_BACKEND and environment["GITHUB_JOB"] not in LOCAL_COMPONENT_ROLES)
+            or (backend == GITHUB_BACKEND and environment["GITHUB_JOB"] == "native_local_components")):
+        raise ValueError("Native role is outside the explicitly reviewed backend")
+    if backend == LOCAL_COMPONENTS_BACKEND:
+        read_local_components_binding(policy, current)
     for name, field in (("ELITE_RECOVERABLE_WORKFLOW_SHA256", "workflow_sha256"),
                         ("ELITE_RECOVERABLE_ACTIVATION_SHA256", "manifest_sha256")):
         expected = activation.get(field, "")
@@ -168,9 +264,10 @@ def require_recoverable_job(policy: dict, environment: dict, event: dict, now=No
     mode, shard, worker, phase = (environment.get("ELITE_RECOVERABLE_REQUEST_" + name, "")
                                   for name in ("MODE", "SHARD", "WORKER", "PHASE"))
     job = environment["GITHUB_JOB"]
-    if job == "native_aggregate" and not re.fullmatch(r"[0-9a-f]{64}", environment.get("OTHER_PLAN_DIGEST", "")):
+    backend, _ = backend_descriptor(policy)
+    if job == "native_aggregate" and backend == GITHUB_BACKEND and not re.fullmatch(r"[0-9a-f]{64}", environment.get("OTHER_PLAN_DIGEST", "")):
         raise ValueError("The independently prepared address plan is mandatory")
-    if ((job in ("prepare_native", "native_aggregate", "native_checks") and any((mode, shard, worker, phase)))
+    if ((job in ("prepare_native", "native_aggregate", "native_checks", "native_local_components") and any((mode, shard, worker, phase)))
             or (job == "native_phase" and (phase not in ("normal", "leaks") or any((mode, shard, worker))))
             or (job in ("prepare_thread", "prepare_address") and (mode != job.removeprefix("prepare_") or any((shard, worker, phase))))
             or (job in SHARD_JOBS and (mode not in ("thread", "address")
@@ -236,12 +333,15 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
             or any(manifest[name] != activation[name] for name in (
                 "schema", "enabled", "revoked", "expires_at", "head", "workflow_sha256", "runners", "assignment_root"))):
         raise ValueError("Job activation variables differ from the host-owned approval.")
-    for name in ("pr_head", "reusable_workflow_sha256"):
+    for name in ("pr_head", "reusable_workflow_sha256", "sanitizer_backend", "local_components"):
         if manifest.get(name) != activation.get(name):
             raise ValueError("Owned caller/PR activation facts differ.")
     guard = load_recoverable_guard(policy) if guard is None else guard
     if not guard.PHYSICAL_EXECUTION_ENABLED:
         raise ValueError("Recoverable native execution HELD by the installed guard.")
+    backend, _ = backend_descriptor(policy)
+    if backend == LOCAL_COMPONENTS_BACKEND:
+        read_local_components_binding(policy, current)
     token = value.get("GITHUB_TOKEN") or value.get("GH_TOKEN")
     if not token:
         raise ValueError("Pre-job artifact read credentials are unavailable.")
@@ -281,6 +381,8 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
         plans, manifest = guard.NativeWorkflow(authority, remote).plans(bundle, value["PLAN_DIGEST"])
         if manifest["host"] != config["host"]:
             raise ValueError("Prepared plan belongs to another physical host.")
+        if backend == LOCAL_COMPONENTS_BACKEND and {p["runtime"]["mode"] for p in plans} != {"address"}:
+            raise ValueError("Local-components CI phases require their actual address anchor")
         if value["GITHUB_JOB"] in SHARD_JOBS:
             assignment = {"mode": value.get("ELITE_RECOVERABLE_REQUEST_MODE"),
                           "shard": value.get("ELITE_RECOVERABLE_REQUEST_SHARD"),
@@ -289,7 +391,7 @@ def authorize_recoverable(policy: dict, environment: dict, event: dict, api=None
                 raise ValueError("This worker/shard is not in the authenticated frozen plan.")
         if value["GITHUB_JOB"] == "native_phase" and value.get("ELITE_RECOVERABLE_REQUEST_PHASE") not in manifest["phases"]:
             raise ValueError("This phase is not in the authenticated frozen plan.")
-        if value["GITHUB_JOB"] == "native_aggregate":
+        if value["GITHUB_JOB"] == "native_aggregate" and backend == GITHUB_BACKEND:
             other_id = value.get("OTHER_PLAN_ID", "")
             if not re.fullmatch(r"[1-9][0-9]*", other_id):
                 raise ValueError("Aggregate requires the independent address plan artifact.")

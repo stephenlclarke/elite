@@ -37,6 +37,7 @@ jobs:
     timeout-minutes: 2
     outputs:
       authorized: ${{ steps.authorize.outputs.authorized }}
+      backend: ${{ steps.authorize.outputs.backend }}
     steps:
       - id: authorize
         name: Fail closed before any native routing
@@ -46,6 +47,14 @@ jobs:
           e = os.environ
           assert e['REQUESTED_NATIVE'] == 'true', 'Native execution was not requested'
           a, p = json.loads(e['ACTIVATION']), json.loads(e['POLICY_DIGESTS'])
+          backend = a.get('sanitizer_backend', 'github-artifacts-v1')
+          assert backend in ('github-artifacts-v1', 'owned-local-components-v1')
+          if backend == 'owned-local-components-v1':
+              assert set(a['local_components']) == {'path', 'sha256'}
+              assert os.path.isabs(a['local_components']['path'])
+              assert re.fullmatch('[0-9a-f]{64}', a['local_components']['sha256'])
+          else:
+              assert 'local_components' not in a
           assert type(a['schema']) is int and a['schema'] == 1
           assert a['enabled'] is True and a['revoked'] is False
           assert time.time() < a['expires_at'] < float('inf')
@@ -88,6 +97,7 @@ jobs:
               assert name == 'workflow_dispatch' and a['ref'].startswith('refs/heads/')
           with open(e['GITHUB_OUTPUT'], 'a') as out:
               out.write('authorized=true\n')
+              out.write('backend=' + backend + '\n')
           PY
 
   fake-contracts:
@@ -107,6 +117,9 @@ jobs:
           - {module: test_recoverable_shards, suite: NativeAdapterTests}
           - {module: test_recoverable_shards, suite: WorkflowTests}
           - {module: test_recoverable_shards, suite: GranularityTests}
+          - {module: test_recoverable_shards, suite: OwnedQualityBridgeTests}
+          - {module: test_native_runner, suite: OwnedQualityAuthorizationTests}
+          - {module: test_quality_phase_checkpoints, suite: OwnedPhaseBuildTests}
           - {module: test_native_runner, suite: NativeAuthorizationTests}
           - {module: test_native_runner, suite: PhysicalIdentityTests}
           - {module: test_native_runner, suite: RecoverableAuthorizationTests}
@@ -283,7 +296,11 @@ jobs:
               worker=e.get('ELITE_RECOVERABLE_REQUEST_WORKER', ''),
               phase=e.get('ELITE_RECOVERABLE_REQUEST_PHASE', ''),
               plan_sha256=e.get('PLAN_DIGEST') or None)
-          if e['GITHUB_JOB'] == 'native_aggregate':
+          backend = a.get('sanitizer_backend', 'github-artifacts-v1')
+          assert backend in ('github-artifacts-v1', 'owned-local-components-v1')
+          if backend == 'owned-local-components-v1':
+              expected.update(sanitizer_backend=backend, local_components=a['local_components'])
+          elif e['GITHUB_JOB'] == 'native_aggregate':
               expected['other_plan_sha256'] = e['OTHER_PLAN_DIGEST']
           assert set(binding) == set(expected) | {'expires_at', 'revoked'}
           assert {k: binding[k] for k in expected} == expected
@@ -331,9 +348,11 @@ jobs:
 
   prepare_thread:
     name: Prepare, build and discover thread
-    needs: [authorize_native, prepare_address, address_shards]
+    needs: [authorize_native, prepare_address, address_shards, native_local_components]
     if: >-
       always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.authorize_native.outputs.backend == 'github-artifacts-v1' &&
+      needs.native_local_components.result == 'skipped' &&
       needs.prepare_address.result == 'success' &&
       (needs.address_shards.result == 'success' ||
       (needs.address_shards.result == 'skipped' &&
@@ -452,10 +471,58 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
 
+  native_local_components:
+    name: Verify both original local sanitizer components in place
+    needs: [authorize_native, prepare_address]
+    if: >-
+      always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.authorize_native.outputs.backend == 'owned-local-components-v1' &&
+      needs.prepare_address.result == 'success'
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
+    timeout-minutes: 45
+    outputs:
+      verified: ${{ steps.verify.outputs.verified }}
+    env:
+      PLAN_ID: ${{ needs.prepare_address.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.prepare_address.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.prepare_address.outputs.manifest_digest }}
+    steps:
+      - *native_authorize
+      - *native_guard
+      - *native_checkout
+      - *verify_checkout
+      - id: load_plan
+        name: Restore the actual current-CI address anchor
+        run: |
+          umask 077
+          python3 Tools/CI/recoverable_shards.py workflow-load \
+            --artifact-id "$PLAN_ID" --archive-digest "$PLAN_ARCHIVE" \
+            --digest "$PLAN_DIGEST" --output "$RUNNER_TEMP/$PLAN_BASENAME"
+      - id: verify
+        name: Reverify full local ASAN and TSAN unions without changing their original identities
+        run: |
+          python3 Tools/CI/recoverable_shards.py workflow-verify-local-components \
+            --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
+            --output "$RUNNER_TEMP/local-components-${{ github.run_attempt }}"
+          printf 'verified=true\n' >> "$GITHUB_OUTPUT"
+      - name: Retain local component verification
+        if: always() && steps.native_guard.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: local-component-verification-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/local-components-${{ github.run_attempt }}
+          if-no-files-found: warn
+
   native_phase:
     name: ${{ matrix.phase == 'normal' && 'Normal tests and coverage' || 'Zero leaks' }}
-    needs: [authorize_native, prepare_thread]
-    if: needs.authorize_native.outputs.authorized == 'true'
+    needs: [authorize_native, prepare_address, prepare_thread, native_local_components]
+    if: >-
+      always() && needs.authorize_native.outputs.authorized == 'true' &&
+      ((needs.authorize_native.outputs.backend == 'github-artifacts-v1' &&
+      needs.prepare_thread.result == 'success' && needs.native_local_components.result == 'skipped') ||
+      (needs.authorize_native.outputs.backend == 'owned-local-components-v1' &&
+      needs.prepare_address.result == 'success' && needs.prepare_thread.result == 'skipped' &&
+      needs.native_local_components.result == 'success' && needs.native_local_components.outputs.verified == 'true'))
     runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
     timeout-minutes: 360
     strategy:
@@ -464,9 +531,9 @@ jobs:
       matrix:
         phase: [normal, leaks]
     env:
-      PLAN_ID: ${{ needs.prepare_thread.outputs.artifact_id }}
-      PLAN_ARCHIVE: ${{ needs.prepare_thread.outputs.archive_digest }}
-      PLAN_DIGEST: ${{ needs.prepare_thread.outputs.manifest_digest }}
+      PLAN_ID: ${{ needs.authorize_native.outputs.backend == 'owned-local-components-v1' && needs.prepare_address.outputs.artifact_id || needs.prepare_thread.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.authorize_native.outputs.backend == 'owned-local-components-v1' && needs.prepare_address.outputs.archive_digest || needs.prepare_thread.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.authorize_native.outputs.backend == 'owned-local-components-v1' && needs.prepare_address.outputs.manifest_digest || needs.prepare_thread.outputs.manifest_digest }}
       ELITE_RECOVERABLE_REQUEST_PHASE: ${{ matrix.phase }}
       PHASE_BASENAME: >-
         ${{ format('recoverable-phase-{0}-{1}', matrix.phase,
@@ -511,9 +578,11 @@ jobs:
 
   thread_shards:
     name: TSAN ${{ matrix.label }}
-    needs: [authorize_native, prepare_thread]
+    needs: [authorize_native, prepare_thread, native_local_components]
     if: >-
       always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.authorize_native.outputs.backend == 'github-artifacts-v1' &&
+      needs.native_local_components.result == 'skipped' &&
       needs.prepare_thread.result == 'success' &&
       needs.prepare_thread.outputs.has_pending == 'true'
     runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
@@ -570,9 +639,11 @@ jobs:
 
   address_shards:
     name: ASAN ${{ matrix.label }}
-    needs: [authorize_native, prepare_address]
+    needs: [authorize_native, prepare_address, native_local_components]
     if: >-
       always() && needs.authorize_native.outputs.authorized == 'true' &&
+      needs.authorize_native.outputs.backend == 'github-artifacts-v1' &&
+      needs.native_local_components.result == 'skipped' &&
       needs.prepare_address.result == 'success' &&
       needs.prepare_address.outputs.has_pending == 'true'
     runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
@@ -629,19 +700,22 @@ jobs:
 
   native_aggregate:
     name: Verify exact full inventory, coverage and zero leaks
-    needs: [authorize_native, fake-aggregate, native_checks, prepare_thread, prepare_address, native_phase, thread_shards, address_shards]
+    needs: [authorize_native, fake-aggregate, native_checks, prepare_thread, prepare_address, native_local_components, native_phase, thread_shards, address_shards]
     if: >-
       always() && needs.authorize_native.outputs.authorized == 'true' &&
-      needs.prepare_thread.result == 'success' && needs.prepare_address.result == 'success'
+      needs.prepare_address.result == 'success' &&
+      ((needs.authorize_native.outputs.backend == 'github-artifacts-v1' && needs.prepare_thread.result == 'success') ||
+      (needs.authorize_native.outputs.backend == 'owned-local-components-v1' &&
+      needs.native_local_components.result == 'success' && needs.native_local_components.outputs.verified == 'true'))
     runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","elite-native"]') }}
     timeout-minutes: 45
     env:
-      PLAN_ID: ${{ needs.prepare_thread.outputs.artifact_id }}
-      PLAN_ARCHIVE: ${{ needs.prepare_thread.outputs.archive_digest }}
-      PLAN_DIGEST: ${{ needs.prepare_thread.outputs.manifest_digest }}
-      OTHER_PLAN_ID: ${{ needs.prepare_address.outputs.artifact_id }}
-      OTHER_PLAN_ARCHIVE: ${{ needs.prepare_address.outputs.archive_digest }}
-      OTHER_PLAN_DIGEST: ${{ needs.prepare_address.outputs.manifest_digest }}
+      PLAN_ID: ${{ needs.authorize_native.outputs.backend == 'owned-local-components-v1' && needs.prepare_address.outputs.artifact_id || needs.prepare_thread.outputs.artifact_id }}
+      PLAN_ARCHIVE: ${{ needs.authorize_native.outputs.backend == 'owned-local-components-v1' && needs.prepare_address.outputs.archive_digest || needs.prepare_thread.outputs.archive_digest }}
+      PLAN_DIGEST: ${{ needs.authorize_native.outputs.backend == 'owned-local-components-v1' && needs.prepare_address.outputs.manifest_digest || needs.prepare_thread.outputs.manifest_digest }}
+      OTHER_PLAN_ID: ${{ needs.authorize_native.outputs.backend == 'github-artifacts-v1' && needs.prepare_address.outputs.artifact_id || '' }}
+      OTHER_PLAN_ARCHIVE: ${{ needs.authorize_native.outputs.backend == 'github-artifacts-v1' && needs.prepare_address.outputs.archive_digest || '' }}
+      OTHER_PLAN_DIGEST: ${{ needs.authorize_native.outputs.backend == 'github-artifacts-v1' && needs.prepare_address.outputs.manifest_digest || '' }}
     steps:
       - *native_authorize
       - *native_guard
@@ -649,11 +723,13 @@ jobs:
       - *verify_checkout
       - *load_plan
       - name: Restore the independent address plan through its own trusted digests
+        if: needs.authorize_native.outputs.backend == 'github-artifacts-v1'
         run: |
           python3 Tools/CI/recoverable_shards.py workflow-load \
             --artifact-id "$OTHER_PLAN_ID" --archive-digest "$OTHER_PLAN_ARCHIVE" \
             --digest "$OTHER_PLAN_DIGEST" --output "$RUNNER_TEMP/$PLAN_BASENAME-address"
       - name: Rehash every required native proof and export exact-main coverage
+        if: needs.authorize_native.outputs.backend == 'github-artifacts-v1'
         run: |
           python3 Tools/CI/recoverable_shards.py workflow-aggregate \
             --input "$RUNNER_TEMP/$PLAN_BASENAME" --digest "$PLAN_DIGEST" \
@@ -661,27 +737,48 @@ jobs:
             --output "$RUNNER_TEMP/native-aggregate-${{ github.run_attempt }}"
       - name: Require every job outcome before authoritative main analysis
         env:
+          BACKEND: ${{ needs.authorize_native.outputs.backend }}
+          LOCAL_RESULT: ${{ needs.native_local_components.result }}
+          LOCAL_VERIFIED: ${{ needs.native_local_components.outputs.verified }}
           CHECKS: ${{ needs.native_checks.result }}
           FAKES: ${{ needs.fake-aggregate.result }}
           PHASES: ${{ needs.native_phase.result }}
-          THREAD: ${{ needs.thread_shards.result }}
-          ADDRESS: ${{ needs.address_shards.result }}
+          THREAD_PREPARE: ${{ needs.prepare_thread.result }}
+          ADDRESS_PREPARE: ${{ needs.prepare_address.result }}
+          THREAD_SHARDS: ${{ needs.thread_shards.result }}
+          ADDRESS_SHARDS: ${{ needs.address_shards.result }}
           THREAD_PENDING: ${{ needs.prepare_thread.outputs.has_pending }}
           ADDRESS_PENDING: ${{ needs.prepare_address.outputs.has_pending }}
         run: |
-          test "$CHECKS" = success
-          test "$FAKES" = success
-          test "$PHASES" = success
-          for mode in THREAD ADDRESS; do
-            state="${!mode}"
-            pending_name="${mode}_PENDING"
-            test "$state" = success || { test "$state" = skipped && test "${!pending_name}" = false; }
-          done
+          python3 - <<'PY'
+          import os
+          e = os.environ
+          assert all(e[k] == 'success' for k in ('CHECKS', 'FAKES', 'PHASES', 'ADDRESS_PREPARE'))
+          if e['BACKEND'] == 'owned-local-components-v1':
+              assert e['LOCAL_RESULT'] == 'success' and e['LOCAL_VERIFIED'] == 'true'
+              assert all(e[k] == 'skipped' for k in ('THREAD_PREPARE', 'THREAD_SHARDS', 'ADDRESS_SHARDS'))
+          else:
+              assert e['BACKEND'] == 'github-artifacts-v1' and e['LOCAL_RESULT'] == 'skipped'
+              assert e['THREAD_PREPARE'] == 'success'
+              for mode in ('THREAD', 'ADDRESS'):
+                  assert e[mode + '_SHARDS'] == 'success' or (
+                      e[mode + '_SHARDS'] == 'skipped' and e[mode + '_PENDING'] == 'false')
+          PY
       - name: Install SonarScanner on actual main
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: brew install sonar-scanner
+      - name: Reverify the owned backend and retain actual current-CI phase coverage
+        if: needs.authorize_native.outputs.backend == 'owned-local-components-v1'
+        env:
+          BRIDGE_PLAN_DIR: ${{ runner.temp }}/${{ env.PLAN_BASENAME }}
+          BRIDGE_PLAN_DIGEST: ${{ env.PLAN_DIGEST }}
+          BRIDGE_OUTPUT: ${{ runner.temp }}/native-aggregate-${{ github.run_attempt }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: make ci-owned-local-components
       - name: Analyze committed main with its exact SHA
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: >-
+          needs.authorize_native.outputs.backend == 'github-artifacts-v1' &&
+          github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: make sonar
@@ -699,11 +796,14 @@ jobs:
 
   physical_qualification:
     name: Required native quality aggregate
-    needs: [authorize_native, native_checks, prepare_thread, prepare_address, native_phase, thread_shards, address_shards, native_aggregate]
+    needs: [authorize_native, native_checks, prepare_thread, prepare_address, native_local_components, native_phase, thread_shards, address_shards, native_aggregate]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
     env:
+      BACKEND: ${{ needs.authorize_native.outputs.backend }}
+      LOCAL_RESULT: ${{ needs.native_local_components.result }}
+      LOCAL_VERIFIED: ${{ needs.native_local_components.outputs.verified }}
       AUTHORIZED: ${{ needs.authorize_native.outputs.authorized }}
       CHECKS: ${{ needs.native_checks.result }}
       THREAD_PREPARE: ${{ needs.prepare_thread.result }}
@@ -721,11 +821,19 @@ jobs:
           import os
           e = os.environ
           assert e['AUTHORIZED'] == 'true', 'Exact-head host activation is required'
-          assert all(e[k] == 'success' for k in (
-              'CHECKS', 'THREAD_PREPARE', 'ADDRESS_PREPARE', 'PHASES', 'AGGREGATE'))
-          for mode in ('THREAD', 'ADDRESS'):
-              assert e[mode + '_SHARDS'] == 'success' or (
-                  e[mode + '_SHARDS'] == 'skipped' and e[mode + '_PENDING'] == 'false')
+          assert all(e[k] == 'success' for k in ('CHECKS', 'ADDRESS_PREPARE', 'PHASES', 'AGGREGATE'))
+          if e['BACKEND'] == 'owned-local-components-v1':
+              assert e['LOCAL_RESULT'] == 'success' and e['LOCAL_VERIFIED'] == 'true'
+              assert all(e[k] == 'skipped' for k in ('THREAD_PREPARE', 'THREAD_SHARDS', 'ADDRESS_SHARDS'))
+          else:
+              assert e['BACKEND'] == 'github-artifacts-v1' and e['LOCAL_RESULT'] == 'skipped'
+              assert e['THREAD_PREPARE'] == 'success'
+              for mode in ('THREAD', 'ADDRESS'):
+                  assert e[mode + '_SHARDS'] == 'success' or (
+                      e[mode + '_SHARDS'] == 'skipped' and e[mode + '_PENDING'] == 'false')
           with open(e['GITHUB_STEP_SUMMARY'], 'a') as out:
-              out.write('Every required native component is qualified for this exact execution head.\n')
+              if e['BACKEND'] == 'owned-local-components-v1':
+                  out.write('All required components passed. Local sanitizer proofs retain their original tested head; current-CI phases retain this execution head.\n')
+              else:
+                  out.write('Every required native component is qualified for this exact execution head.\n')
           PY

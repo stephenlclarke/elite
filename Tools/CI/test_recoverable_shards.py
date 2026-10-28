@@ -1289,11 +1289,11 @@ class WorkflowTests(Fixture):
     def test_thread_prepare_waits_for_successful_address_chain_or_proven_empty_plan(self):
         source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
         job = source.split("\n  prepare_thread:\n", 1)[1].split("\n  prepare_address:\n", 1)[0]
-        self.assertIn("    needs: [authorize_native, prepare_address, address_shards]\n", job)
+        self.assertIn("    needs: [authorize_native, prepare_address, address_shards, native_local_components]\n", job)
         address = source.split("\n  prepare_address:\n", 1)[1].split("\n  native_phase:\n", 1)[0]
         self.assertIn("    needs: authorize_native\n", address)
         shards_job = source.split("\n  address_shards:\n", 1)[1].split("\n  native_aggregate:\n", 1)[0]
-        self.assertIn("    needs: [authorize_native, prepare_address]\n", shards_job)
+        self.assertIn("    needs: [authorize_native, prepare_address, native_local_components]\n", shards_job)
         condition = job.split("    if: >-\n", 1)[1].split("\n    runs-on:", 1)[0]
         condition = " ".join(condition.split()).replace("&&", "and").replace("||", "or")
         gate = self.workflow_script("Held, failed or cancelled execution")
@@ -1314,12 +1314,13 @@ class WorkflowTests(Fixture):
         for label, authorized, prepare, shards_result, pending, expected in cases:
             with self.subTest(label=label):
                 needs = SimpleNamespace(
-                    authorize_native=SimpleNamespace(outputs=SimpleNamespace(authorized=authorized)),
+                    authorize_native=SimpleNamespace(outputs=SimpleNamespace(authorized=authorized, backend="github-artifacts-v1")),
+                    native_local_components=SimpleNamespace(result="skipped"),
                     prepare_address=SimpleNamespace(result=prepare, outputs=SimpleNamespace(has_pending=pending)),
                     address_shards=SimpleNamespace(result=shards_result))
                 eligible = eval(condition, {"__builtins__": {}, "always": lambda: True, "needs": needs})
                 self.assertEqual(eligible, expected)
-                env = dict(AUTHORIZED=authorized, CHECKS="success", THREAD_PREPARE="success" if eligible else "skipped",
+                env = dict(BACKEND="github-artifacts-v1", LOCAL_RESULT="skipped", AUTHORIZED=authorized, CHECKS="success", THREAD_PREPARE="success" if eligible else "skipped",
                            ADDRESS_PREPARE=prepare, PHASES="success", AGGREGATE="success",
                            THREAD_SHARDS="success", THREAD_PENDING="true", ADDRESS_SHARDS=shards_result,
                            ADDRESS_PENDING=pending, GITHUB_STEP_SUMMARY=str(self.root / "address-first-summary"))
@@ -1524,7 +1525,7 @@ class WorkflowTests(Fixture):
                     event["pull_request"].pop("merge_commit_sha")
                 else:
                     event["pull_request"]["merge_commit_sha"] = webhook
-                self.assertEqual(self.run_pr_authorizer(activation, env, event), "authorized=true\n")
+                self.assertEqual(self.run_pr_authorizer(activation, env, event), "authorized=true\nbackend=github-artifacts-v1\n")
 
     def test_hosted_authorizer_rejects_wrong_execution_source_ref_repo_actor_or_workflow(self):
         changes = [lambda e, v: e.update(GITHUB_SHA="c" * 40),
@@ -1605,7 +1606,7 @@ class WorkflowTests(Fixture):
             with patch.dict(os.environ, {**env, **change}, clear=True), self.assertRaises((AssertionError, KeyError)):
                 exec(compile(source, "fake-precheckout-guard", "exec"), {})
         gate = self.workflow_script("Held, failed or cancelled execution")
-        passed = dict(AUTHORIZED="true", CHECKS="success", THREAD_PREPARE="success", ADDRESS_PREPARE="success",
+        passed = dict(BACKEND="github-artifacts-v1", LOCAL_RESULT="skipped", AUTHORIZED="true", CHECKS="success", THREAD_PREPARE="success", ADDRESS_PREPARE="success",
                       PHASES="success", AGGREGATE="success", THREAD_SHARDS="skipped", THREAD_PENDING="false",
                       ADDRESS_SHARDS="skipped", ADDRESS_PENDING="false", GITHUB_STEP_SUMMARY=str(self.root / "gate-summary"))
         with patch.dict(os.environ, passed, clear=True):
@@ -2836,11 +2837,11 @@ class AsanTestMemoryTests(Fixture):
 
 class LocalSanitizerTests(Fixture):
     def controls(self, mode="address", stage="execute", launches=1, extra_environment=None, separate_shards=False,
-                 worker_budget=None):
+                 worker_budget=None, physical_home=None):
         import uuid
         directory = self.root / str(uuid.uuid4())
         directory.mkdir(mode=0o700)
-        home, repo, controls = directory / "home", directory / "source", directory / "controls"
+        home, repo, controls = physical_home or directory / "home", directory / "source", directory / "controls"
         controls.mkdir(mode=0o700)
         (repo / "Tools/CI").mkdir(parents=True, mode=0o700)
         for name in ("native_runner.py", "recoverable_shards.py", "sanitizer_checkpoints.py",
@@ -3531,6 +3532,460 @@ class LocalTsanMemoryTests(Fixture):
                 with self.subTest(mutation=mutation), self.assertRaisesRegex(ValueError, "mode-specific resident-budget"):
                     shards.local_component(validation, value.plan, value.session["plan_sha256"], store,
                                            value.plan_path.with_name("component"))
+
+
+
+class OwnedQualityBridgeTests(Fixture):
+    def controls(self, *args, **kwargs):
+        return LocalSanitizerTests.controls(self, *args, physical_home=self.root / "physical-home", **kwargs)
+    authority = LocalSanitizerTests.authority
+    control_write = staticmethod(LocalSanitizerTests.control_write)
+    fake_local_executor = LocalSanitizerTests.fake_local_executor
+    completed_local = LocalSanitizerTests.completed_local
+    workflow_script = WorkflowTests.workflow_script
+
+    def bridge(self):
+        """Create original local fake executions first, then a distinct real-format CI authority."""
+        originals, entries = {}, {}
+        for mode in shards.MODES:
+            value, authority, store, attempt = self.completed_local(mode)
+            value.plan_path.chmod(0o400)
+            runtime = value.plan['runtime']
+            worker = authority.workers['one']
+            private = worker / mode
+            relative = Path(runtime['flags'][1]) / 'Tests.xctest/Contents/MacOS/Tests'
+            image = private / relative
+            image.parent.mkdir(parents=True, mode=0o700)
+            image.write_bytes(self.image.read_bytes())
+            frozen = authority.cache / 'builds' / HEAD / mode
+            (frozen / 'scratch').mkdir(parents=True, mode=0o700)
+            frozen_image = frozen / 'scratch' / relative.relative_to(runtime['flags'][1])
+            frozen_image.parent.mkdir(parents=True, mode=0o700)
+            frozen_image.write_bytes(self.image.read_bytes())
+            build = dict(schema=1, runtime=runtime, tested_head=HEAD, inventory=METHODS,
+                         shared_groups=[], image_relative=str(relative), scratch=shards.build_entries(frozen / 'scratch'))
+            shards.durable_json(frozen / 'build.json', build)
+            shards.durable_json(frozen / 'build-commit.json', {'sha256': shards.legacy.digest(frozen / 'build.json')})
+            shards.seal(frozen)
+            self.control_write(worker / (mode + '-build.json'), build)
+            component = value.plan_path.with_name('component')
+            component.mkdir(mode=0o700)
+            result = shards.local_component_content(value.plan, shards.legacy.digest(value.plan_path), store,
+                HEAD, authority.policy_sha256, authority.config['admission'], worker)
+            shards.durable_json(component / 'component.json', result)
+            shards.durable_json(component / 'commit.json', {'sha256': shards.legacy.digest(component / 'component.json')})
+            shards.seal(component)
+            def pin(path, file=None):
+                return dict(path=str(path), sha256=shards.legacy.digest(path / file if file else path))
+            entries[mode] = dict(policy=pin(value.policy_path), plan=pin(value.plan_path),
+                component=pin(component, 'component.json'), build=pin(frozen, 'build.json'),
+                cache=str(authority.cache), worker=str(worker), runtime_sha256=shards.fingerprint(runtime),
+                admission=authority.config['admission'])
+            originals[mode] = SimpleNamespace(value=value, authority=authority, attempt=attempt, component=component)
+        # From here all operations are read-only in-place proof verification under current CI.
+        current = shards.NativeAuthority.__new__(shards.NativeAuthority)
+        current.root = self.root / 'current-ci'
+        (current.root / 'Tools/CI').mkdir(parents=True, mode=0o700)
+        for name in value.policy['local_activation']['sources']:
+            (current.root / 'Tools/CI' / name).write_bytes((Path(value.policy['local_activation']['workspace']) / 'Tools/CI' / name).read_bytes())
+        current.cache, current.workers = self.root / 'ci-cache', {'one': self.root / 'ci-worker'}
+        current.cache.mkdir(mode=0o700)
+        current.workers['one'].mkdir(mode=0o700)
+        target, tree = 'b' * 40, 'c' * 40
+        current.config = deepcopy(value.policy['recoverable_shards'])
+        current.config.update(cache=str(current.cache), workers={'one': str(current.workers['one'])})
+        current.config['phase_profiles'] = {phase: dict(build_profile='jobs1-nonbatch-v1',
+            admission={**current.config['admission'], 'peak_per_worker': peak})
+            for phase, peak in [('normal', 2 * 1024**3), ('leaks', 3 * 1024**3)]}
+        descriptor = dict(path=str(value.home / 'Library/EliteNativeAuthorization/local-quality-bindings' / target / 'binding.json'), sha256='f' * 64)
+        current.policy = dict(approved_head=target, developer_dir=value.policy['developer_dir'],
+            swift=value.policy['swift'], sdk=value.policy['sdk'], recoverable_shards=current.config,
+            recoverable_activation=dict(sanitizer_backend=shards.native_runner.LOCAL_COMPONENTS_BACKEND,
+                                       local_components=descriptor, workflow_sha256='e' * 64))
+        current.environment = {**value.environment, 'GITHUB_JOB': 'native_local_components', 'GITHUB_RUN_ID': '123',
+            'GITHUB_RUN_ATTEMPT': '1', 'RUNNER_NAME': 'owned-one', 'ELITE_NATIVE_APPROVED_HEAD': target,
+            'ELITE_NATIVE_POLICY': str(self.root / 'ci-policy'), 'ELITE_RECOVERABLE_CODE_ENABLED': 'true',
+            'ELITE_RECOVERABLE_WORKFLOW_SHA256': 'e' * 64,
+            'ELITE_RECOVERABLE_POLICY_SHA256': shards.native_runner.policy_digest(current.policy)}
+        current.calls = []
+        def read(command, workspace=None, *args):
+            current.calls.append((command, workspace))
+            if command[:2] == ['git', 'rev-parse']:
+                return tree if command[-1].endswith('^{tree}') else (target if workspace == current.root else HEAD)
+            if command == ['git', 'status', '--porcelain']:
+                return ''
+            raise AssertionError('Unexpected fake bridge probe: ' + repr(command))
+        current.read = read
+        anchor_runtime = {**originals['address'].value.plan['runtime'], 'flags': shards.sanitizer_build_flags('address'),
+            'environment': shards.legacy.runtime_identity(current.environment_for('address')),
+            'phase_environment': shards.legacy.runtime_identity(current.execution_environment())}
+        anchor = shards.make_plan(anchor_runtime, METHODS)
+        binding = dict(schema=1, kind=shards.native_runner.LOCAL_COMPONENTS_BACKEND, target=dict(head=target, tree=tree),
+            original=dict(head=HEAD, tree=tree), inputs=anchor_runtime['inputs'],
+            semantic_environment=shards.bridge_semantics(anchor_runtime['phase_environment']), modes=entries)
+        return SimpleNamespace(current=current, anchor=anchor, binding=binding, originals=originals)
+
+    def verify(self, fixture):
+        with patch.object(shards.native_runner, 'read_local_components_binding', return_value=fixture.binding), \
+                patch.object(shards.NativeExecutor, 'verify') as executor, \
+                patch.object(shards.NativeExecutor, 'unknown_live_helpers', return_value=False), \
+                patch.object(shards.legacy, 'executable_inputs', return_value=fixture.binding['inputs']):
+            result = shards.verify_owned_local_components(fixture.current, fixture.anchor)
+        executor.assert_called_once_with(fixture.anchor['runtime'])
+        return result
+
+    def test_both_original_full_unions_are_read_in_place_under_current_ci_without_relabel_or_spawn(self):
+        fixture = self.bridge()
+        before = {mode: shards.physical_tree(row.component) for mode, row in fixture.originals.items()}
+        with patch.object(shards, 'LocalAuthority', side_effect=AssertionError('No new local authority in CI')), \
+                patch.object(shards.legacy, 'owned_directory', side_effect=AssertionError('Pure verifier cannot create storage')), \
+                patch.object(shards, 'durable_json', side_effect=AssertionError('Pure verifier cannot write proof')), \
+                patch.object(shards.shutil, 'copytree', side_effect=AssertionError('Pure verifier cannot copy proof')), \
+                patch.dict(os.environ, {'GITHUB_JOB': 'native_local_components', 'GITHUB_SHA': 'b' * 40}, clear=True):
+            result = self.verify(fixture)
+        self.assertEqual(result['target_ci_head'], 'b' * 40)
+        self.assertEqual(result['original_tested_head'], HEAD)
+        self.assertEqual(set(result['modes']), set(shards.MODES))
+        for mode, row in fixture.originals.items():
+            self.assertEqual(result['modes'][mode]['inventory_count'], 3)
+            self.assertEqual(shards.physical_tree(row.component), before[mode])
+            self.assertEqual(shards.load_json(row.attempt / 'result.json')['tested_head'], HEAD)
+        self.assertIn('not sanitizer execution at M', result['qualification'])
+
+    def test_current_tree_blob_environment_role_and_unknown_controls_drift_refuse(self):
+        fixture = self.bridge()
+        for mutate in [lambda f: f.binding['target'].update(tree='d' * 40),
+                       lambda f: f.binding.update(inputs={'Sources/Game.swift': '9' * 64}),
+                       lambda f: f.binding['semantic_environment'].update(ELITE_NEW_CONTROL='9' * 64),
+                       lambda f: f.current.environment.update(GITHUB_JOB='native_checks')]:
+            saved_binding, saved_env = deepcopy(fixture.binding), deepcopy(fixture.current.environment)
+            mutate(fixture)
+            with self.assertRaises(ValueError):
+                self.verify(fixture)
+            fixture.binding, fixture.current.environment = saved_binding, saved_env
+        original_read = fixture.current.read
+        def wrong_original_tree(command, workspace=None, *args):
+            if workspace != fixture.current.root and command[-1].endswith('^{tree}'):
+                return 'd' * 40
+            return original_read(command, workspace, *args)
+        with patch.object(fixture.current, 'read', side_effect=wrong_original_tree), self.assertRaisesRegex(ValueError, 'checkout/tree'):
+            self.verify(fixture)
+        semantic = shards.bridge_semantics({'ELITE_NATIVE_POLICY': 'identity', 'ELITE_UNKNOWN_TEST_CONTROL': 'retain',
+            'PATH': 'retain', 'HOME': 'retain', 'TSAN_OPTIONS': 'retain', 'ELITE_ENABLE_GPU': 'retain'})
+        self.assertEqual(set(semantic), {'ELITE_UNKNOWN_TEST_CONTROL', 'PATH', 'HOME', 'TSAN_OPTIONS', 'ELITE_ENABLE_GPU'})
+
+    def test_missing_mode_original_private_image_build_component_and_receipt_tamper_refuse(self):
+        fixture = self.bridge()
+        for mode in shards.MODES:
+            entry = fixture.binding['modes'][mode]
+            for control in ('policy', 'plan', 'component', 'build'):
+                old = entry[control]['sha256']
+                entry[control]['sha256'] = '0' * 64
+                with self.subTest(mode=mode, control=control), self.assertRaises(ValueError):
+                    self.verify(fixture)
+                entry[control]['sha256'] = old
+        row = fixture.originals['thread']
+        image = Path(fixture.binding['modes']['thread']['worker']) / 'thread' / shards.load_json(
+            Path(fixture.binding['modes']['thread']['build']['path']) / 'build.json')['image_relative']
+        image.write_bytes(b'wrong image')
+        with self.assertRaisesRegex(ValueError, 'private source/image'):
+            self.verify(fixture)
+        image.write_bytes(self.image.read_bytes())
+        self.change(row.attempt / 'test.log', 'ERROR: ThreadSanitizer: deliberate fake diagnostic')
+        with self.assertRaisesRegex(ValueError, 'missing/failed/incomplete'):
+            self.verify(fixture)
+
+    def test_expired_original_authority_remains_historical_and_allocation_and_semantics_are_exact(self):
+        fixture = self.bridge()
+        # Original policies expire at 10000, but their child began at 100. No local session is reopened.
+        with patch.object(shards.time, 'time', return_value=20000):
+            self.verify(fixture)
+        original = fixture.originals['thread'].value
+        changed = deepcopy(original.policy)
+        changed['recoverable_shards']['legacy_cache'] = str(self.root / 'alternate-lease')
+        self.control_write(original.policy_path, changed)
+        entry = fixture.binding['modes']['thread']['policy']
+        entry['sha256'] = shards.legacy.digest(original.policy_path)
+        with self.assertRaisesRegex(ValueError, 'allocation differs'):
+            self.verify(fixture)
+        self.control_write(original.policy_path, original.policy)
+        entry['sha256'] = shards.legacy.digest(original.policy_path)
+        fixture.binding['modes']['thread']['admission'] = {**fixture.binding['modes']['thread']['admission'], 'peak_per_worker': 1}
+        with self.assertRaisesRegex(ValueError, 'allocation differs'):
+            self.verify(fixture)
+
+    def test_real_quality_gate_requires_explicit_verifier_success_before_intentional_skips(self):
+        gate = self.workflow_script('Held, failed or cancelled execution')
+        selected = dict(BACKEND='owned-local-components-v1', AUTHORIZED='true', CHECKS='success',
+            ADDRESS_PREPARE='success', THREAD_PREPARE='skipped', PHASES='success', AGGREGATE='success',
+            THREAD_SHARDS='skipped', ADDRESS_SHARDS='skipped', THREAD_PENDING='', ADDRESS_PENDING='true',
+            LOCAL_RESULT='success', LOCAL_VERIFIED='true', GITHUB_STEP_SUMMARY=str(self.root / 'selected-summary'))
+        with patch.dict(os.environ, selected, clear=True):
+            exec(compile(gate, 'fake-owned-final-gate', 'exec'), {})
+        for key in ('LOCAL_RESULT', 'LOCAL_VERIFIED', 'CHECKS', 'ADDRESS_PREPARE', 'PHASES', 'AGGREGATE',
+                    'THREAD_PREPARE', 'THREAD_SHARDS', 'ADDRESS_SHARDS', 'AUTHORIZED', 'BACKEND'):
+            for value in ('', 'skipped', 'failure', 'cancelled', 'success', 'true', 'unknown'):
+                if value == selected[key]:
+                    continue
+                with self.subTest(control=key, value=value), patch.dict(os.environ, {**selected, key: value}, clear=True), \
+                        self.assertRaises(AssertionError):
+                    exec(compile(gate, 'fake-owned-final-gate', 'exec'), {})
+
+    def test_independent_phase_memory_budget_and_image_lifecycle_refusals(self):
+        for phase in ('normal', 'leaks'):
+            profile = dict(build_profile='jobs1-nonbatch-v1', admission=dict(peak_per_worker=2048 if phase == 'normal' else 4096))
+            row = dict(start='fake-start', command='fake phase', parent=1, group=42, state='S')
+            identity = dict(phase=phase, image_sha256='a' * 64,
+                image_uuid='UUID: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA (arm64) /fake/image')
+            origin = dict(tested_head=HEAD, authorization=dict(role='native_phase', phase=phase, head=HEAD, workspace='/fake/source'))
+            value = dict(child=dict(pid=42), terminal=dict(pid=42, exit_code=0), processes=dict(
+                running=False, workspace='/fake/source', root={'pid': 42, **row}, processes={'42': row},
+                observed_images={'fake': dict(sha256='a' * 64, uuid=shards.fingerprint({'arm64': 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA'}))},
+                resident_memory=dict(kind='sampled-owned-process-rss-v1', mode=phase, phase_profile_sha256=shards.fingerprint(profile),
+                    failure=None, budget_bytes=profile['admission']['peak_per_worker'], samples=1,
+                    helper_samples=1 if phase == 'normal' else 0, high_water_bytes=1024)))
+            shards.validate_phase_memory(value, identity, profile, origin)
+            for mutation in [lambda v: v['processes']['resident_memory'].update(mode='address'),
+                             lambda v: v['processes']['resident_memory'].update(samples=0),
+                             lambda v: v['processes']['resident_memory'].update(budget_bytes=1),
+                             lambda v: v['processes']['resident_memory'].update(high_water_bytes=9000),
+                             lambda v: v['processes']['resident_memory'].update(phase_profile_sha256='f' * 64),
+                             lambda v: v['processes'].update(running=True),
+                             lambda v: v['terminal'].update(exit_code=9),
+                             lambda v: v['processes']['root'].update(start='different-process')]:
+                changed = deepcopy(value)
+                mutation(changed)
+                with self.subTest(phase=phase), self.assertRaises(ValueError):
+                    shards.validate_phase_memory(changed, identity, profile, origin)
+            if phase == 'normal':
+                for mutation in [lambda v: v['processes']['resident_memory'].update(helper_samples=0),
+                                 lambda v: v['processes'].update(observed_images={})]:
+                    changed = deepcopy(value)
+                    mutation(changed)
+                    with self.assertRaises(ValueError):
+                        shards.validate_phase_memory(changed, identity, profile, origin)
+
+    def test_each_phase_monitor_uses_only_its_explicit_budget_and_refuses_incomplete_or_over_budget_samples(self):
+        fixture = self.bridge()
+        authority = fixture.current
+        for phase in ('normal', 'leaks'):
+            attempt = self.root / ('monitor-' + phase)
+            attempt.mkdir(mode=0o700)
+            monitor = shards.NativeMonitor(authority, attempt, authority.root, phase=phase)
+            self.assertEqual(monitor.memory['budget_bytes'], authority.config['phase_profiles'][phase]['admission']['peak_per_worker'])
+            self.assertEqual(monitor.memory['phase_profile_sha256'], shards.fingerprint(authority.phase_profile(phase)))
+            monitor.sample_memory({42: dict(command='fake phase', rss_bytes=monitor.memory['budget_bytes'] + 1)})
+            self.assertEqual(monitor.memory['failure'], 'owned process tree exceeds budget')
+            monitor = shards.NativeMonitor(authority, attempt, authority.root, phase=phase)
+            monitor.sample_memory({42: dict(command='fake phase')})
+            self.assertEqual(monitor.memory['failure'], 'incomplete resident sample')
+        with patch.object(authority, 'phase_profile', return_value=None), self.assertRaises(ValueError):
+            shards.NativeMonitor(authority, self.root, authority.root, phase='normal')
+    def phase_capsule(self, fixture, phase):
+        authority, runtime = fixture.current, fixture.anchor['runtime']
+        authority.environment.update(GITHUB_JOB='native_phase', ELITE_RECOVERABLE_REQUEST_PHASE=phase)
+        profile = authority.phase_profile(phase)
+        identity = dict(schema=1, phase=phase, inputs=runtime['inputs'], swift=runtime['toolchain'],
+            swift_executable='/fake/swift', sdk='fake-sdk', sdk_path='/fake/sdk', architecture=runtime['architecture'],
+            os_version=dict(release='fake-os', version='fake-version'), image_sha256=shards.legacy.digest(self.image),
+            image_uuid='UUID: AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA (fake-arm64) /fake/image',
+            phase_image=str(self.image), environment=runtime['phase_environment'],
+            inventory=METHODS if phase == 'normal' else [], opt_in_policy={},
+            flags=['--enable-code-coverage'] if phase == 'normal' else [], parallel=phase == 'normal',
+            policy='normal-coverage-80-v1' if phase == 'normal' else 'leaks-at-exit-diagnostics-v1')
+        flags = ['--jobs', '1', '-Xswiftc', '-disable-batch-mode']
+        identity['build_profile'] = dict(kind='owned-phase-build-v1', phase=phase, profile=profile['build_profile'],
+            policy_sha256=shards.native_runner.policy_digest(authority.policy), admission=profile['admission'], flags=flags,
+            argv=['/fake/swift', 'build', *(['--build-tests'] if phase == 'normal' else []), *identity['flags'], *flags])
+        attempt = self.root / ('fresh-owned-' + phase)
+        attempt.mkdir(mode=0o700)
+        command = (['/fake/swift', 'test', '--enable-code-coverage', '--skip-build', '--xunit-output', str(attempt / 'tests.xml')]
+                   if phase == 'normal' else ['/usr/bin/leaks', '--atExit', '--', str(self.image), '--diagnostics'])
+        (attempt / 'build.log').write_text('fake build completed')
+        (attempt / 'phase.log').write_text('fake tests completed' if phase == 'normal' else '0 leaks for 0 total leaked bytes')
+        if phase == 'normal':
+            xml(attempt / 'tests-swift-testing.xml', METHODS)
+            (attempt / 'coverage.xml').write_text('<coverage><file path="Sources/Game.swift">'
+                + '<lineToCover covered="true"/>' * 4 + '<lineToCover covered="false"/>' + '</file></coverage>')
+            (attempt / 'coverage.lcov').write_text('fake full lcov')
+            (attempt / 'default.profdata').write_bytes(b'fake full coverage')
+        shards.durable_json(attempt / 'start.json', dict(identity=identity, tested_head=authority.policy['approved_head'], command=command))
+        result = dict(identity=identity, tested_head=authority.policy['approved_head'], command=command,
+            status='passed', exit_code=0, native_exit_code=0, outputs={name: shards.legacy.digest(attempt / name)
+                for name in shards.phases.phase_outputs(attempt, phase)}, validation=shards.phases.validate_outputs(attempt, identity))
+        shards.durable_json(attempt / 'result.json', result)
+        origin = dict(schema=1, host=runtime['host'], phase=phase, tested_head=authority.policy['approved_head'],
+            receipt_sha256=shards.legacy.digest(attempt / 'result.json'), exit_code=0, authorization=authority.authorization())
+        row = dict(start='fake-start', command='fake phase controller', parent=1, group=42, state='S')
+        memory = dict(child=dict(pid=42), terminal=dict(pid=42, exit_code=0), processes=dict(running=False,
+            workspace=str(authority.root), root={'pid': 42, **row}, processes={'42': row},
+            observed_images={'fake': dict(sha256=identity['image_sha256'],
+                uuid=shards.fingerprint({'fake-arm64': 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA'}))},
+            resident_memory=dict(kind='sampled-owned-process-rss-v1', mode=phase,
+                phase_profile_sha256=shards.fingerprint(profile), failure=None, budget_bytes=profile['admission']['peak_per_worker'],
+                samples=1, helper_samples=1 if phase == 'normal' else 0, high_water_bytes=1024)))
+        verifier = SimpleNamespace(verify=lambda actual: self.assertEqual(actual, runtime), phase_origin=lambda a, i: origin)
+        bundle = authority.cache / 'full-phases' / shards.phase_key(runtime, METHODS, phase, profile)
+        bundle.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        checksum = shards.freeze_phase(attempt, identity, runtime, METHODS, verifier, bundle, profile, memory)
+        shards.validate_phase(bundle, checksum, phase, runtime, METHODS, profile)
+        return bundle, checksum
+
+    def test_selected_capsules_reject_changed_profile_command_memory_and_actual_head(self):
+        fixture = self.bridge()
+        for phase in ('normal', 'leaks'):
+            bundle, checksum = self.phase_capsule(fixture, phase)
+            profile = fixture.current.phase_profile(phase)
+            changed = deepcopy(profile)
+            changed['admission']['peak_per_worker'] += 1
+            with self.assertRaises(ValueError):
+                shards.validate_phase(bundle, checksum, phase, fixture.anchor['runtime'], METHODS, changed)
+            result = shards.load_json(bundle / 'attempt/result.json')
+            start = shards.load_json(bundle / 'attempt/start.json')
+            result['command'] = result['command'][:-1]
+            start['command'] = result['command']
+            with self.assertRaises(ValueError):
+                shards.validate_phase_command(result, start)
+            self.change(bundle / 'phase-memory.json', '{}')
+            with self.assertRaises(ValueError):
+                shards.validate_phase(bundle, checksum, phase, fixture.anchor['runtime'], METHODS, profile)
+
+    def test_explicit_full_aggregate_requires_real_current_run_checks_and_both_actual_phase_capsules(self):
+        from contextlib import nullcontext
+        fixture = self.bridge()
+        authority = fixture.current
+        workflow = shards.NativeWorkflow(authority)
+        authority.environment.update(GITHUB_JOB='native_checks')
+        def execute(command, root, attempt, *args, **kwargs):
+            (attempt / 'test.log').write_text('fake prerequisite commands completed')
+            shards.durable_json(attempt / 'child-exit.json', dict(pid=42, exit_code=0))
+            shards.durable_json(attempt / 'processes.json', dict(running=False))
+            return 0
+        with patch.object(shards.NativeBuilder, 'preparation_claim', side_effect=lambda **k: nullcontext(SimpleNamespace(fileno=lambda: 99))), \
+                patch.object(shards, 'execute_process', side_effect=execute), \
+                patch.object(shards.legacy, 'executable_inputs', return_value=fixture.binding['inputs']):
+            workflow.checks(self.root / 'current-checks', 5)
+        normal, _ = self.phase_capsule(fixture, 'normal')
+        leaks, _ = self.phase_capsule(fixture, 'leaks')
+        authority.environment.update(GITHUB_JOB='native_aggregate', ELITE_RECOVERABLE_REQUEST_PHASE='')
+        self.assertTrue(workflow.require_prerequisites(fixture.anchor))
+        with self.assertRaisesRegex(ValueError, 'explicit aggregate'):
+            workflow.aggregate([fixture.anchor])
+        with patch.object(shards.NativeBuilder, 'preparation_claim', side_effect=lambda: nullcontext()), \
+                patch.object(shards.native_runner, 'read_local_components_binding', return_value=fixture.binding), \
+                patch.object(shards.NativeExecutor, 'verify'), \
+                patch.object(shards.NativeExecutor, 'unknown_live_helpers', return_value=False), \
+                patch.object(shards.legacy, 'executable_inputs', return_value=fixture.binding['inputs']):
+            report = workflow.aggregate_owned([fixture.anchor], self.root / 'full-report')
+            self.assertEqual(report['current_ci_head'], 'b' * 40)
+            self.assertEqual(report['original_sanitizer_tested_head'], HEAD)
+            self.assertEqual(set(report['phases']), {'normal', 'leaks'})
+            self.assertEqual((authority.root / 'coverage.lcov').read_text(), 'fake full lcov')
+            self.assertIn('actual-main Sonar must also succeed', report['qualification'])
+            authority.environment['GITHUB_RUN_ATTEMPT'] = '2'
+            with self.assertRaises((OSError, ValueError)):
+                workflow.aggregate_owned([fixture.anchor], self.root / 'wrong-attempt-report')
+            self.assertEqual(shards.load_json(self.root / 'wrong-attempt-report/result.json')['status'], 'failed')
+            authority.environment['GITHUB_RUN_ATTEMPT'] = '1'
+            hidden = leaks.with_name('held-leaks')
+            leaks.rename(hidden)
+            with patch.object(workflow, 'artifacts', return_value=SimpleNamespace(artifacts=lambda prefix: [])), \
+                    self.assertRaisesRegex(ValueError, 'phase is missing'):
+                workflow.aggregate_owned([fixture.anchor], self.root / 'missing-phase-report')
+        self.assertTrue(normal.exists())
+
+
+    def test_each_phase_has_separate_admission_and_shared_lease_before_execution(self):
+        fixture = self.bridge()
+        authority = fixture.current
+        def metadata(command):
+            if command[0] == 'sysctl':
+                return '4'
+            if command == ['vm_stat']:
+                return ('Mach Virtual Memory Statistics: (page size of 4096 bytes)\n'
+                        'Pages free: 3000000.\nPages inactive: 0.\nPages speculative: 0.\n')
+            raise AssertionError('Unexpected fake resource probe')
+        with patch.object(authority, 'output', side_effect=metadata), \
+                patch.object(shards.shutil, 'disk_usage', return_value=SimpleNamespace(free=100 * 1024**3)):
+            for phase in ('normal', 'leaks'):
+                observed = authority.admission(phase)
+                self.assertEqual(observed['peak_per_worker'], authority.phase_profile(phase)['admission']['peak_per_worker'])
+        authority.legacy_cache = Path(authority.config['legacy_cache'])
+        authority.legacy_cache.mkdir(parents=True, exist_ok=True, mode=0o700)
+        with patch.object(authority, 'admission', return_value={'explicit': 1}) as admission, \
+                patch.object(shards.legacy, 'ensure_no_live_tests'), patch.object(authority, 'snapshot', return_value={}):
+            for phase in ('normal', 'leaks'):
+                with shards.NativeBuilder(authority).preparation_claim(phase=phase) as lock:
+                    os.fstat(lock.fileno())
+                    admission.assert_called_with(phase=phase)
+
+    def test_outcome_closure_and_native_phase_routing_reject_unproved_local_skip(self):
+        source = (Path(__file__).resolve().parents[2] / '.github/workflows/recoverable-quality.yml').read_text()
+        closure = self.workflow_script('Require every job outcome before authoritative main analysis')
+        env = dict(BACKEND='owned-local-components-v1', LOCAL_RESULT='success', LOCAL_VERIFIED='true',
+            CHECKS='success', FAKES='success', PHASES='success', ADDRESS_PREPARE='success',
+            THREAD_PREPARE='skipped', THREAD_SHARDS='skipped', ADDRESS_SHARDS='skipped')
+        with patch.dict(os.environ, env, clear=True):
+            exec(compile(closure, 'fake-owned-before-sonar', 'exec'), {})
+        for key in env:
+            with self.subTest(job=key), patch.dict(os.environ, {**env, key: ''}, clear=True), self.assertRaises(AssertionError):
+                exec(compile(closure, 'fake-owned-before-sonar', 'exec'), {})
+        job = source.split('\n  native_phase:\n', 1)[1].split('\n  thread_shards:\n', 1)[0]
+        condition = ' '.join(job.split('    if: >-\n', 1)[1].split('\n    runs-on:', 1)[0].split())
+        condition = condition.replace('&&', 'and').replace('||', 'or')
+        needs = SimpleNamespace(authorize_native=SimpleNamespace(outputs=SimpleNamespace(
+            authorized='true', backend='owned-local-components-v1')), prepare_address=SimpleNamespace(result='success'),
+            prepare_thread=SimpleNamespace(result='skipped'), native_local_components=SimpleNamespace(
+                result='success', outputs=SimpleNamespace(verified='true')))
+        self.assertTrue(eval(condition, {'__builtins__': {}, 'always': lambda: True, 'needs': needs}))
+        for status in ('', 'skipped', 'failure', 'cancelled'):
+            needs.native_local_components.result = status
+            self.assertFalse(eval(condition, {'__builtins__': {}, 'always': lambda: True, 'needs': needs}))
+        self.assertIn("backend == 'owned-local-components-v1' && needs.prepare_address.outputs.artifact_id || needs.prepare_thread.outputs.artifact_id", job)
+        make = (Path(__file__).resolve().parents[2] / 'Makefile').read_text()
+        target = make.split('\nci-owned-local-components:\n', 1)[1].split('\n\n', 1)[0]
+        self.assertIn('workflow-owned-aggregate', target)
+        self.assertIn('$(MAKE) sonar', target)
+        self.assertIn('refs/heads/main', target)
+
+
+    def test_phase_parent_passes_immutable_profile_policy_and_captures_monitored_real_format_capsules(self):
+        from contextlib import nullcontext
+        fixture = self.bridge()
+        authority = fixture.current
+        policy_path = Path(authority.environment['ELITE_NATIVE_POLICY'])
+        self.control_write(policy_path, authority.policy)
+        for phase in ('normal', 'leaks'):
+            initial, _ = self.phase_capsule(fixture, phase)
+            saved = self.root / ('initial-' + phase)
+            initial.chmod(0o700)
+            initial.rename(saved)
+            shards.seal(saved)
+            memory = shards.load_json(saved / 'phase-memory.json')
+            def execute(command, workspace, attempt, timeout, descriptors, environment, monitor, isolate_environment):
+                self.assertFalse(isolate_environment)
+                self.assertEqual(command[command.index('--profile-policy') + 1], str(policy_path))
+                self.assertEqual(command[command.index('--profile-policy-sha256') + 1], shards.legacy.digest(policy_path))
+                self.assertEqual(monitor.memory['mode'], phase)
+                self.assertEqual(monitor.memory['budget_bytes'], authority.phase_profile(phase)['admission']['peak_per_worker'])
+                fresh = Path(command[command.index('--cache') + 1]) / 'phases/fake/attempt'
+                fresh.parent.mkdir(parents=True, mode=0o700)
+                shutil.copytree(saved / 'attempt', fresh)
+                monitor.observed = memory['processes']['observed_images']
+                for name, file in [('processes', 'processes.json'), ('child', 'child.json'), ('terminal', 'child-exit.json')]:
+                    shards.durable_json(attempt / file, memory[name])
+                return 0
+            executor = FakeExecutor(authority.workers['one'], {'address': fixture.anchor['runtime']})
+            with patch.object(shards.NativeBuilder, 'preparation_claim', side_effect=lambda **k: nullcontext(SimpleNamespace(fileno=lambda: 99))) as claim, \
+                    patch.object(shards, 'execute_process', side_effect=execute) as execution, \
+                    patch.object(authority, 'host', return_value=fixture.anchor['runtime']['host']):
+                runner = shards.NativePhaseRunner(authority, executor)
+                destination = self.root / ('delivered-' + phase)
+                checksum = runner.run(phase, fixture.anchor, destination, 5)
+                self.assertEqual(runner.run(phase, fixture.anchor, destination, 5), checksum)
+                self.assertEqual(execution.call_count, 1)
+                claim.assert_called_with(phase=phase)
+            shards.validate_phase(destination, checksum, phase, fixture.anchor['runtime'], METHODS, authority.phase_profile(phase))
 
 
 if __name__ == "__main__":
