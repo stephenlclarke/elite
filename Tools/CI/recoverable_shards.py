@@ -39,6 +39,7 @@ POLICY = "recoverable-parallel-shards-v1"
 PHYSICAL_EXECUTION_ENABLED = True
 SHARD_MAX_SECONDS = 7200
 PACKED_ID_TARGET = 64
+ASAN_PACKED_ID_TARGET = 16
 MODES = ("thread", "address")
 AUTHORIZATION_CONTROLS = (
     "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_PATH",
@@ -207,6 +208,8 @@ def shard_identity(runtime, shard):
 def make_plan(runtime, methods, shared_groups=(), history=None, resources=None, budget=600, pack=True, max_methods=None):
     """Pack whole audited groups/suites by duration; timings are only planning hints."""
     validate_runtime(runtime)
+    if runtime["mode"] == "address":
+        max_methods = min(max_methods, ASAN_PACKED_ID_TARGET) if max_methods is not None else ASAN_PACKED_ID_TARGET
     if type(budget) not in (int, float) or not 300 <= budget <= 600:
         raise ValueError("The soft duration target must be five to ten minutes")
     methods = sorted(methods)
@@ -313,6 +316,9 @@ def validate_plan(plan):
     atomic = {fingerprint(sorted(atom)): sorted(atom) for atom in legacy.partition(
         plan["inventory"], plan["runtime"]["mode"], 1, plan["shared_groups"])}
     for shard in plan["shards"]:
+        if (plan["runtime"]["mode"] == "address" and len(shard["methods"]) > ASAN_PACKED_ID_TARGET
+                and len(shard["atoms"]) != 1):
+            raise ValueError("ASAN packing exceeds the process memory profile")
         if (shard["atoms"] != sorted(set(shard["atoms"]))
                 or set(shard["resource_audits"]) != set(shard["atoms"])
                 or any(atom not in atomic for atom in shard["atoms"])
@@ -1288,15 +1294,24 @@ def native_output(command, workspace, environment, descriptors=()):
                                    umask=0o077).strip()
 
 
-def process_rows(raw):
+def process_rows(raw, resident=False):
     """Use the existing capture-quality ps format and PID/start/command ownership rules."""
     rows = {}
     for line in raw.splitlines():
-        fields = line.split(None, 9)
+        fields = line.split(None, 10 if resident else 9)
+        if resident:
+            if (len(fields) != 11 or not all(value.isdecimal() for value in (fields[0], fields[9]))
+                    or int(fields[0]) in rows):
+                raise ValueError("Incomplete resident process snapshot")
+            rss = int(fields.pop(9)) * 1024  # Darwin ps reports resident size in KiB, not bytes.
         if len(fields) == 10:
             rows[int(fields[0])] = {"parent": int(fields[1]), "group": int(fields[2]),
                                    "state": fields[3], "start": " ".join(fields[4:9]),
                                    "command": fields[9]}
+            if resident:
+                rows[int(fields[0])]["rss_bytes"] = rss
+    if resident and not rows:
+        raise ValueError("Empty resident process snapshot")
     return rows
 
 
@@ -1369,8 +1384,9 @@ class NativeAuthority:
         return self.read(command, self.root if workspace is None else workspace,
                          self.execution_environment() if environment is None else environment, descriptors)
 
-    def snapshot(self):
-        return process_rows(self.output(["ps", "-axo", "pid=,ppid=,pgid=,stat=,lstart=,command="]))
+    def snapshot(self, resident=False):
+        fields = "pid=,ppid=,pgid=,stat=,lstart=," + ("rss=," if resident else "") + "command="
+        return process_rows(self.output(["ps", "-axo", fields]), resident=resident)
 
     def host(self):
         raw = self.output(["ioreg", "-rd1", "-c", "IOPlatformExpertDevice"])
@@ -1771,11 +1787,64 @@ class NativeMonitor:
         self.observed = {}
         self.bound_callback = None
         self.stop, self.thread = threading.Event(), None
+        self.memory = None
+        if expected_runtime is not None and expected_runtime["mode"] == "address":
+            budget = authority.config["admission"]["peak_per_worker"]
+            if type(budget) is not int or budget <= 0:
+                raise ValueError("ASAN resident budget must be positive integer bytes")
+            self.memory = {"kind": "sampled-owned-process-rss-v1", "budget_bytes": budget,
+                           "poll_wait_seconds": 0.1, "samples": 0, "helper_samples": 0,
+                           "last_bytes": 0, "high_water_bytes": 0, "failure": None,
+                           "authority": "sampled RSS sum; not physical footprint or an OS hard limit"}
+
+    def persist(self):
+        record = {"schema": SCHEMA, "workspace": str(self.workspace), "controller": self.controller,
+                  "root": self.root_identity, "running": not self.stop.is_set(),
+                  "observed_images": self.observed,
+                  "processes": {str(pid): row for pid, row in self.known.items()}}
+        if self.memory is not None:
+            record["resident_memory"] = dict(self.memory)
+        durable_json(self.attempt / "processes.json", record)
+
+    def memory_failure(self, reason):
+        if self.memory["failure"] is None:
+            self.memory["failure"] = reason
+            self.errors.append("ASAN resident memory: " + reason)
+            self.persist()
+            legacy.progress(json.dumps({"asan_resident_memory_refused": self.memory}, sort_keys=True))
+
+    def sample_memory(self, live):
+        if self.memory is None or not live:
+            return
+        if any(type(row.get("rss_bytes")) is not int or row["rss_bytes"] < 0 for row in live.values()):
+            self.memory_failure("incomplete resident sample")
+            return
+        total = sum(row["rss_bytes"] for row in live.values())
+        self.memory["samples"] += 1
+        self.memory["helper_samples"] += int(any(
+            "swiftpm-testing-helper" in row["command"] for row in live.values()))
+        self.memory["last_bytes"] = total
+        self.memory["high_water_bytes"] = max(self.memory["high_water_bytes"], total)
+        if total > self.memory["budget_bytes"]:
+            self.memory_failure("owned process tree exceeds budget")
+
+    def cleanup_memory_failure(self, live):
+        if self.memory is not None and self.memory["failure"] is not None:
+            for pid, row in live.items():
+                cleanup_owned_identity({"pid": pid, **row}, self.authority.snapshot)
+            return True
+        return False
 
     def observe(self):
-        rows = self.authority.snapshot()
+        try:
+            rows = self.authority.snapshot(resident=True) if self.memory is not None else self.authority.snapshot()
+        except Exception as error:
+            if self.memory is not None:
+                self.memory_failure("snapshot " + type(error).__name__)
+            raise
         live = descendants(self.known, rows)
         self.known.update(live)
+        self.sample_memory(live)
         for row in live.values():
             argv = arguments(row)
             if "swiftpm-testing-helper" not in row["command"]:
@@ -1804,12 +1873,7 @@ class NativeMonitor:
                         self.bound_callback = None
             except (OSError, ValueError, IndexError):
                 self.errors.append("helper image binding failed")
-        durable_json(self.attempt / "processes.json", {"schema": SCHEMA, "workspace": str(self.workspace),
-                                                      "controller": self.controller,
-                                                      "root": self.root_identity,
-                                                      "running": not self.stop.is_set(),
-                                                      "observed_images": self.observed,
-                                                      "processes": {str(pid): row for pid, row in self.known.items()}})
+        self.persist()
         return live
 
     def start(self, pid):
@@ -1820,13 +1884,16 @@ class NativeMonitor:
         self.controller = {"pid": os.getpid(), **controller}
         self.root_identity = {"pid": pid, **row}
         self.known[pid] = row
-        self.observe()
+        if self.cleanup_memory_failure(self.observe()):
+            return
         def watch():
             try:
                 while not self.stop.wait(0.1):
-                    self.observe()
+                    if self.cleanup_memory_failure(self.observe()):
+                        return
             except Exception as error:
                 self.errors.append(type(error).__name__)
+                self.cleanup_memory_failure(self.known)
         self.thread = threading.Thread(target=watch)
         self.thread.start()
 
@@ -1842,6 +1909,9 @@ class NativeMonitor:
         while live and time.monotonic() < deadline:
             time.sleep(0.05)
             live = self.observe()
+        if self.memory is not None and not self.memory["helper_samples"]:
+            self.memory_failure("no resident helper sample")
+        self.persist()
         clean = not live and not self.errors and (self.expected_runtime is None or bool(self.observed))
         for pid, row in live.items():
             cleanup_owned_identity({"pid": pid, **row}, self.authority.snapshot)
@@ -2315,7 +2385,8 @@ def report_progress(plan, store, state, current=None):
     record = {"mode": plan["runtime"]["mode"], "completed": complete, "total": len(plan["shards"]),
               "state": state, "current": current["id"] if current else None,
               "suites": suites, "max_runtime_seconds": SHARD_MAX_SECONDS,
-              "indivisible_over_target_ids": bool(current and len(current["methods"]) > PACKED_ID_TARGET)}
+              "indivisible_over_target_ids": bool(current and len(current["methods"]) > (
+                  ASAN_PACKED_ID_TARGET if plan["runtime"]["mode"] == "address" else PACKED_ID_TARGET))}
     legacy.progress(json.dumps(record, sort_keys=True))
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:

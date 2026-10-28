@@ -2596,5 +2596,243 @@ class GranularityTests(Fixture):
         shards.require_sealed(output)
 
 
+class AsanTestMemoryTests(Fixture):
+    def test_address_caps_all_planning_inputs_and_preserves_full_atomic_union(self):
+        solo = [f"EliteCoreTests.C{i}/one()" for i in range(80)]
+        big = [f"EliteCoreTests.Big/case{i}()" for i in range(170)]
+        salvage = [f"EliteCoreTests.Salvage{i}/one()" for i in range(13)]
+        methods = sorted(solo + big + salvage)
+        for target in (None, 16, 64, 500):
+            plan = shards.make_plan(self.runtimes["address"], methods, [big, salvage], max_methods=target)
+            self.assertEqual(sorted(m for row in plan["shards"] for m in row["methods"]), methods)
+            self.assertIn(sorted(big), [row["methods"] for row in plan["shards"]])
+            self.assertTrue(any(set(salvage) <= set(row["methods"]) for row in plan["shards"]))
+            self.assertTrue(all(len(row["methods"]) <= 16 or len(row["atoms"]) == 1 for row in plan["shards"]))
+            shards.workflow_manifest([plan], ["one"], self.store, HEAD)
+        # Identical inventory/weights in thread mode retains the existing 64-ID packing.
+        thread = shards.make_plan(self.runtimes["thread"], solo,
+            history=shards.workflow_history(solo, "thread", []), max_methods=64)
+        self.assertEqual(sorted(len(row["methods"]) for row in thread["shards"]), [16, 64])
+
+    def test_untrusted_old_packed_address_plan_is_refused_even_with_rehashed_identity(self):
+        methods = [f"EliteCoreTests.C{i}/one()" for i in range(40)]
+        thread = shards.make_plan(self.runtimes["thread"], methods,
+            history=shards.workflow_history(methods, "thread", []), max_methods=64)
+        self.assertEqual(len(thread["shards"]), 1)
+        thread["runtime"] = self.runtimes["address"]
+        for row in thread["shards"]:
+            row["id"] = shards.fingerprint(shards.shard_identity(thread["runtime"], row))
+        with self.assertRaisesRegex(ValueError, "ASAN packing"):
+            shards.validate_plan(thread)
+
+    def monitor(self, mode="address", budget=4096):
+        workspace = self.root / ("memory-worker-" + mode)
+        image = workspace / ".build/fake.xctest/Contents/MacOS/EliteCoreTests"
+        image.parent.mkdir(parents=True, mode=0o700)
+        image.write_bytes(self.image.read_bytes())
+        uuids = {"fake-arm64": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
+        runtime = {**self.runtimes[mode], "image_uuid": shards.fingerprint(uuids)}
+        root = dict(parent=1, group=10, state="S", start="root", command="/fake/swift test", rss_bytes=1024)
+        helper = dict(parent=10, group=20, state="S", start="helper", rss_bytes=2048,
+            command=f"/fake/swiftpm-testing-helper --test-bundle-path {image} {image} --testing-library swift-testing")
+        rows = {10: root, 20: helper}
+        authority = SimpleNamespace(config={"admission": {"peak_per_worker": budget}},
+                                    snapshot=lambda **kwargs: deepcopy(rows))
+        attempt = self.root / ("memory-attempt-" + mode)
+        attempt.mkdir(mode=0o700)
+        monitor = shards.NativeMonitor(authority, attempt, workspace, runtime, image)
+        monitor.known[10] = deepcopy(root)
+        self.uuid_patch = patch.object(shards, "image_uuids", return_value={"uuids": uuids})
+        self.uuid_patch.start()
+        self.addCleanup(self.uuid_patch.stop)
+        return monitor, rows
+
+    def test_resident_parser_uses_kib_preserves_ownership_and_rejects_missing_or_duplicate(self):
+        original = "10 1 10 S Wed Oct 28 10:00:00 2026 /fake/swift test\n"
+        resident = original.replace("2026 /", "2026 123 /")
+        parsed = shards.process_rows(resident, resident=True)[10]
+        self.assertEqual(parsed.pop("rss_bytes"), 123 * 1024)
+        self.assertEqual(parsed, shards.process_rows(original)[10])
+        for bad in ("", original, resident + resident, resident.replace("123", "-1"),
+                    resident.replace("123", "nan"), "truncated"):
+            with self.assertRaises(ValueError):
+                shards.process_rows(bad, resident=True)
+
+    def test_high_water_sums_only_fresh_owned_descendants_and_retains_last_sample(self):
+        monitor, rows = self.monitor()
+        rows[90] = {**rows[10], "parent": 1, "start": "unrelated", "rss_bytes": 10**12}
+        monitor.observe()
+        self.assertEqual(monitor.memory["high_water_bytes"], 3072)
+        rows[20]["rss_bytes"] = 512
+        monitor.observe()
+        self.assertEqual(monitor.memory["last_bytes"], 1536)
+        self.assertEqual(monitor.memory["high_water_bytes"], 3072)
+        # A reused PID, plus its new children, cannot enter the retained owned tree.
+        rows[20] = {**rows[20], "parent": 1, "start": "reused", "rss_bytes": 10**12}
+        rows[21] = {**rows[20], "parent": 20}
+        monitor.observe()
+        rows.clear()
+        self.assertTrue(monitor.finish(False))
+        record = shards.load_json(monitor.attempt / "processes.json")
+        self.assertEqual(record["resident_memory"]["high_water_bytes"], 3072)
+        self.assertEqual(record["resident_memory"]["helper_samples"], 2)
+        self.assertFalse(record["running"])
+
+    def test_budget_refusal_retains_evidence_progress_and_cleans_only_reverified_identities(self):
+        monitor, rows = self.monitor(budget=3071)
+        monitor.observe()
+        self.assertEqual(monitor.memory["high_water_bytes"], 3072)
+        self.assertIn("exceeds budget", monitor.memory["failure"])
+        # Simulate PID reuse between accounting and termination; use the real cleanup guard.
+        rows[20] = {**rows[20], "parent": 1, "start": "reused"}
+        sent = []
+        from crash_artifacts import cleanup_owned_identity
+        def safe_cleanup(identity, snapshot):
+            def signal_owned(pid, signum):
+                sent.append((pid, signum))
+                rows.pop(pid)
+            cleanup_owned_identity(identity, snapshot, send_signal=signal_owned)
+        with patch.object(shards, "cleanup_owned_identity", side_effect=safe_cleanup), patch.object(shards.legacy, "progress"):
+            self.assertTrue(monitor.cleanup_memory_failure(monitor.known))
+        self.assertEqual([pid for pid, _ in sent], [10])
+        record = shards.load_json(monitor.attempt / "processes.json")["resident_memory"]
+        self.assertEqual(record["budget_bytes"], 3071)
+        self.assertEqual(record["samples"], 1)
+        self.assertIn("exceeds budget", record["failure"])
+        self.assertFalse(monitor.finish(True))
+
+    def test_initial_budget_refusal_stops_owned_child_and_preserves_failed_exit(self):
+        monitor, rows = self.monitor(budget=3071)
+        rows[os.getpid()] = dict(parent=1, group=1, state="S", start="controller", command="fake controller")
+        cleaned = []
+        def cleanup(identity, snapshot):
+            self.assertTrue(shards.same_process(identity, snapshot().get(identity["pid"])))
+            cleaned.append(identity["pid"])
+            rows.pop(identity["pid"])
+        process = SimpleNamespace(pid=10, returncode=0, wait=lambda timeout=None: 0, poll=lambda: 0)
+        with patch.object(shards.subprocess, "Popen", return_value=process) as spawn, patch.object(
+                shards, "cleanup_owned_identity", side_effect=cleanup), patch.object(shards.legacy, "progress"):
+            code = shards.execute_process(["/fake/swift", "test"], monitor.workspace, monitor.attempt,
+                                           5, [], {}, monitor, isolate_environment=False)
+        self.assertEqual(code, 125)
+        self.assertEqual(cleaned, [10, 20])
+        spawn.assert_called_once()
+        self.assertEqual(shards.load_json(monitor.attempt / "child-exit.json")["exit_code"], 125)
+        record = shards.load_json(monitor.attempt / "processes.json")
+        self.assertFalse(record["running"])
+        self.assertEqual(record["resident_memory"]["high_water_bytes"], 3072)
+        self.assertIn("exceeds budget", record["resident_memory"]["failure"])
+
+    def test_missing_rss_and_sampling_errors_fail_closed_with_raw_evidence(self):
+        monitor, rows = self.monitor()
+        rows[20].pop("rss_bytes")
+        with patch.object(shards.legacy, "progress") as progress:
+            monitor.observe()
+        self.assertIn("incomplete", monitor.memory["failure"])
+        self.assertTrue(progress.called)
+        self.assertEqual(shards.load_json(monitor.attempt / "processes.json")["resident_memory"], monitor.memory)
+        monitor.authority.snapshot = lambda **kwargs: (_ for _ in ()).throw(ValueError("fake ps failure"))
+        with self.assertRaises(ValueError):
+            monitor.observe()
+        self.assertTrue(monitor.errors)
+
+    def test_background_sampler_refuses_growth_and_joins_before_final_evidence(self):
+        monitor, rows = self.monitor()
+        rows[os.getpid()] = dict(parent=1, group=1, state="S", start="controller", command="fake controller")
+        stopped, cleaned = threading.Event(), []
+        def cleanup(identity, snapshot):
+            self.assertTrue(shards.same_process(identity, snapshot().get(identity["pid"])))
+            cleaned.append(identity["pid"])
+            rows.pop(identity["pid"])
+            if identity["pid"] == 20:
+                stopped.set()
+        with patch.object(shards, "cleanup_owned_identity", side_effect=cleanup), patch.object(shards.legacy, "progress"):
+            monitor.start(10)
+            rows[20]["rss_bytes"] = 4096
+            try:
+                self.assertTrue(stopped.wait(2), "fake sampler did not terminate its over-budget tree")
+            finally:
+                self.assertFalse(monitor.finish(True))
+        self.assertEqual(cleaned, [10, 20])
+        self.assertFalse(monitor.thread.is_alive())
+        memory = shards.load_json(monitor.attempt / "processes.json")["resident_memory"]
+        self.assertGreaterEqual(memory["samples"], 2)
+        self.assertEqual(memory["high_water_bytes"], 5120)
+
+    def test_snapshot_failure_retains_reason_and_cleanup_still_rechecks_fresh_identity(self):
+        monitor, rows = self.monitor()
+        def snapshot(resident=False):
+            if resident:
+                raise ValueError("fake missing resident column")
+            return deepcopy(rows)
+        monitor.authority.snapshot = snapshot
+        with patch.object(shards.legacy, "progress"):
+            with self.assertRaises(ValueError):
+                monitor.observe()
+        self.assertEqual(monitor.memory["failure"], "snapshot ValueError")
+        self.assertEqual(shards.load_json(monitor.attempt / "processes.json")["resident_memory"], monitor.memory)
+        from crash_artifacts import cleanup_owned_identity
+        sent = []
+        def cleanup(identity, fresh_snapshot):
+            def signal_owned(pid, signum):
+                sent.append(pid)
+                rows.pop(pid)
+            cleanup_owned_identity(identity, fresh_snapshot, send_signal=signal_owned)
+        with patch.object(shards, "cleanup_owned_identity", side_effect=cleanup):
+            self.assertTrue(monitor.cleanup_memory_failure(monitor.known))
+        self.assertEqual(sent, [10])
+
+    def test_authority_resident_snapshot_requests_one_ps_sample_without_changing_default(self):
+        line = "10 1 10 S Wed Oct 28 10:00:00 2026 123 /fake/swift test"
+        calls = []
+        def output(command):
+            calls.append(command)
+            return line if "rss=" in command[-1] else line.replace("2026 123", "2026")
+        authority = SimpleNamespace(output=output)
+        self.assertEqual(shards.NativeAuthority.snapshot(authority, resident=True)[10]["rss_bytes"], 123*1024)
+        self.assertNotIn("rss_bytes", shards.NativeAuthority.snapshot(authority)[10])
+        self.assertEqual(calls, [["ps", "-axo", "pid=,ppid=,pgid=,stat=,lstart=,rss=,command="],
+                                 ["ps", "-axo", "pid=,ppid=,pgid=,stat=,lstart=,command="]])
+
+    def test_no_helper_resident_observation_cannot_qualify(self):
+        monitor, rows = self.monitor()
+        rows.pop(20)
+        monitor.observe()
+        rows.clear()
+        with patch.object(shards.legacy, "progress"):
+            self.assertFalse(monitor.finish(False))
+        self.assertEqual(monitor.memory["failure"], "no resident helper sample")
+
+    def test_non_address_monitor_never_requests_resident_or_adds_memory_evidence(self):
+        monitor, rows = self.monitor(mode="thread")
+        for row in rows.values():
+            row.pop("rss_bytes")
+        monitor.authority.snapshot = lambda: deepcopy(rows)
+        monitor.observe()
+        rows.clear()
+        self.assertTrue(monitor.finish(False))
+        self.assertIsNone(monitor.memory)
+        self.assertNotIn("resident_memory", shards.load_json(monitor.attempt / "processes.json"))
+
+    def test_fixed_budget_admission_boundary_and_policy_identity_are_real(self):
+        gib = 1024**3
+        bounds = {**ADMISSION, "explicit": 1, "cpu_budget": 1, "ram_capacity": 8*gib,
+                  "ram_reserve": 2*gib, "peak_per_worker": 2*gib, "ram_available": 4*gib}
+        self.assertEqual(shards.worker_limit(**bounds), 1)
+        with self.assertRaises(ValueError):
+            shards.worker_limit(**{**bounds, "ram_available": 4*gib-1})
+        with self.assertRaises(ValueError):
+            shards.worker_limit(**{**bounds, "ram_available": int(4.6*gib), "peak_per_worker": 4*gib})
+        config = {"host": "fake-host", "admission": bounds}
+        before = shards.execution_policy_digest(config)
+        config["admission"] = {**bounds, "peak_per_worker": 4*gib}
+        self.assertNotEqual(before, shards.execution_policy_digest(config))
+        plan = shards.make_plan(self.runtimes["address"], METHODS)
+        changed = deepcopy(plan["runtime"])
+        changed["inputs"]["Tools/CI/recoverable_shards.py"] = "f"*64
+        self.assertNotEqual(shards.shard_identity(plan["runtime"], plan["shards"][0]),
+                            shards.shard_identity(changed, plan["shards"][0]))
+
+
 if __name__ == "__main__":
     unittest.main()
