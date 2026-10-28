@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current M01 execution — 28 October 2026
+## Current memory remediation — 28 October 2026
+
+The first local ASAN shard on source `8913329f37ca9814b67ec895d3c30f06caa4b1e5` exceeded the owned 2 GiB RSS budget and stopped without a qualified shard. Preserve its consumed allowance and mutable owned failure evidence. The independently source-reviewed indexed shaded-projection fix requires a new final committed source and fresh policies, preparation, cache, worker and plan identities. No old proof or counter transfers to the new source.
+
+After exact final composition/pins and actual input reviews, reuse one fresh ASAN `--build-tests` preparation to compile the fix and its extended assertions. Then execute the full packed cohort containing the three panel-clipping methods, followed by the intact 170-method AppKit cohort containing both original icon tests. Select actual new plan IDs by method membership; preserve every cohort method, assertion, sanitizer flag, diagnostic, internal concurrency and the unchanged memory guard. This validates the affected five-method scope under ASAN without a standalone selector, cohort split or duplicate normal build. It does not complete full ASAN, normal coverage, TSAN or release acceptance. Stop at the first failure or uncertainty and review actual XML, image, RSS and terminal evidence before extending authority.
+
+The source/model checks and source clearance do not establish Swift assertion success or measured memory savings. Freeze all required tracked status files before the new source preparation; record subsequent progress externally. All quality and publication requirements below remain in force. See [the current memory handoff](PR-m01-icon-projection-memory.md).
+
+## M01 execution requirements — 28 October 2026
 
 This checkpoint supersedes the historical execution assignments below. G1 is the sole native operator. Finish the fresh local address and thread sanitizer campaigns serially on one final published source H, then the remaining real quality and release gates. Other workstreams remain held. The source-reviewed owned-local-components backend preserves each original local proof at its tested head and re-verifies both complete components in place before any intentional GitHub sanitizer-matrix skip can satisfy real quality.
 
