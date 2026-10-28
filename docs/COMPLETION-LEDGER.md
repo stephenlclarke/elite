@@ -1,5 +1,7 @@
 # L337 completion ledger
 
+> Current CI scope (28 October 2026): the user removed ASAN and TSAN as mandatory CI/release steps. Local sanitizer completion and the isolation proposal are stopped. Normal tests, coverage, zero leaks, static checks, Sonar and required reviews remain. Historical sanitizer results below retain their original scope. See [the CI change](PR-ci-without-sanitizers.md).
+
 Updated 28 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
 ## Current forwarded-helper correction — 28 October 2026

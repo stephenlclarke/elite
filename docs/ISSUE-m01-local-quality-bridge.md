@@ -1,5 +1,7 @@
 # M01 local sanitizer components and full CI quality
 
+> Superseded CI routing: the user removed ASAN and TSAN requirements on 28 October 2026. The active workflow no longer consumes this sanitizer bridge. The contract and results below are retained as history; see [current CI scope](PR-ci-without-sanitizers.md).
+
 ## Motivation
 
 G1 must execute ASAN and TSAN locally without GitHub scheduling or transport. The local adapter can qualify each complete mode, but the required GitHub `quality` workflow still expects sanitizer matrix jobs and two GitHub mode plans. A local component alone cannot establish full quality or authorize release publication.

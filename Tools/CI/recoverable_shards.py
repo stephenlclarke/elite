@@ -1498,7 +1498,7 @@ class NativeAuthority:
         if "vmmap_diagnostic" in self.config and not isinstance(self, LocalAuthority):
             raise ValueError("The diagnostic is restricted to its owned local session")
         native_runner.backend_descriptor(self.policy)
-        if self.backend() == native_runner.LOCAL_COMPONENTS_BACKEND:
+        if self.backend() == native_runner.LOCAL_COMPONENTS_BACKEND or "phase_profiles" in self.config:
             native_runner.phase_profile(self.policy, "normal")
         if type(self.config["schema"]) is not int or self.config["schema"] != SCHEMA or not self.config["workers"]:
             raise ValueError("Reviewed native workspace activation is required")

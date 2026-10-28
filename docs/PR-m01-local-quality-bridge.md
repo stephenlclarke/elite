@@ -1,5 +1,7 @@
 # M01 full-quality bridge for original local sanitizer proof
 
+> Superseded CI routing: the user removed ASAN and TSAN requirements on 28 October 2026. The active workflow no longer consumes this sanitizer bridge. The contract and results below are retained as history; see [current CI scope](PR-ci-without-sanitizers.md).
+
 ## Result
 
 The explicit `owned-local-components-v1` backend combines complete original local ASAN/TSAN components with real current-CI prerequisites, normal coverage and zero-leak phases. Original sanitizer proof retains its tested head H. Current CI phases retain actual head M. An owned binding permits H-to-M use only when their complete Git trees and all canonical executable/dependency blobs match exactly. The bridge never claims that a sanitizer executed at M when its receipt records H. [Problem and acceptance criteria](ISSUE-m01-local-quality-bridge.md).

@@ -1,10 +1,10 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 RELEASE_PLAN ?= dist/release-plan.json
-.PHONY: release-plan publish-release release-readme release ci-owned-local-components
+.PHONY: release-plan publish-release release-readme release
 .PHONY: sanitizer-checkpoints-check native-runner-check instance-equality-check ci-capture-check help build run test unit-ci local-runner-check coverage coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check release-plan package-macos publish-release release-readme release homebrew-cask homebrew-cask-check sonar ci ci-owned-local-components'
+	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check release-plan package-macos publish-release release-readme release homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -79,11 +79,8 @@ ci-capture-check:
 native-runner-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_native_runner.py'
 
-ci: native-runner-check instance-equality-check ci-capture-check flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check threads address leaks
+ci: native-runner-check instance-equality-check ci-capture-check flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check leaks
 
-ci-owned-local-components:
-	python3 Tools/CI/recoverable_shards.py workflow-owned-aggregate --input "$(BRIDGE_PLAN_DIR)" --digest "$(BRIDGE_PLAN_DIGEST)" --output "$(BRIDGE_OUTPUT)"
-	@if [[ "$${GITHUB_REF:-}" == refs/heads/main && "$${GITHUB_EVENT_NAME:-}" != pull_request ]]; then $(MAKE) sonar; fi
 
 instance-equality-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_script_instance_equality.py'

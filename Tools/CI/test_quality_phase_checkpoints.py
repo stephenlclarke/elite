@@ -271,6 +271,7 @@ class QualityPhaseTests(unittest.TestCase):
 
 
 
+
 class OwnedPhaseBuildTests(unittest.TestCase):
     setUp = QualityPhaseTests.setUp
     context = QualityPhaseTests.context
@@ -369,3 +370,74 @@ class OwnedPhaseBuildTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class NormalLeaksOnlyCITests(unittest.TestCase):
+    setUp = QualityPhaseTests.setUp
+    profile = OwnedPhaseBuildTests.profile
+    def test_hosted_profiles_require_no_local_sanitizer_proof(self):
+        import native_runner
+        path = self.root / 'normal-leaks-policy.json'
+        policy = dict(approved_head=self.head, recoverable_activation={}, recoverable_shards={
+            'phase_profiles': {phase: dict(build_profile='jobs1-nonbatch-v1',
+                                           admission=self.profile(phase)['admission'])
+                               for phase in ('normal', 'leaks')}})
+        def save():
+            if path.exists():
+                path.chmod(0o600)
+            path.write_text(json.dumps(policy)); path.chmod(0o400)
+            return dict(GITHUB_ACTIONS='true', GITHUB_JOB='native_checks', GITHUB_SHA=self.head,
+                        ELITE_NATIVE_APPROVED_HEAD=self.head, ELITE_NATIVE_POLICY=str(path),
+                        ELITE_RECOVERABLE_POLICY_SHA256=native_runner.policy_digest(policy))
+        environment = save()
+        with patch.object(native_runner, 'read_local_components_binding', side_effect=AssertionError('must not read sanitizer proof')):
+            for phase in ('normal', 'leaks'):
+                actual = runner.reviewed_build_profile(None, None, phase, environment)
+                self.assertEqual(actual['admission'], self.profile(phase)['admission'])
+            for fault in ('missing', 'empty', 'one-phase', 'malformed'):
+                original = policy['recoverable_shards'].pop('phase_profiles', None)
+                if fault == 'empty': policy['recoverable_shards']['phase_profiles'] = {}
+                if fault == 'one-phase': policy['recoverable_shards']['phase_profiles'] = {'normal': original['normal']}
+                if fault == 'malformed': policy['recoverable_shards']['phase_profiles'] = {'normal': {}, 'leaks': {}}
+                environment = save()
+                with self.subTest(fault=fault), self.assertRaises(ValueError):
+                    runner.reviewed_build_profile(None, None, 'normal', environment)
+                policy['recoverable_shards']['phase_profiles'] = original
+
+    def test_hosted_phase_wraps_the_whole_helper_and_rejects_forged_parent(self):
+        from types import SimpleNamespace
+        import native_runner
+        import recoverable_shards
+        source = str(Path(runner.__file__).resolve())
+        row = dict(start='fixed parent start', command=runner.sys.executable + ' ' + source + ' normal')
+        authority = SimpleNamespace(snapshot=lambda: {os.getpid(): row}, root=self.root,
+                                    admission=lambda **values: self.assertEqual(values, {'phase': 'normal'}))
+        policy = self.root / 'policy.json'; policy.write_text('{}')
+        environment = dict(GITHUB_ACTIONS='true', GITHUB_JOB='native_checks', ELITE_NATIVE_POLICY=str(policy))
+        with patch.dict(os.environ, environment, clear=True), patch.object(runner, 'ROOT', self.root), \
+                patch.object(runner, 'reviewed_build_profile'), \
+                patch.object(recoverable_shards, 'NativeAuthority', return_value=authority), \
+                patch.object(recoverable_shards, 'NativeMonitor', return_value=object()) as monitor, \
+                patch.object(recoverable_shards, 'execute_process', return_value=0) as execute:
+            runner.run_hosted_phase('normal')
+            command = execute.call_args.args[0]
+            self.assertEqual(command[:3], [runner.sys.executable, source, 'normal'])
+            self.assertEqual(monitor.call_args.kwargs, {'phase': 'normal'})
+            self.assertFalse(execute.call_args.kwargs['isolate_environment'])
+            args = SimpleNamespace(phase='normal', monitor_parent=os.getpid(),
+                                   monitor_parent_start=native_runner.custody_digest(row['start']),
+                                   monitor_parent_command=native_runner.custody_digest(row['command']),
+                                   profile_policy=policy, profile_policy_sha256=runner.digest(policy))
+            with patch.object(runner.os, 'getppid', return_value=os.getpid()):
+                runner.require_monitor_parent(args, authority)
+                for field, changed in [('phase', 'leaks'), ('monitor_parent_start', 'changed'),
+                                       ('monitor_parent_command', 'changed')]:
+                    original = getattr(args, field); setattr(args, field, changed)
+                    with self.subTest(field=field), self.assertRaises(ValueError):
+                        runner.require_monitor_parent(args, authority)
+                    setattr(args, field, original)
+            with self.assertRaises(ValueError):
+                runner.require_monitor_parent(args, authority)
+            execute.return_value = 1
+            with self.assertRaises(subprocess.CalledProcessError):
+                runner.run_hosted_phase('normal')

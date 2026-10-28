@@ -1,5 +1,7 @@
 # Requested game changes and delivery evidence
 
+> Current CI scope (28 October 2026): the user removed ASAN and TSAN as mandatory CI/release steps. Local sanitizer completion and the isolation proposal are stopped. Normal tests, coverage, zero leaks, static checks, Sonar and required reviews remain. Historical sanitizer results below retain their original scope. See [the CI change](PR-ci-without-sanitizers.md).
+
 ## Current sanitizer checkpoint — 28 October 2026
 
 The [completion ledger](COMPLETION-LEDGER.md) records the current owned work. Original2176 retains one sealedCatalogue16 pass and its following Panel16 RSS refusal. The c3ce diagnostic guard deployment and matching preparation completed, but its one wholePanel16 attempt rejected the forwarded helper before vmmap started. Terminal review verified CLEAN289 and consumed1/1; no snapshot or ordinaryPASS exists. The exact helper-binding correction passed source review. Final composition, new installed-generation delta and fresh execution inputs remain pending; no new playable build or release is claimed.

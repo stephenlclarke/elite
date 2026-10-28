@@ -364,8 +364,8 @@ def backend_descriptor(policy):
     backend = activation.get("sanitizer_backend", GITHUB_BACKEND)
     descriptor = activation.get("local_components")
     if backend == GITHUB_BACKEND:
-        if "local_components" in activation or "phase_profiles" in policy.get("recoverable_shards", {}):
-            raise ValueError("Default backend cannot carry local proof or phase profiles")
+        if "local_components" in activation:
+            raise ValueError("Default backend cannot carry local sanitizer proof")
         return backend, None
     if backend != LOCAL_COMPONENTS_BACKEND or not isinstance(descriptor, dict) or set(descriptor) != {"path", "sha256"}:
         raise ValueError("Unknown or incomplete sanitizer backend")
@@ -379,9 +379,9 @@ def backend_descriptor(policy):
 
 def phase_profile(policy, phase):
     backend, _ = backend_descriptor(policy)
-    if backend != LOCAL_COMPONENTS_BACKEND:
+    profiles = policy.get("recoverable_shards", {}).get("phase_profiles", {})
+    if backend != LOCAL_COMPONENTS_BACKEND and "phase_profiles" not in policy.get("recoverable_shards", {}):
         return None
-    profiles = policy["recoverable_shards"].get("phase_profiles", {})
     if not isinstance(profiles, dict) or set(profiles) != {"normal", "leaks"} or phase not in profiles:
         raise ValueError("Both independent phase profiles are mandatory")
     for value in profiles.values():
@@ -470,6 +470,8 @@ def require_recoverable_identity(policy: dict, environment: dict, event: dict, n
         raise ValueError("Native role is outside the explicitly reviewed backend")
     if backend == LOCAL_COMPONENTS_BACKEND:
         read_local_components_binding(policy, current)
+    elif "phase_profiles" in policy.get("recoverable_shards", {}):
+        phase_profile(policy, "normal")
     for name, field in (("ELITE_RECOVERABLE_WORKFLOW_SHA256", "workflow_sha256"),
                         ("ELITE_RECOVERABLE_ACTIVATION_SHA256", "manifest_sha256")):
         expected = activation.get(field, "")

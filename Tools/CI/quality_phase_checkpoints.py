@@ -8,6 +8,8 @@ from pathlib import Path
 import platform
 import re
 import shutil
+import shlex
+import sys
 import subprocess
 import time
 import uuid
@@ -107,8 +109,13 @@ def phase_outputs(attempt, phase):
 
 def reviewed_build_profile(path, checksum, phase, environment):
     import native_runner
+    hosted_quality = environment.get('GITHUB_ACTIONS') == 'true' and environment.get('GITHUB_JOB') == 'native_checks'
     if path is None and checksum is None:
-        return None
+        if not hosted_quality:
+            return None
+        path = Path(environment.get('ELITE_NATIVE_POLICY', ''))
+        native_runner.require_owned_activation_file(path)
+        checksum = digest(path)
     if path is None or not checksum or not re.fullmatch(r'[0-9a-f]{64}', checksum):
         raise ValueError('An owned phase policy and separate raw checksum are required')
     path = Path(path)
@@ -117,13 +124,20 @@ def reviewed_build_profile(path, checksum, phase, environment):
             or digest(path) != checksum):
         raise ValueError('Phase build policy ownership or bytes changed')
     policy = json.loads(path.read_text())
-    native_runner.read_local_components_binding(policy)
-    if (environment.get('GITHUB_JOB') != 'native_phase'
+    if hosted_quality:
+        if (native_runner.backend_descriptor(policy)[0] != native_runner.GITHUB_BACKEND
+                or native_runner.policy_digest(policy) != environment.get('ELITE_RECOVERABLE_POLICY_SHA256')):
+            raise ValueError('Quality policy differs from its installed authorization')
+    else:
+        native_runner.read_local_components_binding(policy)
+    if (environment.get('GITHUB_JOB') not in ('native_phase', 'native_checks')
             or environment.get('GITHUB_SHA') != policy['approved_head']
             or environment.get('ELITE_NATIVE_APPROVED_HEAD') != policy['approved_head']
             or environment.get('ELITE_NATIVE_POLICY') != str(path)):
         raise ValueError('Phase build profile is outside its real current-CI parent authorization')
     profile = native_runner.phase_profile(policy, phase)
+    if profile is None:
+        raise ValueError('Both reviewed normal/leaks resource profiles are required')
     return {'kind': 'owned-phase-build-v1', 'phase': phase, 'profile': profile['build_profile'],
             'policy_sha256': native_runner.policy_digest(policy), 'admission': profile['admission'],
             'flags': ['--jobs', '1', '-Xswiftc', '-disable-batch-mode']}
@@ -309,13 +323,71 @@ def digest_identity(identity):
     return hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
 
 
+def require_monitor_parent(args, authority):
+    """Bind the private child to the still-live exact hosted phase wrapper."""
+    import native_runner
+    row = authority.snapshot().get(args.monitor_parent)
+    if not row or os.getppid() != args.monitor_parent:
+        raise ValueError('Hosted phase monitor parent is missing')
+    argv = shlex.split(row['command'])
+    executable = shutil.which(argv[0]) if argv else None
+    source = Path(__file__).resolve()
+    script = (authority.root / argv[1]).resolve() if len(argv) > 1 else None
+    if (not executable or Path(executable).resolve() != Path(sys.executable).resolve()
+            or script != source or argv[2:] != [args.phase]
+            or native_runner.custody_digest(row['start']) != args.monitor_parent_start
+            or native_runner.custody_digest(row['command']) != args.monitor_parent_command
+            or args.profile_policy != Path(os.environ['ELITE_NATIVE_POLICY'])
+            or args.profile_policy_sha256 != digest(args.profile_policy)):
+        raise ValueError('Hosted phase monitor parent identity changed')
+    reviewed_build_profile(args.profile_policy, args.profile_policy_sha256, args.phase, os.environ)
+
+
+def run_hosted_phase(phase):
+    """Keep the existing owned monitor around the complete real phase helper."""
+    from recoverable_shards import NativeAuthority, NativeMonitor, execute_process
+    import native_runner
+    policy = Path(os.environ['ELITE_NATIVE_POLICY'])
+    authority = NativeAuthority(policy)
+    reviewed_build_profile(None, None, phase, os.environ)
+    authority.admission(phase=phase)
+    row = authority.snapshot().get(os.getpid())
+    if row is None:
+        raise ValueError('Hosted phase wrapper identity is unavailable')
+    report = ROOT / 'reports/quality-phases' / phase / ('monitor-' + str(uuid.uuid4()))
+    owned_directory(report)
+    command = [sys.executable, str(Path(__file__).resolve()), phase,
+               '--cache', str(report / 'fresh-cache'), '--profile-policy', str(policy),
+               '--profile-policy-sha256', digest(policy), '--monitor-parent', str(os.getpid()),
+               '--monitor-parent-start', native_runner.custody_digest(row['start']),
+               '--monitor-parent-command', native_runner.custody_digest(row['command'])]
+    code = execute_process(command, ROOT, report, 19800, (), dict(os.environ),
+                           NativeMonitor(authority, report, ROOT, phase=phase), isolate_environment=False)
+    if code:
+        raise subprocess.CalledProcessError(code, command)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase', choices=['normal', 'leaks'])
     parser.add_argument('--cache', type=Path, default=Path.home() / 'Library/EliteNativeCI/sanitizer-checkpoints')
     parser.add_argument('--profile-policy', type=Path)
     parser.add_argument('--profile-policy-sha256')
+    parser.add_argument('--monitor-parent', type=int, help=argparse.SUPPRESS)
+    parser.add_argument('--monitor-parent-start', help=argparse.SUPPRESS)
+    parser.add_argument('--monitor-parent-command', help=argparse.SUPPRESS)
     args = parser.parse_args()
+    hosted = os.environ.get('GITHUB_ACTIONS') == 'true' and os.environ.get('GITHUB_JOB') == 'native_checks'
+    if args.monitor_parent is not None:
+        if not hosted:
+            raise ValueError('Phase monitor child requires the hosted quality job')
+        from recoverable_shards import NativeAuthority
+        require_monitor_parent(args, NativeAuthority(Path(os.environ['ELITE_NATIVE_POLICY'])))
+    elif hosted:
+        if sys.argv[1:] != [args.phase]:
+            raise ValueError('Hosted phase wrapper requires its exact workflow invocation')
+        run_hosted_phase(args.phase)
+        return
     run_phase(args.phase, args.cache, args.profile_policy, args.profile_policy_sha256)
 
 

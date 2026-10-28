@@ -1286,50 +1286,26 @@ class WorkflowTests(Fixture):
     authority = NativeAdapterTests.authority
     prepared = NativeAdapterTests.prepared
 
-    def test_thread_prepare_waits_for_successful_address_chain_or_proven_empty_plan(self):
+    def test_ci_requires_real_make_ci_and_has_no_sanitizer_or_local_proof_jobs(self):
         source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
-        job = source.split("\n  prepare_thread:\n", 1)[1].split("\n  prepare_address:\n", 1)[0]
-        self.assertIn("    needs: [authorize_native, prepare_address, address_shards, native_local_components]\n", job)
-        address = source.split("\n  prepare_address:\n", 1)[1].split("\n  native_phase:\n", 1)[0]
-        self.assertIn("    needs: authorize_native\n", address)
-        shards_job = source.split("\n  address_shards:\n", 1)[1].split("\n  native_aggregate:\n", 1)[0]
-        self.assertIn("    needs: [authorize_native, prepare_address, native_local_components]\n", shards_job)
-        condition = job.split("    if: >-\n", 1)[1].split("\n    runs-on:", 1)[0]
-        condition = " ".join(condition.split()).replace("&&", "and").replace("||", "or")
-        gate = self.workflow_script("Held, failed or cancelled execution")
-        cases = (
-            ("pending passed", "true", "success", "success", "true", True),
-            ("pending failed", "true", "success", "failure", "true", False),
-            ("completed plan", "true", "success", "skipped", "false", True),
-            ("pending skipped", "true", "success", "skipped", "true", False),
-            ("missing pending", "true", "success", "skipped", "", False),
-            ("invalid pending", "true", "success", "skipped", "False", False),
-            ("shards cancelled", "true", "success", "cancelled", "true", False),
-            ("prepare failed", "true", "failure", "skipped", "false", False),
-            ("prepare cancelled", "true", "cancelled", "skipped", "false", False),
-            ("prepare skipped", "true", "skipped", "skipped", "false", False),
-            ("unauthorized", "false", "success", "success", "true", False),
-            ("missing authorization", "", "success", "skipped", "false", False),
-        )
-        for label, authorized, prepare, shards_result, pending, expected in cases:
-            with self.subTest(label=label):
-                needs = SimpleNamespace(
-                    authorize_native=SimpleNamespace(outputs=SimpleNamespace(authorized=authorized, backend="github-artifacts-v1")),
-                    native_local_components=SimpleNamespace(result="skipped"),
-                    prepare_address=SimpleNamespace(result=prepare, outputs=SimpleNamespace(has_pending=pending)),
-                    address_shards=SimpleNamespace(result=shards_result))
-                eligible = eval(condition, {"__builtins__": {}, "always": lambda: True, "needs": needs})
-                self.assertEqual(eligible, expected)
-                env = dict(BACKEND="github-artifacts-v1", LOCAL_RESULT="skipped", AUTHORIZED=authorized, CHECKS="success", THREAD_PREPARE="success" if eligible else "skipped",
-                           ADDRESS_PREPARE=prepare, PHASES="success", AGGREGATE="success",
-                           THREAD_SHARDS="success", THREAD_PENDING="true", ADDRESS_SHARDS=shards_result,
-                           ADDRESS_PENDING=pending, GITHUB_STEP_SUMMARY=str(self.root / "address-first-summary"))
-                with patch.dict(os.environ, env, clear=True):
-                    if expected:
-                        exec(compile(gate, "fake-address-first-final-gate", "exec"), {})
-                    else:
-                        with self.assertRaises(AssertionError):
-                            exec(compile(gate, "fake-address-first-final-gate", "exec"), {})
+        for name in ('prepare_thread', 'prepare_address', 'thread_shards', 'address_shards',
+                     'native_local_components', 'native_phase', 'native_aggregate'):
+            self.assertNotIn("\n  " + name + ":\n", source)
+        self.assertNotIn('workflow-verify-local-components', source)
+        self.assertNotIn('workflow-owned-aggregate', source)
+        self.assertNotIn('workflow-prepare --mode', source)
+        self.assertIn('run: python3 Tools/CI/capture-quality.py', source)
+        gate = self.workflow_script('Held, failed or cancelled execution')
+        selected = dict(AUTHORIZED='true', FAKES='success', CHECKS='success',
+                        GITHUB_STEP_SUMMARY=str(self.root / 'normal-leaks-summary'))
+        with patch.dict(os.environ, selected, clear=True):
+            exec(compile(gate, 'fake-normal-leaks-gate', 'exec'), {})
+        for key in ('AUTHORIZED', 'FAKES', 'CHECKS'):
+            for value in ('', 'skipped', 'failure', 'cancelled'):
+                with self.subTest(control=key, value=value), patch.dict(os.environ, {**selected, key: value}, clear=True):
+                    with self.assertRaises(AssertionError):
+                        exec(compile(gate, 'fake-normal-leaks-gate', 'exec'), {})
+
 
     def workflow(self):
         authority, builder, builds, calls = self.prepared()
@@ -1606,16 +1582,14 @@ class WorkflowTests(Fixture):
             with patch.dict(os.environ, {**env, **change}, clear=True), self.assertRaises((AssertionError, KeyError)):
                 exec(compile(source, "fake-precheckout-guard", "exec"), {})
         gate = self.workflow_script("Held, failed or cancelled execution")
-        passed = dict(BACKEND="github-artifacts-v1", LOCAL_RESULT="skipped", AUTHORIZED="true", CHECKS="success", THREAD_PREPARE="success", ADDRESS_PREPARE="success",
-                      PHASES="success", AGGREGATE="success", THREAD_SHARDS="skipped", THREAD_PENDING="false",
-                      ADDRESS_SHARDS="skipped", ADDRESS_PENDING="false", GITHUB_STEP_SUMMARY=str(self.root / "gate-summary"))
+        passed = dict(AUTHORIZED="true", CHECKS="success", FAKES="success",
+                      GITHUB_STEP_SUMMARY=str(self.root / "gate-summary"))
         with patch.dict(os.environ, passed, clear=True):
             exec(compile(gate, "fake-final-gate", "exec"), {})
-        for change in ({"THREAD_SHARDS": "failed"}, {"ADDRESS_SHARDS": "cancelled"}, {"AGGREGATE": "skipped"},
-                       {"AUTHORIZED": "false"}, {"THREAD_PENDING": "true"}, {"CHECKS": "skipped"}):
+        for change in ({"FAKES": "failed"}, {"CHECKS": "cancelled"},
+                       {"AUTHORIZED": "false"}, {"CHECKS": "skipped"}):
             with patch.dict(os.environ, {**passed, **change}, clear=True), self.assertRaises(AssertionError):
                 exec(compile(gate, "fake-final-gate", "exec"), {})
-
 
 class ArtifactRunProvenanceTests(unittest.TestCase):
     def contract(self, event="workflow_dispatch"):
@@ -1990,23 +1964,18 @@ class PrerequisiteRawExportTests(unittest.TestCase):
                 with self.assertRaises((ValueError, OSError)):
                     shards.NativeWorkflow(authority).export_checks(source, output)
 
-    def test_workflow_always_exports_before_upload_and_missing_or_failed_checks_never_pass_gate(self):
-        source = (Path(__file__).resolve().parents[2] / ".github/workflows/recoverable-quality.yml").read_text()
-        job = source.split("  native_checks:\n", 1)[1].split("  prepare_thread:\n", 1)[0]
-        self.assertLess(job.index("workflow-checks --timeout 7200"), job.index("workflow-checks-export"))
-        self.assertLess(job.index("workflow-checks-export"), job.index("uses: actions/upload-artifact@"))
-        self.assertEqual(job.count("if: always() && steps.native_guard.outcome == 'success'"), 2)
-        self.assertIn('            --input "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}"', job)
-        self.assertIn('            --output "$RUNNER_TEMP/required-checks-${{ github.run_attempt }}-raw"', job)
-        self.assertIn("path: ${{ runner.temp }}/required-checks-${{ github.run_attempt }}-raw", job)
-        self.assertNotIn("continue-on-error", job)
-        gate = WorkflowTests.workflow_script(self, "Held, failed or cancelled execution")
-        for status in ("failure", "failed", "cancelled", "skipped", "missing"):
-            values = dict(AUTHORIZED="true", CHECKS=status, THREAD_PREPARE="success", ADDRESS_PREPARE="success",
-                          PHASES="success", AGGREGATE="success", THREAD_SHARDS="skipped", THREAD_PENDING="false",
-                          ADDRESS_SHARDS="skipped", ADDRESS_PENDING="false")
+    def test_workflow_retains_raw_make_ci_even_on_failure_and_never_passes_skips(self):
+        source = (Path(__file__).resolve().parents[2] / '.github/workflows/recoverable-quality.yml').read_text()
+        job = source.split('  native_checks:\n', 1)[1].split('  physical_qualification:\n', 1)[0]
+        self.assertLess(job.index('capture-quality.py'), job.index('uses: actions/upload-artifact@'))
+        self.assertIn("if: always() && steps.native_guard.outcome == 'success'", job)
+        self.assertIn('            reports/', job)
+        self.assertNotIn('continue-on-error', job)
+        gate = WorkflowTests.workflow_script(self, 'Held, failed or cancelled execution')
+        for status in ('failure', 'failed', 'cancelled', 'skipped', 'missing'):
+            values = dict(AUTHORIZED='true', FAKES='success', CHECKS=status)
             with self.subTest(status=status), patch.dict(os.environ, values, clear=True), self.assertRaises(AssertionError):
-                exec(compile(gate, "fake-final-gate", "exec"), {})
+                exec(compile(gate, 'fake-final-gate', 'exec'), {})
 
 
 class ResourceRefusalEvidenceTests(unittest.TestCase):
@@ -2556,34 +2525,25 @@ class GranularityTests(Fixture):
         self.assertIn("No method split", path.read_text())
         self.assertIn("1/1 complete", path.read_text())
 
-    def test_future_ci_preserves_required_name_all_make_gates_and_independent_mode_prerequisites(self):
+    def test_future_ci_preserves_required_name_and_real_normal_leak_gates(self):
         root = Path(__file__).resolve().parents[2]
-        ci = (root / ".github/workflows/ci.yml").read_text()
-        workflow = (root / ".github/workflows/recoverable-quality.yml").read_text()
-        self.assertIn("uses: ./.github/workflows/recoverable-quality.yml", ci)
-        self.assertIn("name: quality", ci)
+        ci = (root / '.github/workflows/ci.yml').read_text()
+        workflow = (root / '.github/workflows/recoverable-quality.yml').read_text()
+        make = (root / 'Makefile').read_text()
+        self.assertIn('uses: ./.github/workflows/recoverable-quality.yml', ci)
+        self.assertIn('name: quality', ci)
         self.assertIn('test "$COMPONENTS" = success', ci)
-        for mode in shards.MODES:
-            job = workflow.split("  " + mode + "_shards:", 1)[1]
-            prefix = job.split("    env:", 1)[0]
-            self.assertIn("needs: [authorize_native, prepare_" + mode + "]", prefix)
-            self.assertIn("max-parallel: 1", prefix)
-            self.assertIn("fail-fast: false", prefix)
-            self.assertIn("timeout-minutes: 130", prefix)
-        self.assertIn("--timeout 7200", workflow)
-        authority, _, _, _ = self.prepared()
-        output = self.root / "required-gates"
-        def run(command, workspace, attempt, *args, **kwargs):
-            (attempt / "test.log").write_text("fake prerequisites exited zero")
-            expected = (root / "Makefile").read_text().split("\nci: ", 1)[1].split("\n", 1)[0].split()
-            self.assertTrue(set(expected) - {"coverage-check", "threads", "address", "leaks"} <= set(command[1:]))
-            return 0
-        with patch.object(shards, "execute_process", side_effect=run):
-            self.assertEqual(shards.NativeWorkflow(authority).checks(output, 5)["checks_exit_code"], 0)
-        shards.require_sealed(output)
-        self.assertIn("make sonar", workflow)
-        self.assertLess(workflow.index("Require every job outcome before authoritative main analysis"), workflow.index("make sonar"))
-        self.assertIn("--other-digest", workflow)
+        targets = make.split('\nci: ', 1)[1].split('\n', 1)[0].split()
+        self.assertIn('coverage-check', targets)
+        self.assertIn('leaks', targets)
+        self.assertNotIn('threads', targets)
+        self.assertNotIn('address', targets)
+        self.assertIn('make sonar', workflow)
+        self.assertLess(workflow.index('Require every job outcome before authoritative main analysis'), workflow.index('make sonar'))
+        self.assertNotIn('--other-digest', workflow)
+        self.assertIn('python3 Tools/CI/capture-quality.py', workflow)
+        self.assertIn("github.ref == 'refs/heads/main'", workflow)
+
 
     def test_aggregate_failure_is_retained_without_fabricated_pass_or_missing_mode_acceptance(self):
         authority = self.authority()
@@ -3714,22 +3674,18 @@ class OwnedQualityBridgeTests(Fixture):
         with self.assertRaisesRegex(ValueError, 'allocation differs'):
             self.verify(fixture)
 
-    def test_real_quality_gate_requires_explicit_verifier_success_before_intentional_skips(self):
+    def test_real_quality_gate_requires_complete_current_native_and_fake_results(self):
         gate = self.workflow_script('Held, failed or cancelled execution')
-        selected = dict(BACKEND='owned-local-components-v1', AUTHORIZED='true', CHECKS='success',
-            ADDRESS_PREPARE='success', THREAD_PREPARE='skipped', PHASES='success', AGGREGATE='success',
-            THREAD_SHARDS='skipped', ADDRESS_SHARDS='skipped', THREAD_PENDING='', ADDRESS_PENDING='true',
-            LOCAL_RESULT='success', LOCAL_VERIFIED='true', GITHUB_STEP_SUMMARY=str(self.root / 'selected-summary'))
+        selected = dict(AUTHORIZED='true', CHECKS='success', FAKES='success',
+                        GITHUB_STEP_SUMMARY=str(self.root / 'selected-summary'))
         with patch.dict(os.environ, selected, clear=True):
-            exec(compile(gate, 'fake-owned-final-gate', 'exec'), {})
-        for key in ('LOCAL_RESULT', 'LOCAL_VERIFIED', 'CHECKS', 'ADDRESS_PREPARE', 'PHASES', 'AGGREGATE',
-                    'THREAD_PREPARE', 'THREAD_SHARDS', 'ADDRESS_SHARDS', 'AUTHORIZED', 'BACKEND'):
-            for value in ('', 'skipped', 'failure', 'cancelled', 'success', 'true', 'unknown'):
-                if value == selected[key]:
-                    continue
-                with self.subTest(control=key, value=value), patch.dict(os.environ, {**selected, key: value}, clear=True), \
-                        self.assertRaises(AssertionError):
-                    exec(compile(gate, 'fake-owned-final-gate', 'exec'), {})
+            exec(compile(gate, 'fake-normal-leaks-final-gate', 'exec'), {})
+        for key in ('AUTHORIZED', 'CHECKS', 'FAKES'):
+            for value in ('', 'skipped', 'failure', 'cancelled', 'unknown'):
+                with self.subTest(control=key, value=value), patch.dict(os.environ, {**selected, key: value}, clear=True):
+                    with self.assertRaises(AssertionError):
+                        exec(compile(gate, 'fake-normal-leaks-final-gate', 'exec'), {})
+
 
     def test_independent_phase_memory_budget_and_image_lifecycle_refusals(self):
         for phase in ('normal', 'leaks'):
@@ -3919,34 +3875,22 @@ class OwnedQualityBridgeTests(Fixture):
                     os.fstat(lock.fileno())
                     admission.assert_called_with(phase=phase)
 
-    def test_outcome_closure_and_native_phase_routing_reject_unproved_local_skip(self):
+    def test_outcome_closure_no_longer_requires_or_routes_local_sanitizer_proofs(self):
         source = (Path(__file__).resolve().parents[2] / '.github/workflows/recoverable-quality.yml').read_text()
         closure = self.workflow_script('Require every job outcome before authoritative main analysis')
-        env = dict(BACKEND='owned-local-components-v1', LOCAL_RESULT='success', LOCAL_VERIFIED='true',
-            CHECKS='success', FAKES='success', PHASES='success', ADDRESS_PREPARE='success',
-            THREAD_PREPARE='skipped', THREAD_SHARDS='skipped', ADDRESS_SHARDS='skipped')
+        env = dict(AUTHORIZED='true', FAKES='success', CHECKS='success')
         with patch.dict(os.environ, env, clear=True):
-            exec(compile(closure, 'fake-owned-before-sonar', 'exec'), {})
+            exec(compile(closure, 'fake-normal-before-sonar', 'exec'), {})
         for key in env:
             with self.subTest(job=key), patch.dict(os.environ, {**env, key: ''}, clear=True), self.assertRaises(AssertionError):
-                exec(compile(closure, 'fake-owned-before-sonar', 'exec'), {})
-        job = source.split('\n  native_phase:\n', 1)[1].split('\n  thread_shards:\n', 1)[0]
-        condition = ' '.join(job.split('    if: >-\n', 1)[1].split('\n    runs-on:', 1)[0].split())
-        condition = condition.replace('&&', 'and').replace('||', 'or')
-        needs = SimpleNamespace(authorize_native=SimpleNamespace(outputs=SimpleNamespace(
-            authorized='true', backend='owned-local-components-v1')), prepare_address=SimpleNamespace(result='success'),
-            prepare_thread=SimpleNamespace(result='skipped'), native_local_components=SimpleNamespace(
-                result='success', outputs=SimpleNamespace(verified='true')))
-        self.assertTrue(eval(condition, {'__builtins__': {}, 'always': lambda: True, 'needs': needs}))
-        for status in ('', 'skipped', 'failure', 'cancelled'):
-            needs.native_local_components.result = status
-            self.assertFalse(eval(condition, {'__builtins__': {}, 'always': lambda: True, 'needs': needs}))
-        self.assertIn("backend == 'owned-local-components-v1' && needs.prepare_address.outputs.artifact_id || needs.prepare_thread.outputs.artifact_id", job)
+                exec(compile(closure, 'fake-normal-before-sonar', 'exec'), {})
+        self.assertNotIn('needs.native_local_components', source)
+        self.assertNotIn('needs.prepare_address', source)
+        self.assertNotIn('needs.prepare_thread', source)
+        self.assertNotIn('workflow-owned-aggregate', source)
         make = (Path(__file__).resolve().parents[2] / 'Makefile').read_text()
-        target = make.split('\nci-owned-local-components:\n', 1)[1].split('\n\n', 1)[0]
-        self.assertIn('workflow-owned-aggregate', target)
-        self.assertIn('$(MAKE) sonar', target)
-        self.assertIn('refs/heads/main', target)
+        self.assertNotIn('\nci-owned-local-components:', make)
+
 
 
     def test_phase_parent_passes_immutable_profile_policy_and_captures_monitored_real_format_capsules(self):
