@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current ordinary shared-mesh qualification — 28 October 2026
+## Current catalogue diagnostic-only execution — 28 October 2026
+
+The ordinary Catalogue16 run stopped at its RSS guard during the strengthened mesh method without a qualified shard or an identified profile/subphase. Root selected the bounded catalogue diagnostic; its source and narrow external-parser correction passed review. G1 owns the existing native lease, MC1 owns source findings, and Root alone dispatches the single active MBA task. Prior source, raw failures and all consumed or unused counters remain unchanged.
+
+Freeze final tracked source/status and review exact composition/pins, then publish and request PR review. Bind the exact diagnostic opt-in and corrected external parser context in new actual policy/environment/storage records on G1's owned recovered workspace. After actual finite preparation-input review, one matching ASAN preparation must establish its fresh full inventory, image and plan. Review those actual records before one finite complete Catalogue16 diagnostic assignment. Preserve all assertions, profile iterations, operation order, instrumentation, concurrency, options, shared locks, 2.25 GiB worker estimate, 2 GiB reserve and refusal rules. Stop after the attempt regardless of exit; do not start Panel/AppKit, split cohorts, retry automatically, raise the budget or promote diagnostic evidence into ordinary qualification.
+
+The global limit remains 64 bounded records and two statistics dumps. Profile/selected-phase markers can locate progress but cannot prove raw-cache or disabled-profile initialization or cold/warm state. Counters are sequential and process-wide; body-exit is not post-destruction, missing exits are censored and unavailable early exits remain incomplete. Interpret only actual raw evidence with the reviewed corrected parser and retain its limits. No ordering edit, ownership/leak cause, allocation-stack attribution, exact quarantine accounting, memory-fit or ordinary pass follows from this diagnostic alone. Final coverage, both sanitizers, leaks, protected review/checks, main-only exact-SHA Sonar and usable delivery remain required. See [the current diagnostic handoff](PR-m01-catalogue-allocator-diagnostic.md).
+
+## Previous ordinary shared-mesh qualification — 28 October 2026
 
 The source-reviewed shared-mesh fix supersedes the single diagnostic assignment below. Remove the diagnostic opt-in entirely for ordinary qualification; do not transfer diagnostic-on proof. Freeze the final fix and status documents, review exact source/pins, publish the actual source, then bind new ordinary environment/policy/storage identities and finite preparation inputs to G1's recovered owned execution checkout. Preserve all prior raw failures and session counters without promotion or reset.
 
