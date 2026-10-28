@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current diagnostic-only execution — 28 October 2026
+## Current ordinary shared-mesh qualification — 28 October 2026
+
+The source-reviewed shared-mesh fix supersedes the single diagnostic assignment below. Remove the diagnostic opt-in entirely for ordinary qualification; do not transfer diagnostic-on proof. Freeze the final fix and status documents, review exact source/pins, publish the actual source, then bind new ordinary environment/policy/storage identities and finite preparation inputs to G1's recovered owned execution checkout. Preserve all prior raw failures and session counters without promotion or reset.
+
+One matching ASAN preparation compiles the changed cache and strengthened existing salvage catalogue assertions. After actual image, full 200-shard/3,403-method plan and finite input reviews, execute complete cohorts covering the salvage catalogue/storage oracle, the previous failing native paths and AppKit/rendering interactions. Use separate bounded assignments where order matters; require strict success before conditional follow-up. Preserve all methods, parameters, assertions, instrumentation, concurrency and the 2.25 GiB worker estimate plus 2 GiB reserve. Do not add a duplicate normal build, standalone selector, cohort split, budget increase or diagnostic retry. Stop at the first failure or uncertainty and review actual XML, image, diagnostics, RSS and terminal records before extending authority.
+
+The sharing change can move profile metadata and scratch construction earlier on raw-cache-first paths. Source payload totals and source/model checks are not native memory measurements, cold-initialization acceptance or passing storage assertions. Development remains validation pending until those actual checks pass. All final quality, main-only exact-SHA Sonar, protected review/merge and usable release requirements remain in force. See [the current mesh handoff](PR-m01-shared-authored-mesh.md).
+
+## Previous diagnostic-only execution — 28 October 2026
 
 The 2 GiB and separately reviewed 2.25 GiB ASAN executions both stopped at their unchanged owned RSS guards without a qualified shard or affected panel/icon assertions. Both recorded values are lower bounds, not completed peaks. Stop further budget escalation and ordinary retries. Preserve all old source identities, consumed or unused session allowances and mutable owned raw failures.
 
