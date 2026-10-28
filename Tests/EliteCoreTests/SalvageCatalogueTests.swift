@@ -78,6 +78,15 @@ import Testing
       #expect(
         profile.mesh.materials == mesh.materials && profile.mesh.faceMaterials == mesh.faceMaterials
       )
+      let cached = try #require(ShipCatalogue.rawMesh(profile.catalogueShipID))
+      expectSameMesh(profile.mesh, as: mesh)
+      expectSameMesh(cached, as: mesh)
+      let sharesVertices = profile.mesh.vertices.withUnsafeBufferPointer { profileVertices in
+        cached.vertices.withUnsafeBufferPointer { cachedVertices in
+          !profileVertices.isEmpty && profileVertices.baseAddress == cachedVertices.baseAddress
+        }
+      }
+      #expect(sharesVertices)
       #expect(profile.bounds.radius > 0 && profile.bounds.radius.isFinite)
       for vertex in mesh.vertices {
         #expect((vertex - profile.bounds.center).length <= profile.bounds.radius + 1e-8)
@@ -104,6 +113,40 @@ import Testing
     #expect(leviathan.maximum.z - leviathan.minimum.z > 1500)
     let wheel = try #require(SalvageCatalogue.profile(catalogueShipID: "SH141"))
     #expect(wheel.bounds.radius > 0)
+    try expectActivatedOriginalTexturesAndHaflingerScale()
+  }
+
+  private func expectSameMesh(_ actual: Mesh, as expected: Mesh) {
+    #expect(actual.vertices == expected.vertices)
+    #expect(actual.faces == expected.faces)
+    #expect(actual.details == expected.details)
+    #expect(actual.materials == expected.materials)
+    #expect(actual.faceMaterials == expected.faceMaterials)
+    #expect(actual.faceTextures == expected.faceTextures)
+  }
+
+  private func expectActivatedOriginalTexturesAndHaflingerScale() throws {
+    for (id, vertices, faces) in [("SH012", 132, 228), ("SH019", 172, 304)] {
+      let original = try OriginalFleetShowroomModels.model(for: id)
+      let mesh = original.nativeDesign.rawMesh
+      #expect(mesh.vertices.count == vertices && mesh.faces.count == faces)
+      #expect(original.nativeDesign.textures?.count == 3)
+      #expect(mesh.faceTextures.count == faces && mesh.faceTextures.contains { $0 != nil })
+      let profile = try #require(SalvageCatalogue.profile(catalogueShipID: id))
+      let cached = try #require(ShipCatalogue.rawMesh(id))
+      expectSameMesh(profile.mesh, as: mesh)
+      expectSameMesh(cached, as: mesh)
+    }
+    let ship = try #require(ShipCatalogue.ship("SH061"))
+    let authored = ship.design.rawMesh
+    let physical = try OriginalHullPhysicalContract.haflinger.get()
+    let cached = try #require(ShipCatalogue.rawMesh("SH061"))
+    let disabled = try #require(SalvageCatalogue.empProfile(catalogueShipID: "SH061"))
+    #expect(SalvageCatalogue.profile(catalogueShipID: "SH061") == nil)
+    #expect(physical.metresPerSourceUnit == 20)
+    #expect(cached.vertices != authored.vertices)
+    expectSameMesh(cached, as: physical.physicalMesh)
+    expectSameMesh(disabled.mesh, as: authored)
   }
 
   @Test func workSurfaceIDsArePersistentAndTechnologyMetadataResolvesEveryCategory() throws {

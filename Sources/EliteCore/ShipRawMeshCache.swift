@@ -5,6 +5,10 @@ extension ShipCatalogue {
       if ship.id == "SH061", let physical = try? OriginalHullPhysicalContract.haflinger.get() {
         return (ship.id, physical.physicalMesh)
       }
+      // Reuse the authored geometry already retained by ordinary salvage profiles.
+      if let profile = SalvageCatalogue.profile(catalogueShipID: ship.id) {
+        return (ship.id, profile.mesh)
+      }
       return (ship.id, ship.design.rawMesh)
     })
 
