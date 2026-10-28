@@ -25,7 +25,7 @@ The seven owned paths are the recoverable controller, shared native guard, legac
 
 ## Status and limits
 
-This is source and fake validation only. No vmmap invocation, native probe, Swift build/test, bootstrap, deployment, operator policy/session/resolution write or release action is authorized by this packet. Missing registry state deliberately refuses admission until a separately reviewed operator bootstrap. Independent source review and all final native/CI/release gates remain pending.
+This is source and fake validation only. No vmmap invocation, native probe, Swift build/test, bootstrap, deployment, operator policy/session/resolution write or release action is authorized by this packet. Missing registry state deliberately refuses admission until a separately reviewed operator bootstrap. Independent source review is now complete; deployment and all final native/CI/release gates remain pending.
 
 See [the implementation and validation note](PR-m01-vmmap-snapshot.md).
 
@@ -33,4 +33,10 @@ See [the implementation and validation note](PR-m01-vmmap-snapshot.md).
 
 Independent review of `db197d77` retained the other reviewed scope and found two error paths. A persistent utility output-cap failure aborted cleanup before a fresh identity check or stop attempt. Registry/resolution exceptions in the inert hold skipped its wait and could busy-spin. Root selected only these corrections from review `557c727aecb2bf2b03ee2edfe2a5aea64f832b97ae61d2d9967ca6934ba6eb23`.
 
-Failed worker/utility output acquisition now stops reading that child while bounded fresh identity sampling, TERM/grace/revalidated KILL and nonblocking reap continue. Identity-sampler failures still refuse unverified signalling. Every unresolved hold check now waits, including missing/malformed registry and stale resolution errors; an interrupted wait must complete before the next check. Raw partial output, the 4 MiB cap, original deadlines, held leases and nonpromotion remain intact. Five new focused regression methods and four affected existing cases pass; independent correction review remains pending.
+Failed worker/utility output acquisition now stops reading that child while bounded fresh identity sampling, TERM/grace/revalidated KILL and nonblocking reap continue. Identity-sampler failures still refuse unverified signalling. Every unresolved hold check now waits, including missing/malformed registry and stale resolution errors; an interrupted wait must complete before the next check. Raw partial output, the 4 MiB cap, original deadlines, held leases and nonpromotion remain intact. Five new focused regression methods and four affected existing cases pass; independent correction review is complete with no remaining source findings.
+
+## Final composition checkpoint
+
+Independent review `c072799ffa9ffac237017a6cf113f560e694fd308c80705cf512697ab4ec1404` cleared correction e8b3b717 and retained the other db197d77 review. The original 2176 Catalogue16 sealed pass remains separately credited; the Panel16 RSS failure and counters 1/1/0 remain unchanged. G1 composes only tracked status documents onto the reviewed source in the existing owned Library checkout. No code or Swift test changes accompany that composition.
+
+Before any native run, G1 must obtain the exact composition and bootstrap/deployment plan review, then actual installed guard/hook and old-launch-path clearance, then fresh finite preparation and actual-plan/execution-input review. Missing registry is intentionally a deployment blocker; old unguarded copies are not covered merely by adding the new source. No installed files, registry, old authority/evidence, policy/session, process or release changes occurred in this composition. Permission, output/residency schema and overhead remain unqualified.

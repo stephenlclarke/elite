@@ -33,7 +33,7 @@ The saved `db197d77` run of `python3 -B -m unittest discover -s Tools/CI -p test
 
 The cases cover closed policy/session rules, empty/missing/malformed/unresolved registry state, exact reviewed resolution and stale-record rejection, lease lifetime and same-inode FD reuse, consumed allowance and phase/deadline revocation, installed-byte/job-matrix drift, worker-only trigger, union accounting/reparent/PID drift, one capture and raw units, fair combined output cap, post-capture target sampling, invalid output/tool drift, aggregate refusal with cleanup, ten-second capture and original-deadline cleanup, TERM/KILL, interrupted inert custody, uncertain spawn and terminal persistence failure, missing-output reclaim without a native fallback, ordinary nonpromotion, nested/direct provisioning order, finite renewal and executor release before listener.
 
-`git diff --check`, Python source compilation without bytecode output and Markdown lint pass for the frozen packet. Coverage measurement with the optional `coverage` module was unavailable in this interpreter; no percentage is claimed. `make ci`, native Swift assertions, sanitizers, leak gates, hosted checks, independent review, protected merge and release remain UNRUN/pending under Root/G1 ownership. No source-only result promotes the retained first Catalogue16 qualification or repairs the refused Panel16 result.
+`git diff --check`, Python source compilation without bytecode output and Markdown lint pass for the frozen packet. Coverage measurement with the optional `coverage` module was unavailable in this interpreter; no percentage is claimed. `make ci`, native Swift assertions, sanitizers, leak gates, hosted checks, protected merge and release remain UNRUN/pending under Root/G1 ownership. No source-only result promotes the retained first Catalogue16 qualification or repairs the refused Panel16 result.
 
 ## Bounded review corrections
 
@@ -43,10 +43,16 @@ The inert custody loop now waits after every unresolved check, including missing
 
 Five new correction methods plus four affected existing controller cases pass in one nine-method fake-only run. The new integrated cap case drives the actual bounded pipe-drain logic against fake ready descriptors until the combined 4 MiB limit, keeps output persistently available, ignores TERM and verifies fresh sampled KILL/reap inside the original cleanup window. It retains the exact raw prefix, returns diagnostic failure and avoids unjustified UNKNOWN. Missing/malformed/stale-resolution cases verify paced retries and held descriptors across an interrupted wait. A cleanup-only output exception case covers the separate cleanup catch path.
 
-For a negative control, the reviewed old `drain`, `cleanup` and `custody_hold` methods were loaded into memory without changing tracked source. The persistent-cap and three hold regressions all failed as expected. Corrected methods pass. No unrelated tests, native probe, operator bootstrap/deployment or policy/session/resolution action was performed. The narrow correction packet changes only the affected controller, focused fake tests and this note pair; independent correction review is pending.
+For a negative control, the reviewed old `drain`, `cleanup` and `custody_hold` methods were loaded into memory without changing tracked source. The persistent-cap and three hold regressions all failed as expected. Corrected methods pass. No unrelated tests, native probe, operator bootstrap/deployment or policy/session/resolution action was performed. The narrow correction packet changes only the affected controller, focused fake tests and this note pair; independent correction review is complete with no remaining source findings.
 
 ## Review handoff
 
 Freeze exactly these seven paths for one independent MBA source review through Root. The owner must close actionable findings before integration. For any later pushed project PR, use the established single `@codex review` handoff for that pushed packet, disposition real code findings, retain required independent approval/checks and use a protected merge. Generic service errors receive the current human-directed disposition recorded in AGENTS.md.
 
 Related issue: [M01 diagnostic gap and acceptance](ISSUE-m01-vmmap-snapshot.md). No GitHub PR is created by this source-only handoff.
+
+## Final composition checkpoint
+
+Independent review `c072799ffa9ffac237017a6cf113f560e694fd308c80705cf512697ab4ec1404` cleared correction e8b3b717 and retained the other db197d77 review. The original 2176 Catalogue16 sealed pass remains separately credited; the Panel16 RSS failure and counters 1/1/0 remain unchanged. G1 composes only tracked status documents onto the reviewed source in the existing owned Library checkout. No code or Swift test changes accompany that composition.
+
+Before any native run, G1 must obtain the exact composition and bootstrap/deployment plan review, then actual installed guard/hook and old-launch-path clearance, then fresh finite preparation and actual-plan/execution-input review. Missing registry is intentionally a deployment blocker; old unguarded copies are not covered merely by adding the new source. No installed files, registry, old authority/evidence, policy/session, process or release changes occurred in this composition. Permission, output/residency schema and overhead remain unqualified.

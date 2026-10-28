@@ -1,5 +1,9 @@
 # Requested game changes and delivery evidence
 
+## Current sanitizer checkpoint — 28 October 2026
+
+The [completion ledger](COMPLETION-LEDGER.md) records the current owned work. Original 2176 has one sealed Catalogue16 ASAN pass; the next whole Panel16 failed its RSS guard and AppKit did not start. Counters remain 1/1/0. The vmmap controller and its two cleanup corrections passed source review with fake-only evidence. Final composition, registry bootstrap/installed guard coverage, actual finite inputs and native permission/output/overhead remain pending. No diagnostic run, new playable build, full quality pass or release is claimed.
+
 Use the [current completion ledger](COMPLETION-LEDGER.md) for L337 player-facing milestones, all current missions and next-work selection. The historical evidence below is retained unchanged and does not establish current L337 completion.
 
 As of 18 October 2026, the accepted [L337 implementation scope](L337-IMPLEMENTATION.md) supersedes the predecessor preservation and content targets recorded below. This document retains historical v1.x delivery and validation evidence; its rows do not establish current L337 acceptance.
