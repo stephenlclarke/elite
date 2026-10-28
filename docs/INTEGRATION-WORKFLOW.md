@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current memory remediation — 28 October 2026
+## Current diagnostic-only execution — 28 October 2026
+
+The 2 GiB and separately reviewed 2.25 GiB ASAN executions both stopped at their unchanged owned RSS guards without a qualified shard or affected panel/icon assertions. Both recorded values are lower bounds, not completed peaks. Stop further budget escalation and ordinary retries. Preserve all old source identities, consumed or unused session allowances and mutable owned raw failures.
+
+The source-reviewed allocator diagnostic is test-only and off by default. After exact final source/pins and actual input reviews, G1 may perform one fresh preparation with the exact diagnostic opt-in, current owned execution workspace and new policy/runtime/storage identities. Then, after actual preparation/plan and finite execution-input review, run one complete packed 16-method cohort only under the same 2.25 GiB worker estimate, 2 GiB reserve, admission checks, shared leases, instrumentation and RSS guard. Do not start AppKit, split cohorts, change parameters or assertions, serialize cases, weaken validators or treat diagnostic output as ordinary quality acceptance.
+
+The helper permits at most 64 bounded records and two statistics dumps. Counters are process-wide, sequential and not allocation-stack ownership or exact quarantine accounting. Boundary intervals describe test-body observations; exit markers are not post-deallocation proof, and missing exits are censored. Diagnostic overhead can trigger an earlier refusal. Stop after the one attempt and independently review raw output and terminal evidence before a cause-specific source decision. A diagnostic-mode success remains diagnostic evidence only; later ordinary qualification requires the opt-in off and a fresh matching identity. All tracked source and status files freeze before preparation. See [the diagnostic handoff](PR-m01-asan-allocator-diagnostic.md).
+
+## Previous memory remediation — 28 October 2026
 
 The first local ASAN shard on source `8913329f37ca9814b67ec895d3c30f06caa4b1e5` exceeded the owned 2 GiB RSS budget and stopped without a qualified shard. Preserve its consumed allowance and mutable owned failure evidence. The independently source-reviewed indexed shaded-projection fix requires a new final committed source and fresh policies, preparation, cache, worker and plan identities. No old proof or counter transfers to the new source.
 
