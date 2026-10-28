@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current ordinary disabled-profile qualification — 28 October 2026
+## Current ordinary profile-face projection qualification — 28 October 2026
+
+Root selected the source-reviewed per-face temporary-array removal after the prior ordinary refusal and single same-source diagnostic. The diagnostic again ended at SH061 emp-before without proving initializer state, ownership, changed-branch reach or cause. MC1 owns concrete source/test findings; G1 owns the sole native lease. Source/model parity is retained separately from unverified Swift numeric behavior, assertions and RSS effect.
+
+Freeze the reviewed fix and all required status documents, review exact composition/pins and physical workspace ownership, then publish and request PR review. The previous execution directory is absent. After workspace-plan review and Root selection, standard Git moved the one newly created checkout to `/Users/sclarke/Library/EliteNativeCI/execution/m01-profile-projection/elite`, preserving its HEAD/tree, source pins and primary WIP/index/branch pointers. Use this exact owned physical root explicitly; no second checkout or manual registration edit was made. Sidebar registration remains blocked by the attachment cap. The move does not prove the disappearance cause or guarantee persistence. Bind fresh ordinary policy/environment/storage identities to this exact physical root and remove the diagnostic key entirely; missing-root authority cannot transfer. After actual finite preparation-input review, one matching ASAN preparation compiles the fix and old-array oracle and establishes the full current image/inventory/plan. Review those actual records and ordered finite assignments before complete Catalogue16, native/Panel16 and AppKit170 cohorts, requiring strict success before each next cohort.
+
+Preserve all guards and numeric ordering, the ordered Double radius map and Array.max, selection/tie rules, prior assertions and diagnostic operations, selectors, profile iterations, cohorts, sanitizer options/instrumentation, concurrency, shared locks, 2.25 GiB worker estimate and 2 GiB reserve. The extra selected-section oracle has an allocation/time cost. No model count or source temporary removal establishes native peak fit or ordinary quality acceptance. Stop at the first failure or uncertainty; do not duplicate a normal build, split cohorts, reset counters, raise budgets or promote diagnostic evidence. Final quality and publication gates remain required. See [the profile-face handoff](PR-m01-profile-face-projection.md).
+
+## Previous ordinary disabled-profile qualification — 28 October 2026
 
 Root selected the source-reviewed disabled-profile mesh-reuse fix after the one catalogue diagnostic ended at SH061 emp-before. That observation narrows a span without proving runtime initializer state or allocator cause. Preserve all earlier raw failures and counters. MC1 owns concrete source/test findings and G1 owns the sole native lease; actual assertions, cold initialization and memory effect remain validation pending.
 
