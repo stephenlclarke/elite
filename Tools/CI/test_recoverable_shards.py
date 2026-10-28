@@ -2835,7 +2835,8 @@ class AsanTestMemoryTests(Fixture):
 
 
 class LocalSanitizerTests(Fixture):
-    def controls(self, mode="address", stage="execute", launches=1, extra_environment=None, separate_shards=False):
+    def controls(self, mode="address", stage="execute", launches=1, extra_environment=None, separate_shards=False,
+                 worker_budget=None):
         import uuid
         directory = self.root / str(uuid.uuid4())
         directory.mkdir(mode=0o700)
@@ -2849,7 +2850,7 @@ class LocalSanitizerTests(Fixture):
         config = dict(schema=1, host="AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA", cache=str(directory / "cache"),
             legacy_cache=str(home / "Library/EliteNativeCI/sanitizer-checkpoints"), workers={"one": str(directory / "worker")},
             admission=dict(explicit=1, cpu_budget=1, ram_capacity=20*gib, ram_reserve=2*gib,
-                peak_per_worker=(2 if mode == "address" else 4)*gib,
+                peak_per_worker=2*gib if worker_budget is None else worker_budget,
                 disk_capacity=100*gib, disk_reserve=10*gib, disk_per_worker=20*gib))
         environment = {"PATH": "/fake/bin", "DEVELOPER_DIR": "/fixture/Xcode", "LANG": "C", **(extra_environment or {})}
         policy = dict(approved_head=HEAD, developer_dir="/fixture/Xcode", swift="fake Swift", sdk="fake SDK",
@@ -2867,8 +2868,11 @@ class LocalSanitizerTests(Fixture):
         phase_environment = dict(child)
         if mode == "address":
             child["ASAN_OPTIONS"] = "detect_leaks=0"
+        flags = shards.sanitizer_build_flags(mode)
+        if mode == "thread":
+            flags += ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
         runtime = {**self.runtimes[mode], "host": config["host"], "environment": shards.legacy.runtime_identity(child),
-                   "phase_environment": shards.legacy.runtime_identity(phase_environment), "flags": shards.sanitizer_build_flags(mode)}
+                   "phase_environment": shards.legacy.runtime_identity(phase_environment), "flags": flags}
         history = ({shards.fingerprint(unit): 600 for unit in shards.legacy.partition(METHODS, mode, 1)}
                    if separate_shards else shards.workflow_history(METHODS, mode, []))
         plan = shards.make_plan(runtime, METHODS, history=history, max_methods=64)
@@ -2944,10 +2948,9 @@ class LocalSanitizerTests(Fixture):
             processes = {"running": False, "workspace": str(authority.workers["one"] / plan["runtime"]["mode"]),
                 "root": {"pid": 4242, "start": "fake start"},
                 "observed_images": {"fake": {"sha256": plan["runtime"]["image_sha256"], "uuid": plan["runtime"]["image_uuid"]}}}
-            if plan["runtime"]["mode"] == "address":
-                processes["resident_memory"] = dict(kind="sampled-owned-process-rss-v1", failure=None,
-                    helper_samples=1, samples=1, high_water_bytes=1024,
-                    budget_bytes=authority.config["admission"]["peak_per_worker"])
+            processes["resident_memory"] = dict(kind="sampled-owned-process-rss-v1", failure=None,
+                mode=plan["runtime"]["mode"], helper_samples=1, samples=1, high_water_bytes=1024,
+                budget_bytes=authority.config["admission"]["peak_per_worker"])
             shards.durable_json(attempt / "processes.json", processes)
             shards.durable_json(attempt / "child-exit.json", {"pid": 4242, "exit_code": 0})
             return 0
@@ -2960,7 +2963,7 @@ class LocalSanitizerTests(Fixture):
             input=value.plan_path, digest=shards.legacy.digest(value.plan_path),
             output=value.plan_path.with_name("component"))
 
-    def test_both_modes_are_genuinely_local_with_independent_profiles_and_unchanged_flags(self):
+    def test_both_modes_are_genuinely_local_with_independent_profiles_and_explicit_flags(self):
         for mode in shards.MODES:
             value = self.controls(mode)
             authority = self.authority(value)
@@ -2970,9 +2973,10 @@ class LocalSanitizerTests(Fixture):
             self.assertFalse(any(k.startswith(("GITHUB_", "RUNNER_")) for k in child))
             self.assertEqual("ASAN_OPTIONS" in child, mode == "address")
             self.assertNotIn("TSAN_OPTIONS", child)
-            self.assertEqual(authority.config["admission"]["peak_per_worker"], (2 if mode == "address" else 4)*1024**3)
+            self.assertEqual(authority.config["admission"]["peak_per_worker"], 2*1024**3)
             if mode == "thread":
-                self.assertEqual(value.plan["runtime"]["flags"], ["--scratch-path", ".build/tsan", "--sanitize=thread"])
+                self.assertEqual(value.plan["runtime"]["flags"], ["--scratch-path", ".build/tsan", "--sanitize=thread",
+                                                               "--jobs", "1", "-Xswiftc", "-disable-batch-mode"])
             self.assertFalse(any(c[0] == "gh" for c in value.calls))
 
     def test_held_activation_and_supplied_github_identities_refuse_before_file_or_probe(self):
@@ -3217,7 +3221,7 @@ class LocalSanitizerTests(Fixture):
             self.assertEqual(result["inventory_sha256"], shards.fingerprint(METHODS))
             self.assertEqual(result["mode"], mode)
             self.assertIn("pending full quality", result["release_status"])
-            self.assertEqual(result["sampled_rss_high_water_bytes"], 1024 if mode == "address" else None)
+            self.assertEqual(result["sampled_rss_high_water_bytes"], 1024)
             shards.require_sealed(output)
             with self.assertRaises(ValueError), patch.object(shards.NativeExecutor, "verify"), patch.object(
                     shards.NativeExecutor, "unknown_live_helpers", return_value=False):
@@ -3345,6 +3349,188 @@ class LocalControllerLeaseTests(Fixture):
                 shards.local_command(args)
         never.assert_not_called()
         authority.assert_not_called()
+
+
+class LocalTsanMemoryTests(Fixture):
+    controls = LocalSanitizerTests.controls
+    control_write = staticmethod(LocalSanitizerTests.control_write)
+    authority = LocalSanitizerTests.authority
+    fake_local_executor = LocalSanitizerTests.fake_local_executor
+    validation_authority = LocalSanitizerTests.validation_authority
+
+    def test_authority_dispatch_changes_only_local_thread_build_flags(self):
+        value = self.controls("thread")
+        authority = self.authority(value)
+        original = ["--scratch-path", ".build/tsan", "--sanitize=thread"]
+        expected = original + ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+        self.assertEqual(authority.build_flags("thread"), expected)
+        self.assertEqual(shards.NativeAuthority.build_flags(authority, "thread"), original)
+        self.assertEqual(shards.sanitizer_build_flags("thread"), original)
+        self.assertEqual(shards.NativeAuthority.build_flags(authority, "address"),
+                         ["--scratch-path", ".build/asan", "--sanitize=address", "--jobs", "1", "-Xswiftc", "-disable-batch-mode"])
+        command = shards.legacy.batch_command("/fake/swift", expected, "thread", self.root, METHODS)
+        old = shards.legacy.batch_command("/fake/swift", original, "thread", self.root, METHODS)
+        position = command.index("--jobs")
+        self.assertEqual(command[:position] + command[position+4:], old)
+        self.assertNotIn("--no-parallel", command)  # Preserve Swift Testing/internal test concurrency.
+
+    def test_local_old_flags_wrong_mode_and_oversized_plan_refuse_before_runtime_probe(self):
+        value = self.controls("thread")
+        authority = self.authority(value)
+        with patch.object(shards.NativeAuthority, "runtime") as never:
+            with self.assertRaises(ValueError):
+                authority.runtime(authority.root, "thread", self.image, shards.sanitizer_build_flags("thread"))
+            with self.assertRaises(ValueError):
+                authority.build_flags("address")
+        never.assert_not_called()
+        old = deepcopy(value.plan)
+        old["runtime"]["flags"] = shards.sanitizer_build_flags("thread")
+        for row in old["shards"]:
+            row["id"] = shards.fingerprint(shards.shard_identity(old["runtime"], row))
+        with self.assertRaises(ValueError):
+            shards.verify_local_plan(authority, old, value.session["plan_sha256"])
+        methods = sorted(f"EliteCoreTests.Small{i}/one()" for i in range(64))
+        plan = shards.make_plan(value.plan["runtime"], methods,
+            history=shards.workflow_history(methods, "thread", []), max_methods=64)
+        authority.activation.update(inventory_sha256=shards.fingerprint(methods), inventory_count=64, shard_count=1)
+        with self.assertRaisesRegex(ValueError, "packing exceeds"):
+            shards.verify_local_plan(authority, plan)
+
+    def test_local_thread16_retains_atomic_groups_and_global_thread64(self):
+        value = self.controls("thread")
+        solo = [f"EliteCoreTests.Small{i}/one()" for i in range(64)]
+        shared = [f"EliteCoreTests.Shared{i}/one()" for i in range(170)]
+        salvage = [f"EliteCoreTests.Salvage{i}/one()" for i in range(13)]
+        full = sorted(solo + shared + salvage)
+        groups = [shared, salvage]
+        history = shards.workflow_history(full, "thread", groups)
+        plan = shards.make_plan(value.plan["runtime"], full, groups, history, max_methods=shards.LOCAL_PACKED_ID_TARGET)
+        self.assertEqual(sorted(m for row in plan["shards"] for m in row["methods"]), full)
+        self.assertTrue(all(len(row["methods"]) <= 16 or len(row["atoms"]) == 1 for row in plan["shards"]))
+        for group in groups:
+            self.assertEqual(sum(set(group) <= set(row["methods"]) for row in plan["shards"]), 1)
+        baseline = shards.make_plan(self.runtimes["thread"], solo,
+            history=shards.workflow_history(solo, "thread", []), max_methods=64)
+        self.assertEqual([len(row["methods"]) for row in baseline["shards"]], [64])
+
+    def test_actual_local_builder_ready_and_discovery_use_same_flags_and_refuse_old_ready(self):
+        value = self.controls("thread", "prepare")
+        authority = self.authority(value)
+        builder = shards.NativeBuilder(authority)
+        image = authority.root / ".build/tsan/Fake.xctest/Contents/MacOS/Fake"
+        image.parent.mkdir(parents=True)
+        image.write_bytes(self.image.read_bytes())
+        expected = ["--scratch-path", ".build/tsan", "--sanitize=thread", "--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+        commands, original = [], authority.output
+        def output(command, *args, **kwargs):
+            if "--show-bin-path" in command:
+                self.assertEqual(command, ["/fake/swift", "build", *expected, "--show-bin-path"])
+                return str(image.parents[3])
+            return original(command, *args, **kwargs)
+        def execute(command, workspace, attempt, timeout, descriptors, *args, **kwargs):
+            commands.append(command)
+            for descriptor in descriptors:
+                os.fstat(descriptor)
+            (attempt / "test.log").write_text("\n".join(METHODS) if "list" in command else "fake build")
+            return 0
+        def runtime(workspace, mode, actual_image, flags, inputs=None):
+            self.assertEqual(flags, expected)
+            return value.plan["runtime"]
+        bounds = {**authority.config["admission"], "ram_available": 20*1024**3, "disk_available": 100*1024**3}
+        with patch.object(shards.legacy, "ensure_no_live_tests"), patch.object(authority, "snapshot", return_value={}), patch.object(
+                authority, "admission", return_value=bounds), patch.object(authority, "output", side_effect=output), patch.object(
+                authority, "runtime", side_effect=runtime), patch.object(shards.legacy, "executable_inputs", return_value=value.plan["runtime"]["inputs"]), patch.object(
+                shards.legacy, "grouping_policy", return_value={"shared_groups": []}), patch.object(shards, "execute_process", side_effect=execute):
+            self.assertFalse(builder.build_only("thread", 5)["reused"])
+            self.assertTrue(builder.build_only("thread", 5)["reused"])
+            with builder.preparation_claim():
+                builder.build_and_discover("thread")
+            self.assertEqual(commands, [["/fake/swift", "build", "--build-tests", *expected],
+                                        ["/fake/swift", "test", *expected, "list", "--skip-build"]])
+            ready = authority.cache / "build-stage" / HEAD / "thread/ready.json"
+            stale = shards.load_json(ready)
+            stale["runtime"]["flags"] = shards.sanitizer_build_flags("thread")
+            ready.parent.chmod(0o700)
+            shards.durable_json(ready, stale)
+            shards.seal(ready.parent)
+            with self.assertRaisesRegex(ValueError, "changed before discovery"):
+                builder.build_only("thread", 5)
+            self.assertEqual(len(commands), 2)
+
+    def test_local_thread_rss_uses_own_budget_high_water_and_owned_refusal(self):
+        value = self.controls("thread", worker_budget=3072)
+        authority = self.authority(value)
+        workspace = authority.workers["one"] / "thread"
+        image = workspace / ".build/tsan/Fake.xctest/Contents/MacOS/Fake"
+        image.parent.mkdir(parents=True)
+        image.write_bytes(self.image.read_bytes())
+        uuids = {"fake-arm64": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
+        runtime = {**value.plan["runtime"], "image_uuid": shards.fingerprint(uuids)}
+        root = dict(parent=1, group=10, state="S", start="root", command="/fake/swift test", rss_bytes=1024)
+        helper = dict(parent=10, group=20, state="S", start="helper", rss_bytes=2048,
+            command=f"/fake/swiftpm-testing-helper --test-bundle-path {image} {image} --testing-library swift-testing")
+        rows = {10: root, 20: helper}
+        authority.snapshot = lambda **kwargs: deepcopy(rows)
+        attempt = self.root / "thread-rss"
+        attempt.mkdir(mode=0o700)
+        monitor = shards.NativeMonitor(authority, attempt, workspace, runtime, image)
+        monitor.known[10] = deepcopy(root)
+        with patch.object(shards, "image_uuids", return_value={"uuids": uuids}), patch.object(shards.legacy, "progress") as progress:
+            monitor.observe()
+            self.assertEqual(monitor.memory["budget_bytes"], 3072)
+            self.assertEqual(monitor.memory["mode"], "thread")
+            self.assertIsNone(monitor.memory["failure"])
+            rows[20]["rss_bytes"] = 4096
+            monitor.observe()
+            self.assertEqual(monitor.memory["high_water_bytes"], 5120)
+            self.assertIn("tsan_resident_memory_refused", json.loads(progress.call_args.args[0]))
+        from crash_artifacts import cleanup_owned_identity
+        sent = []
+        def cleanup(identity, snapshot):
+            def signal_owned(pid, signum):
+                sent.append(pid)
+                rows.pop(pid)
+            cleanup_owned_identity(identity, snapshot, send_signal=signal_owned)
+        with patch.object(shards, "cleanup_owned_identity", side_effect=cleanup):
+            self.assertTrue(monitor.cleanup_memory_failure(monitor.known))
+        self.assertEqual(sent, [10, 20])
+        self.assertFalse(monitor.finish(True))
+
+    def test_nonlocal_or_unbound_thread_does_not_gain_local_rss_policy(self):
+        value = self.controls("thread")
+        authority = self.authority(value)
+        runtime = deepcopy(value.plan["runtime"])
+        runtime["environment"][shards.LOCAL_POLICY_ENV] = "f"*64
+        monitor = shards.NativeMonitor(authority, self.root, self.root, runtime)
+        self.assertIsNone(monitor.memory)
+        nonlocal_authority = SimpleNamespace(config={"admission": {"peak_per_worker": 1}})
+        monitor = shards.NativeMonitor(nonlocal_authority, self.root, self.root, value.plan["runtime"])
+        self.assertIsNone(monitor.memory)
+
+    def test_thread_component_refuses_missing_wrong_mode_budget_and_over_budget_rss(self):
+        for mutation in ("missing", "mode", "budget", "over"):
+            value, authority, store, attempt = LocalSanitizerTests.completed_local(self, "thread")
+            validation = self.validation_authority(value)
+            processes = shards.load_json(attempt / "processes.json")
+            if mutation == "missing":
+                processes.pop("resident_memory")
+            elif mutation == "mode":
+                processes["resident_memory"]["mode"] = "address"
+            elif mutation == "budget":
+                processes["resident_memory"]["budget_bytes"] += 1
+            else:
+                processes["resident_memory"]["high_water_bytes"] = processes["resident_memory"]["budget_bytes"] + 1
+            attempt.chmod(0o700)
+            shards.durable_json(attempt / "processes.json", processes)
+            receipt = shards.load_json(attempt / "result.json")
+            receipt["outputs"] = shards.evidence_outputs(attempt, value.plan["runtime"], METHODS)
+            shards.durable_json(attempt / "result.json", receipt)
+            shards.durable_json(attempt / "commit.json", {"schema": 1, "receipt_sha256": shards.legacy.digest(attempt / "result.json")})
+            shards.seal(attempt)
+            with patch.object(shards.NativeExecutor, "verify"), patch.object(shards.NativeExecutor, "unknown_live_helpers", return_value=False):
+                with self.subTest(mutation=mutation), self.assertRaisesRegex(ValueError, "mode-specific resident-budget"):
+                    shards.local_component(validation, value.plan, value.session["plan_sha256"], store,
+                                           value.plan_path.with_name("component"))
 
 
 if __name__ == "__main__":

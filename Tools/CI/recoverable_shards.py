@@ -40,6 +40,7 @@ PHYSICAL_EXECUTION_ENABLED = True
 SHARD_MAX_SECONDS = 7200
 PACKED_ID_TARGET = 64
 ASAN_PACKED_ID_TARGET = 16
+LOCAL_PACKED_ID_TARGET = 16
 MODES = ("thread", "address")
 AUTHORIZATION_CONTROLS = (
     "ELITE_RECOVERABLE_PLAN_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_SHA256", "ELITE_RECOVERABLE_ASSIGNMENT_PATH",
@@ -1468,6 +1469,9 @@ class NativeAuthority:
             value["ASAN_OPTIONS"] = "detect_leaks=0"
         return value
 
+    def build_flags(self, mode):
+        return sanitizer_build_flags(mode)
+
     def execution_environment(self):
         value = runtime_child_environment(self.environment)
         # These exact authorization controls never enter the native process. Unknown ELITE_ keys remain bound.
@@ -1713,6 +1717,14 @@ class LocalAuthority(NativeAuthority):
         value[LOCAL_POLICY_ENV] = self.policy_sha256
         return value
 
+    def build_flags(self, mode):
+        if mode != self.activation["mode"]:
+            raise ValueError("Local build mode differs from its reviewed profile")
+        flags = super().build_flags(mode)
+        if mode == "thread":
+            flags += ["--jobs", "1", "-Xswiftc", "-disable-batch-mode"]
+        return flags
+
     def output(self, command, workspace=None, environment=None, descriptors=()):
         return super().output(command, workspace, environment,
                               (*descriptors, *getattr(self, "control_descriptors", ())))
@@ -1727,8 +1739,8 @@ class LocalAuthority(NativeAuthority):
 
     def runtime(self, workspace, mode, image, flags, inputs=None):
         self.check_session()
-        if mode != self.activation["mode"]:
-            raise ValueError("Local runtime mode is outside its independently reviewed allocation")
+        if mode != self.activation["mode"] or flags != self.build_flags(mode):
+            raise ValueError("Local runtime mode/flags differ from its independently reviewed profile")
         return super().runtime(workspace, mode, image, flags, inputs)
 
     def admission(self):
@@ -1858,7 +1870,7 @@ class NativeBuilder:
         if timeout > SHARD_MAX_SECONDS:
             raise ValueError("Preparation exceeds the reviewed two-hour bound")
         destination = self.authority.cache / "build-stage" / self.authority.policy["approved_head"] / mode
-        flags = sanitizer_build_flags(mode)
+        flags = self.authority.build_flags(mode)
         with self.preparation_claim():
             if destination.exists():
                 ready = load_json(destination / "ready.json")
@@ -1902,7 +1914,7 @@ class NativeBuilder:
         swift = shutil.which("swift", path=env.get("PATH"))
         if swift is None:
             raise ValueError("Approved Swift compiler is unavailable")
-        flags = sanitizer_build_flags(mode)
+        flags = self.authority.build_flags(mode)
         report = self.authority.cache / "preparation" / str(uuid.uuid4())
         legacy.owned_directory(report)
         durable_json(report / "launch.json", {"head": self.authority.policy["approved_head"], "mode": mode,
@@ -2017,11 +2029,15 @@ class NativeMonitor:
         self.bound_callback = None
         self.stop, self.thread = threading.Event(), None
         self.memory = None
-        if expected_runtime is not None and expected_runtime["mode"] == "address":
+        if expected_runtime is not None and (expected_runtime["mode"] == "address" or (
+                expected_runtime["mode"] == "thread" and isinstance(authority, LocalAuthority)
+                and expected_runtime["environment"].get(LOCAL_POLICY_ENV) == hashlib.sha256(
+                    authority.policy_sha256.encode()).hexdigest())):
             budget = authority.config["admission"]["peak_per_worker"]
             if type(budget) is not int or budget <= 0:
-                raise ValueError("ASAN resident budget must be positive integer bytes")
+                raise ValueError("Sanitizer resident budget must be positive integer bytes")
             self.memory = {"kind": "sampled-owned-process-rss-v1", "budget_bytes": budget,
+                           "mode": expected_runtime["mode"],
                            "poll_wait_seconds": 0.1, "samples": 0, "helper_samples": 0,
                            "last_bytes": 0, "high_water_bytes": 0, "failure": None,
                            "authority": "sampled RSS sum; not physical footprint or an OS hard limit"}
@@ -2038,9 +2054,10 @@ class NativeMonitor:
     def memory_failure(self, reason):
         if self.memory["failure"] is None:
             self.memory["failure"] = reason
-            self.errors.append("ASAN resident memory: " + reason)
+            label = "ASAN" if self.memory["mode"] == "address" else "TSAN"
+            self.errors.append(label + " resident memory: " + reason)
             self.persist()
-            legacy.progress(json.dumps({"asan_resident_memory_refused": self.memory}, sort_keys=True))
+            legacy.progress(json.dumps({label.lower() + "_resident_memory_refused": self.memory}, sort_keys=True))
 
     def sample_memory(self, live):
         if self.memory is None or not live:
@@ -2615,7 +2632,7 @@ def workflow_manifest(plans, workers, store, head):
 
 
 
-def report_progress(plan, store, state, current=None):
+def report_progress(plan, store, state, current=None, packed_target=None):
     """A progress count is validated durable proof, never the last line of a running log."""
     complete = sum(store.matching(shard_identity(plan["runtime"], row)) is not None for row in plan["shards"])
     suites = sorted({".".join(legacy.group_key(method)) for method in current["methods"]}) if current else []
@@ -2623,6 +2640,7 @@ def report_progress(plan, store, state, current=None):
               "state": state, "current": current["id"] if current else None,
               "suites": suites, "max_runtime_seconds": SHARD_MAX_SECONDS,
               "indivisible_over_target_ids": bool(current and len(current["methods"]) > (
+                  packed_target if packed_target is not None else
                   ASAN_PACKED_ID_TARGET if plan["runtime"]["mode"] == "address" else PACKED_ID_TARGET))}
     legacy.progress(json.dumps(record, sort_keys=True))
     if os.environ.get("GITHUB_STEP_SUMMARY"):
@@ -2962,6 +2980,7 @@ def verify_local_plan(authority, plan, digest=None):
     validate_plan(plan)
     activation = authority.activation
     if (plan["runtime"]["mode"] != activation["mode"]
+            or plan["runtime"]["flags"] != authority.build_flags(activation["mode"])
             or fingerprint(plan["inventory"]) != activation["inventory_sha256"]
             or len(plan["inventory"]) != activation["inventory_count"]
             or len(plan["shards"]) != activation["shard_count"]
@@ -2969,6 +2988,8 @@ def verify_local_plan(authority, plan, digest=None):
                 authority.policy_sha256.encode()).hexdigest()
             or (digest is not None and digest != authority.session["plan_sha256"])):
         raise ValueError("Local plan differs from its mode/source/profile/full-inventory approval")
+    if any(len(row["methods"]) > LOCAL_PACKED_ID_TARGET and len(row["atoms"]) != 1 for row in plan["shards"]):
+        raise ValueError("Local sanitizer packing exceeds its process memory profile")
     if authority.session["stage"] == "execute" and not set(authority.session["shards"]) <= {row["id"] for row in plan["shards"]}:
         raise ValueError("Local assigned shards are outside the exact full plan")
 
@@ -3004,16 +3025,16 @@ def local_component(authority, plan, digest, store, output):
                 or processes.get("root", {}).get("pid") != child["pid"]
                 or not processes.get("root", {}).get("start")):
             raise ValueError("Local component process/image terminal proof is incomplete")
-        if plan["runtime"]["mode"] == "address":
-            memory = processes.get("resident_memory", {})
-            if (memory.get("kind") != "sampled-owned-process-rss-v1" or memory.get("failure") is not None
-                    or type(memory.get("helper_samples")) is not int or memory["helper_samples"] < 1
-                    or type(memory.get("samples")) is not int or memory["samples"] < memory["helper_samples"]
-                    or type(memory.get("high_water_bytes")) is not int or memory["high_water_bytes"] < 0
-                    or memory.get("budget_bytes") != authority.config["admission"]["peak_per_worker"]
-                    or memory["high_water_bytes"] > memory["budget_bytes"]):
-                raise ValueError("Local ASAN component lacks successful resident-budget evidence")
-            maxima.append(memory["high_water_bytes"])
+        memory = processes.get("resident_memory", {})
+        if (memory.get("kind") != "sampled-owned-process-rss-v1" or memory.get("failure") is not None
+                or memory.get("mode") != plan["runtime"]["mode"]
+                or type(memory.get("helper_samples")) is not int or memory["helper_samples"] < 1
+                or type(memory.get("samples")) is not int or memory["samples"] < memory["helper_samples"]
+                or type(memory.get("high_water_bytes")) is not int or memory["high_water_bytes"] < 0
+                or memory.get("budget_bytes") != authority.config["admission"]["peak_per_worker"]
+                or memory["high_water_bytes"] > memory["budget_bytes"]):
+            raise ValueError("Local sanitizer component lacks successful mode-specific resident-budget evidence")
+        maxima.append(memory["high_water_bytes"])
         receipts[shard["id"]] = {"path": str(attempt), "sha256": legacy.digest(attempt / "result.json")}
         actual.extend(receipt["identity"]["methods"])
     if Counter(actual) != Counter(plan["inventory"]):
@@ -3064,7 +3085,7 @@ def local_command(args):
             hints = authority.config.get("planning", {}).get(args.mode, {})
             plan = make_plan(build["runtime"], build["inventory"], build["shared_groups"],
                 workflow_history(build["inventory"], args.mode, build["shared_groups"], hints.get("history")),
-                hints.get("resources"), hints.get("budget_seconds", 600), max_methods=PACKED_ID_TARGET)
+                hints.get("resources"), hints.get("budget_seconds", 600), max_methods=LOCAL_PACKED_ID_TARGET)
             verify_local_plan(authority, plan)
             authority.check_session("prepare")
             durable_json(args.output, plan)
@@ -3083,16 +3104,16 @@ def local_command(args):
         for shard in plan["shards"]:
             if shard["id"] not in authority.session["shards"]:
                 continue
-            observation = report_progress(plan, store, "starting local shard", shard)
+            observation = report_progress(plan, store, "starting local shard", shard, packed_target=LOCAL_PACKED_ID_TARGET)
             executor.progress_context = {"validated_shards_completed": observation["completed"],
                                          "shards_total": observation["total"]}
             try:
                 results.append(run_shard(plan, shard["id"], store, executor, authority.policy["approved_head"],
                                          args.timeout, authority.admission()))
             except BaseException:
-                report_progress(plan, store, "local shard failed or interrupted", shard)
+                report_progress(plan, store, "local shard failed or interrupted", shard, packed_target=LOCAL_PACKED_ID_TARGET)
                 raise
-            report_progress(plan, store, "local shard completed or reused", shard)
+            report_progress(plan, store, "local shard completed or reused", shard, packed_target=LOCAL_PACKED_ID_TARGET)
         return {"status": "assigned shards executed; explicit full local validation still required", "results": results}
 
 
