@@ -15,3 +15,7 @@ Allow exactly the current singleton native_checks role on the default backend on
 ## Status and boundaries
 
 Focused Python checks pass; independent delta review and final native quality remain pending. ships-check separately reports171 stale GIF inputs and requires actual renderer generation. No Swift game/tests, maintained media, historical proofs/counters, registry state, native process, installed policy or release changed in this packet. See [validation and handoff](PR-m01-ci-fixture-contracts.md).
+
+## Hosted isolation follow-up, 29 October
+
+Actual CI40837312906 exposed remaining fake dependencies on the operator's real custody state and hosted listener environment. Local runs had passed because physical registry state existed and operator variables were absent. The hard-kill Python child does not inherit a parent mock. A nested request/selected fixture also restored mocks out of order, leaving a deleted temporary registry selected after the test. Fix the fixture lifetimes and temporary data, not the production guards. The new hosted-like validation must run the entire native file and active fake classes in one process to detect cross-class pollution.

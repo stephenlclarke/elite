@@ -27,6 +27,16 @@ def owned_control_fixture(root):
     return custody
 
 
+def fake_operator_environment():
+    """Isolate operator fixtures from the job that happens to run their tests."""
+    import os
+    from unittest.mock import patch
+    environment = {key: value for key, value in os.environ.items()
+                   if key not in ('GITHUB_ACTIONS', 'GITHUB_JOB', 'GITHUB_RUN_ID', 'GITHUB_WORKFLOW_REF')
+                   and not key.startswith('RUNNER_')}
+    return patch.dict(os.environ, environment, clear=True)
+
+
 def fixture():
     """Return a trusted internal PR event with an immutable reviewed head."""
     environment = {"GITHUB_REPOSITORY": REPO["full_name"], "GITHUB_ACTOR_ID": "22142777",
@@ -1438,6 +1448,9 @@ class ProvisioningFailureTests(unittest.TestCase):
         import prepare_native_runner as install
         temporary = TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
+        operator_environment = fake_operator_environment()
+        operator_environment.start()
+        self.addCleanup(operator_environment.stop)
         home = Path(temporary.name).resolve() / 'EliteNativeCI'
         custody = owned_control_fixture(home)
         runner = home / 'native-runner'
@@ -1610,6 +1623,8 @@ class ImmutablePreparationTests(unittest.TestCase):
         import tempfile
         from unittest.mock import patch
         stack = ExitStack()
+        self.addCleanup(stack.close)
+        stack.enter_context(fake_operator_environment())
         temporary = stack.enter_context(tempfile.TemporaryDirectory())
         fixture = Path(temporary).resolve()
         home = fixture / "EliteNativeCI"
@@ -1639,6 +1654,24 @@ class ImmutablePreparationTests(unittest.TestCase):
         stack.enter_context(patch("prepare_native_runner.RUNNER", home / "native-runner"))
         stack.enter_context(patch("prepare_native_runner.output", side_effect=fingerprint))
         return stack, home, archive, hashlib.sha256(archive.read_bytes()).hexdigest()
+
+    def test_hosted_operator_fixture_is_scoped_and_listener_guards_still_refuse(self):
+        import os
+        from unittest.mock import patch
+        import prepare_native_runner as install
+        hostile = dict(GITHUB_ACTIONS='true', GITHUB_JOB='fake-contracts', GITHUB_RUN_ID='123',
+                       GITHUB_WORKFLOW_REF='fixture-workflow', RUNNER_NAME='hosted', RUNNER_TEMP='/tmp/fixture')
+        with patch.dict(os.environ, hostile):
+            stack, _, archive, digest = self.with_fixture()
+            with stack:
+                install.prepare(SHA, archive, digest)
+                for key, value in hostile.items():
+                    with self.subTest(key=key), patch.dict(os.environ, {key: value}):
+                        with self.assertRaisesRegex(ValueError, 'ineligible inside a listener job'):
+                            with install.recoverable_control():
+                                self.fail('Listener context must not acquire operator custody')
+            for key, value in hostile.items():
+                self.assertEqual(os.environ[key], value)
 
     def test_prepare_then_same_head_register_reuses_immutable_authorization(self):
         from types import SimpleNamespace
@@ -1913,11 +1946,15 @@ class OwnedQualityAuthorizationTests(unittest.TestCase):
         import json
         from pathlib import Path
         import native_runner as native
+        original_custody = native.diagnostic_custody_root
+        self.addCleanup(lambda: self.assertIs(native.diagnostic_custody_root, original_custody))
+        # Register outer request cleanups before entering the inner selected stack.
+        role_fixtures = [self.request_fixture(role) for role in
+                         ('native_local_components', 'native_phase', 'native_aggregate')]
         stack, home, reviewed, selected, path, binding = self.selected()
         from unittest.mock import patch
         with stack, patch.object(native, "require_diagnostic_custody_clear"):
-            for role in ('native_local_components', 'native_phase', 'native_aggregate'):
-                policy, env, event, api, guard, requests = self.request_fixture(role)
+            for policy, env, event, api, guard, requests in role_fixtures:
                 a, config = policy['recoverable_activation'], policy['recoverable_shards']
                 config.update(legacy_cache=selected['recoverable_shards']['legacy_cache'],
                               admission=selected['recoverable_shards']['admission'],

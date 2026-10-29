@@ -92,6 +92,13 @@ class Fixture(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name).resolve()
         self.addCleanup(self.cleanup)
+        # Fake contracts must never consult the operator's physical custody state.
+        from test_native_runner import owned_control_fixture
+        home = self.root / 'physical-home'
+        owned_control_fixture(home / 'Library/EliteNativeCI')
+        physical_home = patch('pwd.getpwuid', return_value=SimpleNamespace(pw_dir=str(home)))
+        physical_home.start()
+        self.addCleanup(physical_home.stop)
         self.image = self.root / "fake-image"
         self.image.write_bytes(b"fake executable bytes")
         self.runtimes = {mode: dict(
@@ -131,6 +138,21 @@ class Fixture(unittest.TestCase):
 
 
 class PlanningTests(Fixture):
+    def test_custody_fixture_is_private_empty_and_outside_operator_home(self):
+        import native_runner
+        root = native_runner.diagnostic_custody_root()
+        self.assertTrue(root.is_relative_to(self.root))
+        self.assertEqual(root.stat().st_mode & 0o777, 0o700)
+        self.assertEqual(native_runner.diagnostic_custody_registry()['records'], {})
+        native_runner.require_diagnostic_custody_clear()
+
+    def test_missing_fake_registry_still_refuses_execution(self):
+        import native_runner
+        (native_runner.diagnostic_custody_root() / 'registry.json').unlink()
+        with self.assertRaises((ValueError, OSError)):
+            native_runner.require_diagnostic_custody_clear()
+
+
     def test_longest_first_atomic_duration_packing_and_stable_identity(self):
         units = shards.legacy.partition(METHODS, "thread", 1)
         weights = {shards.fingerprint(unit): seconds for unit, seconds in zip(units, (5100, 70))}
@@ -853,10 +875,16 @@ shards.execute_process([sys.executable, '-c', "import time; print('\\u25c7 Test 
     def test_hard_killed_python_controller_recovers_only_durable_success(self):
         script = """
 import json, os, pathlib, sys
+from types import SimpleNamespace
+from unittest.mock import patch
 import recoverable_shards as shards
+from test_native_runner import owned_control_fixture
 from test_recoverable_shards import FakeExecutor, ADMISSION, HEAD
 plan = shards.load_json(pathlib.Path(sys.argv[1]))
 cache, stage = pathlib.Path(sys.argv[2]), sys.argv[3]
+home = cache.parent / 'child-physical-home'
+owned_control_fixture(home / 'Library/EliteNativeCI')
+patch('pwd.getpwuid', return_value=SimpleNamespace(pw_dir=str(home))).start()
 executor = FakeExecutor(cache.parent / 'worker-hard-kill', {'thread': plan['runtime']})
 if stage == 'after-xml':
     executor.damage = lambda attempt: os._exit(77)
