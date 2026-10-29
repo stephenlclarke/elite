@@ -520,7 +520,7 @@ Station Gossip includes **Most Wanted**, a current-galaxy board of up to ten act
 
 ## Automated release versions
 
-App versions come from the last published stable ancestor tag and Conventional Commits: breaking changes bump major, features minor, and fixes/performance changes patch. Documentation and chores alone do not release. One generated, source-bound plan supplies the bundle, tag, assets, README and Homebrew version; there is no separate manually entered version. Packaging and publication retain review, quality, signing, notarization and main-only analysis gates. See [the release workflow](docs/MACOS-DISTRIBUTION.md).
+App versions come from the last published stable ancestor tag and Conventional Commits: breaking changes bump major, features minor, and fixes/performance changes patch. Documentation and chores alone do not release. One generated, source-bound plan supplies the bundle, tag, assets, README and Homebrew version; there is no separate manually entered version. Packaging and publication retain review, quality, signing, notarization and main-only analysis gates. See [the release workflow](docs/MACOS-DISTRIBUTION.md). The universal release build uses one compile job with batch compilation disabled.
 
 ## Validation and SonarQube
 

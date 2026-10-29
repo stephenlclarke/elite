@@ -69,11 +69,17 @@ class ReleaseArtifactTests(unittest.TestCase):
         with patch.object(package_macos, "ROOT", self.root), \
              patch.object(package_macos, "source_checkpoint", return_value=self.plan["sourceRevision"]), \
              patch.object(version, "load_plan", return_value=self.plan), \
-             patch.object(package_macos, "run", return_value=SimpleNamespace(stdout=str(self.root))), \
+             patch.object(package_macos, "run", return_value=SimpleNamespace(stdout=str(self.root))) as build_tool, \
              patch.object(package_macos, "create_bundle", side_effect=StopBeforeNativePackaging) as bundle:
             with self.assertRaises(StopBeforeNativePackaging):
                 package_macos.package(SimpleNamespace(release_plan=Path("plan.json"), version="99.0.0"))
             self.assertEqual(bundle.call_args.args[2:], (self.plan["version"], self.plan["sourceRevision"]))
+            expected = ("swift", "build", "--configuration", "release", "--scratch-path",
+                        str(self.root / ".build/distribution"), "--arch", "arm64", "--arch", "x86_64",
+                        "--jobs", "1", "-Xswiftc", "-disable-batch-mode")
+            self.assertEqual([call.args for call in build_tool.call_args_list],
+                             [expected, (*expected, "--show-bin-path")])
+            self.assertEqual([call.kwargs for call in build_tool.call_args_list], [{}, {"capture": True}])
         readme = release.readme_text("The [published tap cask](https://example.invalid) is older.\n", self.plan, self.manifest)
         self.assertIn("Elite 1.5.0", readme)
         self.assertIn("/v1.5.0/Elite-1.5.0-universal.zip", readme)
