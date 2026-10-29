@@ -124,7 +124,10 @@ static void write_bytes(lua_State *L, const void *bytes, size_t count) {
     size_t capacity = needed < 4096 ? 4096 : needed * 2;
     if (capacity > ctx->limits.output_bytes) capacity = ctx->limits.output_bytes;
     void *next = realloc(ctx->result.bytes, capacity);
-    if (!next) luaL_error(L, "Output allocation failed.");
+    if (!next) {
+      luaL_error(L, "Output allocation failed.");
+      return;
+    }
     ctx->result.bytes = next;
     ctx->output_capacity = capacity;
   }
