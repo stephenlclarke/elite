@@ -3,44 +3,51 @@ import Testing
 
 @testable import EliteCore
 
-@Test func originalGalaxyFixtures() {
-  let galaxy = Universe.galaxy()
-  #expect(galaxy.count == 256)
-  #expect(galaxy[7].name == "LAVE")
-  #expect(galaxy[7].x == 20 && galaxy[7].y == 173)
-  #expect(galaxy[7].economy == 5 && galaxy[7].government == 3)
-  #expect(galaxy[7].technology == 4)
-  #expect(galaxy[129].name == "ZAONCE")
-  #expect(galaxy[147].name == "DISo".uppercased())
-  #expect(galaxy[7].distance(to: galaxy[7]) == 0)
-  #expect(galaxy[7].distance(to: galaxy[129]) == 5.6)
-  #expect(galaxy[7].economyName == "Rich Agricultural")
-  #expect(galaxy[7].governmentName == "Dictatorship")
+@Test func originalGalaxyFixtures() throws {
+  let catalogue = try OriginalWorldCatalogue.loadBundled()
   for index in 0..<8 {
     let systems = Universe.galaxy(number: index)
-    #expect(systems.allSatisfy { !$0.name.isEmpty && (0..<8).contains($0.economy) })
-    #expect(Set(systems.map(\.id)).count == 256)
-    #expect(systems == Universe.galaxy(number: index + 8))
+    #expect(systems.count == 256 && Set(systems.map(\.id)).count == 256)
+    for system in systems {
+      let world = try catalogue.world(galaxy: index, system: system.id)
+      #expect(system.original == world)
+      #expect(system.name == world.name && system.x == world.xLY && system.y == world.yLY)
+      #expect(
+        system.technology == world.technology && system.hostileFraction == world.hostileFraction)
+      #expect(system.economyName == world.economy && system.governmentName == world.government)
+    }
   }
-  #expect(Universe.galaxy(number: 1) != galaxy)
+  let galaxy = Universe.galaxy()
+  #expect(galaxy.contains { $0.x < 0 || $0.y < 0 })
+  #expect(
+    galaxy[7].distance(to: galaxy[129])
+      == hypot(galaxy[7].x - galaxy[129].x, galaxy[7].y - galaxy[129].y))
+  #expect(!galaxy[7].distance(to: Universe.galaxy(number: 1)[7]).isFinite)
 }
 
-@Test func marketFixturesAndBounds() {
-  let market = MarketItem.generate(economy: 5, fluctuation: 0)
-  #expect(market[0] == MarketItem(price: 36, quantity: 16))
-  #expect(market[7] == MarketItem(price: 896, quantity: 0))
-  for economy in 0..<8 {
-    for fluctuation in 0..<256 {
-      let items = MarketItem.generate(economy: economy, fluctuation: fluctuation)
-      #expect(items.allSatisfy { (0...1020).contains($0.price) && (0...63).contains($0.quantity) })
-      #expect(items[16].quantity == 0)
+@Test func marketFixturesAndBounds() throws {
+  let catalogue = try OriginalMarketCatalogue.loadBundled()
+  for galaxy in 0..<8 {
+    for system in Universe.galaxy(number: galaxy) {
+      let seed = try catalogue.initialState(galaxy: galaxy, system: system.id)
+      let market = MarketItem.at(system)
+      #expect(market.count == 17)
+      for quote in seed.quotes {
+        #expect(
+          market[quote.index]
+            == MarketItem(
+              price: quote.askTenthsCR, quantity: quote.stock, bidPrice: quote.bidTenthsCR))
+        #expect(market[quote.index].bidPrice <= market[quote.index].price)
+      }
     }
   }
 }
 
 @Test func commanderIntegrityAndRanks() {
   var commander = Commander()
-  #expect(commander.valid && commander.capacity == 20 && commander.rank == "Harmless")
+  let hold = commander.nativePerformance.cargo
+  let expanded = hold + commander.nativePerformance.cargoExpansion
+  #expect(commander.valid && commander.capacity == hold && commander.rank == "Harmless")
   for (kills, rank) in [
     (8, "Mostly Harmless"), (16, "Poor"), (32, "Average"), (64, "Above Average"),
     (128, "Competent"), (512, "Dangerous"), (2560, "Deadly"), (6400, "ELITE"),
@@ -48,12 +55,12 @@ import Testing
     commander.kills = kills
     #expect(commander.rank == rank)
   }
-  commander.cargo[0] = 21
+  commander.cargo[0] = hold + 1
   #expect(!commander.valid)
   commander.equipment.insert("Large Cargo Bay")
-  #expect(commander.valid && commander.capacity == 35)
+  #expect(commander.valid && commander.capacity == expanded)
   commander.cargo[13] = 1000
-  #expect(commander.cargoTonnes == 21)
+  #expect(commander.cargoTonnes == hold + 1)
   commander.system = 256
   #expect(!commander.valid)
   commander = Commander()
@@ -76,13 +83,13 @@ import Testing
   #expect(game.screen == .title)
   game.key(" ")
   #expect(game.screen == .status)
-  let docked: [Screen] = [
-    .front, .buy, .sell, .equipment, .chart, .shortChart, .showroom, .market, .status, .inventory,
-  ]
-  // Screen zero launches, so verify docked screens before it.
-  for i in 1..<10 {
-    game.key("\(i)")
-    #expect(game.screen == docked[i])
+  // Retired docked market aliases do not navigate; zero is tested separately because it launches.
+  for (number, expected) in [
+    (3, Screen.equipment), (4, .chart), (5, .shortChart),
+    (6, .showroom), (7, .buy), (8, .status), (9, .inventory),
+  ] {
+    game.key("\(number)")
+    #expect(game.screen == expected)
   }
   game.key("99")
   #expect(game.screen == .inventory)
@@ -109,25 +116,31 @@ import Testing
   game.key("q")
   #expect(game.screen == .gameOver)
   game.key("return")
-  #expect(game.docked && game.commander.credits == 1000)
+  #expect(game.docked && game.commander.credits == 7200)
 }
 
 @Test func marketTransactionsRespectCashCapacityAndStock() {
   var game = Game(executive: false)
   game.screen = .buy
   let initial = game.commander
+  let initialAsk = game.market[0].price
+  let initialBid = game.market[0].bidPrice
+  let initialStock = game.market[0].quantity
   game.key("return")
-  #expect(game.commander.cargo[0] == 1 && game.commander.credits == initial.credits - 36)
-  #expect(game.market[0].quantity == 15)
+  #expect(game.commander.cargo[0] == 1 && game.commander.credits == initial.credits - initialAsk)
+  #expect(game.market[0].quantity == initialStock - 1)
   game.key("left")
-  #expect(game.commander.cargo[0] == 0 && game.commander.credits == initial.credits)
+  #expect(
+    game.commander.cargo[0] == 0
+      && game.commander.credits == initial.credits - initialAsk + initialBid)
   game.key("left")
   #expect(game.message == "NO CARGO")
   game.commander.credits = 0
   game.trade(buy: true)
   #expect(game.commander.cargo[0] == 0)
   game.commander.credits = 10000
-  game.commander.cargo[1] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[1] = hold
   game.trade(buy: true)
   #expect(game.commander.cargo[0] == 0)
   game.selection = 13
@@ -146,17 +159,34 @@ import Testing
   game.screen = .sell
   game.selection = 1
   game.key("return")
-  #expect(game.commander.cargo[1] == 19)
+  #expect(game.commander.cargo[1] == hold - 1)
   game.key("down")
-  #expect(game.selection == 2)
+  #expect(
+    game.selection
+      == MarketDisplayOrder.commodityIDs[MarketDisplayOrder.commodityIDs.firstIndex(of: 1)! + 1])
   game.key("up")
   #expect(game.selection == 1)
   game.key("right")
-  #expect(game.commander.cargo[1] == 20)
+  #expect(game.commander.cargo[1] == hold)
 }
 
-@Test func equipmentPurchases() {
+@Test func equipmentPurchases() throws {
   var game = Game(executive: false)
+  // This purchase sequence has a 70-unit tank, four pylons and an explicit 100 CR budget.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.commander.credits = 1000
+  let unavailableItem = try #require(Equipment.all.first { $0.name == "Extra Energy Unit" })
+  game.commander.system = try #require(
+    game.systems.first {
+      !$0.isPlugh && $0.technology >= Equipment.base[2].requiredTechnologyLevel
+        && $0.technology < unavailableItem.requiredTechnologyLevel
+    }?.id)
+  game.selectedSystem = game.commander.system
+  try #require(!game.equipmentAvailable(unavailableItem))
   game.screen = .equipment
   game.commander.fuel = 60
   game.purchase()
@@ -166,15 +196,19 @@ import Testing
   #expect(game.commander.missiles == 4 && game.commander.credits == 680)
   game.purchase()
   #expect(game.message == "MISSILE RACK FULL")
-  game.selection = 9
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Extra Energy Unit" })
+  let unavailable = game.commander
   game.purchase()
-  #expect(game.message == "NOT AVAILABLE")
+  #expect(game.message == "NOT AVAILABLE" && game.commander == unavailable)
   game.commander.credits = 100000
-  game.selection = 2
+  game.selection = try #require(Equipment.all.firstIndex { $0.name == "Large Cargo Bay" })
   game.purchase()
-  #expect(game.commander.capacity == 35 && game.commander.credits == 96000)
+  #expect(
+    game.commander.capacity == game.commander.nativePerformance.cargo
+      + game.commander.nativePerformance.cargoExpansion && game.commander.credits == 96000)
+  let owned = game.commander
   game.purchase()
-  #expect(game.message == "ALREADY FITTED")
+  #expect(game.message == "ALREADY OWNED" && game.commander == owned)
   game.selection = 99
   game.purchase()
   game.docked = false
@@ -183,8 +217,14 @@ import Testing
   #expect(!game.commander.equipment.contains("E.C.M. System"))
 }
 
-@Test func chartSelectionAndHyperspace() {
+@Test func chartSelectionAndHyperspace() throws {
   var game = Game(executive: false)
+  // This controlled unit fixture exercises the stock Cobra, independently of the fresh starter.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.key(" ")
   game.key("4")
   game.key("right")
@@ -194,7 +234,8 @@ import Testing
   game.selectedSystem = 0
   game.selectNeighbour(direction: -1)
   #expect(game.selectedSystem == 255)
-  game.selectSystem(x: 20, y: 173)
+  // Authenticated original-world coordinates, rather than the predecessor chart location.
+  game.selectSystem(x: 52.4955, y: 51.0662)
   #expect(game.selectedSystem == 7)
   game.key("d")
   #expect(game.message.contains("DISTANCE"))
@@ -203,7 +244,10 @@ import Testing
   game.beginHyperspace()
   #expect(game.jumpCountdown == nil)
   game.launch()
-  game.selectedSystem = 129
+  // Avenor to Renas is 3.364975176728651 LY: the native rounded debit is 34 units.
+  // Beliven (129) is 23.533908197534895 LY away and cannot exercise a stock seven-LY drive.
+  try #require(abs(game.systems[7].distance(to: game.systems[185]) - 3.364975176728651) < 1e-12)
+  game.selectedSystem = 185
   game.beginHyperspace()
   #expect(game.message == "MASS LOCKED")
   game.bodies = []
@@ -212,70 +256,150 @@ import Testing
   #expect(game.message == "FUEL TOO LOW")
   game.commander.fuel = 70
   game.key("h")
-  #expect(game.jumpCountdown == 15)
+  #expect(
+    game.commander.fittedEquipment(at: .drive)?.node == HyperspaceDriveDefinition.node(for: .basic))
+  #expect(game.commander.fittedEquipment(at: .drive)?.provenance == .standard)
+  #expect(game.commander.fittedComponent(at: .drive)?.statistics[.jumpSpool] == 10)
+  #expect(game.commander.hyperspaceDrivePolicy?.activation == .timed(seconds: 10))
+  #expect(game.jumpCountdown == 10)
   game.jumpCountdown = 0.01
   game.tick(delta: 0.02)
-  #expect(game.commander.system == 129 && game.commander.fuel == 14 && game.jumpCountdown == nil)
-  #expect(game.market == MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 218))
+  #expect(game.commander.system == 185 && game.commander.fuel == 36 && game.jumpCountdown == nil)
+  #expect(game.market == MarketItem.at(game.currentSystem))
 }
 
-@Test func jumpTravelDockingAndGalacticDrive() {
+@Test func jumpTravelDockingAndGalacticDrive() throws {
   var game = Game(executive: false)
   game.inSystemJump()
   #expect(game.message == "MASS LOCKED")
   game.launch()
   game.inSystemJump()
   #expect(game.message == "MASS LOCKED")
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 10000))]
+  let departure = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: departure.position - departure.orientation.apply(.init(0, 0, 10000)),
+      orientation: departure.orientation))
   game.key("j")
-  #expect(game.bodies[0].position.z == 7000)
+  let jumpedStation = try #require(game.bodies.first { $0.id == 0 && $0.hull == .station })
+  #expect(jumpedStation.position.z == 7000)
+  #expect(jumpedStation.physical?.identity == departure.identity)
   game.key("g")
   #expect(game.commander.galaxy == 0)
-  game.commander.equipment.insert("Galactic Hyperdrive")
+  try game.commander.grantEquipment(
+    "Galactic Hyperdrive", at: .utility(.galacticHyperdrive),
+    provenance: .grant("galactic travel fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.galacticHyperdrive)) != nil)
   game.key("g")
   #expect(
-    game.commander.galaxy == 1 && game.commander.fuel == 70
+    game.commander.galaxy == 1 && game.commander.fuel == game.commander.fuelCapacity
       && !game.commander.equipment.contains("Galactic Hyperdrive"))
-  game.commander.installTargetingComputer(.docking)
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
-  game.key("r")
+  try game.commander.grantEquipment(
+    TargetingTier.docking.equipmentName, at: .targetingCore,
+    provenance: .grant("jump-docking-fixture"))
+  let arrival = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: arrival.position - arrival.orientation.apply(.init(0, 0, 1500)),
+      orientation: arrival.orientation))
+  for _ in 0..<(game.bodies.count * 2) {
+    game.key("tab")
+    if game.autoPilot.targetActor == arrival.identity { break }
+  }
+  try #require(game.autoPilot.targetID == 0 && game.autoPilot.targetActor == arrival.identity)
   #expect(game.dockingComputer)
   game.key("p")
   #expect(!game.dockingComputer)
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1500))]
-  game.key("r")
+  game.key("tab")
+  let anchors = try #require(game.commander.flightSimulation.anchors)
+  for _ in 0..<(game.bodies.count * 2) {
+    if let selected = game.autoTargetBody, selected.id == 0,
+      selected.nativeStationIdentity == nil, selected.physical?.identity == anchors.station.identity
+    {
+      break
+    }
+    game.key("tab")
+  }
+  let station = try #require(game.autoTargetBody)
+  try #require(
+    station.id == 0 && station.nativeStationIdentity == nil
+      && station.physical?.identity == anchors.station.identity && game.dockingComputer)
   for _ in 0..<2000 where !game.docked { game.tick(delta: 0.1) }
-  #expect(game.docked && game.screen == .status && game.speed == 0)
+  #expect(
+    game.docked && game.screen == .status && game.speed == 0,
+    Comment(
+      rawValue:
+        "target=\(String(describing: game.autoPilot.targetID)), actor=\(String(describing: game.autoPilot.targetActor)), status=\(game.autoPilot.status), distance=\(String(describing: game.autoTargetBody?.position.length)), energy=\(game.energy), pendingRRS=\(game.pendingNativeStationDock != nil)"
+    ))
+  #expect(game.nativeMainStationDockEvidenceIsCurrent)
   game.launch()
-  game.speed = 0
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(0, 0, 89.5))]
+  let manual = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  let port = MainStationGeometry.docking
+  // Cross the original half-unit doorway boundary; stationary overlap cannot mint arrival.
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: manual.position + manual.orientation.apply(port.center + port.outward * 0.5),
+      orientation: manual.orientation))
+  game.speed = 2
   game.tick(delta: 0.02)
   #expect(game.docked)
+  #expect(game.nativeMainStationDockEvidenceIsCurrent)
   game.launch()
+  let impact = try #require(
+    game.currentNativeMainStationAnchor(at: game.commander.flightSimulation.physicalTime))
+  NativeStationTestFixture.reframe(
+    &game,
+    to: .init(
+      position: impact.position - impact.orientation.apply(.init(50, 0, 50)),
+      orientation: impact.orientation))
   game.speed = 20
-  game.bodies = [SpaceBody(id: 0, hull: .station, position: .init(50, 0, 50))]
   game.tick(delta: 0.02)
   #expect(!game.docked && game.message == "DOCKING COLLISION")
 }
 
-@Test func combatLasersMissilesAndBomb() {
+@Test func combatLasersMissilesAndBomb() throws {
+  // Native combat in an authored unit cohort before ordinary station/traffic admission.
   var game = Game(executive: false)
-  game.launch()
-  game.speed = 0
-  game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 500), hostile: true)]
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.commander.credits = 1000
   game.commander.equipment.insert("Military Laser")
+  try game.commander.prepareEquipment()
+  game.commander.mirrorFittedEquipment()
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.docked = false
+  game.screen = .front
+  try #require(game.commander.valid && game.commander.nativeStations == nil)
+  game.ensurePhysicalActors()
+  #expect(game.commander.fittedEquipment(at: .laser(.front))?.node.key == "Military Laser")
+  game.speed = 0
+  game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
+  game.bodies = [SpaceBody(id: 1, hull: .sidewinder, position: .init(0, 0, 500), hostile: true)]
+  game.ensurePhysicalActors()
+  // Hostility does not establish a bounty; this fixture supplies its known criminal record.
+  game.bodies[0].physical?.npc?.legal = .init(value: 64, bountyTenths: 50)
+  game.bodies[0].physical?.npc?.legalProvenance = .recorded
   var controls = Controls()
   controls.fire = true
   for _ in 0..<6 { game.tick(delta: 0.1, controls: controls) }
   #expect(game.commander.kills == 1 && game.commander.credits == 1050 && game.bodies.isEmpty)
   game.fireMissile()
   #expect(game.commander.missiles == 3)
-  game.bodies = [SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 1000))]
+  // Keep this damage/bounty fixture outside immediate NPC beam-interception range.
+  game.bodies = [SpaceBody(id: 2, hull: .cobra, position: .init(0, 0, 1800))]
   game.key("t")
   game.key("m")
   #expect(game.commander.missiles == 2 && !game.missileArmed)
-  game.tick(delta: 0.02)
-  #expect(game.commander.kills == 2 && game.commander.legal == 8)
+  for _ in 0..<150 where game.commander.kills < 2 { game.tick(delta: 0.02) }
+  #expect(game.commander.kills == 2 && game.commander.legal == 40)
   game.commander.unlimitedMissiles = true
   game.bodies = [SpaceBody(id: 3, hull: .cobra, position: .init(0, 0, 1000))]
   game.key("t")
@@ -284,7 +408,9 @@ import Testing
   game.key("t")
   game.key("u")
   #expect(!game.missileArmed)
-  game.commander.equipment.insert("Energy Bomb")
+  try game.commander.grantEquipment(
+    "Energy Bomb", at: .utility(.energyBomb), provenance: .grant("fixture"))
+  let bomb = try #require(game.commander.fittedEquipment(at: .utility(.energyBomb))?.id)
   game.bodies = [
     SpaceBody(id: 0, hull: .station, position: .init(0, 0, 1000)),
     SpaceBody(id: 4, hull: .thargoid, position: .init(0, 0, 2000)),
@@ -293,35 +419,62 @@ import Testing
   game.tick(delta: 0.02)
   #expect(game.bodies.count == 1 && game.bodies[0].hull == .station)
   #expect(!game.commander.equipment.contains("Energy Bomb"))
+  #expect(game.commander.equipmentInventory?.items.contains { $0.id == bomb } == false)
 }
 
-@Test func ecmEscapeEnemiesAndSimulationBounds() {
+@Test func ecmEscapeEnemiesAndSimulationBounds() throws {
   var game = Game(executive: false)
+  // Preserve this controlled Cobra unit's original energy and speed boundaries.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.launch()
+  try #require(!game.docked && game.commander.valid)
   game.speed = 0
-  game.bodies = [SpaceBody(id: 1, hull: .missile, position: .init(0, 0, 1000))]
+  let missileID = game.nextBodyID
+  game.nextBodyID += 1
+  game.bodies.append(SpaceBody(id: missileID, hull: .missile, position: .init(0, 0, 1000)))
+  game.ensurePhysicalActors()
+  let beforeECM = game.bodies
+  let survivors = beforeECM.filter { $0.hull != .missile }
+  try #require(beforeECM.filter { $0.hull == .missile }.map(\.id) == [missileID])
+  try #require(survivors.contains { $0.nativeStationIdentity != nil })
   game.key("e")
-  #expect(game.bodies.count == 1)
-  game.commander.equipment.insert("E.C.M. System")
+  #expect(game.bodies == beforeECM && game.energy == 256)
+  try game.commander.grantEquipment(
+    "E.C.M. System", at: .utility(.ecm), provenance: .grant("ECM simulation fixture"))
+  try #require(game.commander.fittedEquipment(at: .utility(.ecm)) != nil)
   game.key("e")
-  #expect(game.bodies.isEmpty && game.energy == 246)
+  #expect(game.bodies == survivors && game.energy == 246)
   game.bodies = [SpaceBody(id: 2, hull: .viper, position: .init(0, 0, 500), hostile: true)]
   game.frontShield = 0
   game.energy = 0.01
   game.tick(delta: 0.1)
   #expect(game.screen == .gameOver)
   game = Game(executive: false)
+  // Preserve this controlled Cobra unit's original energy and speed boundaries.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
   game.launch()
   game.key("escape-pod")
   #expect(!game.docked)
-  game.commander.equipment.insert("Escape Pod")
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("escape simulation fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.escapePod)) != nil)
   game.commander.cargo[0] = 10
   game.commander.legal = 30
   game.key("escape-pod")
   #expect(game.docked && game.commander.cargoTonnes == 0 && game.commander.legal == 0)
   game.launch()
   game.bodies = []
-  game.commander.equipment.insert("Extra Energy Unit")
+  try game.commander.grantEquipment(
+    "Extra Energy Unit", at: .energy, provenance: .grant("energy simulation fixture"))
+  #expect(game.commander.fittedEquipment(at: .energy)?.node.key == "Extra Energy Unit")
   var controls = Controls()
   controls.throttle = 1
   controls.pitch = 0.2
@@ -338,7 +491,8 @@ import Testing
   #expect(game.time == time)
   game.bodies = [SpaceBody(id: 3, hull: .cargo, position: .init(0, 0, 50000))]
   game.tick(delta: 0.02)
-  #expect(game.bodies.isEmpty)
+  #expect(!game.bodies.contains { $0.id == 3 })
+  #expect(game.bodies.allSatisfy { $0.physical?.spawnIdentity != nil })
 }
 
 @Test func viewTransformsAndGeometry() {
@@ -442,7 +596,8 @@ import Testing
   #expect(abs(final.time - 2) < 0.00001)
   await restored.key("0")
   await restored.setControls(Controls())
-  await restored.selectSystem(x: 20, y: 173)
+  let target = try #require(await restored.snapshot().systems.first { $0.id == 7 })
+  await restored.selectSystem(x: Double(target.x), y: Double(target.y))
   #expect(await restored.snapshot().selectedSystem == 7)
   var invalid = Commander()
   invalid.system = -1
@@ -460,8 +615,12 @@ import Testing
 
 @Test func executiveDefaultsDemoAndPauseOptions() {
   var game = Game()
-  #expect(game.screen == .demo && game.commander.name == "JAMESON")
-  #expect(game.commander.credits == 1000 && game.commander.capacity == 20)
+  #expect(game.screen == .demo && game.commander.name == "Rowan Calder")
+  #expect(
+    game.commander.credits == 7200
+      && game.commander.capacity == game.commander.nativePerformance.cargo)
+  #expect(game.commander.shipID == "SH025" && game.commander.fuel == 130)
+  #expect(game.commander.galaxy == 0 && game.commander.system == 7)
   #expect(game.commander.equipment == ["Pulse Laser"])
   #expect(game.commander.valid)
   game.key(" ")
@@ -483,7 +642,9 @@ import Testing
   #expect(!game.paused)
   game.screen = .gameOver
   game.key("return")
-  #expect(game.commander.name == "JAMESON")
+  #expect(game.commander.name == "Rowan Calder")
+  #expect(game.commander.credits == 7200 && game.commander.shipID == "SH025")
+  #expect(game.commander.fuel == 130 && game.commander.galaxy == 0 && game.commander.system == 7)
 }
 
 @Test func xyzzyJumpLimitsPersistAndObeyCurrentFuelAndNavigationComputer() async throws {
@@ -509,8 +670,18 @@ import Testing
   game.commander.fuel = 350
   let destination = game.selectedSystem
   let cost = Int((game.currentSystem.distance(to: game.targetSystem) * 10).rounded())
+  let drive = try #require(game.commander.fittedEquipment(at: .drive))
+  let component = try #require(drive.component)
+  let navigationDevice = try #require(game.commander.fittedEquipment(at: .navigation))
+  let navigation = try #require(navigationDevice.component)
+  try #require(navigationDevice.node.key == NavigationTier.military.equipmentName)
+  try #require(drive.node == HyperspaceDriveDefinition.node(for: .advanced))
+  try #require(component.grade == HyperspaceDriveDefinition.template(for: .advanced).identity)
+  try #require(component.statistics[.jumpSpool] == 1 && navigation.statistics[.jumpSpool] == 1)
+  let policy = try #require(game.commander.hyperspaceDrivePolicy)
+  try #require(policy.activation == .timed(seconds: 1))
   game.beginHyperspace()
-  #expect(game.jumpCountdown == 15 && game.targetReachable)
+  #expect(game.jumpCountdown == 1 && game.targetReachable)
   game.arrive()
   #expect(game.commander.system == destination && game.commander.fuel == 350 - cost)
   let runtime = GameRuntime(game: game)
@@ -519,7 +690,64 @@ import Testing
   try await runtime.save(to: url)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26)
+  let (strictSaved, strictWorld) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(strictSaved.valid && strictWorld.valid && strictWorld.consistent(with: strictSaved))
+  // Versioned loading restores ordinary NPC bindings from the retained physical scene.
+  var expected = game.commander
+  var restoredGame = await restored.snapshot()
+  let savedWorld = try #require(expected.nativeStations)
+  expected.nativeStations = try reboundJumpLimitWorldAfterLoad(savedWorld, restored: &restoredGame)
+  let differences = try jumpLimitSaveDifferences(expected, actual: restoredGame.commander)
+  let restoredCommander = await restored.snapshot().commander
+  #expect(restoredCommander == expected, Comment(rawValue: differences))
+}
+
+private func jumpLimitSaveDifferences(_ expected: Commander, actual: Commander) throws -> String {
+  var left = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(expected)) as? [String: Any])
+  var right = try #require(
+    JSONSerialization.jsonObject(with: JSONEncoder().encode(actual)) as? [String: Any])
+  left["equipment"] = expected.equipment.sorted()
+  right["equipment"] = actual.equipment.sorted()
+  func differences(_ left: Any, _ right: Any, path: String) -> [String] {
+    if let value = left as? NSObject, value.isEqual(right) { return [] }
+    if let left = left as? [String: Any], let right = right as? [String: Any] {
+      return Set(left.keys).union(right.keys).sorted().flatMap { key in
+        differences(left[key] ?? NSNull(), right[key] ?? NSNull(), path: path + "." + key)
+      }
+    }
+    if let left = left as? [Any], let right = right as? [Any] {
+      guard left.count == right.count else { return [path + ".count"] }
+      return left.indices.flatMap { differences(left[$0], right[$0], path: path + "[\($0)]") }
+    }
+    return ["\(path): expected \(left), actual \(right)"]
+  }
+  return Set(left.keys).union(right.keys).sorted().flatMap { key in
+    differences(left[key] ?? NSNull(), right[key] ?? NSNull(), path: key).prefix(2)
+  }.joined(separator: "; ")
+}
+
+private func reboundJumpLimitWorldAfterLoad(
+  _ saved: NativeStationWorld, restored: inout Game
+) throws -> NativeStationWorld {
+  var expected = saved
+  for record in saved.ledger.records
+  where record.identity.system == restored.systemIdentity && record.tombstone == nil {
+    let originalBinding = try #require(record.binding)
+    let body = try #require(
+      restored.bodies.first { $0.nativeStationIdentity == record.identity })
+    let actor = try #require(body.physical?.identity)
+    #expect(
+      actor.system == restored.systemIdentity
+        && actor.visit == restored.commander.flightSimulation.visit)
+    #expect(actor.visit == originalBinding.actor.visit && originalBinding.actor != actor)
+    try expected.ledger.rebind(record.identity, to: .init(actor: actor, bodyID: body.id))
+  }
+  #expect(expected.valid)
+  return expected
 }
 
 @Test func autoTraderUsesEconomyCapitalAndCargo() {
@@ -530,17 +758,29 @@ import Testing
   #expect(!exports.isEmpty)
   #expect(exports.allSatisfy { $0.index != 16 && $0.profit > 0 })
   game.autoTrade()
-  #expect(game.commander.cargoTonnes > 0 && game.commander.cargoTonnes <= 20)
+  #expect(
+    game.commander.cargoTonnes > 0
+      && game.commander.cargoTonnes <= game.commander.tradeCargoCapacity)
   #expect(game.commander.credits >= 0 && game.commander.credits < 20000)
   let cargo = game.commander.cargo
+  let initialFreightCost = 20000 - game.commander.credits
   game.launch()
   game.autoTrade()
   #expect(game.commander.cargo == cargo)
   game.arrive()
   game.commander.autoTrade = true
   let cash = game.commander.credits
+  let arrivalPrices = game.market.map(\.price)
+  let arrivalBids = game.market.map(\.bidPrice)
+  let saleRevenue = cargo.indices.reduce(0) { $0 + cargo[$1] * arrivalBids[$1] }
+  let refuelCost = game.refillCost
   game.dock()
-  #expect(game.commander.credits > cash && game.selectedSystem != game.commander.system)
+  let nextFreightCost = game.commander.cargo.indices.reduce(0) {
+    $0 + game.commander.cargo[$1] * arrivalPrices[$1]
+  }
+  #expect(saleRevenue > initialFreightCost)
+  #expect(game.commander.credits == cash + saleRevenue - refuelCost - nextFreightCost)
+  #expect(game.commander.cargoTonnes > 0 && game.selectedSystem != game.commander.system)
   #expect(game.commander.valid)
   var stranded = Game(executive: false)
   stranded.commander.fuel = 0
@@ -567,17 +807,36 @@ import Testing
   }
 }
 
-@Test func autoTraderIncludesIllegalProfitableExports() {
+@Test func autoTraderIncludesIllegalProfitableExports() throws {
   var game = Game(executive: false)
-  game.selectedSystem = 129
-  game.commander.credits = 20000
+  // The first catalogue-ordered, seven-LY route profitable for all three restricted goods.
+  // Preserve authenticated ask/bid quotes: invented prices make the current Commander invalid.
+  game.commander.system = 12
+  game.selectedSystem = 225
+  game.commander.credits = 200000
+  try #require(game.currentSystem.original?.key == "G01-S012")
+  try #require(game.targetSystem.original?.key == "G01-S225")
+  try #require(game.currentSystem.distance(to: game.targetSystem) <= 7)
+  let destination = MarketItem.at(game.targetSystem)
+  let illegal = [3, 6, 10]
+  for index in illegal {
+    try #require(destination[index].bidPrice > game.market[index].price)
+  }
+  let purchaseCost = illegal.reduce(0) { $0 + 4 * game.market[$1].price }
+  let cashBefore = game.commander.credits
   for index in game.market.indices { game.market[index].quantity = 0 }
-  for index in [3, 6, 10] { game.market[index] = MarketItem(price: 1, quantity: 4) }
+  for index in illegal { game.market[index].quantity = 4 }
+  try #require(game.commander.valid)
   game.autoTrade()
   #expect(
     game.commander.cargo[3] == 4 && game.commander.cargo[6] == 4 && game.commander.cargo[10] == 4)
+  #expect(game.commander.cargoTonnes == 12)
+  #expect(game.commander.credits == cashBefore - purchaseCost)
+  #expect(illegal.allSatisfy { game.market[$0].quantity == 0 })
+  try #require(game.commander.valid)
   game.launch()
-  #expect(game.commander.legal == 16)
+  #expect(!game.docked && game.screen == .front && game.commander.legal == 16)
+  #expect(game.commander.valid)
 }
 
 @Test func finiteXYZzyCashAndUnlimitedCargoKeepTransactionsAndSavesValid() async throws {
@@ -590,7 +849,8 @@ import Testing
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.commander.cargo[0] = 100
   game.selection = 1
-  game.market[1] = MarketItem(price: 30, quantity: 10)
+  // Current markets own immutable authored bid/ask quotes; only stock is mutable.
+  game.market[1].quantity = 10
   game.trade(buy: true)
   #expect(game.commander.cargo[1] == 0 && game.commander.credits == 0)
   game.selection = 2
@@ -601,12 +861,59 @@ import Testing
   game.key("8")
   #expect(game.commander.unlimitedCargo && game.message == "SELL EXCESS CARGO FIRST")
   let runtime = GameRuntime(game: game)
-  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-  defer { try? FileManager.default.removeItem(at: url) }
+  let ready = await runtime.snapshot()
+  #expect(ready.commander.valid && ready.commander.equipmentInventory != nil)
+  #expect(
+    ready.commander.credits == game.commander.credits
+      && ready.commander.cargo == game.commander.cargo)
+  #expect(
+    ready.commander.unlimitedCargo == game.commander.unlimitedCargo
+      && ready.commander.unlimitedCash == game.commander.unlimitedCash
+      && ready.commander.fuel == game.commander.fuel
+      && ready.commander.shipID == game.commander.shipID)
+  // This docked, non-legacy fixture has no journey or live body poses to publish.
+  try #require(ready.docked && ready.bodies.isEmpty)
+  try #require(ready.commander.legacyOwnedEquipment == nil && ready.jumpCountdown == nil)
+  try #require(ready.commander.miningLedger.usesEconomyWeightedPresence)
+  var migrated = ready
+  try migrated.migrateMiningPresence(legacyMissing: false, persistCurrentPolicy: true)
+  migrated.ensureScriptCalendar(origin: .newCommander)
+  // Independently whitelist only persisted current-policy metadata and a missing calendar.
+  var canonical = ready.commander
+  canonical.miningLedger = ready.commander.miningLedger
+  if canonical.scriptState.calendarLedger == nil {
+    canonical.scriptState.calendarLedger = .init(origin: .newCommander)
+  }
+  #expect(migrated.commander == canonical)
+  #expect(migrated.commander.usesEconomyMiningSaveVersion)
+  #expect(migrated.commander.miningLedger == ready.commander.miningLedger)
+  #expect(
+    migrated.commander.scriptState.calendarSeconds == ready.commander.scriptState.calendarSeconds)
+  #expect(
+    migrated.commander.scriptState.calendarLedger
+      == (ready.commander.scriptState.calendarLedger ?? ScriptCalendarLedger(origin: .newCommander))
+  )
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  let url = directory.appendingPathComponent("commander.json")
+  defer { try? FileManager.default.removeItem(at: directory) }
   try await runtime.save(to: url)
+  let published = await runtime.snapshot()
+  // The expected value comes only from the two authorized migrations above: every
+  // other Commander property must survive publication exactly, including all custody.
+  #expect(published.commander == canonical && published.market == ready.market)
+  var expected = canonical
+  if expected.npcPersistence.count > 0 {
+    expected.npcPersistence.resetPhysicalBindings(system: published.systemIdentity)
+  }
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (persisted, world) = try ScriptSaveStore.read(bytes, from: url)
+  #expect(persisted == expected && world.market == ready.market)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  let loaded = await restored.snapshot()
+  #expect(loaded.commander == expected && loaded.market == ready.market)
   game.commander.cargo = Array(repeating: 0, count: 17)
   game.key("8")
   game.key("9")
@@ -615,11 +922,26 @@ import Testing
   game.commander.unlimitedCash = false
   game.commander.credits = 100000
   game.selectedSystem = 129
-  game.market = MarketItem.generate(economy: game.currentSystem.economy, fluctuation: 0)
+  game.market = MarketItem.at(game.currentSystem)
+  // Seeded stock need not exceed the fitted hold; supply one real profitable tonne export.
+  let bulkExport = try #require(
+    game.profitableExports(to: game.targetSystem).first { Commodity.all[$0.index].unit == "t" })
+  let bulkQuantity = game.commander.standardCargoCapacity + 1
+  try #require(
+    bulkQuantity * game.market[bulkExport.index].price <= game.commander.credits - game.refillCost)
+  for index in game.market.indices { game.market[index].quantity = 0 }
+  game.market[bulkExport.index].quantity = bulkQuantity
+  try #require(game.commander.valid)
   game.autoTrade()
-  #expect(game.commander.credits < 100000 && game.commander.cargoTonnes > 20)
+  #expect(game.commander.cargo[bulkExport.index] == bulkQuantity)
+  #expect(
+    game.commander.credits < 100000
+      && game.commander.cargoTonnes > game.commander.standardCargoCapacity)
   game.commander.cargo[0] = Int.max / 17
-  game.market[0].price = 1020
+  // The real authored bid still exercises finite cash overflow without changing prices.
+  let saleQuantity = min(game.commander.cargo[0], Int.max / 17 - game.market[0].quantity)
+  let cashOverflow = saleQuantity.multipliedReportingOverflow(by: game.market[0].bidPrice).overflow
+  #expect(cashOverflow)
   game.autoTrade()
   #expect(
     game.commander.credits <= 4_294_967_295 && game.commander.credits > 4_294_000_000
@@ -659,6 +981,22 @@ import Testing
         adjacency["\(min(i,j)):\(max(i,j))", default: 0] += 1
       }
     }
-    #expect(adjacency.values.allSatisfy { $0 == 2 })
+    if hull == .station {
+      let aperture = MainStationGeometry.docking.aperture.map {
+        MainStationGeometry.docking.center + $0
+      }
+      let indices = aperture.compactMap { point in mesh.vertices.firstIndex(of: point) }
+      #expect(indices.count == aperture.count)
+      let doorway = Set(indices.indices.map { index in
+        let i = indices[index]
+        let j = indices[(index + 1) % indices.count]
+        return "\(min(i,j)):\(max(i,j))"
+      })
+      let boundary = Set(adjacency.filter { $0.value == 1 }.keys)
+      #expect(doorway.count == 4 && boundary == doorway)
+      #expect(adjacency.allSatisfy { doorway.contains($0.key) ? $0.value == 1 : $0.value == 2 })
+    } else {
+      #expect(adjacency.values.allSatisfy { $0 == 2 })
+    }
   }
 }

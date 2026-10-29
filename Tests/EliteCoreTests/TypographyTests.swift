@@ -36,6 +36,9 @@ import Testing
 
 @Test func equipmentMountHeadingsWeaponsAndClickTargetsStayPairedAfterReflow() throws {
   var game = Game(executive: false)
+  // This layout unit requires the Cobra's declared mining work-tool destination.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
   game.screen = .equipment
   game.commander.installLaser(.military, on: .front)
   game.commander.installLaser(.naval, on: .right)
@@ -65,9 +68,13 @@ import Testing
       #expect(
         price.y == layout.listTop - 22 && price.bounds.maxX == layout.left + layout.contentWidth)
       game.key("right")
-      #expect(game.equipmentMount == cell.mount.next)
+      if cell.mount == .rear {
+        #expect(game.equipmentWorkTool && game.equipmentMount == .rear)
+      } else {
+        #expect(!game.equipmentWorkTool && game.equipmentMount == cell.mount.next)
+      }
       game.key("left")
-      #expect(game.equipmentMount == cell.mount)
+      #expect(!game.equipmentWorkTool && game.equipmentMount == cell.mount)
     }
     game.equipmentClick(y: layout.mounts[0].bounds.maxY + 2, x: layout.left + 10)
     #expect(game.selection == item && game.equipmentMount == .rear)

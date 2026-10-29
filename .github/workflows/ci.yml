@@ -7,32 +7,28 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: elite-${{ github.ref }}
   cancel-in-progress: false
 jobs:
+  phases:
+    name: Native quality components
+    uses: ./.github/workflows/recoverable-quality.yml
+    with:
+      enable_native: true
+    secrets: inherit
   quality:
-    runs-on: macos-15
+    # Preserve the required check name. Only the real component workflow can qualify it.
+    name: quality
+    needs: phases
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Coverage, thread sanitizer, address sanitizer, and leak probe
-        run: make ci
-      - name: Install SonarScanner
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        run: brew install sonar-scanner
-      - name: Analyze main in SonarQube
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      - name: Require all native and prerequisite results
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: make sonar
-      - name: Upload coverage and runtime diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: elite-quality-evidence
-          path: |
-            coverage.xml
-            reports/
+          COMPONENTS: ${{ needs.phases.result }}
+        run: |
+          test "$COMPONENTS" = success
+          echo 'All required exact-head quality components passed.' >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,5 @@
+# Courier witnesses still describe the replaced BBC universe
+
+CI 683 found six fixed courier paths inconsistent with the current original-world catalogue. Their input boards and deterministic draws remained stable, but routes now use authenticated Cartesian light-year coordinates. The approved calendar correction removes the additional BBC coordinate conversion. Three former successful input rows consequently select routes longer than their unchanged deadlines. Updating only expected paths or choosing runtime rerolls would conceal that behavior.
+
+Freeze current-world witnesses through independent source-data arithmetic, preserve the former origin/seed/draw combinations as refused current offers, and retain all six actual successful delivery variants and both deadline boundaries. Historical BBC proof bytes must remain historical; the approved original-world migration requires no predecessor world aliases or obsolete save compatibility. See [the packet](PR-current-world-courier-witnesses.md).

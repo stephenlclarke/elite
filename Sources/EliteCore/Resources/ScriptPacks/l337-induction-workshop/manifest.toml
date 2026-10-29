@@ -1,0 +1,23 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.induction-consignment"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2"]
+priority = 615
+source = "Closed native C08 original Enmadan workshop consignment family. One actual owner issue records six new unique2t failed units in its charter epoch. Actual pickup, Renas service and original owner return are separate operations; no stock refill, generic equipment grant, old induction cassette substitution or remote pickup."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "workshop"
+title = "Original Enmadan charter workshop consignments"
+briefing = "Enmadan G01-S000 retains six unique2t failed units for actual Renas G01-S185 service and return to the same original Enmadan owner. Current reachable complete out-and-return quotations set payment. Nonperishable, with no deadline or hidden timer."
+destination = "Renas G01-S185 service, then original Enmadan G01-S000 receiving"
+reward = "430+90L CR only after actual serviced original owner return; no induction payment or clue."
+milestones = ["Original serviced workshop unit returned"]
+
+[[handlers]]
+event = "mission.accepted"
+function = "retain"

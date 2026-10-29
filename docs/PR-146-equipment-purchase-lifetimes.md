@@ -1,0 +1,43 @@
+# Equipment purchase and migration frame lifetimes
+
+The retained required-quality run39980129381 at e2f0498c (synthetic88f9413b)
+failed coverage-check after887.35s compilation; make ci exited2 after
+1786.012624s. The helper reported signal10. All171 media entries passed;
+thread/address sanitizer and leak stages were not reached.
+
+Owned capture PID32407/thread4 reaches stack probing with LR in
+EquipmentModuleTemplates.legacyMapping, through migratedComponent,
+initializeEquipment, preparation/migration, quoteEquipmentPurchase,
+performShopPurchase and the original four-mount replacement test. The matched
+image UUID beginsC4D3B4B4. Evidence is retained at
+`/tmp/elite-mba-e2-quality39980129381`. No mapping semantic defect is inferred.
+
+The internal purchase quote now stores exactly the same immutable full source
+and prepared Commander snapshots in a final Sendable class. Its binding and
+request fields remain unchanged. Detailed quote/request construction occurs
+only after equipment preparation returns. migratedComponent is static because
+its unchanged implementation reads no Commander; its three production callers
+and one pre-drive fixture caller use that entry. The unrelated fuel candidate
+is confined to its own noninline branch helper, retaining exact checks, debit,
+trade history, validation, publication and receipt order.
+
+No mapping, selected mount, price/cash, quantity, save schema, actor isolation
+or atomic publication/rollback rule changes. Existing immutable quote consumers
+still compare the complete source and retain independent Commander values.
+
+Focused execution retains five existing methods and ten cases: original
+four-mount replacement(one), stale commander/offer(six), legacy bag migration
+(one), actual purchase writer rollback(one), and concurrent fuel/missile intent
+(one). All original assertions remain. Execution is pending; full524, required
+quality, native M01 and release qualification remain separate. The unresolved
+VM SIGILL in144 is not claimed repaired by this source-backed correction.
+
+At sourcef165fef66d4282cca5e53f707a321b60aa266a12 all five unchanged methods
+and ten expanded cases passed with complete XML and zero failures/errors/skips.
+Compilation232.79s; total process247.888367s, exit0. Original four-mount case
+8.742971s; stale six variants8.726370s; legacy migration8.729212s; writer rollback
+9.126874s; concurrent fuel/missile intent8.742985s. Evidence:
+`/tmp/elite-146-equipment-lifetimes-units-result.json`, its raw log and
+`/tmp/elite-146-equipment-lifetimes-units-swift-testing.xml`.
+Independent source/result review closed146 on this affected-case criterion.
+No full VM, protected-main quality, sanitizer/leak or M01/release pass follows.

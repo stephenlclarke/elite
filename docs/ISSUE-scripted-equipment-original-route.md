@@ -1,0 +1,7 @@
+# The original loan demonstrator retains an obsolete historical destination mapping
+
+The scripted-equipment pack explicitly identifies itself as an original engine demonstration, not a historical Elite mission. Its legacy text calls system 129 Zaonce, but the approved current original-world catalogue identifies G01-S129 as Beliven, a Multi-government world with government ID 2. The loan demonstration therefore combines a stale place name with a different current-world route and risk profile.
+
+Qualification 736 completed the native jump, fuel use, issued-unit preservation and correct MAIN selection, then failed to dock. Retained owned-process coverage and the existing fatal notice prove ambient pirate pulse-laser death at physical time 33.04 before final approach, with no native station structural collision. This is not a near-door terminal-profile failure. The destination mapping is inappropriate for the intended nonhistorical engine demonstration; this repair does not claim that sustained-hostile-fire autodocking is fixed.
+
+Root approved the exact current-world demonstration route: retain controlled origin G01-S167 Natanas at (36.9736, 33.1044), and return the original ECM unit at G01-S153 Bevitha at (32.2143, 36.14), a Corporate State with government ID 7. Their distance is 5.644980411834923 LY, within the unchanged stock 7 LY range. Coherently update the pack and its existing native workflow test; preserve all actual travel, fitting, unit identity, return and payment requirements.

@@ -12,6 +12,7 @@ public enum Ink: UInt32, Sendable {
   case gold = 0xffcc_22ff
   case lime = 0xccee_22ff
   case leaf = 0x66ee_44ff
+  case purple = 0xbb77_ffff
   case orange = 0xffaa_44ff
 }
 
@@ -24,6 +25,7 @@ public struct WireLine: Sendable, Equatable {
 }
 
 public struct Frame: Sendable, Equatable {
+  public var inventoryInteraction: InventoryInteraction?
   public var rasterizeGraphics = true
   public var graphics: [Graphic] = []
   public var worldGraphics: [Graphic] = []
@@ -195,7 +197,9 @@ public enum Display {
     case .handoff: return blackjackHandoff(game, width: 768, height: 768)
     case .secret: secret(game, into: &frame)
     case .help: help(game, into: &frame)
+    case .library: return referenceLibrary(game, width: 768, height: 768)
     case .gallery: return gallery(game, width: 768, height: 768)
+    case .contracts: return contractBoard(game, width: 768, height: 768)
     case .navigation: return navigation(game, width: 768, height: 768)
     case .mission: mission(game, into: &frame)
     case .gameOver:
@@ -279,6 +283,7 @@ public enum Display {
       frame.point(point.x, point.y, radius: radius, opacity: (0.5 + proximity * 0.45) * fade)
     }
     flightObjects(game, projection: projection, into: &frame)
+    drawNativeWormholes(game, into: &frame, projection: projection)
     let x = projection.center.x
     let y = projection.center.y
     let size = frame.responsive ? 1.5 : 1.0
@@ -306,20 +311,41 @@ public enum Display {
     }
   }
   static func draw(
-    _ body: SpaceBody, game: Game, into frame: inout Frame, projection: FlightProjection = .legacy,
-    mesh: Mesh? = nil
+    _ body: SpaceBody, game: borrowing Game, into frame: inout Frame,
+    projection: FlightProjection = .legacy,
+    mesh suppliedMesh: Mesh? = nil, screen: Screen? = nil
   ) {
-    var game = game
-    if game.screen == .demo || game.screen == .title {
-      game.commander.shipDisplayStyle = .shadedPanels
+    let view: Screen
+    if let screen {
+      view = screen
+    } else {
+      view = game.screen
     }
-    let center = game.viewPosition(body.position)
-    guard center.z > 10 else { return }
-    let mesh = mesh ?? Mesh.hull(body.hull)
-    let vertices = mesh.vertices.map { vertex -> Vector3 in
-      let rotated = game.viewPosition(body.modelVector(vertex))
-      return rotated + center
+    let style: ShipDisplayStyle =
+      view == .demo || view == .title
+      ? .shadedPanels : game.withReadOnlyCommander { $0.shipDisplayStyle }
+    let center = Game.viewPosition(body.position, screen: view)
+    let mesh: Mesh
+    if let supplied = suppliedMesh {
+      mesh = supplied
+    } else if let scripted = game.scriptNPCMesh(body) {
+      mesh = scripted
+    } else {
+      mesh = game.gameplayMesh(for: body)
     }
+    let miningFields = game.miningFields
+    let oreInk = body.physical?.rock.flatMap { identity in
+      miningFields.lazy.flatMap(\.rocks).first { $0.identity == identity }
+    }.flatMap { MiningRockAppearance.ink(for: $0) }
+    var vertices: [Vector3] = []
+    vertices.reserveCapacity(mesh.vertices.count)
+    for vertex in mesh.vertices {
+      let rotated = Game.viewPosition(body.modelVector(vertex), screen: view)
+      vertices.append(rotated + center)
+    }
+    guard vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite && $0.z.isFinite }),
+      vertices.contains(where: { $0.z >= 1 })
+    else { return }
     var drawn: Set<String> = []
     var visibleFaces: Set<Int> = []
     let depths = mesh.faces.enumerated().map { index, face -> (index: Int, distance: Double) in
@@ -333,21 +359,47 @@ public enum Display {
       let c = vertices[face[2]]
       let normal = (b - a).cross(c - a)
       guard normal.dot(a) < 0 else { continue }
-      visibleFaces.insert(entry.index)
-      if game.commander.shipDisplayStyle == .shadedPanels {
+      if style == .shadedPanels {
         let material =
           mesh.faceMaterials.isEmpty ? nil : mesh.materials[mesh.faceMaterials[entry.index]]
+        if mesh.faceTextures.indices.contains(entry.index),
+          let texture = mesh.faceTextures[entry.index],
+          ShipTextureAssets.pixels(for: texture.asset) != nil
+        {
+          let brightness =
+            Double(
+              ShipProjection.shade(
+                0xffff_ffff, normal: normal,
+                emissive: material?.emissive ?? false) >> 24) / 255
+          let appearance: ShipTextureAppearance
+          if OriginalShipTextureAssets.allowedIDs.contains(texture.asset), let material {
+            appearance = .originalSurface(
+              litMaterial: ShipProjection.shade(
+                material.colour, normal: normal, emissive: material.emissive))
+          } else {
+            appearance = .sourceRGB
+          }
+          let triangles = ShipTextureProjection.triangles(
+            vertices: face.map { vertices[$0] }, uv: texture.uv, projection: projection,
+            texture: texture.asset, brightness: brightness, clip: frame.flightClip,
+            appearance: appearance)
+          if !triangles.isEmpty {
+            for triangle in triangles { frame.textured(triangle) }
+            continue
+          }
+        }
         frame.panel(
-          ShipProjection.polygon(face.map { vertices[$0] }, projection: projection),
+          ShipProjection.polygon(face, vertices: vertices, projection: projection),
           colour: material.map {
             ShipProjection.shade($0.colour, normal: normal, emissive: $0.emissive)
           }
             ?? ShipProjection.shade(body.blackjackRole?.ink ?? body.hull.ink, normal: normal))
         continue
       }
+      visibleFaces.insert(entry.index)
       let ink: Ink =
-        game.commander.shipDisplayStyle == .whiteWireframe
-        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+        style == .whiteWireframe
+        ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for edge in face.indices {
         let i = face[edge]
         let j = face[(edge + 1) % face.count]
@@ -361,10 +413,10 @@ public enum Display {
         frame.wire(points.0, points.1, points.2, points.3, ink)
       }
     }
-    if game.commander.shipDisplayStyle != .shadedPanels {
+    if style != .shadedPanels {
       let ink: Ink =
-        game.commander.shipDisplayStyle == .whiteWireframe
-        ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+        style == .whiteWireframe
+        ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
       for detail in mesh.details where visibleFaces.contains(detail.face) {
         if let line = project(vertices[detail.start], vertices[detail.end], projection: projection)
         {
@@ -372,20 +424,32 @@ public enum Display {
         }
       }
     }
+    drawScriptBeams(body, game: game, into: &frame, projection: projection, screen: view)
     if body.hull == .station {
-      let hatch = [
-        Vector3(-30, -10, -90), Vector3(30, -10, -90), Vector3(30, 10, -90),
-        Vector3(-30, 10, -90),
-      ].map { game.viewPosition(body.modelVector($0)) + center }
-      let normal = game.viewPosition(body.entranceNormal)
+      let aperture: [Vector3]
+      if let identity = body.nativeStationIdentity,
+        let source = NativeStationSource.binding(for: identity)
+      {
+        aperture = source.geometry.docking.aperture.map { source.geometry.docking.center + $0 }
+      } else {
+        aperture = MainStationGeometry.docking.aperture.map {
+          MainStationGeometry.docking.center + $0
+        }
+      }
+      var hatch: [Vector3] = []
+      hatch.reserveCapacity(aperture.count)
+      for vertex in aperture {
+        hatch.append(Game.viewPosition(body.modelVector(vertex), screen: view) + center)
+      }
+      let normal = Game.viewPosition(body.entranceNormal, screen: view)
       guard normal.dot(hatch[0]) < 0 else { return }
-      if game.commander.shipDisplayStyle == .shadedPanels {
+      if style == .shadedPanels {
         frame.panel(
           ShipProjection.polygon(hatch, projection: projection), colour: Ink.black.rawValue)
       } else {
         let ink: Ink =
-          game.commander.shipDisplayStyle == .whiteWireframe
-          ? .white : (body.blackjackRole?.ink ?? body.hull.ink)
+          style == .whiteWireframe
+          ? .white : (oreInk ?? body.blackjackRole?.ink ?? body.hull.ink)
         for index in hatch.indices {
           if let line = project(
             hatch[index], hatch[(index + 1) % hatch.count], projection: projection)
@@ -415,9 +479,19 @@ public enum Display {
     let local = game.screen == .shortChart
     header(local ? "SHORT RANGE CHART" : "GALACTIC CHART \(game.commander.galaxy+1)", into: &frame)
     let current = game.currentSystem
-    for star in game.systems {
-      let x = local ? 128 + (star.x - current.x) * 4 : star.x
-      let y = local ? 90 + (star.y - current.y) * 2 : 30 + star.y / 2
+    let bounds = Universe.originalWorlds.provenance.statistics.coordinateBoundsByGalaxy[
+      game.commander.galaxy]
+    let scale =
+      local
+      ? 6.0
+      : min(
+        250 / max(1, bounds.maximumXLY - bounds.minimumXLY),
+        130 / max(1, bounds.maximumYLY - bounds.minimumYLY))
+    let centreX = local ? current.x : (bounds.minimumXLY + bounds.maximumXLY) / 2
+    let centreY = local ? current.y : (bounds.minimumYLY + bounds.maximumYLY) / 2
+    for star in game.knownSystems {
+      let x = Int((128 + (star.x - centreX) * scale).rounded())
+      let y = Int((90 + (star.y - centreY) * scale).rounded())
       guard (22..<160).contains(y), (1..<255).contains(x) else { continue }
       frame.point(Double(x), Double(y))
       if local { frame.text(star.name, x + 3, y - 7) }
@@ -426,10 +500,10 @@ public enum Display {
         frame.line(x, y - 4, x, y + 4)
       }
     }
-    let x = local ? 128 : current.x
-    let y = local ? 90 : 30 + current.y / 2
-    let radius = local ? game.commander.fuel : game.commander.fuel / 4
-    frame.ellipse(Double(x), Double(y), Double(radius), Double(max(1, radius / 2)))
+    let x = 128 + (current.x - centreX) * scale
+    let y = 90 + (current.y - centreY) * scale
+    let radius = game.commander.maximumJumpDistance * scale
+    frame.ellipse(x, y, radius, radius)
     frame.text(game.targetSystem.name, 4, 162)
     frame.text(
       String(format: "DISTANCE %.1f LIGHT YEARS", current.distance(to: game.targetSystem)), 4, 172)
@@ -438,7 +512,7 @@ public enum Display {
     let star = game.targetSystem
     header("DATA ON " + star.name, into: &frame)
     let lines = [
-      star.economyName, star.governmentName, "TECH.LEVEL \(star.technology+1)",
+      star.economyName, star.governmentName, "TECH.LEVEL \(star.technology)",
       String(format: "POPULATION %.1f BILLION", Double(star.population) / 10),
       "GROSS PRODUCTIVITY \(star.productivity) MCR", "AVERAGE RADIUS \(star.radius) KM",
     ]
@@ -462,7 +536,11 @@ public enum Display {
       let y = 34 + i * 8
       if i == game.selection { frame.text(">", 0, y) }
       frame.text(item.name, 8, y, CommodityCategory.at(i).ink)
-      frame.text(String(format: "%5.1f", Double(game.market[i].price) / 10), 100, y)
+      frame.text(
+        String(
+          format: "%5.1f",
+          Double(game.screen == .sell ? game.market[i].bidPrice : game.market[i].price) / 10), 100,
+        y)
       frame.text("\(game.market[i].quantity)\(item.unit)", 154, y)
       frame.text("\(game.commander.cargo[i])\(item.unit)", 205, y)
     }
@@ -478,12 +556,15 @@ public enum Display {
       let item = Equipment.all[i]
       let y = 30 + (i - start) * 10
       if i == game.selection { frame.text(">", 0, y) }
-      let available = item.technology <= game.currentSystem.technology
+      let available = game.equipmentAvailable(item)
       frame.text(item.name, 8, y, available ? .white : .red)
       let fitted =
         game.commander.equipment.contains(item.name)
         || (item.name == "Extra Energy Unit"
-          && game.commander.equipment.contains(Equipment.navalEnergyUnit))
+          && (game.commander.equipment.contains(Equipment.navalEnergyUnit)
+            || game.commander.equipment.contains(Equipment.eliteEnergyUnit)))
+        || (item.name == Equipment.navalEnergyUnit
+          && game.commander.equipment.contains(Equipment.eliteEnergyUnit))
       let price =
         Equipment.isReward(item.name) ? "REWARD" : String(format: "%.1f", Double(item.price) / 10)
       frame.text(fitted ? "FITTED" : price, 194, y)
@@ -509,6 +590,7 @@ public enum Display {
         "RATING: " + game.commander.rank,
         "TARGETING: " + (game.commander.targetingTier?.label ?? "NONE"),
         "NAVIGATION: " + (game.commander.navigationTier?.label ?? "NONE"),
+        "DRIVE: " + (game.commander.fittedEquipment(at: .drive)?.node.key ?? "NONE"),
         "FRONT LASER: " + (game.commander.laser(on: .front)?.equipmentName ?? "EMPTY"),
         "SHIELDS: " + (game.commander.shieldBooster?.label ?? "STANDARD"), "EQUIPMENT:",
       ]
@@ -579,7 +661,12 @@ public enum Display {
     frame.line(180, 192, 180, 255, .yellow)
     let left: [(String, Double, Ink)] = [
       ("FS", game.frontShield / 255, .green), ("AS", game.rearShield / 255, .green),
-      ("FU", Double(game.commander.fuel) / Double(game.commander.fuelCapacity), .green),
+      (
+        "FU",
+        Game.equipmentResourceLevel(
+          Double(game.commander.fuel), from: Double(game.commander.fuelCapacity), to: 1),
+        .green
+      ),
       ("CT", game.cabinTemperature, .red),
       ("LT", game.laserHeat / 255, .red), ("AL", game.altitude, .yellow),
     ]
@@ -589,7 +676,7 @@ public enum Display {
       bar(&frame, 24, y, item.1, item.2, 46)
     }
     let right: [(String, Double)] = [
-      ("SP", game.speed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
+      ("SP", game.cockpitSpeed / game.commander.performance.speed), ("RL", (game.roll + 1) / 2),
       ("DC", (game.pitch + 1) / 2),
     ]
     for (i, item) in right.enumerated() {
@@ -609,8 +696,9 @@ public enum Display {
       let sx = 128 + Int(max(-44, min(44, body.position.x / 100)))
       let sy = 220 + Int(max(-17, min(17, -body.position.z / 500)))
       let height = Int(max(-15, min(15, body.position.y / 100)))
-      frame.line(sx, sy, sx, sy - height, body.hostile ? .red : .green)
-      frame.line(sx - 1, sy - height, sx + 1, sy - height, body.hostile ? .red : .green)
+      frame.line(sx, sy, sx, sy - height, game.targetColourCue(for: body).ink ?? .green)
+      frame.line(
+        sx - 1, sy - height, sx + 1, sy - height, game.targetColourCue(for: body).ink ?? .green)
     }
     let flightCondition = game.bodies.contains(where: \.hostile) ? "RED" : "GREEN"
     frame.text(game.docked ? "S" : flightCondition, 82, 246, .yellow)
@@ -619,7 +707,7 @@ public enum Display {
       game.missileArmed ? .red : .green)
     frame.ellipse(166, 201, 6, 6, .yellow)
   }
-  private static func bar(
+  static func bar(
     _ frame: inout Frame, _ x: Int, _ y: Int, _ value: Double, _ ink: Ink, _ width: Int
   ) {
     let count = Int(max(0, min(1, value)) * Double(width))

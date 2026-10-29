@@ -11,6 +11,29 @@ dimensions = [1000.0, 1000.0, 995.918]
 geometryContext = "Source model units; envelope, not internal volume or SI dimensions."
 nativeHull = "station"
 
+[catalogue]
+schemaVersion = 2
+family = "coriolis-station"
+objectKind = "station"
+origin = "human"
+roleWeights = []
+access = "normal"
+playerFlyable = false
+normalPurchaseEligible = false
+discoveryEligible = true
+encounterMode = "authored"
+mechanicsStatus = "pending"
+rarity = "rare"
+galaxies = []
+regions = []
+basis = "retained source facts + project classification judgement. Structural object outside the seven functional ship types. FR048-FR052: blueprint fabrication, eight displayed types, independent habitat and explicit capital/station collection policies; actual receipts/providers remain actor-owned."
+placementStatus = "pending"
+isCapital = true
+purchasePolicy = "never"
+collectionMilestone = "docking"
+damagePolicy = "activeStationIndestructible"
+capitalSubtype = "station"
+
 [design]
 vertices = [
   [500.0, -492.929, -0.0],

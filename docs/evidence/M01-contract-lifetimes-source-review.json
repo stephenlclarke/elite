@@ -1,0 +1,931 @@
+{
+  "source_manifest": {
+    "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+    "files": {
+      "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+      "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c"
+    },
+    "patch_sha256": "c5f474cc9dfcdbf3c2b46be5905f71ec8d695bf73cec7722ea31eb2f85cda148",
+    "scope": "Caller lifetime only; no game state, schema, guard, decoder budget or authority change.",
+    "regression": "Existing actual failing FreshMainStationStartTests ordinaryFreshOrRecoveryStartAcceptsRealArlenTermsWithoutFlight(recovery:) plus full FreshMainStationStartTests and OriginalContractOfferPolicyTests focused scope.",
+    "historical_asan_failure": {
+      "run": 40157835601,
+      "batch_index": 4,
+      "ips_sha256": "eb074a6d450c8bd132e5e7832a44bd6be289890799546882c677a1642103ae8a",
+      "image_sha256": "bf932714f20bab457f19782f1730d34852d6acea8cf86823a7233e37eb51b1cf",
+      "sp_far": "0x16d52fbd0",
+      "stack_guard": [
+        "0x16d52c000",
+        "0x16d530000"
+      ],
+      "actual_parent_fixed_frame_reservations": {
+        "prepareCurrentContractAcceptance": "0xbd50 plus prologue/alignment",
+        "OriginalContractOfferPolicy.revision": "0xae50 plus prologue/alignment"
+      },
+      "limit": "Static reservations only, not total dynamic stack measurement; no heap-error attribution."
+    },
+    "prior_gate_reuse": "Runtime inputs changed. Prior normal/TSAN/ASAN scopes remain historical; no checkpoint requalification across this patch."
+  },
+  "source_review": "CLEAR: no actionable findings in frozen two-file patch",
+  "checks": [
+    "Exact base, both file hashes and patch hash verified.",
+    "Cached-board guard identical; floor assignment becomes return; zero fallback preserved.",
+    "Retained-job loop and overflow handling byte-identical.",
+    "Acceptance validation and accepted-offer early return preserved before resource helper.",
+    "Resource checks, errors, ordering and preparation body byte-identical.",
+    "Borrowing parameters add no explicit copies; private synchronous calls add no suspension or actor transition.",
+    "Noninline sibling phases separate recursive cached validation from retained-job storage, and revision validation from resource/pledge storage."
+  ],
+  "limitations": [
+    "New frame sizes and total dynamic stack usage not measured.",
+    "No runtime/performance claim beyond focused supplied evidence.",
+    "Runtime change invalidates historical sanitizer reuse.",
+    "Reviewer executed no tests/builds/probes."
+  ],
+  "normal": {
+    "receipt": "/tmp/elite-m01-contract-lifetimes-normal-result.json",
+    "log": "/tmp/elite-m01-contract-lifetimes-normal.log",
+    "log_sha256": "322403aa9189f67235ce373b711a1fbe3ceca6a115ce8e608e19eb557f327038",
+    "exit_code": 0,
+    "unique_declared_methods_passed": 12,
+    "suite_count": 2,
+    "framework_seconds": 33.915,
+    "build_seconds": 155.62,
+    "xml": null,
+    "total_wall_seconds": null
+  },
+  "asan": {
+    "status": "FAILED; repair not runtime/merge qualified",
+    "result": "/tmp/elite-m01-contract-lifetimes-failure/elite-m01-contract-lifetimes-asan-result.json",
+    "exit_code": 1,
+    "wall_seconds": 108.30937591614202,
+    "build_seconds": 70.96,
+    "log_sha256": "1c0284faf02310bea51065f39d9ca0c00e856f794e6d0385d51bce1f53a1578d",
+    "xml_bytes": 52,
+    "xml_sha256": "6edbe77098b9cbc5d4d33c4279d3def109144c23b8014d646fdd7793d16b20b3",
+    "completion": "No complete framework summary or complete XML; no passing focused-run claim.",
+    "image_sha256": "fab2bfed0119989aab2576314dab4ae115d0c8cf1aa8dd7f15646163b3f2a6f6",
+    "image_uuid": "4ffc60a1-bcd3-3b93-9d17-3eb89b449dbe",
+    "ips_sha256": "44eb799cec5ac89edd465cc28256bd1bc04f2aab52ddb12a2257ea027948902a",
+    "pid": 93467,
+    "procLaunch": "2026-10-25 04:36:30.1426 +0000",
+    "identity_limit": "PID/start match sole owned helper as reported by G1; reviewer independently verified raw IPS/image UUID and preserved bytes; no retained observer receipt supplied.",
+    "faulting_thread": 1,
+    "sp_far": "0x16b83a380",
+    "guard": [
+      "0x16b838000",
+      "0x16b83c000"
+    ],
+    "actual_path": [
+      "Game.scriptUnavailable(_:navigationBinding:)",
+      "Game.validateScriptMissionAcceptance(_:instanceID:contract:campaignParent:providerState:navigationBinding:)",
+      "Game.prepareScriptMissionAcceptance(_:instanceID:randomSeed:contract:campaignParent:providerState:freightAdmission:navigationBinding:)",
+      "Game.acceptScriptMission(_:instanceID:randomSeed:contract:campaignParent:drainAccepted:freightAdmission:navigationBinding:)",
+      "Game.performContractAcceptance(_:)",
+      "Game.acceptContract(board:offer:confirmationToken:)",
+      "Game.contractAcceptanceQuote(board:offer:)",
+      "closure #3 in Game.refreshSelectedContractQuote()"
+    ],
+    "attribution": "Actual raw fault stack is later script mission admission, not repeated cached-revision/freight decoder fault. Guard protection fault; no heap error or deeper compiler cause inferred.",
+    "reviewer_execution": "Read-only retained artifacts; no rerun/build/probe."
+  },
+  "incremental_v2": {
+    "source_manifest": {
+      "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+      "files": {
+        "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+        "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+        "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+        "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff"
+      },
+      "patch_sha256": "ab893cc7311350cccef33d3acf3de7e1d6ae41097f0e358c5aea8460db096b0f",
+      "scope": "Same caller-lifetime repair; added three ordered validator sibling phases and native-provider refusal/error-order/publication-purity regression.",
+      "ownership_note": "Pack remains explicitly borrowed. Optional inputs retain original value parameter semantics because nil equality consumes them under Swift6.4.1; no optional copy/representation rewrite."
+    },
+    "source_review": "CLEAR: no actionable findings in added two-file delta",
+    "checks": [
+      "Exact base, four file hashes and full patch hash verified.",
+      "Previously cleared two file hashes unchanged; no duplicate source review.",
+      "Provider, context and resource phase bodies mechanically byte-identical to original contiguous statements in the same order.",
+      "Dispatcher is synchronous and noninline, preserves throws and mutating context call; no actor/concurrency/schema/state representation changes.",
+      "Borrowed inputs read only; unchanged construction/publication runs only after all validation phases return.",
+      "New regression checks twelve native stateID refusal branches before generic availability; exact error plus commander/bodies/gameplayRevision/nextBodyID unchanged."
+    ],
+    "limits": [
+      "New regression covers stateID exclusions; digest-only and manifest-feature branches are unchanged source, not claimed independently covered by this new case.",
+      "No measured stack/frame/performance benefit claimed.",
+      "v1 normal PASS and ASAN failure remain v1-scoped; v2 normal/ASAN results pending.",
+      "Reviewer performed no build/test/probe/fix."
+    ],
+    "normal": {
+      "status": "PASS: verified supplied focused evidence",
+      "result": "/tmp/elite-m01-contract-lifetimes-v2-normal-result.json",
+      "result_sha256": "212fc684d62e8f1f61d786129c0a3cf28f5458191345629a8bb5ee8142295f97",
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v2-normal.log": {
+          "bytes": 10559,
+          "sha256": "b209c6443bc30047d2f300907d30287bb549ead66417496ce249f4d82fbab787"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v2-normal-swift-testing.xml": {
+          "bytes": 4452,
+          "sha256": "90cdf69b835ff9ced951f8c2b3e806b328bc3bb4e55d493509ab739f53207529"
+        }
+      },
+      "source_before_after_exact": true,
+      "exit_code": 0,
+      "expected_unique_declared_methods": 27,
+      "actual_unique_xml_methods": 27,
+      "failure_error_skip_duplicate_missing_extra": 0,
+      "framework_suite_count": 6,
+      "framework_seconds": 35.486,
+      "build_seconds": 81.74,
+      "process_wall_seconds": 121.07428583409637,
+      "selection": "Exact three selected suite method declarations plus twelve explicit selected methods equal XML inventory.",
+      "limits": "Focused normal scope only; no full quality or sanitizer qualification."
+    },
+    "asan": {
+      "status": "FAILED; repair incomplete and not runtime/merge qualified",
+      "result": "/tmp/elite-m01-contract-lifetimes-v2-failure/elite-m01-contract-lifetimes-v2-asan-result.json",
+      "exit_code": 1,
+      "process_wall_seconds": 121.78666066704318,
+      "build_seconds": 84.07,
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v2-asan.log": {
+          "bytes": 4139,
+          "sha256": "98d14253f0c2e27bb18bea5b7adbdfcd5835863767581d7a39c38009b0e07944"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v2-asan-swift-testing.xml": {
+          "bytes": 52,
+          "sha256": "6edbe77098b9cbc5d4d33c4279d3def109144c23b8014d646fdd7793d16b20b3"
+        }
+      },
+      "preservation_manifest_verified": true,
+      "image_sha256": "ae77be5c9538ec8140d794c36cfc39dcf5fa3c121714e72e5ded40c1280190bf",
+      "image_uuid": "e15b66a6-dc8d-3b73-829d-ffd7e8f9fc47",
+      "ips": "/tmp/elite-m01-contract-lifetimes-v2-failure/swiftpm-testing-helper-2026-10-25-044638.ips",
+      "ips_sha256": "831494f0f2fa84bb23c3eb07637aea9a77d95d184bc62e88172a17b2bd4cce8a",
+      "pid": 12371,
+      "procLaunch": "2026-10-25 04:45:51.9282 +0000",
+      "faulting_thread": 1,
+      "sp": "0x16c173ac0",
+      "far": "0x16c173ad0",
+      "guard": [
+        "0x16c170000",
+        "0x16c174000"
+      ],
+      "actual_frames": [
+        "__asan_memset",
+        "static ScriptValue.decodePrimitive(from:budget:)",
+        "static ScriptValue.decodeStored(from:typed:budget:)",
+        "ScriptValue.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance ScriptValue",
+        "dispatch thunk of Decodable.init(from:)",
+        "JSONDecoderImpl.unwrap<A, B>(_:as:for:_:)",
+        "JSONDecoderImpl.KeyedContainer.decode<A>(_:forKey:)",
+        "protocol witness for KeyedDecodingContainerProtocol.decode<A>(_:forKey:) in conformance JSONDecoderImpl.KeyedContainer<A>",
+        "protocol witness for KeyedDecodingContainerProtocol.decode<A>(_:forKey:) in conformance JSONDecoderImpl.KeyedContainer<A>",
+        "_KeyedDecodingContainerBox.decode<A, B>(_:forKey:)",
+        "Dictionary<>.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance <> [A : B]",
+        "dispatch thunk of Decodable.init(from:)",
+        "JSONDecoderImpl.decode<A>(_:)",
+        "protocol witness for SingleValueDecodingContainer.decode<A>(_:) in conformance JSONDecoderImpl",
+        "dispatch thunk of SingleValueDecodingContainer.decode<A>(_:)",
+        "static ScriptValue.decodePrimitive(from:budget:)",
+        "static ScriptValue.decodeStored(from:typed:budget:)",
+        "ScriptValue.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance ScriptValue",
+        "dispatch thunk of Decodable.init(from:)",
+        "JSONDecoderImpl.unwrap<A, B>(_:as:for:_:)",
+        "JSONDecoderImpl.KeyedContainer.decode<A>(_:forKey:)",
+        "protocol witness for KeyedDecodingContainerProtocol.decode<A>(_:forKey:) in conformance JSONDecoderImpl.KeyedContainer<A>",
+        "protocol witness for KeyedDecodingContainerProtocol.decode<A>(_:forKey:) in conformance JSONDecoderImpl.KeyedContainer<A>",
+        "_KeyedDecodingContainerBox.decode<A, B>(_:forKey:)",
+        "Dictionary<>.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance <> [A : B]",
+        "dispatch thunk of Decodable.init(from:)",
+        "JSONDecoderImpl.decode<A>(_:)",
+        "protocol witness for SingleValueDecodingContainer.decode<A>(_:) in conformance JSONDecoderImpl",
+        "dispatch thunk of SingleValueDecodingContainer.decode<A>(_:)",
+        "static ScriptValue.decodePrimitive(from:budget:)",
+        "static ScriptValue.decodeStored(from:typed:budget:)",
+        "ScriptValue.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance ScriptValue",
+        "dispatch thunk of Decodable.init(from:)",
+        "specialized JSONDecoderImpl.unwrap<A, B>(_:as:for:_:)",
+        "partial apply for closure #1 in JSONDecoder.decode<A>(_:from:)",
+        "closure #1 in JSONDecoder._decode<A>(_:from:)",
+        "partial apply for closure #1 in JSONDecoder._decode<A>(_:from:)",
+        "closure #1 in static JSONDecoder.withUTF8Representation<A>(of:_:)",
+        "partial apply for closure #1 in static JSONDecoder.withUTF8Representation<A>(of:_:)",
+        "Data.withBufferView<A>(_:)",
+        "JSONDecoder.decode<A>(_:from:)",
+        "dispatch thunk of JSONDecoder.decode<A>(_:from:)",
+        "ScriptFreightPlan.parameters.getter",
+        "ScriptFreightPlan.matches(_:)",
+        "closure #1 in ScriptContractOffer.valid.getter",
+        "partial apply for closure #1 in ScriptContractOffer.valid.getter",
+        "Optional.map<A, B>(_:)",
+        "ScriptContractOffer.valid.getter",
+        "static ScriptFreightGeneration.valid(_:)",
+        "ScriptOwnedCargoState.valid(state:engine:)",
+        "Commander.freightStateValid(_:)",
+        "closure #3 in Commander.contractsValid.getter",
+        "thunk for @callee_guaranteed (@in_guaranteed UUID, @guaranteed ScriptInstance) -> (@unowned Bool)",
+        "partial apply for thunk for @callee_guaranteed (@in_guaranteed UUID, @guaranteed ScriptInstance) -> (@unowned Bool)",
+        "Sequence.allSatisfy(_:)",
+        "Commander.contractsValid.getter",
+        "Commander.validAfterEquipment()",
+        "Commander.valid.getter",
+        "static Game.scriptEventCommanderIsValid(_:)",
+        "static Game.validateScriptEventCommander(_:)",
+        "static Game.prepareScriptEventResultQueue(candidate:next:event:derivedEvents:)",
+        "static Game.prepareScriptEventCandidateForPublication(original:candidate:instance:next:event:pack:derivedEvents:clueTrust:)",
+        "static Game.finishScriptEventCandidate(original:candidate:instance:next:event:pack:derivedEvents:publish:clueTrust:)",
+        "static Game.finishScriptEventAttempt(original:attempt:publish:clueTrust:)",
+        "static Game.executeScriptEventAttempt(original:selected:navigationBinding:publish:clueTrust:)",
+        "Game.drainScriptEvent(_:index:publish:clueTrust:navigationBinding:)",
+        "Game.drainScriptEvents(publish:clueTrust:navigationBinding:)",
+        "Game.performContractAcceptance(_:)",
+        "Game.acceptContract(board:offer:confirmationToken:)",
+        "Game.contractAcceptanceQuote(board:offer:)",
+        "closure #3 in Game.refreshSelectedContractQuote()",
+        "partial apply for closure #3 in Game.refreshSelectedContractQuote()",
+        "closure #1 in Game.withReadOnlyStoredGame<A>(_:)",
+        "partial apply for closure #1 in Game.withReadOnlyStoredGame<A>(_:)",
+        "specialized withUnsafePointer<A, B, C>(to:_:)",
+        "Game.withReadOnlyStoredGame<A>(_:)",
+        "Game.refreshSelectedContractQuote()",
+        "Game.applyContractBoardKey(_:)",
+        "Game.contractBoardKey(_:)",
+        "Game.interfaceKey(_:)",
+        "Game.key(_:)",
+        "GameRuntime.applyPlainGameKey(_:)",
+        "GameRuntime.applyKey(_:)",
+        "GameRuntime.keyAfterGallery(_:)",
+        "GameRuntime.key(_:)",
+        "reviewFreshSupply(_:)",
+        "acceptFreshSupply(_:)",
+        "FreshMainStationStartTests.ordinaryFreshOrRecoveryStartAcceptsRealArlenTermsWithoutFlight(recovery:)",
+        "static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_17Z39f13a2ae35ce3c7fMu_@Sendable (recovery:)",
+        "implicit closure #1 in static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_25generator39f13a2ae35ce3c7fMu_@Sendable ()",
+        "partial apply for implicit closure #1 in static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_25generator39f13a2ae35ce3c7fMu_@Sendable ()",
+        "closure #1 in closure #2 in Test.Case.Generator.init<>(arguments:parameters:testFunction:)",
+        "partial apply for closure #1 in closure #2 in Test.Case.Generator.init<>(arguments:parameters:testFunction:)",
+        "specialized static Runner._applyScopingTraits(for:testCase:_:)",
+        "specialized closure #1 in closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "partial apply for closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Issue.withErrorRecording(at:configuration:isolation:_:)",
+        "closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "partial apply for closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized closure #1 in TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized static Test.Case.withCurrent<A>(_:perform:)",
+        "static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Runner._runTestCase(_:within:in:)",
+        "closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "partial apply for closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+        "partial apply for thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+        "specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "partial apply for specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "completeTaskWithClosure(swift::AsyncContext*, swift::SwiftError*)"
+      ],
+      "attribution": "Nested freight decoding from owned-cargo/commander validation in event result processing during contract acceptance, later than mission-admission validator. No same-fault/heap-error/compiler-cause claim.",
+      "correction": "G1 message conflated SP/FAR: actual SP is0x16c173ac0, FAR is0x16c173ad0; both in guard.",
+      "limits": [
+        "No full summary;52-byte incomplete XML; no focused PASS.",
+        "PID/start independently read from rawIPS; sole-helper association G1-reported, observer receipt not supplied.",
+        "Retained artifacts only; no reviewer execution/probe/replay."
+      ]
+    },
+    "ownership_correction": {
+      "previous_source_manifest": {
+        "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+        "files": {
+          "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+          "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+          "Sources/EliteCore/ScriptDirector.swift": "413bc377a619b4005874af371fbf9a7f3dbd8efc22cd50be7f390ea3e2990997",
+          "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff"
+        },
+        "patch_sha256": "15ff613e12ad146e3b75b45a996fe310738a7cce11efea75b9d6bdfee73ec2f7",
+        "scope": "Same caller-lifetime repair; added three ordered validator sibling phases and native-provider refusal/error-order/publication-purity regression."
+      },
+      "review": "CLEAR: exact six ownership annotations removed from three optional parameters in dispatcher/context helper; all other bytes unchanged. Original value-parameter semantics restored. Pack remains borrowing. Guard bodies/order/errors unchanged.",
+      "compiler_refusal": {
+        "result": "/tmp/elite-m01-contract-lifetimes-v2-build-refusal-result.json",
+        "log": "/tmp/elite-m01-contract-lifetimes-v2-build-refusal.log",
+        "log_sha256": "1a2815a5a9773fb475cfb2fc4bd83fe5740f3b7c5e1494d814e552a799c2c772",
+        "exit_code": 1,
+        "test_bodies_executed": false,
+        "errors": [
+          "error: SwiftCompile normal arm64 /Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/Sources/EliteCore/ScriptDirector.swift failed with a nonzero exit code. Command line:     cd /Users/sclarke/.codex/worktrees/station-entry-value-lifetimes",
+          "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/Sources/EliteCore/ScriptDirector.swift:694:45: error: 'campaignParent' is borrowed and cannot be consumed",
+          "     |                                             `- error: 'campaignParent' is borrowed and cannot be consumed",
+          "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/Sources/EliteCore/ScriptDirector.swift:694:45: error: 'campaignParent' is borrowed and cannot be consumed",
+          "     |                                             `- error: 'campaignParent' is borrowed and cannot be consumed",
+          "/Users/sclarke/.codex/worktrees/station-entry-value-lifetimes/elite/Sources/EliteCore/ScriptDirector.swift:694:5: error: 'contract' is borrowed and cannot be consumed",
+          "     |     `- error: 'contract' is borrowed and cannot be consumed",
+          "error: Build failed",
+          "error: fatalError"
+        ]
+      },
+      "limits": "No execution or measured stack claim. Prior clear review inherited only for unchanged bytes."
+    }
+  },
+  "incremental_v3": {
+    "source_manifest": {
+      "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+      "files": {
+        "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+        "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+        "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+        "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+        "Sources/EliteCore/ContractBoard.swift": "4e6651d1eca355e78b4ae90e60295b6c4f8b19ea072654e3aaafd40297c8be8f",
+        "Tests/EliteCoreTests/ScriptContractTests.swift": "bb42a6743a2a8a77297b77bce890fb801b19bbcd248f84783c5ea6829bcf3657"
+      },
+      "patch_sha256": "03244c64a1c4031a8fc89dbf2cf18a0bd65d6a00201729ebf5de0862ea0b276e",
+      "scope": "Coherent caller-lifetime repair including actual contract-board list/detail and specialized/ordinary review dispatch; original guards/data/authority preserved.",
+      "fixture_note": "New UI regression obtains its genuine generated board from GameRuntime with real saveURL before snapshot-only UI checks; no durability flag or native authority fabricated."
+    },
+    "source_review": "CLEAR: no actionable findings in added UI lifetime delta",
+    "checks": [
+      "Exact base, six source hashes and full patch hash verified; prior four hashes unchanged.",
+      "Specialized review phase byte-identical after changing early return to return true; terminal false preserves ordinary fallback.",
+      "Ordinary preview body byte-identical; reviewToken still refreshed before any specialized branch.",
+      "Mechanically undoing only two extractions/noninline annotation reconstructs entire original ContractBoard.swift exactly, preserving detail actions, clearing, error handling, navigation defer and branch order.",
+      "No actor/concurrency/authority/schema/representation changes; intended noninline sibling boundaries avoid unrelated local review/action buffers during preview.",
+      "New regression uses real ordinary offers and disabled presentation-only provider row, checks token/presentation change, Back/Escape, quote clearing and denied confirmation property."
+    ],
+    "limits": [
+      "No measured stack/frame/runtime improvement claim.",
+      "Current prior normal27PASS and ASANfailure remain v2-scoped.",
+      "Reviewer executed no tests/builds/probes/fixes."
+    ],
+    "normal": {
+      "status": "PASS: independently verified supplied focused evidence",
+      "result": "/tmp/elite-m01-contract-lifetimes-v3-normal-result.json",
+      "result_sha256": "5876f3beb659711b9e36ad7e5d038d7e3597178127d929178eaf4bc8304618ac",
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v3-normal.log": {
+          "bytes": 10368,
+          "sha256": "cff69bd04fd914139f3f1c468f4370ddcae3058aa8d70115cd5872b729582c06"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v3-normal-swift-testing.xml": {
+          "bytes": 5050,
+          "sha256": "4f97a7c42adaa92bad172d8aa4534027160be528b9a0e75e1607920faba65f9a"
+        }
+      },
+      "source_before_after_exact": true,
+      "exit_code": 0,
+      "expected_actual_unique_methods": 31,
+      "fail_error_skip_duplicate_missing_extra": 0,
+      "framework_suites": 7,
+      "framework_seconds": 34.661,
+      "build_seconds": 53.95,
+      "process_wall_seconds": 91.8103195829317,
+      "selection": "Source declarations of3complete suites+16explicit filter methods exactly equal XML method inventory.",
+      "limits": "Current source focused normal only; prior fixture failure preserved; ASANpending. No reviewerexecution."
+    },
+    "asan": {
+      "status": "FAILED; repair incomplete and not runtime/merge qualified",
+      "result": "/tmp/elite-m01-contract-lifetimes-v3-failure/elite-m01-contract-lifetimes-v3-asan-result.json",
+      "exit_code": 1,
+      "process_wall_seconds": 109.23578250035644,
+      "build_seconds": 71.52,
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v3-asan.log": {
+          "bytes": 3612,
+          "sha256": "be09a0ce9ddd8171967534d27799ad56c11fa56741bff663d3aefffeddc70f15"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v3-asan-swift-testing.xml": {
+          "bytes": 52,
+          "sha256": "6edbe77098b9cbc5d4d33c4279d3def109144c23b8014d646fdd7793d16b20b3"
+        }
+      },
+      "all_preservation_hashes_verified": true,
+      "image_sha256": "34bc0fa8d68484fc3f85885f82a4d6ac031045044a854d624b72c13bc211d5ae",
+      "image_uuid": "9149c6bf-8a23-3940-9f9f-b2bf71ab5e4c",
+      "ips": "/tmp/elite-m01-contract-lifetimes-v3-failure/swiftpm-testing-helper-2026-10-25-045723.ips",
+      "ips_sha256": "7c0a4fe73d20f6fe9fcf7dab9fe538ec38419077cd36b73c2ffbc77b89fa7b63",
+      "pid": 28236,
+      "procLaunch": "2026-10-25 04:56:36.8890 +0000",
+      "faulting_thread": 1,
+      "sp": "0x16d5affa0",
+      "far": "0x16d5affa0",
+      "guard": [
+        "0x16d5ac000",
+        "0x16d5b0000"
+      ],
+      "actual_frames": [
+        "static ScriptValue.decodePrimitive(from:budget:)",
+        "static ScriptValue.decodeStored(from:typed:budget:)",
+        "ScriptValue.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance ScriptValue",
+        "dispatch thunk of Decodable.init(from:)",
+        "JSONDecoderImpl.unwrap<A, B>(_:as:for:_:)",
+        "JSONDecoderImpl.KeyedContainer.decode<A>(_:forKey:)",
+        "protocol witness for KeyedDecodingContainerProtocol.decode<A>(_:forKey:) in conformance JSONDecoderImpl.KeyedContainer<A>",
+        "protocol witness for KeyedDecodingContainerProtocol.decode<A>(_:forKey:) in conformance JSONDecoderImpl.KeyedContainer<A>",
+        "_KeyedDecodingContainerBox.decode<A, B>(_:forKey:)",
+        "Dictionary<>.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance <> [A : B]",
+        "dispatch thunk of Decodable.init(from:)",
+        "JSONDecoderImpl.decode<A>(_:)",
+        "protocol witness for SingleValueDecodingContainer.decode<A>(_:) in conformance JSONDecoderImpl",
+        "dispatch thunk of SingleValueDecodingContainer.decode<A>(_:)",
+        "static ScriptValue.decodePrimitive(from:budget:)",
+        "static ScriptValue.decodeStored(from:typed:budget:)",
+        "ScriptValue.init(from:)",
+        "protocol witness for Decodable.init(from:) in conformance ScriptValue",
+        "dispatch thunk of Decodable.init(from:)",
+        "specialized JSONDecoderImpl.unwrap<A, B>(_:as:for:_:)",
+        "partial apply for closure #1 in JSONDecoder.decode<A>(_:from:)",
+        "closure #1 in JSONDecoder._decode<A>(_:from:)",
+        "partial apply for closure #1 in JSONDecoder._decode<A>(_:from:)",
+        "closure #1 in static JSONDecoder.withUTF8Representation<A>(of:_:)",
+        "partial apply for closure #1 in static JSONDecoder.withUTF8Representation<A>(of:_:)",
+        "Data.withBufferView<A>(_:)",
+        "JSONDecoder.decode<A>(_:from:)",
+        "dispatch thunk of JSONDecoder.decode<A>(_:from:)",
+        "ScriptFreightPlan.parameters.getter",
+        "ScriptFreightPlan.matches(_:)",
+        "closure #1 in ScriptContractOffer.valid.getter",
+        "partial apply for closure #1 in ScriptContractOffer.valid.getter",
+        "Optional.map<A, B>(_:)",
+        "ScriptContractOffer.valid.getter",
+        "static ScriptFreightGeneration.valid(_:)",
+        "ScriptOwnedCargoState.valid(state:engine:)",
+        "Commander.freightStateValid(_:)",
+        "closure #1 in Commander.freightCargoValid.getter",
+        "partial apply for closure #1 in Commander.freightCargoValid.getter",
+        "Sequence.allSatisfy(_:)",
+        "Commander.freightCargoValid.getter",
+        "Commander.validAfterEquipment()",
+        "Commander.valid.getter",
+        "Game.stationPassengerQuote(_:)",
+        "closure #1 in Game.stationPassengerRows.getter",
+        "partial apply for closure #1 in Game.stationPassengerRows.getter",
+        "Collection.map<A, B>(_:)",
+        "Game.stationPassengerRows.getter",
+        "Game.nativePeopleRows.getter",
+        "Game.refreshContractRows(failures:restoring:)",
+        "Game.applyContractDetailKey(_:)",
+        "Game.applyContractBoardKey(_:)",
+        "Game.contractBoardKey(_:)",
+        "Game.interfaceKey(_:)",
+        "Game.key(_:)",
+        "GameRuntime.applyPlainGameKey(_:)",
+        "GameRuntime.applyKey(_:)",
+        "GameRuntime.keyAfterGallery(_:)",
+        "GameRuntime.key(_:)",
+        "acceptFreshSupply(_:)",
+        "FreshMainStationStartTests.ordinaryFreshOrRecoveryStartAcceptsRealArlenTermsWithoutFlight(recovery:)",
+        "static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_17Z39f13a2ae35ce3c7fMu_@Sendable (recovery:)",
+        "implicit closure #1 in static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_25generator39f13a2ae35ce3c7fMu_@Sendable ()",
+        "partial apply for implicit closure #1 in static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_25generator39f13a2ae35ce3c7fMu_@Sendable ()",
+        "closure #1 in closure #2 in Test.Case.Generator.init<>(arguments:parameters:testFunction:)",
+        "partial apply for closure #1 in closure #2 in Test.Case.Generator.init<>(arguments:parameters:testFunction:)",
+        "specialized static Runner._applyScopingTraits(for:testCase:_:)",
+        "specialized closure #1 in closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "partial apply for closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Issue.withErrorRecording(at:configuration:isolation:_:)",
+        "closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "partial apply for closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized closure #1 in TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized static Test.Case.withCurrent<A>(_:perform:)",
+        "static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Runner._runTestCase(_:within:in:)",
+        "closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "partial apply for closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+        "partial apply for thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+        "specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "partial apply for specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "completeTaskWithClosure(swift::AsyncContext*, swift::SwiftError*)"
+      ],
+      "attribution": "Later detail-confirmation/post-action row refresh: freight decode\u2192commander freight cargo validation\u2192station passenger quote/rows/native people rows\u2192refreshContractRows\u2192applyContractDetailKey\u2192fresh consumer. Distinct from prior quote/event-validation stack.",
+      "limits": [
+        "No full summary;52-byte incomplete XML; no focused PASS.",
+        "Observer too late/empty per G1; no independent sole-helper association claimed. Raw IPS/image UUID and preserved source/patch identities verified.",
+        "No heap-error/compiler-cause claim; reviewer read retained artifacts only, no execution/probe/replay."
+      ]
+    },
+    "fixture_correction": {
+      "review": "CLEAR: exact new-test signature async plus real GameRuntime/saveURL setup; all other test/source bytes unchanged. Real durable board generation replaces unbound direct open; no authority/durability bypass.",
+      "previous_source_manifest": {
+        "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+        "files": {
+          "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+          "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+          "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+          "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+          "Sources/EliteCore/ContractBoard.swift": "4e6651d1eca355e78b4ae90e60295b6c4f8b19ea072654e3aaafd40297c8be8f",
+          "Tests/EliteCoreTests/ScriptContractTests.swift": "b8dc34b4473c877cd361e960926cf932a3f45a71c113d32782215bdc6466dac1"
+        },
+        "patch_sha256": "3ffe53c6ec9503955e19d42c11ffc91fa36f8c53733b49820d67adf589ae776a",
+        "scope": "Coherent caller-lifetime repair including actual contract-board list/detail and specialized/ordinary review dispatch; original guards/data/authority preserved."
+      },
+      "prior_normal_attempt": {
+        "status": "FAILED: one new fixture requirement failure;30 other cases passed",
+        "exit_code": 1,
+        "testcases": 31,
+        "failed_case": "listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty()",
+        "failure": "<testcase classname=\"EliteCoreTests\" name=\"listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty()\" time=\"8.71809225\">\n      <failure message=\"Expectation failed: game.contractBoard.selected.offer (error)\" />\n    </testcase>\n    ",
+        "outputs_verified": {
+          "/tmp/elite-m01-contract-lifetimes-v3-fixture-refusal.log": {
+            "sha256": "455163efcb477cdbb180f6a7aa0bd5b6f047edab08c4ff152f9ec73eae41f682",
+            "bytes": 13426
+          },
+          "/tmp/elite-m01-contract-lifetimes-v3-fixture-refusal-swift-testing.xml": {
+            "sha256": "ed128cb5d179eeed9d45c57f0a50db432315756660ea4c510e99abf251cf52ec",
+            "bytes": 5150
+          }
+        }
+      },
+      "limits": "Prior failure retained; corrected-source normal/ASAN pending; no reviewer execution."
+    }
+  },
+  "incremental_v4": {
+    "source_manifest": {
+      "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+      "files": {
+        "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+        "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+        "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+        "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+        "Sources/EliteCore/ContractBoard.swift": "4e6651d1eca355e78b4ae90e60295b6c4f8b19ea072654e3aaafd40297c8be8f",
+        "Tests/EliteCoreTests/ScriptContractTests.swift": "bb42a6743a2a8a77297b77bce890fb801b19bbcd248f84783c5ea6829bcf3657",
+        "Sources/EliteCore/ScriptFreightGeneration.swift": "5bbfb7acda7c9c194f0611d4f76891671b1144a70eadeca8b478efe55e7573f9",
+        "Sources/EliteCore/ScriptFreightParameters.swift": "b884ddb39e57069b3b0ba5f073d107c9ed4bc665aa84e7bc45a689614216d93f",
+        "Tests/EliteCoreTests/ScriptFreightParametersTests.swift": "4861732e1f67f503f8cca772c998bb924cad071edff51ff4138f9479279ec88e"
+      },
+      "patch_sha256": "c0a83d0d635abfc5f8a2e946f1d45ef12c54c4ca8a343ff1a36bd67fdc5b1d96",
+      "patch_command": "git diff HEAD -- <all nine manifest files>; new files staged so included",
+      "scope": "Approved direct closed-schema freight projection, scalar-only Double/Int64 codec normalisation; no nested typed-plan-to-ScriptValue JSON decode, stored representation, untrusted decoder or authority change."
+    },
+    "source_review": "CHANGES REQUIRED: legacy string/collection refusal parity omitted",
+    "findings": [
+      {
+        "priority": 2,
+        "file": "Sources/EliteCore/ScriptFreightParameters.swift",
+        "line": 7,
+        "title": "Preserve legacy individual string and array limits",
+        "detail": "Original plain ScriptValue JSON decode unconditionally rejects String UTF8 count>262144 and array count>16384 (ScriptValueStorage.chargeString/checkArray), even without optional DecodeBudget. Projector currently accepts all typed leaves/arrays directly. Example oversized template.title or path/draws/capabilities/bondedHazardTiers yields nonnil instead of legacy nil. Preserve all variable string leaves (including capabilities elements) and array bounds, with differential exact/over-boundary regressions. Do not introduce aggregate byte/value budget absent from original plain decoder."
+      }
+    ],
+    "other_checks": [
+      "Exact9filemanifest/full git diff HEAD hash verified; prior6files unchanged.",
+      "Closed keys inspected against plan/content CodingKeys and synthesized reach/origin/template/bondedQuote/supply Codable fields: matching current schema and nil omission.",
+      "UUID uuidString and integer conversions preserve arm64 typed value domain.",
+      "Scalar number helper retains Foundation decimal Int64 normalization, avoids recursive ScriptValue decode; finite Double output otherwise unchanged; nonfinite refuses.",
+      "New oracle uses original whole-plan codec and covers generated profiles, optionals/navigation, Unicode/UUID/int bounds and numeric/nonfinite cases; missing size-limit cases identified."
+    ],
+    "limits": [
+      "No build/test/probe executed by reviewer.",
+      "No measured stack/performance benefit claim.",
+      "Prior tests/results remain tied to prior source; current result qualification pending."
+    ],
+    "normal": {
+      "status": "PASS for preserved pre-correction v4 only; size finding still applied",
+      "result": "/tmp/elite-m01-contract-lifetimes-v4-before-size-correction/elite-m01-contract-lifetimes-v4-normal-result.json",
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v4-normal.log": {
+          "bytes": 17570,
+          "sha256": "3b0aedca25aa4a4ff2efabfd8ea933741e7163f05ac44e2c2812580988c06814"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v4-normal-swift-testing.xml": {
+          "bytes": 6311,
+          "sha256": "f07fcd4faf6863cd404c2807dcd89b2ad1c7f6fa9bb4b63757d00713144887b5"
+        }
+      },
+      "exact_unique_selected_methods": 40,
+      "failure_error_skip_duplicate_missing_extra": 0,
+      "framework_suites": 8,
+      "framework_seconds": 32.937,
+      "process_wall_seconds": 152.01474162517115,
+      "source_preserved_exact": true,
+      "asan": "not run"
+    },
+    "asan": {
+      "status": "not qualified"
+    }
+  },
+  "incremental_v5": {
+    "source_manifest": {
+      "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+      "files": {
+        "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+        "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+        "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+        "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+        "Sources/EliteCore/ContractBoard.swift": "4e6651d1eca355e78b4ae90e60295b6c4f8b19ea072654e3aaafd40297c8be8f",
+        "Tests/EliteCoreTests/ScriptContractTests.swift": "bb42a6743a2a8a77297b77bce890fb801b19bbcd248f84783c5ea6829bcf3657",
+        "Sources/EliteCore/ScriptFreightGeneration.swift": "5bbfb7acda7c9c194f0611d4f76891671b1144a70eadeca8b478efe55e7573f9",
+        "Sources/EliteCore/ScriptFreightParameters.swift": "fdd044bac994081ae52f2be1df3e53ddd1c7b2902e02ca42795fb660c4759e75",
+        "Tests/EliteCoreTests/ScriptFreightParametersTests.swift": "528ddd09ef89e4d60e3ed8e36c52fa8c011de5dc45e679cb3eef48f1d163b919"
+      },
+      "patch_sha256": "bafae197ce92e333591b8a9e1e522cdae5ecf8b3fefa562f3b48b887ef6efbd6",
+      "patch_command": "git diff HEAD -- <all nine manifest files>; new files staged so included",
+      "scope": "Approved direct closed-schema freight projection, scalar-only Double/Int64 codec normalisation; no nested typed-plan-to-ScriptValue JSON decode, stored representation, untrusted decoder or authority change.",
+      "size_limit_note": "Every projected string UTF8<=262144, each variable array count<=16384; no aggregate budget, fixed schema depth/key counts unchanged."
+    },
+    "source_review": "CLEAR: prior individual string/array limit finding corrected",
+    "checks": [
+      "Exact9filehashes/fullpatch verified; prior7files unchanged.",
+      "Removing only new limit helper+guard reconstructs prior helper hash; removing2new tests reconstructs prior test hash. Schema/scalar helper unchanged.",
+      "Limits cover16 fixed string leaves including UUID plus2optional supply leaves and every capability element:UTF8<=262144. All4 variable arrays<=16384. Fixed keys/depth below old limits.",
+      "No aggregate budget introduced, matching old plain decoder without userInfo budget.",
+      "Differential tests cover18variable string positions at262144/262145 UTF8 bytes, combined large strings without aggregate cap,4arrays at16384/16385. UUID leaf fixed36bytes; existing UUID parity test retained."
+    ],
+    "limits": [
+      "Current normal5method delta/full42method ASAN pending; prior40normal only historical v4.",
+      "Reviewer executed no build/test/probe/fix; no measured performance claim."
+    ],
+    "normal": {
+      "status": "PASS: current affected five-method parity scope",
+      "result": "/tmp/elite-m01-contract-lifetimes-v5-normal-result.json",
+      "result_sha256": "1b60b7b933933a6ecfe56edca203ffc2a1d99ce64584d08e3829d0265df302ff",
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v5-normal.log": {
+          "bytes": 2490,
+          "sha256": "456283e8ed3b8cb129911e96731535905fc996923d48d7103b51a31734da6daf"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v5-normal-swift-testing.xml": {
+          "bytes": 970,
+          "sha256": "cd18f4ba1d6d539d2fd7dba7e718f3522bb00010b9296b85323327c04e75233c"
+        }
+      },
+      "source_before_after_exact": true,
+      "exit_code": 0,
+      "exact_unique_selected_methods": 5,
+      "failure_error_skip_duplicate_missing_extra": 0,
+      "framework_suites": 1,
+      "framework_seconds": 8.893,
+      "build_seconds": 68.69,
+      "process_wall_seconds": 80.63740541692823,
+      "limits": "Current affected delta only; prior40normal remains v4-scoped. Full42ASANpending; no reviewerexecution."
+    },
+    "asan": {
+      "status": "FAILED; repair incomplete/not runtime or merge qualified",
+      "result": "/tmp/elite-m01-contract-lifetimes-v5-failure/elite-m01-contract-lifetimes-v5-asan-result.json",
+      "exit_code": 1,
+      "process_wall_seconds": 132.57093041669577,
+      "build_seconds": 95.04,
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v5-asan.log": {
+          "bytes": 6588,
+          "sha256": "853eca461ac2c6caf7143472992dd236141969b9d4b0f458ddeb6369e2ad3de5"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v5-asan-swift-testing.xml": {
+          "bytes": 52,
+          "sha256": "6edbe77098b9cbc5d4d33c4279d3def109144c23b8014d646fdd7793d16b20b3"
+        }
+      },
+      "all_preservation_hashes_verified": true,
+      "image_sha256": "3b0cfe0a8a18997ecf8b4556abf053f939a18ee056d125f02f5e044ada581b60",
+      "image_uuid": "6a49f166-39ce-37ba-a2a6-9dc49ac282aa",
+      "ips": "/tmp/elite-m01-contract-lifetimes-v5-failure/swiftpm-testing-helper-2026-10-25-051414.ips",
+      "ips_sha256": "52b934098cc9612d916463aa4831e1b19eb34e68dbd7d40af54c0c6d57da91f7",
+      "pid": 47995,
+      "procLaunch": "2026-10-25 05:13:27.5663 +0000",
+      "observer": {
+        "observed_utc": "2026-10-25T05:13:58.701078+00:00",
+        "session": 14325,
+        "driver": [
+          "45222",
+          "45155",
+          "Sun Oct 25 05:11:48 2026     /Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/bin/swift-test"
+        ],
+        "helper": [
+          "47995",
+          "45222",
+          "Sun Oct 25 05:13:27 2026     /Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper"
+        ],
+        "limit": "Read-only process metadata of the sole owned run; no debugger, probe, or result inferred."
+      },
+      "observer_sha256": "064fdf5124407063c5243637e3642a04dad617544c241dac53f98c8b19253f8c",
+      "observer_join": "Live observed helper PID47995 parent45222 matches driver; second-resolution launch matches rawIPS; observed before failure. Process command metadata has executable names only, not full arguments/image path. Image association independently UUID-matched.",
+      "faulting_thread": 1,
+      "sp": "0x16fc7bc80",
+      "far": "0x16fc7bc40",
+      "guard": [
+        "0x16fc78000",
+        "0x16fc7c000"
+      ],
+      "actual_frames": [
+        "__asan_alloca_poison",
+        "ScriptFreightPlan.matches(_:)",
+        "closure #1 in ScriptContractOffer.valid.getter",
+        "partial apply for closure #1 in ScriptContractOffer.valid.getter",
+        "Optional.map<A, B>(_:)",
+        "ScriptContractOffer.valid.getter",
+        "static ScriptFreightGeneration.valid(_:)",
+        "ScriptOwnedCargoState.valid(state:engine:)",
+        "Commander.freightStateValid(_:)",
+        "closure #3 in Commander.contractsValid.getter",
+        "thunk for @callee_guaranteed (@in_guaranteed UUID, @guaranteed ScriptInstance) -> (@unowned Bool)",
+        "partial apply for thunk for @callee_guaranteed (@in_guaranteed UUID, @guaranteed ScriptInstance) -> (@unowned Bool)",
+        "Sequence.allSatisfy(_:)",
+        "Commander.contractsValid.getter",
+        "Commander.validAfterEquipment()",
+        "Commander.valid.getter",
+        "Game.stationPassengerQuote(_:)",
+        "closure #1 in Game.stationPassengerRows.getter",
+        "partial apply for closure #1 in Game.stationPassengerRows.getter",
+        "Collection.map<A, B>(_:)",
+        "Game.stationPassengerRows.getter",
+        "Game.nativePeopleRows.getter",
+        "Game.refreshContractRows(failures:restoring:)",
+        "Game.applyContractDetailKey(_:)",
+        "Game.applyContractBoardKey(_:)",
+        "Game.contractBoardKey(_:)",
+        "Game.interfaceKey(_:)",
+        "Game.key(_:)",
+        "GameRuntime.applyPlainGameKey(_:)",
+        "GameRuntime.applyKey(_:)",
+        "GameRuntime.keyAfterGallery(_:)",
+        "GameRuntime.key(_:)",
+        "acceptFreshSupply(_:)",
+        "FreshMainStationStartTests.ordinaryFreshOrRecoveryStartAcceptsRealArlenTermsWithoutFlight(recovery:)",
+        "static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_17Z39f13a2ae35ce3c7fMu_@Sendable (recovery:)",
+        "implicit closure #1 in static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_25generator39f13a2ae35ce3c7fMu_@Sendable ()",
+        "partial apply for implicit closure #1 in static FreshMainStationStartTests.$s14EliteCoreTests021FreshMainStationStartC0V08ordinaryd10OrRecoveryG34AcceptsRealArlenTermsWithoutFlight4TestfMp_25generator39f13a2ae35ce3c7fMu_@Sendable ()",
+        "closure #1 in closure #2 in Test.Case.Generator.init<>(arguments:parameters:testFunction:)",
+        "partial apply for closure #1 in closure #2 in Test.Case.Generator.init<>(arguments:parameters:testFunction:)",
+        "specialized static Runner._applyScopingTraits(for:testCase:_:)",
+        "specialized closure #1 in closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "partial apply for closure #1 in closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Issue.withErrorRecording(at:configuration:isolation:_:)",
+        "closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "partial apply for closure #1 in static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized closure #1 in TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized TestCancellable.withCancellationHandling<A>(_:)",
+        "specialized static Test.Case.withCurrent<A>(_:perform:)",
+        "static Runner._runSingleTestCaseIteration(_:within:)",
+        "specialized static Runner._runTestCase(_:within:in:)",
+        "closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "partial apply for closure #4 in static Runner._runTestCases<A>(_:within:context:)",
+        "thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+        "partial apply for thunk for @escaping @callee_guaranteed @Sendable @async (@unowned Int, @in_guaranteed Test.Case) -> ()",
+        "specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "partial apply for specialized closure #1 in closure #1 in static Runner._forEach<A, B>(in:namingTasksWith:_:)",
+        "completeTaskWithClosure(swift::AsyncContext*, swift::SwiftError*)"
+      ],
+      "attribution": "__asan_alloca_poison\u2192ScriptFreightPlan.matches\u2192offer/generation\u2192owned cargo/Commander.contractsValid\u2192passenger quote/rows\u2192refreshContractRows/detail\u2192fresh method. Recursive JSON decode absent from actual stack.",
+      "limits": [
+        "52-byte incomplete XML; no full framework summary or focused PASS claim.",
+        "No heap error or compiler cause inferred.",
+        "No reviewer build/test/probe/fix/replay or unchanged-source review."
+      ]
+    },
+    "ownership_correction": {
+      "previous_source_manifest": {
+        "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+        "files": {
+          "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+          "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+          "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+          "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+          "Sources/EliteCore/ContractBoard.swift": "4e6651d1eca355e78b4ae90e60295b6c4f8b19ea072654e3aaafd40297c8be8f",
+          "Tests/EliteCoreTests/ScriptContractTests.swift": "bb42a6743a2a8a77297b77bce890fb801b19bbcd248f84783c5ea6829bcf3657",
+          "Sources/EliteCore/ScriptFreightGeneration.swift": "5bbfb7acda7c9c194f0611d4f76891671b1144a70eadeca8b478efe55e7573f9",
+          "Sources/EliteCore/ScriptFreightParameters.swift": "2ba97d4afc2a1c7d5663d509bc5a3def3f543b2233d7bd6c76acafa0249b4e03",
+          "Tests/EliteCoreTests/ScriptFreightParametersTests.swift": "528ddd09ef89e4d60e3ed8e36c52fa8c011de5dc45e679cb3eef48f1d163b919"
+        },
+        "patch_sha256": "3b00fcee6e64a72627161d4fe33b42e596ab3a1d6164cd497e0518914b4566d9",
+        "patch_command": "git diff HEAD -- <all nine manifest files>; new files staged so included",
+        "scope": "Approved direct closed-schema freight projection, scalar-only Double/Int64 codec normalisation; no nested typed-plan-to-ScriptValue JSON decode, stored representation, untrusted decoder or authority change.",
+        "size_limit_note": "Every projected string UTF8<=262144, each variable array count<=16384; no aggregate budget, fixed schema depth/key counts unchanged."
+      },
+      "review": "CLEAR: only short-circuit AND replaced with guard false then capability return; exact condition order/boolean result preserved without consuming autoclosure capture.",
+      "build_refusal": {
+        "result": "/tmp/elite-m01-contract-lifetimes-v5-build-refusal-result.json",
+        "log_sha256": "1c0e0a44b371eed722ce8763f76a87860bfa1e0d851c680f9fc4aaa0f6241a3a",
+        "exit_code": 1,
+        "test_bodies_executed": false
+      }
+    }
+  },
+  "incremental_v6": {
+    "source_manifest": {
+      "base_head": "ee8d62f1ee2b04cae983a9be5268edd57790d38e",
+      "files": {
+        "Sources/EliteCore/OriginalContractOfferPolicy.swift": "de892c815b114b883c33760dd19f6a219bbfa0a3dc847d5605d320046365f291",
+        "Sources/EliteCore/ScriptContractCore.swift": "99f542cb27f2436211b3039c1ef924b24f45c6428620167badba1b2975ba590c",
+        "Sources/EliteCore/ScriptDirector.swift": "e94756cefcd8473b5b7351dee19dc5c8466ce1a7b8a16d106f1d54c6bf595599",
+        "Tests/EliteCoreTests/ScriptAcceptancePreparationTests.swift": "b32108178f59f34423e2e970de1c2ecca1c94b5f8d3c2947a9314787e4e322ff",
+        "Sources/EliteCore/ContractBoard.swift": "78305687d8f1ac60f8093db3861e377884f9fb39b7fe249e685da2ba99cc457e",
+        "Tests/EliteCoreTests/ScriptContractTests.swift": "1cfb5a446fe01365f0d785bab135204865503f72dc6b62148bf183d6814eb69c",
+        "Sources/EliteCore/ScriptFreightGeneration.swift": "5bbfb7acda7c9c194f0611d4f76891671b1144a70eadeca8b478efe55e7573f9",
+        "Sources/EliteCore/ScriptFreightParameters.swift": "fdd044bac994081ae52f2be1df3e53ddd1c7b2902e02ca42795fb660c4759e75",
+        "Tests/EliteCoreTests/ScriptFreightParametersTests.swift": "528ddd09ef89e4d60e3ed8e36c52fa8c011de5dc45e679cb3eef48f1d163b919"
+      },
+      "patch_sha256": "d7ed5da5ca244c48b62e226a7cc24b0e14a3236243f80183c4193c75cdfb5cf6",
+      "patch_command": "git diff HEAD -- <all nine manifest files>; new files staged so included",
+      "scope": "Approved direct closed-schema freight projection, scalar-only Double/Int64 codec normalisation; no nested typed-plan-to-ScriptValue JSON decode, stored representation, untrusted decoder or authority change.",
+      "size_limit_note": "Every projected string UTF8<=262144, each variable array count<=16384; no aggregate budget, fixed schema depth/key counts unchanged.",
+      "transient_representation_note": "Approved immutable zero/one-element typed Array row offer storage, read-only public getter, explicit equivalent initializer, indirect private review enum; saved/Codable representation and authority unchanged."
+    },
+    "source_review": "CLEAR: no actionable findings in transient representation delta",
+    "checks": [
+      "Exact9hashes/fullpatch verified;7otherfiles unchanged.",
+      "Reversing only offer storage/getter, explicitinitializer with metadata nil defaults moved into parameters, whitespace and indirect enum keyword reconstructs prior entire ContractBoard.swift hash.",
+      "Initializer exact field-label order/defaults and every metadata assignment checked;20optionalmetadata nil defaults preserved. Required board/offer/title/reason unchanged.",
+      "Private let typed Array stores zero/one offer with no mutation API; optional public getter returns value; Array COW preserves detached offer mutations. Row metadata independent value fields.",
+      "Private indirect review enum preserves cases/accessors/clearing; compiler-checked Sendable retained, no unchecked/cache/shared mutable state.",
+      "New genuine-save test checks metadata/source-offer independence,nil/replacement offers,ordinary/specialized copy/clear independence,detached resource snapshots. Existing navigation/refusal checks unchanged."
+    ],
+    "limits": [
+      "No measured stack/performance claim; extra heap allocation/reference counting bounded to transient UI data.",
+      "Affected11normal/full43ASAN pending; prior results retain original scope.",
+      "No reviewer build/test/probe/fix or unchanged review."
+    ],
+    "normal": {
+      "status": "PASS: current affected11method scope independently verified",
+      "result": "/tmp/elite-m01-contract-lifetimes-v6-normal-result.json",
+      "result_sha256": "eedc75394899108bbd261fc02c14f2a276d58072369a4e2d77ba264344690c7c",
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v6-normal.log": {
+          "bytes": 7332,
+          "sha256": "1f0b51090d440cbe042953251245b5757234eef6fadd29015e8c94fa22e2260e"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v6-normal-swift-testing.xml": {
+          "bytes": 1936,
+          "sha256": "a43a06eac9478c6b4cde65fc9418e9a893eb94268df850083cb188a894404879"
+        }
+      },
+      "source_before_after_exact": true,
+      "exit_code": 0,
+      "exact_unique_selected_methods": 11,
+      "failure_error_skip_duplicate_missing_extra": 0,
+      "framework_suites": 2,
+      "framework_seconds": 31.507,
+      "build_seconds": 127.2,
+      "process_wall_seconds": 162.68201370770112,
+      "limits": "Affectednormal only;43methodASANpending;no reviewerexecution."
+    },
+    "asan": {
+      "status": "PASS: exact43method focused current-source scope independently verified",
+      "result": "/tmp/elite-m01-contract-lifetimes-v6-asan-result.json",
+      "result_sha256": "b339a3a8c5fa36c9911edc943d81eaa9ef3fac9028cab1a912c4406005d70d1d",
+      "outputs": {
+        "/tmp/elite-m01-contract-lifetimes-v6-asan.log": {
+          "bytes": 18066,
+          "sha256": "f9c64ec1e68f6be16ffc4ba4d6d175a7b88b90b84764290dee8412ae2fea2d55"
+        },
+        "/tmp/elite-m01-contract-lifetimes-v6-asan-swift-testing.xml": {
+          "bytes": 6738,
+          "sha256": "2ad0489e8f1bc4abae415012ba1c49b9cc67a1a235d8cfde200918f2181f2cd4"
+        }
+      },
+      "source_before_after_exact": true,
+      "exit_code": 0,
+      "exact_unique_selected_methods": 43,
+      "failure_error_skip_duplicate_missing_extra": 0,
+      "framework_suites": 8,
+      "framework_seconds": 155.475,
+      "build_seconds": 102.34,
+      "process_wall_seconds": 262.888767584227,
+      "sanitizer_error_markers_found": 0,
+      "tested_image": {
+        "sha256": "a82852c940643b324695f157ff7ebe0af194f8bf12bbaab1baa3cee72cad3349",
+        "bytes": 459883744,
+        "uuid": "UUID: D36A15B6-E25B-35B9-A7B0-33B5D09414E0 (arm64) .build/asan/out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests"
+      },
+      "preserved_image": "/tmp/elite-m01-contract-lifetimes-v6-passed/EliteCoreTests",
+      "parsed_image_uuid": "d36a15b6-e25b-35b9-a7b0-33b5d09414e0",
+      "observer": {
+        "observed_utc": "2026-10-25T05:29:22.942625+00:00",
+        "session": 20864,
+        "driver": [
+          "63686",
+          "63614",
+          "Sun Oct 25 05:27:03 2026     /Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/bin/swift-test"
+        ],
+        "helper": [
+          "66512",
+          "63686",
+          "Sun Oct 25 05:28:50 2026     /Users/sclarke/Library/Developer/Toolchains/swift-6.4.1-RELEASE.xctoolchain/usr/libexec/swift/pm/swiftpm-testing-helper"
+        ],
+        "limit": "Read-only process metadata of the sole owned run; no debugger, probe, or result inferred."
+      },
+      "observer_sha256": "3d74d0383f1a3a711e9566a8373ee2e09a7725390a8380168c5778c96df2e9aa",
+      "observer_limit": "Helper66512/parent63686 joined to observed driver; command metadata contains executable names only, not fullargs/imagepath. No independent actual runtime image UUID observation beyond postrun preserved tested image.",
+      "limits": [
+        "FocusedASAN only,detect_leaks=0; no leak/fullquality/release claim.",
+        "No historical sanitizer reuse or unchangedsource rerun. Reviewer only read artifacts."
+      ]
+    }
+  },
+  "final_focused_disposition": {
+    "status": "Source CLEAR; latest affected normal11PASS and exact43ASANPASS qualify coherent packet for publication.",
+    "source_patch_sha256": "d7ed5da5ca244c48b62e226a7cc24b0e14a3236243f80183c4193c75cdfb5cf6",
+    "limits": "Full required final-head quality/review/release gates remain pending. Historical normal/ASAN attempts retain their own source scopes; no complete current43normalrun claimed.",
+    "receipt_status": "Frozen after final focused evidence append."
+  }
+}

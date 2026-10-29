@@ -1,0 +1,5 @@
+# Glass Meridian lacks the original Enmadan reservation audit
+
+Stage-three recovery retains the real original recorder, but Sorel cannot yet compare it with original booking and clock records. Inferring a ledger after scans or recovery would invent historical evidence. A new commission must issue the finite ledger, clock payloads and independent recorder calibration before any observation. An older unbound commission must stay unbound.
+
+The bounded stage-four change requires the actual living Enmadan main berth, both authentic Renas readings and held original recorder, current carrier/fitting, a writable non-trial commander and separate review/Confirm. Its private read boundary must derive the discrepancy, preserve the original 8kg cargo, and atomically record only the audit. Later original-recorder loss preserves that history with an actual later native sequence. No second capacity unit, player payment, hardware, completion receipt or clue is allowed. See [the implementation](PR-C01-reservation-audit.md).

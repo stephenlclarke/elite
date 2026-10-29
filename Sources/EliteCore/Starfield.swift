@@ -23,6 +23,29 @@ public struct Starfield: Sendable, Equatable {
     }
   }
 
+  /// Apply actual native-world camera motion without reconstructing its integration.
+  /// Invalid poses or derived points leave every star and the random stream unchanged.
+  @discardableResult
+  public mutating func advance(from startPose: ShipPose, to endPose: ShipPose) -> Bool {
+    guard startPose.position.finite, startPose.position.length.isFinite,
+      endPose.position.finite, endPose.position.length.isFinite,
+      startPose.orientation.validRotation, endPose.orientation.validRotation,
+      (startPose.orientation.x.cross(startPose.orientation.y) - startPose.orientation.z).length
+        < 0.0001,
+      (endPose.orientation.x.cross(endPose.orientation.y) - endPose.orientation.z).length < 0.0001
+    else { return false }
+    let moved = positions.map { endPose.shipPoint(startPose.systemPoint($0)) }
+    guard moved.allSatisfy({ $0.finite && $0.length.isFinite }) else { return false }
+    // An unchanged camera must not introduce rounding drift or consume random stars.
+    if startPose == endPose { return true }
+    for index in positions.indices {
+      var star = moved[index]
+      if star.length < 300 || star.length > 9000 { star = makeStar(distance: 7000) }
+      positions[index] = star
+    }
+    return true
+  }
+
   private mutating func makeStar(distance: Double) -> Vector3 {
     let z = unit() * 2 - 1
     let angle = unit() * 2 * .pi

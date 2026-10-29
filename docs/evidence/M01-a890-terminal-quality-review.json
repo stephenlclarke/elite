@@ -1,0 +1,243 @@
+{
+  "run": 40062040085,
+  "publishedHead": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+  "artifact": {
+    "id": 12552865052,
+    "compressedBytes": 73916845,
+    "downloadCount": 1,
+    "serverDigest": "sha256:07dc0b8051695184519eec4934a0a1cfcc212a129f63fa7adf68645ccbe8ea39"
+  },
+  "sourceCheck": {
+    "published": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+    "checkout": "2d4dab7a221d368d233e0d4ba5c0217e4e310221",
+    "trackedInputsCompared": 1879,
+    "differences": [],
+    "logSHA256": "8eeffabd291467cfe6c16be6357a8a8edb7a804973951a33874c58f7010cc1c7"
+  },
+  "allOriginalManifestHashesMatch": true,
+  "result": {
+    "stage": "normal coverage test execution",
+    "makeExitCode": 2,
+    "normalHelperExit": 1,
+    "durationSeconds": 10698.646589334,
+    "buildSeconds": 680.46,
+    "testSummary": "3395 tests failed after9718.235seconds with99issues",
+    "assertionRecords": 99,
+    "uniqueAssertionMethods": 55,
+    "failedMethodSummaryLines": 55,
+    "individualPassLines": 3258,
+    "normalXMLRetained": false,
+    "coveragePercentGateReached": false,
+    "TSANEstablished": false,
+    "ASANEstablished": false,
+    "leaksEstablished": false
+  },
+  "faultEvidence": {
+    "status": "target-exited",
+    "helperPID": 20834,
+    "started": "2026-10-24 04:38:24 UTC",
+    "observerHandedBack": true,
+    "interrupted": false,
+    "cleanupRequired": false,
+    "remainingAfterCleanup": {},
+    "crashReports": [],
+    "signalFaultMarkers": [],
+    "conclusion": "natural normal-test assertion failure; no recurring signal fault retained"
+  },
+  "previousRepairAndOwningMethodPasses": {
+    "actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce()": "\u2714 Test actualNaturalMiningTwelveOriginalScoopsProcessingAndSeparateReceiverPaysOnce() passed after 2409.852 seconds.",
+    "interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID()": "\u2714 Test interceptingArchivedPlasmaCannotFinishAnUnrelatedCurrentMissileWithTheSameEmissionID() passed after 6336.581 seconds.",
+    "actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation()": "\u2714 Test actualRingExtractionCapacityRefusalKeepsPowerHeatAndAttackAllocation() passed after 7409.497 seconds.",
+    "staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack()": "\u2714 Test staleOrMissingAuthoritativeRockRefusesBeforeAllocatingAnAttack() passed after 7409.497 seconds.",
+    "workToolCannotFireThroughShipsStationsOrCelestials()": "\u2714 Test workToolCannotFireThroughShipsStationsOrCelestials() passed after 7409.500 seconds.",
+    "reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent()": "\u2714 Test reviewedCatalogueRolesCargoFamiliesAndDeclaredCoverageAreConsistent() passed after 5984.072 seconds.",
+    "actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception()": "\u2714 Test actualAutomaticRecoveryCollectsTwelveOriginalsAndCompletesSeparateReception() passed after 4644.117 seconds.",
+    "nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling()": "\u2714 Test nativeEmitterActuallyWaitsForEnoughThermalHeadroomAfterCooling() passed after 5984.134 seconds.",
+    "evacuationGenuine47And48IndependentlyComposeG02G04G05G08(alien:composed:)": "\u2714 Test evacuationGenuine47And48IndependentlyComposeG02G04G05G08(alien:composed:) passed after 6133.268 seconds."
+  },
+  "newBlockerIssues": [
+    {
+      "key": "combat",
+      "url": "https://github.com/stephenlclarke/elite/issues/193",
+      "methods": [
+        "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice()",
+        "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit()",
+        "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder()",
+        "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty()",
+        "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+        "interceptedOrdnanceNeverBecomesAShipKillOrBounty()",
+        "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm()",
+        "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact()",
+        "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents(_:)",
+        "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty()",
+        "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock(_:)"
+      ]
+    },
+    {
+      "key": "shop",
+      "url": "https://github.com/stephenlclarke/elite/issues/194",
+      "methods": [
+        "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+        "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor()",
+        "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()"
+      ]
+    },
+    {
+      "key": "selection",
+      "url": "https://github.com/stephenlclarke/elite/issues/195",
+      "methods": [
+        "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+        "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width:)"
+      ]
+    },
+    {
+      "key": "native_fit",
+      "url": "https://github.com/stephenlclarke/elite/issues/196",
+      "methods": [
+        "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce()",
+        "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing()",
+        "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts()",
+        "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography()",
+        "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn()",
+        "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext()",
+        "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction()",
+        "nativeSalvageApproachDrawAndQPreserveFiniteCustody()",
+        "nativeMilitaryCoreCannotSubstituteForMiningModule()",
+        "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap()",
+        "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise()"
+      ]
+    },
+    {
+      "key": "raw_save",
+      "url": "https://github.com/stephenlclarke/elite/issues/197",
+      "methods": [
+        "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame()",
+        "nativeSaveIncludesEarlierQueuedCobraRestore()"
+      ]
+    },
+    {
+      "key": "loan",
+      "url": "https://github.com/stephenlclarke/elite/issues/198",
+      "methods": [
+        "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser()"
+      ]
+    },
+    {
+      "key": "stations",
+      "url": "https://github.com/stephenlclarke/elite/issues/199",
+      "methods": [
+        "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+        "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority()",
+        "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()"
+      ]
+    },
+    {
+      "key": "world",
+      "url": "https://github.com/stephenlclarke/elite/issues/200",
+      "methods": [
+        "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement(guided:)",
+        "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(shipID:)",
+        "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource()"
+      ]
+    },
+    {
+      "key": "chart",
+      "url": "https://github.com/stephenlclarke/elite/issues/201",
+      "methods": [
+        "actorPersistenceAndConcurrentCommands()"
+      ]
+    },
+    {
+      "key": "schema",
+      "url": "https://github.com/stephenlclarke/elite/issues/202",
+      "methods": [
+        "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()"
+      ]
+    },
+    {
+      "key": "ordnance",
+      "url": "https://github.com/stephenlclarke/elite/issues/203",
+      "methods": [
+        "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID()",
+        "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam()"
+      ]
+    },
+    {
+      "key": "g12_negative",
+      "url": "https://github.com/stephenlclarke/elite/issues/204",
+      "methods": [
+        "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction(reason:)"
+      ]
+    },
+    {
+      "key": "g12_rehash",
+      "url": "https://github.com/stephenlclarke/elite/issues/205",
+      "methods": [
+        "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)"
+      ]
+    },
+    {
+      "key": "reload",
+      "url": "https://github.com/stephenlclarke/elite/issues/206",
+      "methods": [
+        "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh()",
+        "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast()"
+      ]
+    },
+    {
+      "key": "native_projection",
+      "url": "https://github.com/stephenlclarke/elite/issues/207",
+      "methods": [
+        "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+        "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()"
+      ]
+    },
+    {
+      "key": "bounds",
+      "url": "https://github.com/stephenlclarke/elite/issues/208",
+      "methods": [
+        "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople()",
+        "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()"
+      ]
+    },
+    {
+      "key": "fire",
+      "url": "https://github.com/stephenlclarke/elite/issues/209",
+      "methods": [
+        "nativeFrameConversionAndInput()"
+      ]
+    },
+    {
+      "key": "textures",
+      "url": "https://github.com/stephenlclarke/elite/issues/210",
+      "methods": [
+        "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes()"
+      ]
+    },
+    {
+      "key": "gpu",
+      "url": "https://github.com/stephenlclarke/elite/issues/211",
+      "methods": [
+        "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer()",
+        "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages()"
+      ]
+    },
+    {
+      "key": "campaign",
+      "url": "https://github.com/stephenlclarke/elite/issues/212",
+      "methods": [
+        "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs()"
+      ]
+    },
+    {
+      "key": "courier",
+      "url": "https://github.com/stephenlclarke/elite/issues/213",
+      "methods": [
+        "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+        "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState()",
+        "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem()"
+      ]
+    }
+  ],
+  "limits": "No test/app/probe execution by reviewer. All previous8assertionmethods and185owner passed in this complete normal run; this does not establish quality because55othermethods failed. Keep185OPENpendingrequiredquality. Keep524isolatedunitPASS separate. Exact unproven causes explicitly marked in issues."
+}

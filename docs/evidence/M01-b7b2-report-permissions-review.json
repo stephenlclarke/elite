@@ -1,0 +1,37 @@
+{
+  "base": "b7b2026ed5baf0547d4deb24e75d587d82ee3b96",
+  "patch_sha256": "7569d94d6c4a62c1aa2c0eab79ccd59d953decfcad629f3ced01ac6786766e46",
+  "files": {
+    "README.md": "92bbf1ef9aec216574787f4189b39a32c8760e097ce8ca3f69a560251a2805ca",
+    "Tools/CI/sanitizer_checkpoints.py": "7bcbdba500410691aa81f200c8b4828519746cecc3195b0eb7060aeab17cdf47",
+    "Tools/CI/test_sanitizer_checkpoints.py": "057273fd377463321403a1f614b9e4be600b1998f4674809c558fdd902e1dd4b",
+    "docs/ISSUE-185-unfiltered-quality.md": "6c3daf93061fb584c899f0b686acbd3548b7670fa725a0d860da6519f51afadd",
+    "docs/PR-185-unfiltered-quality.md": "a8a300c0f47d22c617809dde29105fbad17ddb973fc5e912ac49cbf4b40816b6"
+  },
+  "actual_file_hashes_match": {
+    "README.md": true,
+    "Tools/CI/sanitizer_checkpoints.py": true,
+    "Tools/CI/test_sanitizer_checkpoints.py": true,
+    "docs/ISSUE-185-unfiltered-quality.md": true,
+    "docs/PR-185-unfiltered-quality.md": true
+  },
+  "result": "CLEAR: narrow disposable report permissions repair; no actionable bugs/performance/style findings",
+  "assessment": [
+    "copy_report verifies source tree ownership/modes/no symlinks before creating destination; copies file data only, normalizes derived root/nested directories0700 and files0600.",
+    "Only two publication callsites change: failed and successful/reused report clones. Original durable attempts/cache/attestations remain untouched, including0500/0400 modes and bytes.",
+    "No auth/native_runner/local_runner/Makefile/runtime/testsource or skip/requalification policy change. Inputproducerhash change requires explicit reviewed proof refresh; old attestation not automatically current.",
+    "Real isolated Git-clean regression verifies reportremoval with root.buildexcluded and original immutable cache modes/bytes preserved; linknegativecontrol refuses before destination creation.",
+    "Derivedcleanup cause agrees preflight order: cachemarkerwritten before finalgitclean; report-clone permissions are disposableoutput issue, not authorization policy failure. SavedPythonchecks substantiate fixwithoutSwift/nativeexecution."
+  ],
+  "saved_results": {
+    "native_runner_tests": 15,
+    "native_runner_seconds": 0.931,
+    "checkpoint_tests": 29,
+    "checkpoint_seconds": 0.096,
+    "wall_seconds": 1.5082078338600695,
+    "exit_code": 0,
+    "log_sha256": "7c32511c9e529f732b4891332deca741b3cb695390a29bb9dc6e8ebd5d6699ef",
+    "input_hashes_verified": true
+  },
+  "limits": "No reviewer execution/fix/native/build/reset. Source+savedregression qualified only. Operationalrepair mustpreserve only verifiedderivedfiles outsidecheckout andleavecache/attestation/build unchanged. ActualTSANproofrefresh/publication/formalquality remainpending."
+}

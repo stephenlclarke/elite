@@ -1,0 +1,32 @@
+{
+  "run": 40107557178,
+  "head": "5bd6e9d3b68509790fbb49c1cf9235b52b283465",
+  "status": "passed",
+  "result_commit_filter_and_xml_set_match": true,
+  "selector_count": 524,
+  "xml_cases": 524,
+  "unique_cases": 524,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "missing": [],
+  "extra": [],
+  "duplicates": [],
+  "timing": [
+    "Build complete! (492.00s)",
+    "\u2714 Test run with 524 tests passed after 184.170 seconds."
+  ],
+  "artifact": {
+    "id": 12565089660,
+    "size_in_bytes": 88616,
+    "digest": "sha256:2ba43c747257498186926abdfd836771e08d202b5e81b74aa7063036f23a02b6"
+  },
+  "sole_artifact_path": "/tmp/elite-mba-5bd6-unit40107557178",
+  "hashes": {
+    "result.json": "935da762de4608f9b43e498c6d34686eacae39c35d0ae4117134e84c02b1ca63",
+    "tests-swift-testing.xml": "37d1839f9c17f3d0b03df69318075daa5361d30132046446f82fed1b4b7968ca",
+    "output.log": "e6957f3bff3011c561ff02c11262047efe9f187a3b986ce891127e419b115c2b"
+  },
+  "publication_receipt": "/tmp/elite-mba-5bd6-publication-composition-verification.json",
+  "qualification": "Exact published-head524maintained selected methods PASS; focused48e0normal/ASAN retained separate. No fullinputmanifest insideunitartifact. Requiredquality40107564156 stillpending; no fullM01/merge/releaseclaim. Cancelledredundant40107564243 notPASS. No reviewer execution/rerun."
+}

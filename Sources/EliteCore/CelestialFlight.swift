@@ -75,34 +75,14 @@ extension Game {
       notify("CABIN OVERHEATED - SHIP DESTROYED")
       return
     }
-    guard let sun, ratio <= 3 else {
-      solarFuelRemainder = 0
-      return
-    }
-    if !commander.equipment.contains("Fuel Scoops") {
-      solarScoopState = .noScoops
-      solarFuelRemainder = 0
-    } else if commander.fuel >= commander.fuelCapacity {
-      solarScoopState = .tankFull
-      solarFuelRemainder = 0
-    } else if speed <= 0 || sun.position.z / max(1, sun.position.length) < 0.8 {
-      solarScoopState = .turnTowardSun
-      solarFuelRemainder = 0
-    } else {
-      solarScoopState = .collecting
-      // Seven tenths of a light-year per second at launch cruise or faster.
-      solarFuelRemainder += delta * 7 * min(1, speed / 8)
-      // Avoid losing a whole unit to accumulated binary rounding at an integer boundary.
-      let gained = Int(solarFuelRemainder + 1e-9)
-      if gained > 0 {
-        commander.fuel = min(commander.fuelCapacity, commander.fuel + gained)
-        solarFuelRemainder = max(0, solarFuelRemainder - Double(gained))
-      }
-      if commander.fuel == commander.fuelCapacity {
-        solarFuelRemainder = 0
-        solarScoopState = .tankFull
-      }
-    }
+    let scoopSpeed = manualResidualFlight ? max(0, autoPilot.velocity.z / 18) : speed
+    let collection = SolarFuelCollection.step(
+      delta: delta, sun: sun, forwardSpeed: scoopSpeed,
+      fitted: SolarFuelCollection.hasFittedScoops(commander.equipmentInventory),
+      fuel: commander.fuel, capacity: commander.fuelCapacity, remainder: solarFuelRemainder)
+    solarScoopState = collection.state
+    commander.fuel = collection.fuel
+    solarFuelRemainder = collection.remainder
   }
 
   public var solarHUDLines: [String] {

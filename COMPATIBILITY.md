@@ -2,6 +2,8 @@
 
 XYZZY's Right-On Commander version uses the 6502 Second Processor Executive build as its historical reference, retaining the original-style font by user preference. This checklist distinguishes functional implementation from historically verified parity.
 
+This is a historical gameplay comparison, not a backward-compatibility commitment. The user's 19 October 2026 delivery decision makes existing saves disposable and waives predecessor save/content/API/namespace compatibility. Current-format validation, round trips and durable transactions remain required; older migration descriptions below record existing or historical behavior rather than a delivery requirement.
+
 | Area | Current implementation | Evidence / remaining work |
 | --- | --- | --- |
 | Galaxy | Eight seeded 256-system galaxies plus a separately discovered PLUGH port per galaxy | Lave, Zaonce and Diso fixtures and repeatability tests |

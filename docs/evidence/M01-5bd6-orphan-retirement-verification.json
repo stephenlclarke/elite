@@ -1,0 +1,48 @@
+{
+  "head": "5bd6e9d3b68509790fbb49c1cf9235b52b283465",
+  "run": 40107564156,
+  "classification": "Infrastructure-aborted, TSAN unqualified; prior completed normal/coverage/unit scope preserved",
+  "retirement_receipt": "/tmp/elite-m01-5bd6-orphan-retired/result.json",
+  "evidence_hashes_match": {
+    "ci.log": true,
+    "source-before.json": true,
+    "environment.json": true
+  },
+  "image": {
+    "path": "/tmp/elite-m01-5bd6-orphan-retired/EliteCoreTests",
+    "bytes": 304452176,
+    "sha256": "21e63d2429c0e1b14cab73835e7a135300fa48c850b31805ec88b56f9b3790e1",
+    "independent_macho_uuid": [
+      "dfee3fdb-2d61-3853-9a66-fd75b4994438"
+    ]
+  },
+  "owned_chain_in_record": [
+    "71449",
+    "63629",
+    "63704",
+    "64346"
+  ],
+  "recorded_remaining_all_absent": true,
+  "signal_receipt": [
+    {
+      "pid": 63704,
+      "signal": "SIGTERM",
+      "utc": "2026-10-24T20:57:38Z"
+    },
+    {
+      "pid": 64346,
+      "signal": "SIGTERM",
+      "utc": "2026-10-24T20:57:38Z"
+    },
+    {
+      "pid": 64346,
+      "signal": "SIGKILL",
+      "utc": "2026-10-24T20:57:43Z"
+    }
+  ],
+  "controller_limitation": "First controller stopped during a disappearing-process read. Original make and swift wrapper are absent; no original exit status or earlier per-signal receipt is inferred.",
+  "no_original_exit_code_claimed": true,
+  "normal_prefix_identical": true,
+  "disconnect_snapshot_identical": true,
+  "qualification": "Retained before/result/image/log identities and bounded retirement classification verified. Process absences are owner observation in receipt, not independently reprobed. No claim of original TSAN pass/failure or exit; no new image copy/nativeexecution/download."
+}

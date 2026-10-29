@@ -16,8 +16,8 @@ public enum NavalMissionStage: Int, Codable, Sendable, CaseIterable {
     case .huntingConstrictor: "HUNT THE CONSTRICTOR"
     case .constrictorDestroyed: "REPORT TO THE NAVY"
     case .constrictorComplete: "CONSTRICTOR MISSION COMPLETE"
-    case .reportToCeerdi: "REPORT TO CEERDI (GALAXY 3)"
-    case .carryingPlans: "DELIVER PLANS TO BIRERA (GALAXY 3)"
+    case .reportToCeerdi: "REPORT TO NERITH (GALAXY 3)"
+    case .carryingPlans: "DELIVER PLANS TO VEYARA (GALAXY 3)"
     case .plansDelivered: "NAVAL MISSIONS COMPLETE"
     }
   }
@@ -101,8 +101,18 @@ public enum MissionRules {
 
 extension Commander {
   public var energyRechargeMultiplier: Double {
-    if equipment.contains(Equipment.navalEnergyUnit) { return 3 }
-    return equipment.contains("Extra Energy Unit") ? 2 : 1
+    if let multiplier = fittedComponent(at: .energy)?.statistics[.energyRecharge] {
+      return multiplier * fittedAlienSummary(.energyRecharge).multiplier
+    }
+    let ordinary: Double
+    if equipment.contains(Equipment.eliteEnergyUnit) {
+      ordinary = 4
+    } else if equipment.contains(Equipment.navalEnergyUnit) {
+      ordinary = 3
+    } else {
+      ordinary = equipment.contains("Extra Energy Unit") ? 2 : 1
+    }
+    return ordinary * fittedAlienSummary(.energyRecharge).multiplier
   }
   public func laserDamage(against hull: Hull, mount: LaserMount = .front) -> Double {
     guard let laser = laser(on: mount) else { return 0 }

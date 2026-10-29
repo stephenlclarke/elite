@@ -1,0 +1,5 @@
+# fix(physics): validate borrowed station transfers with an explicit loop
+
+PreparedStationTransfers first retains the existing nonempty, at-most-two and unique-station guards, then checks each proof in order with the same stationTransferCanCommit call. Only after all proofs pass does it copy the same native station world into staged ownership. This replaces allSatisfy with an explicit short-circuit guard loop, preserving source authority, resource/collision checks and refusal behavior without consuming or copying Game.
+
+Actual failed build evidence is retained under /tmp/elite-launch-compile-646; no tests ran and mixed artifacts cannot authorize current-source execution. Scoped Swift formatting, Markdown and whitespace checks validate the source repair; a corrected coherent central compilation and already-authored station contact/refusal/current-save regressions remain pending. No coverage percentage, sanitizer, leak, full CI or release acceptance is claimed. No GitHub issue or PR exists for this leaf. See the [issue](ISSUE-native-station-borrowed-transfers.md).

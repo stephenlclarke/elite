@@ -4,10 +4,14 @@ Runtime decoding uses TOMLDecoder; authoring checks use Python's TOML parser.
 There is no regex or hand-written TOML parser.
 """
 import json
+import importlib.util
 import tomllib
 from pathlib import Path
 
 SHIP_FOLDER = Path('Sources/EliteCore/Resources/Ships')
+_balance_spec = importlib.util.spec_from_file_location('catalogue_balance', Path(__file__).with_name('catalogue-balance.py'))
+catalogue_balance = importlib.util.module_from_spec(_balance_spec)
+_balance_spec.loader.exec_module(catalogue_balance)
 
 
 def value(item):
@@ -21,11 +25,12 @@ def value(item):
 
 def write_ship(path, ship):
     """Keep editable game specs and actual geometry in one self-contained file."""
+    ship = catalogue_balance.apply_balance(ship, catalogue_balance.load_balances())
     lines = ['# Authoritative ship definition. See docs/SHIP-FILES.md.']
     for key,item in ship.items():
-        if key not in {'game','design','nativeDesign','nativeCombat','profiles'} and item is not None:
+        if key not in {'catalogue','game','design','nativeDesign','nativeCombat','profiles'} and item is not None:
             lines.append(key+' = '+value(item))
-    for table in ['game','design','nativeDesign','nativeCombat']:
+    for table in ['catalogue','game','design','nativeDesign','nativeCombat']:
         if table not in ship:continue
         lines.extend(['','['+table+']'])
         for key,item in ship[table].items():

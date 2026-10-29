@@ -1,0 +1,100 @@
+{
+  "run": 40132775072,
+  "published_head": "18b6e91b41b4151395eb645318552d9c522772f9",
+  "actual_checkout_head": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+  "verified_input_paths": 1887,
+  "hash_mismatches": [],
+  "source_before_sha256": "34646f23bef1acf3460299e60f1ed572525f267d4b5306cddb0e6b28bdd3551e",
+  "normal_phase": {
+    "summary_line": 9872,
+    "summary": "\u2714 Test run with 3395 tests in 394 suites passed after 3313.398 seconds.",
+    "assertion_failure_markers": 0,
+    "coverage_log": "90.42%"
+  },
+  "snapshot": {
+    "path": "/tmp/elite-mba-18b6-normal-coverage-phase.log",
+    "bytes": 1034324,
+    "sha256": "7656430f92b10cae76bfe70daaa6cf4dfd50b3beffb17395e3d0fc25259bce65",
+    "boundary": "Exactci.logprefix before sanitizer checkpoint prerequisite fake checks; includes completednormal+coverage only"
+  },
+  "coverage_xml": {
+    "path": "/tmp/elite-mba-18b6-normal-coverage.xml",
+    "bytes": 6047130,
+    "sha256": "68dd66252715304b4c8c40ea1926ddd64beaa2cc1e04bcc317fbc99d1c9e71bc",
+    "line_count": 127743,
+    "covered_lines": 115511,
+    "coverage_percent": 90.42452424007578,
+    "required_minimum": 80,
+    "threshold_met": true
+  },
+  "next_mode": {
+    "line": 9885,
+    "command": "python3 Tools/CI/sanitizer_checkpoints.py thread"
+  },
+  "environment": {
+    "os": {
+      "command": [
+        "sw_vers"
+      ],
+      "exitCode": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0\nBuildVersion:\t\t26A428\n",
+      "stderr": ""
+    },
+    "xcode": {
+      "command": [
+        "xcodebuild",
+        "-version"
+      ],
+      "exitCode": 0,
+      "stdout": "Xcode 27.1\nBuild version 27A9275\n",
+      "stderr": ""
+    },
+    "swift": {
+      "command": [
+        "swift",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": ""
+    },
+    "xcrunSwift": {
+      "command": [
+        "xcrun",
+        "swift",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": "swift-driver version: 1.168.6 "
+    },
+    "sdk": {
+      "command": [
+        "xcrun",
+        "--show-sdk-path"
+      ],
+      "exitCode": 0,
+      "stdout": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\n",
+      "stderr": ""
+    },
+    "sdkVersion": {
+      "command": [
+        "xcrun",
+        "--show-sdk-version"
+      ],
+      "exitCode": 0,
+      "stdout": "27.0\n",
+      "stderr": ""
+    },
+    "architecture": {
+      "command": [
+        "uname",
+        "-m"
+      ],
+      "exitCode": 0,
+      "stdout": "arm64\n",
+      "stderr": ""
+    }
+  },
+  "qualification": "Completed currentheadnormal+coverage only; all1887source/buildinputSHAsmatchpublished18b6. Syntheticc40eeentiretreealsoverifiedequalinunitreceipt. CheckpointTSAN/ASAN/leaks/fullquality/mainSonar/merge/release pending. Noexecution/download/retest/liveoutputmutation."
+}

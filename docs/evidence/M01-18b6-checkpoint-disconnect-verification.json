@@ -1,0 +1,38 @@
+{
+  "run": 40132775072,
+  "head": "18b6e91b41b4151395eb645318552d9c522772f9",
+  "github_conclusion": "failure",
+  "cause": "Self-hosted runner lost communication with server; annotation is infrastructure evidence, not a test/sanitizer verdict.",
+  "terminal_artifacts": 0,
+  "artifact_download_performed": false,
+  "normal_phase_receipt": "/tmp/elite-mba-18b6-normal-coverage-phase-verification.json",
+  "normal_prefix_and_manifest_unchanged": true,
+  "normal_and_unit_passes_preserved_actual_scope": true,
+  "checkpoint": {
+    "plan": "/Users/sclarke/Library/EliteNativeCI/native-runner/_work/elite/elite/reports/sanitizers/thread/a0347c1f-1bf3-4cb2-899d-1945aebbb06a/plan.json",
+    "identity_key": "85ab97018ab16753ca4d3d0ac288723abfc6965a2b4d1742b56431a3e676e123",
+    "recorded_tested_head": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+    "inventory": 3395,
+    "batches": [
+      3395
+    ],
+    "concurrency": "Full original concurrent selection is one indivisible TSAN group.",
+    "attempt": "/Users/sclarke/Library/EliteNativeCI/sanitizer-checkpoints/85ab97018ab16753ca4d3d0ac288723abfc6965a2b4d1742b56431a3e676e123/0/82dddf82-c84b-4787-999f-1717b306a10b",
+    "result_exists": false,
+    "mode_summary_exists": false,
+    "partial_log_bytes": 1028096,
+    "partial_xml_bytes": 52,
+    "partial_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuites>\n",
+    "complete_test_summary": false,
+    "error_markers": []
+  },
+  "snapshot": "/tmp/elite-mba-18b6-checkpoint-disconnect",
+  "snapshot_hashes": {
+    "plan.json": "e3d24e0e9595cd75aaf537570a720dab1fde0ab6df0db7cf98757794a2a96d89",
+    "partial-tests-swift-testing.xml": "6edbe77098b9cbc5d4d33c4279d3def109144c23b8014d646fdd7793d16b20b3",
+    "start.json": "97fe4dc9c3f921804a0a9a698f56cc049beb85766cb6a1ed0ca2ee9c4423b6bd",
+    "partial-test.log": "5de0c8f05582e2f41b7b4f7dfa46ecf1c6d445eda776123d2e8d9db1da16133e"
+  },
+  "classification": "Hosted infrastructure failure; current TSAN incomplete/unqualified, local process/collector continuity still owner-observed. A durable start and partial file-backed output exist, unlike priorlostpipe; no terminal outcome yet.",
+  "limits": "No restart/termination, nativejob, service diagnostics, retry or duplicateartifact. LocalTSAN reportedlive byowner; reviewerdoesnotinferexit fromGHstatus. Modepassesrequire completeXML+exit0+validcheckpoint."
+}

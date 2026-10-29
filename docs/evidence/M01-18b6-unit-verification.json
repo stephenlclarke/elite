@@ -1,0 +1,40 @@
+{
+  "run": 40132775172,
+  "published_head": "18b6e91b41b4151395eb645318552d9c522772f9",
+  "artifact_tested_commit": "c40ee715f2f5f35a3a1a2444a5dd387c0bd9eaf3",
+  "event": "pull_request",
+  "synthetic_merge_parents": [
+    "bba862c558530ea2d40d634f84fbd490d9cc3401",
+    "18b6e91b41b4151395eb645318552d9c522772f9"
+  ],
+  "published_and_tested_full_tree_equal": true,
+  "tree_sha": "b9b421b367b920ec18f6f8669a4102d24769d4fd",
+  "status": "passed",
+  "exact_filter_and_xml_set_match": true,
+  "selector_count": 524,
+  "xml_cases": 524,
+  "unique_cases": 524,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "missing": [],
+  "extra": [],
+  "duplicates": [],
+  "timing": [
+    "Build complete! (646.80s)",
+    "\u2714 Test run with 524 tests passed after 159.428 seconds."
+  ],
+  "artifact": {
+    "id": 12575827193,
+    "size_in_bytes": 88883,
+    "digest": "sha256:e6fbac32e59ceb138b87611a83620b8a4731994987d1d921b8248f5a40d85714"
+  },
+  "sole_artifact_path": "/tmp/elite-mba-18b6-unit40132775172",
+  "hashes": {
+    "result.json": "9e74fc968f8a2415216030c64454baf9bf83578698e782eb7e93eabb5f0828de",
+    "tests-swift-testing.xml": "078c38ad725fc3a9f347496632e79b53f0639fd889da8e4e09540a68b3103e07",
+    "output.log": "091146d1cb17c9d5a4a37f537af1f9a2b0200f8112f98e7916492372dca9f513"
+  },
+  "publication_receipt": "/tmp/elite-mba-18b6-publication-composition-verification.json",
+  "qualification": "Maintained524 selected methodsPASS on actualPRmergecommit whose entiretreeexactlyequalspublished18b6. Actualtestedcommitpreserved; notliteralcommitmatch. Quality40132775072pending,no fullquality/merge/releaseclaim. No reviewerexecution/rerun/redownload."
+}

@@ -1,0 +1,7 @@
+# Stage original market seeds and add README download-link checks
+
+Copied the exact reviewed MBA F download checker and tests, then the exact reviewed F follow-up correcting indented Markdown code handling. Copied G's original market compiler, tests, pinned manifest and full initial-quote payload. Every frozen handoff file is verified against its recorded SHA-256 before copying. Added the single `OriginalMarkets` SwiftPM copy rule; the existing OriginalWorlds resource is not changed or duplicated. No active Universe/Market, runtime market loader, balance or trading simulation is switched by these resources.
+
+The download checker accepts explicit README/repository and optional expected-version/latest-metadata inputs. It reports broken/inconclusive/reachable public links without conflating them with code signature, checksum, notarization, installation or Homebrew acceptance. The existing release publisher and review/branch protections remain untouched. Current correctness is required; predecessor compatibility is outside scope.
+
+Retain the reported MBA G four, F five and F-follow-up two focused mocked tests and original generation/public-pass evidence. No duplicate network pass, full-fleet regeneration or native per-leaf build is run. Central resource bundling joins the next combined Swift build; runtime market activation remains pending its real loader and original-world bindings. See the [issue](ISSUE-original-market-seeds-and-download-checks.md).

@@ -3,7 +3,7 @@ import Foundation
 enum PackValidation {
   private static let equipmentFlags: Set<String> = [
     "E.C.M. System", "Fuel Scoops", "Escape Pod", "Energy Bomb", "Extra Energy Unit",
-    Equipment.navalEnergyUnit, "Galactic Hyperdrive",
+    Equipment.navalEnergyUnit, Equipment.eliteEnergyUnit, "Galactic Hyperdrive",
   ]
   static func identifier(_ value: String) -> Bool {
     value.range(of: "^[a-z][a-z0-9.-]{0,79}$", options: .regularExpression) != nil
@@ -14,7 +14,15 @@ enum PackValidation {
       != nil
   }
   static func localID(_ value: String) -> Bool {
-    value.range(of: "^[A-Za-z][A-Za-z0-9.-]{0,79}$", options: .regularExpression) != nil
+    var length = 0
+    for byte in value.utf8 {
+      guard length < 80 else { return false }
+      let letter = (65...90).contains(byte) || (97...122).contains(byte)
+      guard letter || (length > 0 && ((48...57).contains(byte) || byte == 46 || byte == 45))
+      else { return false }
+      length += 1
+    }
+    return length > 0
   }
   static func validate(_ pack: MissionPack, bundled: Bool) throws {
     try require(

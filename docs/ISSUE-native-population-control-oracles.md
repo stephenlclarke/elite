@@ -1,0 +1,5 @@
+# Control fixtures mistake legitimate native stations for failed scoop and targeting behavior
+
+Qualification 683 recorded successful cargo quantities and full-hold messages alongside failed whole-body count/emptiness assertions. The targeting fixture's extra cycle selected a living native station rather than wrapping early to ship 2. The empty-body docking fixture also admitted an authentic station and correctly engaged docking. These logs do not justify changing production scoop, targeting or docking policy.
+
+Assert the controlled actor's conservation/consumption and preserve authentic station bindings. Exercise the complete actual station group after the controlled ships, preserving hardware and front/back ordering. Establish the no-eligible condition through a real filter on a scene with no corresponding candidates, retain traffic, and use actual Tab selection of the real main station for the full docking sequence. Keep original resource, scoop-side, cancellation and finite flight-budget requirements.

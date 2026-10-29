@@ -13,7 +13,7 @@ public enum MapColourMode: String, Sendable, CaseIterable {
     switch self {
     case .economy: index = 7 - system.economy
     case .government: index = system.government
-    case .technology: index = min(7, system.technology * 7 / 14)
+    case .technology: index = max(0, min(7, (system.technology - 1) * 7 / 19))
     }
     return colours[index]
   }
@@ -21,7 +21,7 @@ public enum MapColourMode: String, Sendable, CaseIterable {
     switch self {
     case .economy: system.economyName
     case .government: system.governmentName
-    case .technology: "Tech level \(system.technology + 1)"
+    case .technology: "Tech level \(system.technology)"
     }
   }
   public var legend: [String] {
@@ -37,7 +37,7 @@ public enum MapColourMode: String, Sendable, CaseIterable {
         "Democracy", "Corporate State",
       ]
     case .technology:
-      ["Level 1", "Level 3", "Level 5", "Level 7", "Level 9", "Level 11", "Level 13", "Level 15+"]
+      ["Level 1", "Level 4", "Level 7", "Level 10", "Level 12", "Level 15", "Level 18", "Level 20"]
     }
   }
 }
@@ -56,16 +56,21 @@ public struct ChartLayout: Sendable {
   public let local: Bool
   public let docked: Bool
   public let scale: Double
+  private let centreX: Double
+  private let centreY: Double
   public let font: Double
   public var searchRect: CanvasRect {
     .init(
       x: width - min(320, width - 32) - 16, y: local ? 44 : 96, width: min(320, width - 32),
       height: min(320, height - (local ? 80 : 132)))
   }
+  public var searchClearRect: CanvasRect {
+    .init(x: searchRect.maxX - 60, y: searchRect.y, width: 60, height: 28)
+  }
   public var searchRows: Int { max(1, Int((searchRect.height - 36) / 22)) }
   public init(
     width: Double, height: Double, local: Bool, fuel: Int = 70, docked: Bool = false,
-    plotOverride: CanvasRect? = nil
+    plotOverride: CanvasRect? = nil, galaxy: Int = 0
   ) {
     self.width = width
     self.height = height
@@ -82,22 +87,26 @@ public struct ChartLayout: Sendable {
       ?? .init(
         x: 16, y: local ? 58 : 96, width: width - (wide ? 336 : 32),
         height: max(80, height - (wide ? wideFooter : narrowFooter) - (local ? 0 : 38)))
+    let bounds = Universe.originalWorlds.provenance.statistics.coordinateBoundsByGalaxy[galaxy]
+    centreX = (bounds.minimumXLY + bounds.maximumXLY) / 2
+    centreY = (bounds.minimumYLY + bounds.maximumYLY) / 2
+    let extent = max(14, Double(fuel) / 10 * 2.2)
     scale =
       local
-      ? min(
-        (plot.width - 32) / max(64, Double(fuel) / 4 * 2.2),
-        (plot.height - 32) / max(64, Double(fuel) / 4 * 2.2))
-      : min((plot.width - 32) / 255, (plot.height - 32) / 127.5)
+      ? min((plot.width - 32) / extent, (plot.height - 32) / extent)
+      : min(
+        (plot.width - 32) / max(1, bounds.maximumXLY - bounds.minimumXLY),
+        (plot.height - 32) / max(1, bounds.maximumYLY - bounds.minimumYLY))
   }
   public func point(_ system: StarSystem, current: StarSystem) -> ScreenPoint {
     let cx = plot.x + plot.width / 2
     let cy = plot.y + plot.height / 2
     if local {
       return .init(
-        cx + Double(system.x - current.x) * scale, cy + Double(system.y - current.y) * scale / 2)
+        cx + (system.x - current.x) * scale, cy + (system.y - current.y) * scale)
     }
     return .init(
-      cx + (Double(system.x) - 127.5) * scale, cy + (Double(system.y) - 127.5) * scale / 2)
+      cx + (system.x - centreX) * scale, cy + (system.y - centreY) * scale)
   }
   public func markerRadius(_ system: StarSystem) -> Double {
     local
@@ -127,7 +136,8 @@ extension Game {
     return distance <= commander.maximumJumpDistance
   }
   mutating func searchKey(_ key: String) {
-    let layout = ChartLayout(width: viewportWidth, height: viewportHeight, local: false)
+    let layout = ChartLayout(
+      width: viewportWidth, height: viewportHeight, local: false, galaxy: viewedGalaxy)
     switch key {
     case "escape": mapSearch.active = false
     case "return":
@@ -167,7 +177,7 @@ extension Game {
     guard screen == .chart || screen == .shortChart else { return }
     let layout = ChartLayout(
       width: viewportWidth, height: viewportHeight, local: screen == .shortChart,
-      fuel: chartScaleFuel, docked: docked)
+      fuel: chartScaleFuel, docked: docked, galaxy: viewedGalaxy)
     if screen == .chart {
       if let index = layout.galaxyButtons.firstIndex(where: { $0.contains(.init(x, y)) }) {
         viewGalaxy(index)
@@ -183,7 +193,7 @@ extension Game {
       return
     }
     if mapSearch.active {
-      if x > layout.searchRect.maxX - 60 && y < layout.searchRect.y + 28 {
+      if layout.searchClearRect.contains(.init(x, y)) {
         searchKey("search-clear")
         return
       }
@@ -217,17 +227,20 @@ extension Display {
   public static func map(_ game: Game, width: Double, height: Double) -> Frame {
     let layout = ChartLayout(
       width: width, height: height, local: game.screen == .shortChart,
-      fuel: game.chartScaleFuel, docked: game.docked)
+      fuel: game.chartScaleFuel, docked: game.docked, galaxy: game.viewedGalaxy)
     var frame = Frame()
     frame.responsive = true
     frame.rasterizeGraphics = false
     frame.canvas = .init(x: 0, y: 0, width: width, height: height)
     frame.flightClip = layout.plot
     frame.label(
-      layout.local ? "SHORT RANGE CHART" : "Viewing Galaxy \(game.viewedGalaxy + 1)", 16, 10,
+      layout.local
+        ? "SHORT RANGE CHART"
+        : "Viewing " + Universe.originalWorlds.authoring.galaxies[game.viewedGalaxy].name, 16, 10,
       scale: layout.font, ink: .yellow)
     frame.label(
-      "M: " + game.mapColour.rawValue, layout.local ? 16 : 220, layout.local ? 32 : 10,
+      "M: " + game.mapColour.rawValue + "  <> belt", layout.local ? 16 : 220,
+      layout.local ? 32 : 10,
       scale: layout.font, ink: .cyan)
     if !layout.local {
       frame.label(
@@ -238,7 +251,7 @@ extension Display {
     if layout.local {
       reachRings(game, layout: layout, into: &frame)
     } else if game.mapIsCurrentGalaxy {
-      let radius = game.commander.maximumJumpDistance / 0.4 * layout.scale
+      let radius = game.commander.maximumJumpDistance * layout.scale
       frame.ellipse(current.x, current.y, radius, radius, .blue)
     }
     let visible = game.mapSystems.filter {
@@ -252,13 +265,16 @@ extension Display {
         }) : [:]
     let markerBoxes = visible.map { system -> CanvasRect in
       let point = layout.point(system, current: game.currentSystem)
-      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 3)
+      let radius = layout.markerRadius(system) + (system.id == game.viewedSystemID ? 12 : 4)
       return .init(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2)
     }
     for system in visible {
       let point = layout.point(system, current: game.currentSystem)
       let radius = layout.markerRadius(system)
       frame.point(point.x, point.y, radius: radius, ink: game.mapColour.colour(system))
+      if game.commander.miningLedger.ringPresence(system: system, galaxy: game.viewedGalaxy) {
+        frame.ellipse(point.x, point.y, radius + 2, radius + 1, .cyan)
+      }
       if ranks[system.id] != nil {
         frame.ellipse(point.x, point.y, radius + 7, radius + 7, .gold)
       }
@@ -365,7 +381,9 @@ extension Display {
     let values = [
       "Selected: G\(game.viewedGalaxy + 1) / " + system.name, "Economy: " + system.economyName,
       "Government: " + system.governmentName,
-      "Tech \(system.technology + 1)  Radius \(system.radius) km",
+      "Tech \(system.technology)  Radius \(system.radius) km  Belt: "
+        + (game.commander.miningLedger.ringPresence(system: system, galaxy: game.viewedGalaxy)
+          ? "Yes" : "No"),
       game.mapIsCurrentGalaxy
         ? String(format: "Distance %.1f light-years", game.currentSystem.distance(to: system))
         : "Distance: unavailable across galaxies",
@@ -377,7 +395,9 @@ extension Display {
     let nav =
       game.commander.navigationTier.map { tier in
         "Nav: " + tier.label + " "
-          + (tier.radius(capacity: game.commander.fuelCapacity).map {
+          + (tier.radius(
+            capacity: game.commander.fuelCapacity, fuelMultiplier: game.commander.jumpFuelMultiplier
+          ).map {
             String(format: "%.1f ly", $0)
           }
             ?? "Whole galaxy")

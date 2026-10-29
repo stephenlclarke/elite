@@ -30,12 +30,24 @@ public struct CatalogueShip: Codable, Sendable, Equatable, Identifiable {
   public let geometryContext: String
   public let profiles: [ShipProfile]
   public let game: ShipPerformance?
+  public let catalogue: ShipCatalogueMetadata
   public let design: ShipDesign
   public let nativeHull: Hull?
   public let nativeDesign: ShipDesign?
   public let nativeCombat: NativeCombat?
+  public var originalDefinition: OriginalFleetDefinition? {
+    ShipCatalogue.originalDefinition(for: id)
+  }
+  var sourceProfilesIncludingOriginal: [ShipProfile] {
+    guard let original = ShipCatalogue.originalSourceProfile(for: id) else { return profiles }
+    return profiles + [original]
+  }
   public var searchText: String {
-    [id, name, shipClass, appearances, evidence].joined(separator: " ")
+    var terms = [id, name, shipClass, appearances, evidence] + (catalogue.aliases ?? [])
+    if let original = originalDefinition {
+      terms += [original.name, original.family, original.role, original.purchasePolicy]
+    }
+    return terms.joined(separator: " ")
   }
   public var previewMesh: Mesh? { ShipCatalogue.meshes[id] }
   public var availability: String {
@@ -57,6 +69,37 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   public let sourceFaceColours: [[Double]]?
   public let sourceTextures: [ShipSourceTexture]?
   public let sourceFaceTextures: [ShipSourceFaceTexture]?
+  public let resolvedTextures: [ShipResolvedTexture]?
+  public let textures: [OriginalShipTextureReference]?
+  public let faceTextures: [ShipSourceFaceTexture]?
+
+  public init(
+    vertices: [[Double]], faces: [[Int]], license: String, source: String,
+    details: [MeshDetail]? = nil, materials: [ShipMaterial]? = nil, faceMaterials: [Int]? = nil,
+    paletteName: String? = nil, appearanceSource: String? = nil, appearanceLicense: String? = nil,
+    appearanceBasis: String? = nil, sourceFaceColours: [[Double]]? = nil,
+    sourceTextures: [ShipSourceTexture]? = nil, sourceFaceTextures: [ShipSourceFaceTexture]? = nil,
+    resolvedTextures: [ShipResolvedTexture]? = nil,
+    textures: [OriginalShipTextureReference]? = nil, faceTextures: [ShipSourceFaceTexture]? = nil
+  ) {
+    self.vertices = vertices
+    self.faces = faces
+    self.license = license
+    self.source = source
+    self.details = details
+    self.materials = materials
+    self.faceMaterials = faceMaterials
+    self.paletteName = paletteName
+    self.appearanceSource = appearanceSource
+    self.appearanceLicense = appearanceLicense
+    self.appearanceBasis = appearanceBasis
+    self.sourceFaceColours = sourceFaceColours
+    self.sourceTextures = sourceTextures
+    self.sourceFaceTextures = sourceFaceTextures
+    self.resolvedTextures = resolvedTextures
+    self.textures = textures
+    self.faceTextures = faceTextures
+  }
   var valid: Bool {
     guard vertices.count >= 4, faces.count >= 4,
       vertices.allSatisfy({ $0.count == 3 && $0.allSatisfy(\.isFinite) }),
@@ -73,7 +116,7 @@ public struct ShipDesign: Codable, Sendable, Equatable {
       : assignments.count == faces.count
         && assignments.allSatisfy { palette.indices.contains($0) }
         && palette.allSatisfy { !$0.name.isEmpty && $0.colour & 255 == 255 }
-    guard indicesValid, materialsValid, sourceAppearanceValid,
+    guard indicesValid, materialsValid, sourceAppearanceValid, originalAppearanceValid,
       (details ?? []).allSatisfy({
         vertices.indices.contains($0.start) && vertices.indices.contains($0.end)
           && faces.indices.contains($0.face)
@@ -86,10 +129,12 @@ public struct ShipDesign: Codable, Sendable, Equatable {
   }
 
   var rawMesh: Mesh {
-    Mesh(
+    if resolvedTextures?.isEmpty == false { ShipTextureAssets.preload() }
+    if textures?.isEmpty == false { OriginalShipTextureAssets.preload() }
+    return Mesh(
       vertices: vertices.map { Vector3($0[0], $0[1], $0[2]) }, faces: faces,
       details: details ?? [], materials: materials ?? [], faceMaterials: faceMaterials ?? [],
-      preserveWinding: true)
+      faceTextures: resolvedFaceTextures, preserveWinding: true)
   }
   var mesh: Mesh { rawMesh.showroomNormalised }
 }
@@ -112,13 +157,22 @@ public enum ShipCatalogue {
     let mesh = ship.design.mesh
     return Mesh(
       vertices: mesh.vertices.map { $0 * 0.69 }, faces: mesh.faces, details: mesh.details,
-      materials: mesh.materials, faceMaterials: mesh.faceMaterials,
+      materials: mesh.materials, faceMaterials: mesh.faceMaterials, faceTextures: mesh.faceTextures,
       preserveWinding: true)
   }
   public static func nativeShip(_ hull: Hull) -> CatalogueShip? { nativeRecords[hull] }
   static func nativeMesh(_ hull: Hull) -> Mesh? { nativeMeshes[hull] }
   private static let byID = Dictionary(uniqueKeysWithValues: all.map { ($0.id, $0) })
   public static func ship(_ id: String) -> CatalogueShip? { byID[id] }
+  static func containsShip(_ id: String) -> Bool { byID.index(forKey: id) != nil }
+  /// The authored source join never falls back to the current native performance table.
+  public static func originalDefinition(for id: String) -> OriginalFleetDefinition? {
+    OriginalFleetDefinitionData.definition(for: id)
+  }
+  private static let originalSourceProfiles = Dictionary(
+    uniqueKeysWithValues:
+      OriginalFleetDefinitionData.staged.map { ($0.id, $0.sourceProfile) })
+  static func originalSourceProfile(for id: String) -> ShipProfile? { originalSourceProfiles[id] }
   public static var modelCount: Int { all.count }
   private static let resources: Bundle =
     Bundle.main.resourceURL.flatMap {
@@ -137,14 +191,19 @@ public enum ShipCatalogue {
       let ship = try TOMLDecoder().decode(CatalogueShip.self, from: Data(contentsOf: url))
       guard ship.id == url.deletingPathExtension().lastPathComponent,
         ship.id.range(of: "^SH[0-9]{3}$", options: .regularExpression) != nil,
-        !ship.name.isEmpty, ship.design.valid, ship.game?.valid ?? true,
-        ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true
+        !ship.name.isEmpty, ship.design.valid,
+        ship.game?.valid(purchasePolicy: ship.catalogue.purchasePolicy) ?? true,
+        ship.nativeDesign?.valid ?? true, ship.nativeCombat?.valid ?? true,
+        ship.catalogue.valid(
+          shipID: ship.id, performance: ship.game, nativeCombat: ship.nativeCombat),
+        ship.catalogue.validEffectiveCargo(performance: ship.game, profiles: ship.profiles)
       else { throw ShipFileError.invalid(url.lastPathComponent) }
+      let resolved = try OriginalPlayerHullActivation.resolve(ship)
       if let hull = ship.nativeHull, !nativeKinds.insert(hull).inserted {
         throw ShipFileError.invalid("Duplicate native hull: " + hull.rawValue)
       }
       guard ids.insert(ship.id).inserted else { throw ShipFileError.duplicate(ship.id) }
-      return ship
+      return resolved
     }
   }
 }

@@ -1,0 +1,51 @@
+{
+  "base": "5bd6e9d3b68509790fbb49c1cf9235b52b283465",
+  "patch_sha256": "2f2f32c5319696f3cfdba8584f48e32df96c0c43091121677335aba22e70e580",
+  "files": {
+    "Makefile": "15faa43012a81dc99f68d6c4dbadba1a709f881290fb186d2cb34d1772aab63a",
+    "README.md": "ff73c7b93b4311512979479ecbc35ab47b98c1ba8ca90a8784d02f496800c149",
+    "Tools/CI/sanitizer_checkpoints.py": "fd0ca74766dcaf0ff198ecd2416957befd73d198dc209b9ca6f25a5715de1a5b",
+    "Tools/CI/test_sanitizer_checkpoints.py": "2e5f1393c31672c3cf6f7802f5c3f4acfcf1798fa43cbc1b311644233e16de5d",
+    "docs/ISSUE-185-unfiltered-quality.md": "548b80d118ebb854d6d71a797d428bcbe991a43c827b0a8213e29ac20632e01e",
+    "docs/PR-185-unfiltered-quality.md": "2cc474d1ee7ab038de44e6bb6112fec4b8d38ddbdefdf081db5fa1f64ec9efd5"
+  },
+  "actual_file_hashes_match": {
+    "Makefile": true,
+    "README.md": true,
+    "Tools/CI/sanitizer_checkpoints.py": true,
+    "Tools/CI/test_sanitizer_checkpoints.py": true,
+    "docs/ISSUE-185-unfiltered-quality.md": true,
+    "docs/PR-185-unfiltered-quality.md": true
+  },
+  "scope": "v1-to-v2 two-codefile correction plus bounded handoff updates; unaffected v1 review reused",
+  "result": "CLEAR: prior P1/P2 resolved; no actionable bugs/performance/style findings in corrected delta",
+  "finding_dispositions": [
+    {
+      "finding": "P1 top-level discovery omission",
+      "status": "resolved",
+      "evidence": "Raw top-level, nested, parameterized and source-qualified IDs preserved; canonical XML tuple mapping; ambiguity/duplicates rejected. Top-level singleton exact filters and nested outer-suite grouping. New fake runs list through inventory/partition/filter/XML and rejects missing top-level outcome."
+    },
+    {
+      "finding": "P2 discovery/query lock inheritance",
+      "status": "resolved",
+      "evidence": "output receives held executor lock and passes descriptor+new-session on every Swift discovery/bin-path/version call and other output queries. Fake verifies descriptor/session on relevant Swift query paths."
+    }
+  ],
+  "validation": {
+    "command": [
+      "make",
+      "sanitizer-checkpoints-check"
+    ],
+    "exit_code": 0,
+    "tests": 18,
+    "runtime_seconds": 0.102,
+    "wall_seconds": 1.2829430000856519,
+    "log_sha256": "4dc96fbf8d3a9973aa7b0b098d810417455d29d8394b05c9c5a037509504a473",
+    "reported_inputs_match_actual_review": true,
+    "receipt": "/tmp/elite-m01-sanitizer-checkpoints-v2-units.json",
+    "log": "/tmp/elite-m01-sanitizer-checkpoints-v2-units.log",
+    "limits": "Inspected retained actual fake-unit command/log/hash receipt; did not rerun."
+  },
+  "design_limits": "TSAN full original unfiltered selection remains one group, not granular resume. ASAN whole-suite100 soft target/oversized intact. Complete matching XML+identity required; no native discovery/command/schema compatibility pass claimed before actual authorised execution. Original coverage/leak/hosted gates unchanged.",
+  "execution": "No reviewer tests/build/native/probe. Existing orphan remains untouched; source approval does not authorise replacement until local process disposition established."
+}

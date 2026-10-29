@@ -1,0 +1,228 @@
+{
+  "package_ids": [
+    "P13",
+    "P14"
+  ],
+  "revision": "5.4.3 MOD 4 / 2023 Switeck archive",
+  "runtime": "v26.9.0",
+  "limits": "Selected source callbacks and all2048 SecCom system predicates; approximation of Oolite script-object scope, not native-engine playthrough parity.",
+  "source_hashes": {
+    "Scripts/galnavymain.js": "d9f1afca3a8c315511f08b1a29fc6985742aa4515ef2e667c8ce8621af1a8ad0",
+    "Scripts/galNavyTarget-Sortie.js": "e63b5709fffb0f9acaa3d0776a4e3e842bbcde66a01210c0df5c18820845b4c8",
+    "Scripts/hofd.js": "6fbee95c81b0a6913f59a8ab17ffaf527fbd037a961584fda4adb5b4ec910a44",
+    "Scripts/hofd-nellie.js": "b15e511ba27f9ea60ee3594ffdae4aaa872dbe5082932875173c41a45f866a99",
+    "Scripts/hofd-nellie-pod.js": "878b4cdcd059e918c4bc2c04007b578f90bdaf4d9ab355bc7a3103ad3e7defc9"
+  },
+  "cases": [
+    {
+      "name": "128 score bin 0",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.051499999999997215,
+      "passed": true
+    },
+    {
+      "name": "128 score bin 0.1",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.0051660000000026685,
+      "passed": true
+    },
+    {
+      "name": "128 score bin 0.3",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.003292000000001849,
+      "passed": true
+    },
+    {
+      "name": "128 score bin 0.4",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.0025410000000007926,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 9",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.1539590000000004,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 10",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.021249999999994884,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 20",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.03479200000000304,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 40",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.009166999999997927,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 50",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.010958000000002244,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 90",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.00941699999999912,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 100",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.0067500000000038085,
+      "passed": true
+    },
+    {
+      "name": "sortie bonus 110",
+      "source": "Scripts/galnavymain.js",
+      "duration_ms": 0.005500000000004945,
+      "passed": true
+    },
+    {
+      "name": "player contribution OFFER_ACCEPTED",
+      "source": "Scripts/galNavyTarget-Sortie.js",
+      "duration_ms": 0.11308299999999605,
+      "passed": true
+    },
+    {
+      "name": "player contribution OBJECTIVES_COMPLETE",
+      "source": "Scripts/galNavyTarget-Sortie.js",
+      "duration_ms": 0.008791000000002214,
+      "passed": true
+    },
+    {
+      "name": "AI kill battle end without player quota",
+      "source": "Scripts/galNavyTarget-Sortie.js",
+      "duration_ms": 0.04087499999999977,
+      "passed": true
+    },
+    {
+      "name": "Kurtz offer hofd_accept",
+      "source": "Scripts/hofd.js",
+      "duration_ms": 0.08441700000000196,
+      "passed": true
+    },
+    {
+      "name": "Kurtz offer hofd_decline",
+      "source": "Scripts/hofd.js",
+      "duration_ms": 0.009749999999996817,
+      "passed": true
+    },
+    {
+      "name": "Kurtz capture return once",
+      "source": "Scripts/hofd.js",
+      "duration_ms": 0.0264580000000052,
+      "passed": true
+    },
+    {
+      "name": "Kurtz pod scoop false",
+      "source": "Scripts/hofd-nellie-pod.js",
+      "duration_ms": 0.046291999999994005,
+      "passed": true
+    },
+    {
+      "name": "Kurtz pod scoop true",
+      "source": "Scripts/hofd-nellie-pod.js",
+      "duration_ms": 0.004791000000011536,
+      "passed": true
+    },
+    {
+      "name": "Kurtz low energy launches once",
+      "source": "Scripts/hofd-nellie.js",
+      "duration_ms": 0.030500000000003524,
+      "passed": true
+    }
+  ],
+  "total": 21,
+  "passed": 21,
+  "seccom_bases": [
+    {
+      "galaxy_zero_based": 0,
+      "system_ids": [
+        7,
+        24,
+        120,
+        150,
+        175
+      ]
+    },
+    {
+      "galaxy_zero_based": 1,
+      "system_ids": [
+        33,
+        82,
+        106,
+        127,
+        243
+      ]
+    },
+    {
+      "galaxy_zero_based": 2,
+      "system_ids": [
+        17,
+        31,
+        36,
+        69,
+        132
+      ]
+    },
+    {
+      "galaxy_zero_based": 3,
+      "system_ids": [
+        66,
+        69,
+        186,
+        197,
+        229
+      ]
+    },
+    {
+      "galaxy_zero_based": 4,
+      "system_ids": [
+        121,
+        153,
+        190,
+        198,
+        249
+      ]
+    },
+    {
+      "galaxy_zero_based": 5,
+      "system_ids": [
+        6,
+        66,
+        85,
+        129,
+        146
+      ]
+    },
+    {
+      "galaxy_zero_based": 6,
+      "system_ids": [
+        86,
+        154,
+        161,
+        216,
+        231
+      ]
+    },
+    {
+      "galaxy_zero_based": 7,
+      "system_ids": [
+        9,
+        26,
+        113,
+        116,
+        251
+      ]
+    }
+  ]
+}

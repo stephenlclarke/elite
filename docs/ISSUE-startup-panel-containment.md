@@ -1,0 +1,7 @@
+# Native title presentation repeatedly clips panels already inside its viewport
+
+Actual optimized native observation 775 on source 1ced9dd7ebe4be3178396d33bdb0066ec94ffc3a completed thirty distinct visible compact title draws. The retained profile reports draw-interval p50 151.590 ms, p95 161.583 ms, presentation p95 33.893 ms and drawing p95 65.644 ms on CPU fallback. This is a measured slow title; the debug coverage unit timing alone was not an optimized frame measurement.
+
+Frame.panel runs four Sutherland-Hodgman clipping passes for every visible ship polygon. Each pass allocates and fills another ScreenPoint array even when every vertex is already within the inclusive viewport. The approved rotating title mesh has radius 65 and center depth 280. With focal length 768, its projected radius is bounded by 183.293 pixels around (384, 288), inside the exact title clip [0, 767] by [36, 527]. Rotation preserves that radius. The original geometry therefore repeatedly takes four unnecessary clipping passes.
+
+Skip those passes only when every finite input vertex is already inside the same exact inclusive bounds. Other inputs must execute the original clipping code. Preserve geometry, winding, material colors, drawing order, rotation, rasterization and existing edge or invalid-input behavior. No mesh reduction, LOD, frame cache, backend change or new profiling tool is required. Actual speedup remains unmeasured until the integrator repeats the same bounded native observation. Related implementation note: PR-startup-panel-containment.md.

@@ -1,0 +1,98 @@
+{
+  "run": 40085265091,
+  "published_head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+  "actual_checkout_head": "4c4736b98d711fc33a41ae1d2d58e2a76c3811e6",
+  "verified_input_paths": 1885,
+  "hash_mismatches": [],
+  "normal_phase": {
+    "complete_summary": "3395tests/394suitesPASS3020.383s",
+    "assertion_failure_records": 0,
+    "normal_run_summary_present": true,
+    "coverage": "90.49%",
+    "following_phase_command": "swift test --scratch-path .build/tsan --sanitize=thread",
+    "normal_xml": "No XML found underreports; ordinary makecoverage script requests no XML; complete terminalsummary retained."
+  },
+  "snapshot": {
+    "path": "/tmp/elite-mba-6552-normal-coverage-phase.log",
+    "bytes": 1034805,
+    "sha256": "39d50de05ec26d156bb93b65c338253465d16075512c64af7c41c9a32d64d013",
+    "boundary": "Exactexistingci.logprefix beforeTSANcommand, no alterationtoliveevidence"
+  },
+  "source_before_sha256": "cfcc5dcb0ef453a5e554f4cc4a11576a9b5942ea248ec7ce9b370e84e9f4fbb0",
+  "environment": {
+    "os": {
+      "command": [
+        "sw_vers"
+      ],
+      "exitCode": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.0\nBuildVersion:\t\t26A428\n",
+      "stderr": ""
+    },
+    "xcode": {
+      "command": [
+        "xcodebuild",
+        "-version"
+      ],
+      "exitCode": 0,
+      "stdout": "Xcode 27.1\nBuild version 27A9275\n",
+      "stderr": ""
+    },
+    "swift": {
+      "command": [
+        "swift",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4.1 (swift-6.4.1-RELEASE)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": ""
+    },
+    "xcrunSwift": {
+      "command": [
+        "xcrun",
+        "swift",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0\n",
+      "stderr": "swift-driver version: 1.168.6 "
+    },
+    "sdk": {
+      "command": [
+        "xcrun",
+        "--show-sdk-path"
+      ],
+      "exitCode": 0,
+      "stdout": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk\n",
+      "stderr": ""
+    },
+    "sdkVersion": {
+      "command": [
+        "xcrun",
+        "--show-sdk-version"
+      ],
+      "exitCode": 0,
+      "stdout": "27.0\n",
+      "stderr": ""
+    },
+    "architecture": {
+      "command": [
+        "uname",
+        "-m"
+      ],
+      "exitCode": 0,
+      "stdout": "arm64\n",
+      "stderr": ""
+    }
+  },
+  "qualification": "CompletedNORMAL+coveragephase only; continuationintoTSAN provescoverage-checkcommandreturned success. FullqualityjobSTILLLIVE; TSAN/ASAN/leaks/mainSonar/merge/release notqualified. No duplicateartifactdownload orreviewerexecution/probe/rerun.",
+  "coverage_xml": {
+    "path": "/tmp/elite-mba-6552-normal-coverage.xml",
+    "bytes": 6047186,
+    "sha256": "60806d6ad916e15d5fe3ccf79cfd43bad205bbd1f5dbea72a88b0ac437f2f455",
+    "line_count": 127746,
+    "covered_lines": 115601,
+    "coverage_percent": 90.49285300518216,
+    "required_minimum": 80,
+    "threshold_met": true
+  }
+}

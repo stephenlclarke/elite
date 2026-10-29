@@ -1,0 +1,29 @@
+# Add normalized alien storage and bounded content-addressed pages
+
+Adds six typed indices for world history, immutable collected sources, physical attachments, owned upgrades, receipts and commands. Upgrade application and large hull transfers use independent receipt records instead of growing per-item or per-command arrays. Full chronological replay validates final ownership and effects.
+
+World records preserve original plans, seed and source facts, EMPTY/nonreserved outcomes, monotone work/depletion/destruction and individual reserved-lot custody. The compact progress header mirrors the native allocator: original item quantities, discard flags, structural material and next lot number. Arrays have exactly the immutable original plan's item count. Checked prefix reconstruction compares actual issued evidence with the original item rebound to its authentic allocated identity.
+
+The codec writes bounded leaves and a multi-level index with a fixed six-root header. It imposes no lifetime record, page-count or tree-depth limit. Decoding checks canonical encoding, ownership, hashes, key order, counts, ranges, page aliasing and all typed joins. Snapshot equality ignores caller insertion order. Transitions reject history deletion, source rerolls, retired-item revival, applied-upgrade reuse and custody rewind.
+
+The file store stages immutable pages and root bytes. Directory descriptors anchored from `/` and no-follow component opens reject links in ancestors and page paths. Existing authenticated pages are synced again before reuse, covering interrupted writes that left complete but unsynced orphan files. Errors propagate to the save owner. Whole-generation publication and its atomic native pointer remain integration responsibilities. Callers must supply a canonical directory path without symlink ancestors; for example resolve the system temporary directory before using it.
+
+## Validation supplied
+
+New tests cover cross-page transfers, unapplied upgrades, retirement, order-independent hashes, more than 16,384 upgrades on one physical attachment, total page data beyond 4 MiB, malformed authenticated pages, missing/corrupt pages, owner mismatch, permanent claims, every page-write failure and immutable/no-symlink file-store behavior. Real salvage-producer fixtures exercise structural-before-alien issuance and mixed commodity chunks before technology, using genuine retained progress rather than fabricated IDs. World tests cover pending offers/bindings, monotone terminal custody and EMPTY plans.
+
+Formatting, scoped Markdown lint and whitespace checks are the local checks. Compilation, test execution, native save/restore, fault injection against final publication and `make ci` remain for the main coder; passing execution is not claimed by this source handoff.
+
+## Integration contract and limits
+
+- The actor owns original inspection, work, shared allocation, producer permits, collection revisions and admission. Alien world/ownership must bypass ordinary lifetime pools before inspection and work as well as collection.
+- Native migration must use genuinely retained validated original progress and actual lot evidence. Ambiguous or insufficient evidence fails atomically while preserving original bytes; it cannot manufacture missing history.
+- The actor supplies current authenticated dock authority for PLUGH and performs live effects once per fitted attachment. This package does not grant recovery or dock rights.
+- The save owner writes a small `AlienStorageReference`, stages the complete versioned generation, validates its cross-chunk joins and publishes the final pointer atomically. `previous: nil` means first history only; subsequent staging supplies the prior snapshot.
+- This implementation materializes normalized records in memory and sorts/replays them. It is not a bounded-memory streaming database. Memory, disk, I/O and representable arithmetic limits still produce real failures. Existing per-source UInt16 lot IDs remain the native collision domain; no new total-plan/history cap is introduced.
+
+The native filesystem fixture now obtains its existing temporary base with POSIX realpath, releases the returned allocation, and retains every immutable-page/root/child-link assertion. It also explicitly requires rejection of a symlink used as the staging root. Production descriptor-anchored no-follow code is unchanged. Strict formatting and whitespace checks pass; the corrected native filesystem method remains pending focused execution. The other thirteen storage methods passed actual 289, without establishing whole-app v27, collection, fitting or publication acceptance.
+
+The store initializer now preserves its caller's physical file URL. Every file-URL, component, descriptor, O_NOFOLLOW, O_DIRECTORY, immutable-byte, hash, size and fsync check remains unchanged. This avoids Foundation's observed existing-directory alias rewrite; it does not follow or accept symlink ancestors. Strict source formatting and whitespace checks pass. The single native filesystem regression is the affected acceptance scope; the thirteen unchanged in-memory storage tests are not repeated for this path-only repair.
+
+Focused 292 passed the native filesystem method and its final one-test summary on committed `870a192d2d4aba638bfd06f559945a953fb01d47`, including every original immutable/root/child-link check and explicit staging-root-link refusal. Total elapsed was 13.104883375111967 seconds; raw SHA256 `ddb79c4b6d0d564f56312c4a9e43014a5a58d64a799c17a4b4a471c18cfe5194`. Verified tracked/protected bytes, exact binary and owned process closure precede lease release. Together with thirteen unchanged storage methods passing in 289, this gives scoped storage acceptance without a new aggregate fourteen-test pass or whole-app v27/gameplay integration.

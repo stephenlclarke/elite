@@ -1,0 +1,23 @@
+{
+  "reviewed_patch_sha256": "7569d94d6c4a62c1aa2c0eab79ccd59d953decfcad629f3ced01ac6786766e46",
+  "original_attempt": "/Users/sclarke/Library/EliteNativeCI/sanitizer-checkpoints/85ab97018ab16753ca4d3d0ac288723abfc6965a2b4d1742b56431a3e676e123/0/82dddf82-c84b-4787-999f-1717b306a10b",
+  "original_status": "failed",
+  "original_result_sha256": "7711e3db2c00b84f512637bdc2428448422f0056c0f340565eb9da4e5adbe3d5",
+  "mode": "metadata-only proposed qualification; no accepted commit or cache attestation yet",
+  "native_current_validator_only_drift": [
+    "Tools/CI/sanitizer_checkpoints.py",
+    "Tools/CI/test_sanitizer_checkpoints.py"
+  ],
+  "status": "PROOF_VALIDATED",
+  "executed_methods": 3389,
+  "source_declared_opt_in_skips": 6,
+  "inventory": 3395,
+  "actual_input_files_verified": 2857,
+  "original_failed_receipt_unchanged": true,
+  "proof_sha256": "370b2a8fa42868696c516f79853dee3e26b6e1eee76dae1ba947240af883f663",
+  "proposed_identity_sha256": "cbccf2565fd05f55e981c644a6b56e5b9260f9b9e9391b1ead49c321e2c3ea43",
+  "image_sha256": "21e63d2429c0e1b14cab73835e7a135300fa48c850b31805ec88b56f9b3790e1",
+  "new_policy_sha256": "7bcbdba500410691aa81f200c8b4828519746cecc3195b0eb7060aeab17cdf47",
+  "limits": "Raw values were not captured and are not reconstructed.",
+  "wall_seconds": 0.9861003747209907
+}

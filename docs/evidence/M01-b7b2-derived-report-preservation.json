@@ -1,0 +1,14 @@
+{
+  "original_derived": "/Users/sclarke/Library/EliteNativeCI/native-runner/_work/elite/elite/reports/sanitizers/thread/a0347c1f-1bf3-4cb2-899d-1945aebbb06a/failed-batch-0",
+  "preserved_copy": "/tmp/elite-m01-b7b2-readonly-report-preserved/failed-batch-0",
+  "files": {
+    "result.json": "7711e3db2c00b84f512637bdc2428448422f0056c0f340565eb9da4e5adbe3d5",
+    "start.json": "97fe4dc9c3f921804a0a9a698f56cc049beb85766cb6a1ed0ca2ee9c4423b6bd",
+    "test.log": "3f5002bbbbc0c7528e84969a6490a5ac8ef4fb70d8eaffba0c550cd0d6a33364",
+    "tests-swift-testing.xml": "a83a1515f6800c130f6b0bf019d1a67bd5b55f08d6773c8fd41caa2ebc7c9eb9"
+  },
+  "action": "Preserved byte-identical immutable backup outside checkout, then repaired only verified disposable directory to0700/files0600. Initial rename was refused and made no data change.",
+  "durable_original_cache_unchanged": true,
+  "build_cache_reset": false,
+  "remaining_derived_mode": "0o700"
+}

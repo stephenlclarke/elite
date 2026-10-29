@@ -1,0 +1,96 @@
+{
+  "source_manifest": {
+    "base": "6169a44184bfa15abb557918888cd2399485da93",
+    "files": {
+      "Sources/EliteCore/ContractBoard.swift": "79f3f18ee37f51cb179ab9851223232771fdc7f8b7b1c7b8f0bd1de46be19988",
+      "Tests/EliteCoreTests/NativeIdentifiedSalvageRecoveryTests.swift": "abb3738a083e1250b44c092b7ea523f75c9539d8182f2cb5078d515c0e8e6789"
+    },
+    "patch_sha256": "a33b7bf1cea08a4ada381c0f9a6a0af102e755e8d9a3603b20a64026261d43d0",
+    "filter": "^(?:EliteCoreTests\\.NativeCrimboRuntimeTests/|EliteCoreTests\\.NativeDefensiveFlightUnitTests/|EliteCoreTests\\.NativeFirstCommoditySaleUnitTests/|EliteCoreTests\\.NativeFleetDiscoveryUnitTests/|EliteCoreTests\\.NativeFlightReceptionUnitTests/|EliteCoreTests\\.NativeGlassMeridianUnitTests/|EliteCoreTests\\.NativeIdentifiedSalvageJourneyTests/|EliteCoreTests\\.NativeIdentifiedSalvageRecoveryTests/|EliteCoreTests\\.NativeIdentifiedSalvageSaveTests/|EliteCoreTests\\.NativeImportedEMPCompatibilityTests/|EliteCoreTests\\.NativeIsolationProgrammerUnitTests/|EliteCoreTests\\.NativeLoanFittingTests/|EliteCoreTests\\.NativeMainStationCapacityTests/|EliteCoreTests\\.NativeMainStationReceiptProjectionTests/|EliteCoreTests\\.NativeMeasuredExtractionAcquisitionTests/)|FreshMainStationStartTests|transientBoardCopiesRetainIndependentOffersMetadataAndReviews|listAndSpecializedReviewDispatchPreserveTokensBackAndRefusalProperty|nativeBoardBrowsingBackAndReloadPreserveTermsWithoutAcceptingOrStartingADeadline|nativeBoardReviewDefaultsBackAndRequiresSeparateConfirmedCollection|frozenContractReviewRejectsChangedPropertyAndFreshReviewCanAccept",
+    "scope": "16 original confirmation completions move only row refresh and exact ordered post-refresh cleanup to a sibling after noninline confirmation returns; provider/back/error retain behavior. Existing real failed salvage-return regression adds list/quote/witness assertions. Authority/hash/schema validation unchanged."
+  },
+  "source_review": "CLEAR: no actionable bugs/performance/style/semantic findings",
+  "checks": [
+    "Exactbase2filehashes and retainedpatchsha verified.",
+    "All16confirmation branches mechanically reconstructed against base: exact guard/call/error/notification order retained; provider return\u2192nil causes no refresh.",
+    "Each completion case generic refresh+detailfalse+case-specific cleanup/notice sequence mechanically equals its original post-confirmation sequence, including RRS/ordinary notices before refresh and people/finance notices after cleanup.",
+    "Back/navigation/error handler and remaining source byte-identical; private small enum and synchronous noninline siblings add no suspension/authority/save/schema change.",
+    "Existing actual failing real salvage-return case adds meaningful removed-row,7quote-clear and unchanged-loss-witness assertions; source reception guard supports removed rows after return. Existingcash/partialreturn/failurepayload/save assertions retained."
+  ],
+  "grouping_manifest": {
+    "changed_audited_sources": [],
+    "new_members": [],
+    "reason": "ContractBoard production file and NativeIdentifiedSalvageRecoveryTests are not source-hashed participants in current32AppKit/2shared-release manifest. RecoveryTests importsEliteCoreonly and uses different identified-salvage fixture, not NativeSalvageAdmissionTestFixture.shared. No manifest sourcehash/membership delta needed for this repair; runtime/test identity still changes and invalidates old execution reuse."
+  },
+  "limits": [
+    "Focused normal110 and ASAN110 independently qualified on frozen a33b7 source/base6169. Full quality/release qualification and publication composition remain separate.",
+    "No tests/build/native/probe/source edits performed by reviewer."
+  ],
+  "normal": {
+    "status": "PASS: exact110selectedmethod scope independently verified",
+    "result": "/tmp/elite-m01-detail-refresh-normal-result.json",
+    "result_sha256": "b9eacc4297debd08ac1176593b8942cd1d38dd00ed7dc76ded8db86287650734",
+    "selection": "/tmp/elite-m01-detail-refresh-selection.json",
+    "selection_sha256": "99fa1a35f5a70ddeb88ab7a302219e16c3cec59e6bc969c05f0d93a97e1470e5",
+    "outputs": {
+      "/tmp/elite-m01-detail-refresh-normal.log": {
+        "bytes": 34152,
+        "sha256": "3ce4fd6679f76c8e697b0c177b63661472eef1e6950bd235f03e2be56cb63b24"
+      },
+      "/tmp/elite-m01-detail-refresh-normal-swift-testing.xml": {
+        "bytes": 19130,
+        "sha256": "28bd24e04a7c22a38cb1c444bc9ca482e1f7e5e11f838db2bb25143965804bf4"
+      }
+    },
+    "discovery_log": "/tmp/elite-m01-detail-refresh-discovery.txt",
+    "discovery_sha256": "3f91dd3c087e21d6378a21dbe45704846b56353e8c6c9b31a9adadcfc4cf0106",
+    "all_discovered_methods": 3416,
+    "selected_unique_methods": 110,
+    "prior_failed_batch99_all_included": true,
+    "extra_general_board_and_fresh_methods": 11,
+    "failure_error_skip_duplicate_missing_extra": 0,
+    "source_before_after_exact": true,
+    "framework_suites": 17,
+    "framework_seconds": 154.092,
+    "native_process_wall_seconds": 154.92751887487248,
+    "discovery_build_seconds": 116.48,
+    "discovery_build_invocation_wall_seconds": 120.8565420419909,
+    "build_log_sha256": "ddc12f5395aa8abe6035884e76539df8f9b8e63fb52a433ee3dd41266e96f3da",
+    "limits": "Focused normal only; ASAN separately qualified in this same receipt. No source audit/rebuild/rerun/probe/download by reviewer."
+  },
+  "asan": {
+    "status": "PASS: exact110selectedmethod scope independently verified",
+    "result": "/tmp/elite-m01-detail-refresh-asan-result.json",
+    "result_sha256": "126984210b35f75b157e25df9dd0cd0d52a56246dc9db11ba02cee62920f0158",
+    "outputs": {
+      "/tmp/elite-m01-detail-refresh-asan.log": {
+        "bytes": 38016,
+        "sha256": "d8dbb95d9ec7175fd2a9370fe61dff0d929f8e93b3df05d3505965e875a0e16c"
+      },
+      "/tmp/elite-m01-detail-refresh-asan-swift-testing.xml": {
+        "bytes": 18847,
+        "sha256": "7e2b80916f9fcd7add3b72a24b602c79738456aa68cbb9e8c9feddb180f7b5b8"
+      }
+    },
+    "selected_unique_methods": 110,
+    "framework_suites": 17,
+    "failure_error_skip_duplicate_missing_extra": 0,
+    "source_before_after_exact": true,
+    "discovery_filter_exact": true,
+    "framework_seconds": 3522.929,
+    "native_process_including_build_wall_seconds": 3625.783773917239,
+    "reported_build_seconds": 97.04,
+    "asan_options": "detect_leaks=0",
+    "sanitizer_markers": [],
+    "image": {
+      "path": "/tmp/elite-m01-detail-refresh-passed/asan-EliteCoreTests",
+      "bytes": 460927088,
+      "sha256": "4eefcfa46d3aa8d77aecb9d38c1ac0489cb6455c5e92e87bb25685b5573cd4b6",
+      "uuid": "EC70B2F2-D9BE-3F87-9198-AA7963CC95D7"
+    },
+    "observed_helper_pid": 66177,
+    "observed_parent_pid": 63748,
+    "actual_helper_image_and_output_bound": true,
+    "limits": "Focused ASAN only; no full quality or release acceptance. Saved evidence inspection only; no native execution, probe, retry or repeated source audit by reviewer."
+  }
+}

@@ -62,6 +62,17 @@ enum ShipProjection {
     return r << 24 | g << 16 | b << 8 | 255
   }
 
+  /// Faces in front of or on the near plane need only their final screen points.
+  static func polygon(
+    _ face: [Int], vertices: [Vector3], projection: FlightProjection = .legacy
+  ) -> [ScreenPoint] {
+    guard !face.isEmpty, face.allSatisfy({ vertices[$0].z >= 1 }) else {
+      return polygon(face.map { vertices[$0] }, projection: projection)
+    }
+    let points = face.map { projection.point(vertices[$0]) }
+    return points.allSatisfy { $0.x.isFinite && $0.y.isFinite } ? points : []
+  }
+
   static func polygon(_ vertices: [Vector3], projection: FlightProjection = .legacy)
     -> [ScreenPoint]
   {
@@ -81,15 +92,92 @@ enum ShipProjection {
 }
 
 extension Frame {
+  /// Ship surfaces visible to the renderer, excluding HUD graphics and offscreen texture faces.
+  public var hasShipSurfaces: Bool {
+    worldGraphics.contains(where: visibleShipSurface)
+      || graphics.contains(where: visibleShipSurface)
+  }
+
+  private func visibleShipSurface(_ graphic: Graphic) -> Bool {
+    switch graphic {
+    case .panel: return true
+    case .textured(let triangle):
+      guard triangle.vertices.count == 3,
+        triangle.vertices.allSatisfy(ShipTextureRaster.validVertex),
+        ShipTextureRaster.validClip(triangle.clip), ShipTextureRaster.validClip(flightClip),
+        triangle.brightness.isFinite, (0...1).contains(triangle.brightness),
+        ShipTextureAssets.pixels(for: triangle.texture) != nil
+      else { return false }
+      let left = max(triangle.clip.x, flightClip.x)
+      let top = max(triangle.clip.y, flightClip.y)
+      let right = min(triangle.clip.maxX, flightClip.maxX)
+      let bottom = min(triangle.clip.maxY, flightClip.maxY)
+      guard left < right, top < bottom else { return false }
+      var clipped = triangle.vertices.map(\.point)
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: left, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: right, above: false)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: top, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: bottom, above: false)
+      guard clipped.count >= 3 else { return false }
+      // A bounding-box intersection alone can accept a face lying outside a viewport corner.
+      let origin = clipped[0]
+      let area = (1..<(clipped.count - 1)).reduce(0.0) { sum, index in
+        let a = clipped[index]
+        let b = clipped[index + 1]
+        return sum + (a.x - origin.x) * (b.y - origin.y) - (a.y - origin.y) * (b.x - origin.x)
+      }
+      return abs(area) > 1e-12
+    default: return false
+    }
+  }
+
+  public mutating func textured(_ triangle: ShipTexturedTriangle) {
+    graphics.append(.textured(triangle))
+    guard rasterizeGraphics, let texture = ShipTextureAssets.pixels(for: triangle.texture),
+      ShipTextureRaster.validClip(triangle.clip), ShipTextureRaster.validClip(flightClip)
+    else { return }
+    let leftEdge = max(0, triangle.clip.x, flightClip.x)
+    let topEdge = max(0, triangle.clip.y, flightClip.y)
+    let rightEdge = min(Double(Self.width), triangle.clip.maxX, flightClip.maxX)
+    let bottomEdge = min(Double(Self.height), triangle.clip.maxY, flightClip.maxY)
+    guard rightEdge > leftEdge, bottomEdge > topEdge else { return }
+    let bounded = ShipTexturedTriangle(
+      vertices: triangle.vertices, texture: triangle.texture, brightness: triangle.brightness,
+      clip: .init(
+        x: leftEdge, y: topEdge, width: rightEdge - leftEdge, height: bottomEdge - topEdge),
+      appearance: triangle.appearance)
+    guard let tile = ShipTextureRaster.tile(triangle: bounded, pixels: texture)
+    else { return }
+    let left = Int(tile.origin.x.rounded())
+    let top = Int(tile.origin.y.rounded())
+    for y in 0..<tile.height {
+      for x in 0..<tile.width {
+        let colour = tile.rgba[y * tile.width + x]
+        let column = left + x
+        let row = top + y
+        if colour & 255 != 0, (0..<Self.width).contains(column), (0..<Self.width).contains(row) {
+          pixels[row * Self.width + column] = colour
+        }
+      }
+    }
+  }
+
   public mutating func panel(_ vertices: [ScreenPoint], colour: UInt32) {
     guard vertices.count >= 3, vertices.allSatisfy({ $0.x.isFinite && $0.y.isFinite }) else {
       return
     }
     var clipped = vertices
-    clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.x, above: true)
-    clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.maxX - 1, above: false)
-    clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.y, above: true)
-    clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.maxY - 1, above: false)
+    // The rotating startup ship is wholly framed inside this exact inclusive clip.
+    // Retain its vertices directly; crossing polygons use the original clipping path.
+    if !vertices.allSatisfy({
+      $0.x >= flightClip.x && $0.x <= flightClip.maxX - 1
+        && $0.y >= flightClip.y && $0.y <= flightClip.maxY - 1
+    }) {
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.x, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.x, limit: flightClip.maxX - 1, above: false)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.y, above: true)
+      clipped = Self.clipPolygon(clipped, axis: \.y, limit: flightClip.maxY - 1, above: false)
+    }
     guard clipped.count >= 3 else { return }
     graphics.append(.panel(ShipPanel(vertices: clipped, colour: colour)))
     if rasterizeGraphics { fillPanel(clipped, colour: colour) }

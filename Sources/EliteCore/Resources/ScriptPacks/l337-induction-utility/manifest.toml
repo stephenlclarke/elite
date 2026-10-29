@@ -1,0 +1,64 @@
+schemaVersion = 2
+missionAPI = 2
+id = "l337.induction-utility"
+version = "1.0.0"
+minimumEngine = "2.0.0"
+capabilities = ["script-lua-v1", "story-v2", "durable-commands-v2", "local-flight-clocks-v2", "profiled-encounters-v2"]
+priority = 613
+source = "Closed native C08 Enron utility source. Actual authorization/admission preserve three initial faults and finite local kits. Lua grants no repair, work, receiving, equipment or reward."
+license = "MIT"
+environments = ["space", "orbital-station"]
+module = "scripts/main.lua"
+
+[mission]
+id = "original-utility-source"
+title = "Original Enron utility handoffs"
+briefing = "Internal owning Exchange provider. Three original uncrewed external modules retain local crew control, one sealed repair kit each and their actual initial mechanical faults. Authorization/admission alone repairs nothing."
+destination = "Enron G01-S190 actual utility handoffs"
+reward = "No player payment, equipment or clue."
+milestones = ["Original Enron handoffs received"]
+
+[[models]]
+id = "induction-enron-service-enclosure"
+path = "models/enclosure.json"
+sha256 = "8edf973c30f2975e567714af9cd72c3449b73d6e333abac5934dd7f7b2a5e8d5"
+source = "Original Enron external service enclosure, explicit6m-per-side native metre design"
+license = "MIT"
+
+[[npcs]]
+id = "induction-enron-service-module"
+name = "Enron crew-owned external service module"
+source = "Explicit original C08 Enron utility source; finite crew-owned kit and mechanical fault"
+basis = "Stationary uncrewed6m enclosure in physical metres. Local utility crew retain control. No ship, salvage, cargo or player equipment grant."
+model = "asset:induction-enron-service-enclosure"
+scale = 1
+energy = 100
+recharge = 0
+speed = 0
+acceleration = 0
+pitch = 0
+yaw = 0
+roll = 0
+missiles = 0
+fuel = 0
+ecm = false
+bounty = 0
+lasers = []
+components = []
+
+[[handlers]]
+event = "mission.accepted"
+function = "accepted"
+[[handlers]]
+event = "timer.fired"
+function = "deploy"
+[[handlers]]
+event = "encounter.admitted"
+function = "admitted"
+
+[[encounters]]
+id = "enron-handoffs"
+galaxy = 0
+system = 190
+profile = "profiled-local-freeze-v1"
+actors = [{id="inlet",npc="induction-enron-service-module",x=60000.0,y=20000.0,z=0.0,hostile=false},{id="buffer",npc="induction-enron-service-module",x=60300.0,y=20000.0,z=0.0,hostile=false},{id="return",npc="induction-enron-service-module",x=60600.0,y=20000.0,z=0.0,hostile=false}]

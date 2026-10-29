@@ -5,7 +5,14 @@ import Testing
 
 @Test func xyzzyFitsClarkeAndCyclesDisplayWhilePreservingProgress() async throws {
   var game = Game(executive: false)
-  #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .whiteWireframe)
+  // This controlled unit fixture exercises the stock Cobra, independently of the fresh starter.
+  game.commander.shipID = "SH023"
+  game.commander.fuel = game.commander.fuelCapacity
+  game.energy = game.commander.performance.energy
+  game.frontShield = game.commander.shieldCapacity
+  game.rearShield = game.commander.rearShieldCapacity
+  game.commander.name = "JAMESON"
+  #expect(game.commander.name == "JAMESON" && game.commander.shipDisplayStyle == .shadedPanels)
   game.key("return")
   game.launch()
   game.commander.credits = 1234
@@ -13,9 +20,25 @@ import Testing
   game.frontShield = 1
   game.rearShield = 2
   game.energy = 3
+  try game.commander.prepareEquipment()
+  let beforeGrant = try #require(game.commander.equipmentInventory)
   for key in "xyzzy" { game.key(String(key)) }
   #expect(game.commander.name == "CLARKE")
-  #expect(game.commander.equipment == Equipment.maximumHardware)
+  let maximumDevices = Equipment.maximumHardware.subtracting(["Fuel", "Missile"])
+  #expect(game.commander.equipment == maximumDevices)
+  let inventory = try #require(game.commander.equipmentInventory)
+  let fittedNames = Set(inventory.items.filter { $0.location != nil }.map(\.node.key))
+  #expect(maximumDevices.isSubset(of: fittedNames))
+  #expect(inventory.owner == beforeGrant.owner && inventory.activeHull == beforeGrant.activeHull)
+  for original in beforeGrant.items {
+    let retained = try #require(inventory.items.first { $0.id == original.id })
+    #expect(retained == original.moved(to: retained.location))
+  }
+  let originalIDs = Set(beforeGrant.items.map(\.id))
+  let grants = inventory.items.filter { !originalIDs.contains($0.id) }
+  #expect(!grants.isEmpty && grants.allSatisfy { $0.provenance == .xyzzy })
+  #expect(Set(inventory.items.map(\.id)).count == inventory.items.count)
+  #expect(game.commander.equipmentPurchaseHistory?.paid.isEmpty == true)
   #expect(game.commander.credits == Commander.xyzzyStartingCredits && game.commander.cargo[0] == 3)
   #expect(game.commander.missiles == 4 && game.commander.fuel == game.commander.fuelCapacity)
   #expect(
@@ -28,22 +51,86 @@ import Testing
     #expect(game.commander.shipDisplayStyle == expected)
     #expect(!Display.render(game).pixels.isEmpty)
   }
-  let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-  defer { try? FileManager.default.removeItem(at: url) }
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  let url = directory.appendingPathComponent("commander.json")
+  defer { try? FileManager.default.removeItem(at: directory) }
   let runtime = GameRuntime(game: game)
   try await runtime.save(to: url)
+  let saved = await runtime.snapshot()
+  let bytes = try Data(contentsOf: url)
+  let pointer = try JSONDecoder().decode(ScriptSavePointer.self, from: bytes)
+  #expect(pointer.schemaVersion == 26 && pointer.scope == "commander")
+  let (stored, _) = try ScriptSaveStore.read(bytes, from: url)
+  var expectedStored = saved.commander
+  if expectedStored.npcPersistence.count > 0 {
+    expectedStored.npcPersistence.resetPhysicalBindings(system: saved.systemIdentity)
+  }
+  expectedStored.resetWantedCareerBindings(system: saved.systemIdentity)
+  #expect(stored == expectedStored)
+  // Derive fresh native station allocation before loading; never copy the loaded answer.
+  let expected = try displayColdCommanderExpectation(saved)
   let restored = GameRuntime()
   try await restored.load(from: url)
-  #expect(await restored.snapshot().commander == game.commander)
+  let restoredCommander = await restored.snapshot().commander
+  #expect(restoredCommander == expected)
   game.key("escape")
   game.key("0")
   #expect(!game.docked && game.commander.shipDisplayStyle == .whiteWireframe)
+  game.commander.credits -= 123
+  game.commander.fuel -= 1
+  // Unlimited shots preserve physical rounds; a mirror-only decrement invalidates custody.
+  #expect(
+    game.commander.unlimitedMissiles && game.commander.missiles == game.commander.missileCapacity)
+  try game.commander.validateEquipmentState()
+  let beforeReentry = game.commander
+  var expectedReentry = beforeReentry
+  expectedReentry.fuel = expectedReentry.fuelCapacity
+  expectedReentry.missiles = expectedReentry.missileCapacity
+  for key in "xyzzy" { game.key(String(key)) }
+  #expect(game.commander == expectedReentry)
+  #expect(game.commander.credits == Commander.xyzzyStartingCredits - 123)
+  #expect(game.commander.equipmentInventory == beforeReentry.equipmentInventory)
+  #expect(game.commander.equipmentPurchaseHistory == beforeReentry.equipmentPurchaseHistory)
+}
+
+/// Project the retained pre-load scene's fresh RRS bindings without reading the loaded result.
+@inline(never)
+private func displayColdCommanderExpectation(_ original: Game) throws -> Commander {
+  var expected = original.commander
+  let indices = original.bodies.indices.filter {
+    original.bodies[$0].nativeStationIdentity != nil
+  }
+  var world = try #require(expected.nativeStations)
+  try #require(!indices.isEmpty)
+  try #require(
+    world.sceneIsConsistent(
+      bodies: original.bodies, docked: original.docked, mainStation: original.dockedAtMainStation,
+      system: original.systemIdentity, flight: expected.flightSimulation))
+  try #require(original.nextBodyID > 0 && original.nextBodyID < 1_000_000_000 - indices.count)
+  var flight = expected.flightSimulation
+  let allocatedSpawn = flight.allocateSpawn()
+  _ = try #require(allocatedSpawn)
+  for (member, index) in indices.enumerated() {
+    let station = try #require(original.bodies[index].nativeStationIdentity)
+    try #require(original.bodies[index].physical != nil)
+    let allocatedActor = flight.allocateActor()
+    let actor = try #require(allocatedActor)
+    let previous = try #require(world.ledger.records.first { $0.identity == station }?.binding)
+    #expect(actor.system == original.systemIdentity && actor.visit == flight.visit)
+    #expect(actor.visit == previous.actor.visit && actor != previous.actor)
+    try world.ledger.rebind(
+      station, to: .init(actor: actor, bodyID: original.nextBodyID + member))
+  }
+  try #require(world.valid && flight.valid)
+  expected.nativeStations = world
+  expected.flightSimulation = flight
+  return expected
 }
 
 @Test func displayStyleDecodingAcceptsOldSavesAndRejectsUnknownStyles() throws {
   let legacy = try JSONEncoder().encode(Commander())
   let old = try JSONDecoder().decode(Commander.self, from: legacy)
-  #expect(old.shipDisplayStyle == .whiteWireframe && old == Commander())
+  #expect(old.shipDisplayStyle == .shadedPanels && old == Commander())
   var object = try #require(JSONSerialization.jsonObject(with: legacy) as? [String: Any])
   object["displayStyle"] = "unsupported"
   let invalid = try JSONSerialization.data(withJSONObject: object)
@@ -155,4 +242,104 @@ import Testing
   _ = Display.render(paused)
   paused.key("escape")
   #expect(paused.paused)
+}
+
+@Test func equipmentHelpShowsCabinKeysOnlyForTheSelectedPassengerBerthRow() throws {
+  var game = Game(executive: false)
+  game.screen = .equipment
+  let store = "S - STORE EMPTY PASSENGER CABIN"
+  let refit = "R - REFIT STORED PASSENGER CABIN"
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
+  game.selection = try #require(
+    Equipment.all.firstIndex { $0.name == PassengerCabin.equipmentName })
+  let commander = game.commander
+  game.key("k")
+  let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
+  #expect(rows.contains(store) && rows.contains(refit))
+  #expect(rows.contains("RETURN - PURCHASE / REFUEL"))
+  #expect(rows.contains("UP / DOWN / SCROLL - SELECT ITEM"))
+  #expect(game.commander == commander)
+  game.key("escape")
+  game.selection = 0
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(refit))
+  game.selection = Equipment.all.count - 1
+  game.screen = .inventory
+  #expect(!PlayerHelp.pages(for: game).flatMap(\.rows).contains(store))
+}
+
+@Test func galleryHelpDescribesActualCampaignNavigationAndAvailableActions() throws {
+  let fixture = try CampaignGalleryFixture()
+  defer { fixture.clean() }
+  var game = fixture.game()
+  let (parent, child) = try fixture.start(&game)
+  try fixture.select(child, game: &game)
+  let commander = game.commander
+  func rows(_ value: Game) -> [String] { PlayerHelp.pages(for: value).flatMap(\.rows) }
+  #expect(MissionUIAction.trial.isEnabled(in: game))
+  #expect(rows(game).contains("T - REVIEW PRIVATE CAMPAIGN TRIAL"))
+  #expect(
+    rows(game).contains("R - RETRY SELECTED MISSION") == MissionUIAction.retry.isEnabled(in: game))
+  #expect(!rows(game).contains("READ ONLY; FLIGHT IS PAUSED"))
+  try fixture.select(parent, game: &game)
+  game.galleryKey("return")
+  try #require(game.gallery.campaignLinks)
+  #expect(rows(game).contains("UP / DOWN - SELECT CAMPAIGN LINK"))
+  #expect(rows(game).contains("TAB - RETURN TO DETAILS"))
+  #expect(rows(game).contains("OPTION-UP/DOWN - MOVE EIGHT LINKS"))
+  #expect(!rows(game).contains { $0.contains("PAGE-UP/DOWN") })
+  game.key("k")
+  #expect(game.screen == .help && game.helpReturn == .gallery)
+  #expect(rows(game).contains("OPTION-UP/DOWN - MOVE EIGHT LINKS"))
+  game.key("escape")
+  #expect(game.screen == .gallery && game.gallery.campaignLinks)
+  try fixture.select(child, game: &game)
+  game.openCampaignTrialReview()
+  try #require(game.gallery.campaignReview != nil && !game.gallery.campaignStartSelected)
+  #expect(rows(game).contains("ARROWS - CHOOSE START / BACK"))
+  #expect(rows(game).contains("RETURN / CLICK - SELECT; BACK IS DEFAULT"))
+  #expect(!rows(game).contains("T - REVIEW PRIVATE CAMPAIGN TRIAL"))
+  #expect(game.commander == commander)
+}
+
+@Test func emptyGalleryHelpDoesNotAdvertiseUnavailableTrialOrRetry() async throws {
+  var game = Game(executive: false)
+  game.screen = .gallery
+  game.commander.name = "LIVE HELP OWNER"
+  game.commander.credits = 4321
+  game.commander.cargo[0] = 2
+  game.missionPacks = .init(entries: [], errors: [])
+  game.scriptPacks = []
+  let original = game.commander
+  let entry = try #require(game.selectedGalleryMission)
+  #expect(entry.trialDigest == NativePeopleGallery.digest && entry.status == .available)
+  #expect(entry.savedInstance == nil)
+  let rows = PlayerHelp.pages(for: game).flatMap(\.rows)
+  #expect(MissionUIAction.trial.isEnabled(in: game))
+  #expect(rows.contains("T - START PRIVATE MISSION TRIAL"))
+  #expect(!MissionUIAction.retry.isEnabled(in: game))
+  #expect(!rows.contains { $0.hasPrefix("R - ") })
+  #expect(rows.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+  let parent = GameRuntime(game: game)
+  let before = await parent.snapshot().commander
+  #expect(before.name == original.name && before.credits == original.credits)
+  #expect(before.cargo == original.cargo && before.shipID == original.shipID)
+  let trial = try await parent.scriptGalleryTrial(packDigest: NativePeopleGallery.digest)
+  let trialNamespace = await trial.gallerySaveDirectory()
+  let namespace = try #require(trialNamespace)
+  defer { try? FileManager.default.removeItem(at: namespace) }
+  await trial.key("gallery-open")
+  let privateGallery = await trial.snapshot()
+  #expect(privateGallery.isMissionTrial && privateGallery.screen == .gallery)
+  #expect(privateGallery.selectedGalleryMission?.trialDigest == NativePeopleGallery.digest)
+  #expect(!MissionUIAction.trial.isEnabled(in: privateGallery))
+  #expect(!MissionUIAction.retry.isEnabled(in: privateGallery))
+  let privateRows = PlayerHelp.pages(for: privateGallery).flatMap(\.rows)
+  #expect(!privateRows.contains { $0.hasPrefix("T - ") || $0.hasPrefix("R - ") })
+  #expect(
+    privateRows.filter { row in
+      row != "FLIGHT ONLY; MENUS KEEP THEIR KEYS"
+        && !FlightControlAuthority.ActionID.allCases.map(FlightControlInput.helpRow).contains(row)
+    }.joined(separator: " ").contains("READING DOES NOT ACCEPT WORK; FLIGHT IS PAUSED"))
+  let after = await parent.snapshot().commander
+  #expect(after == before && game.commander == original)
 }

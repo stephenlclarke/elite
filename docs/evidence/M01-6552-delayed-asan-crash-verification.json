@@ -1,0 +1,97 @@
+{
+  "head": "6552b68f7a146ceb79b4376d33cc8afd3f987399",
+  "run": 40085265091,
+  "pid": 31719,
+  "launch": "2026-10-24 16:13:19.0118 +0100",
+  "raw_ips": "/tmp/elite-m01-6552-asan-terminal/swiftpm-testing-helper-2026-10-24-162017.ips",
+  "raw_sha256": "944860a5c1ef521589ed06f30ff95ca5b7d3c09e8d15283648a961a64676908f",
+  "image": "/tmp/elite-m01-6552-asan-terminal/EliteCoreTests",
+  "image_bytes": 459983024,
+  "image_sha256": "788cc920ec00fc1867140a540e66b7cd2c8ce42353a9aab93b966afc596f54bd",
+  "macho_lc_uuid_independently_parsed": [
+    "46d689c9-a937-3a31-b3b2-01f05031706e"
+  ],
+  "ips_image_uuid": "46d689c9-a937-3a31-b3b2-01f05031706e",
+  "uuid_match": true,
+  "exception": {
+    "codes": "0x0000000000000000, 0x0000000000000000",
+    "rawCodes": [
+      0,
+      0
+    ],
+    "type": "EXC_CRASH",
+    "signal": "SIGABRT"
+  },
+  "faulting_thread": 2,
+  "source_sha256": "584a5cf35ef018c871f45236571a39391963a7d9713d56e4b4b0195636642ad4",
+  "actual_source_frames": [
+    {
+      "imageOffset": 264699220,
+      "sourceLine": 66,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "closure #1 in closure #1 in ScriptInstanceValue.Field.init()",
+      "imageIndex": 2,
+      "symbolLocation": 416
+    },
+    {
+      "imageOffset": 264698604,
+      "sourceLine": 65,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "closure #1 in ScriptInstanceValue.Field.init()",
+      "imageIndex": 2,
+      "symbolLocation": 392
+    },
+    {
+      "imageOffset": 264698012,
+      "sourceLine": 64,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "ScriptInstanceValue.Field.init()",
+      "imageIndex": 2,
+      "symbolLocation": 548
+    },
+    {
+      "imageOffset": 264766496,
+      "sourceLine": 213,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "ScriptInstanceValue.Storage.initializeSavedArkRecovery()",
+      "imageIndex": 2,
+      "symbolLocation": 304
+    },
+    {
+      "imageOffset": 264761008,
+      "sourceLine": 156,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "ScriptInstanceValue.Storage.__allocating_init(id:definition:version:digest:)",
+      "imageIndex": 2,
+      "symbolLocation": 1680
+    },
+    {
+      "imageOffset": 264958148,
+      "sourceLine": 1361,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "ScriptInstanceValue.init(id:definition:version:digest:)",
+      "imageIndex": 2,
+      "symbolLocation": 1204
+    },
+    {
+      "imageOffset": 265236664,
+      "sourceLine": 2418,
+      "sourceFile": "ScriptMissionState.swift",
+      "symbol": "ScriptInstance.init(id:definition:version:digest:)",
+      "imageIndex": 2,
+      "symbolLocation": 1220
+    }
+  ],
+  "owning_test_frames": [
+    {
+      "imageOffset": 8843592,
+      "sourceLine": 292,
+      "sourceFile": "BundledScriptPackTests.swift",
+      "symbol": "BundledScriptPackTests.defaultCourierOpensRealContractsAndAnIsolatedGalleryTrial()",
+      "imageIndex": 2,
+      "symbolLocation": 388
+    }
+  ],
+  "attribution": "Matched delayed report now attributes actual ASAN failing copy to ScriptInstanceValue.Field.init unsafe array initialization line66, called by savedArkRecovery initializer213/storage156 during mission acceptance. This replaces previous absence of source attribution, without changing original collector facts.",
+  "limits": "No original collector matchedIPS/ASANimage existed; G1 retained originalimage and discovered delayedOSreport later. No test replay/capture/probe/execution. Specific underlying Swift memory-layout mechanism and a repair are not yet qualified."
+}

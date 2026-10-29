@@ -9,12 +9,12 @@ private func routePreviewGame(local: Bool = false) -> Game {
   game.commander.system = 7
   game.commander.fuel = 70
   game.systems = game.systems.map { system in
-    let coordinates: (Int, Int)
+    let coordinates: (Double, Double)
     switch system.id {
     case 7: coordinates = (0, 0)
-    case 0: coordinates = (10, 0)
-    case 1: coordinates = (20, 0)
-    case 2: coordinates = (10, 8)
+    case 0: coordinates = (4, 0)
+    case 1: coordinates = (8, 0)
+    case 2: coordinates = (4, 3.2)
     default: coordinates = (255, 255)
     }
     return StarSystem(
@@ -23,7 +23,7 @@ private func routePreviewGame(local: Bool = false) -> Game {
       population: system.population, productivity: system.productivity, radius: system.radius,
       seed: system.seed)
   }
-  game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+  game.market = MarketItem.at(game.currentSystem)
   game.screen = local ? .shortChart : .chart
   game.selectedSystem = 1
   game.galacticBrowse.targets[0] = 1
@@ -282,7 +282,7 @@ private func routePreviewGame(local: Bool = false) -> Game {
   game.commander.navigationPlan = plan
   game.commander.cargo[0] = 2
   game.selectedSystem = 1
-  game.market = MarketItem.at(game.currentSystem, fluctuation: 0)
+  game.market = MarketItem.at(game.currentSystem)
   for index in game.market.indices { game.market[index].quantity = 0 }
   game.market[0].price = 1
   game.market[0].quantity = 3

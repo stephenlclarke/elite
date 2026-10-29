@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "Tools/distribution",
+    "-p",
+    "test_release_macos.py",
+    "-k",
+    "coverage_entrypoint"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 0.24947904190048575,
+  "framework_tests": 1,
+  "framework_seconds": 0.185,
+  "source_before": {
+    "script/coverage.sh": "16ff14d63ae76f85cefb145a72e4434231b76682eb20b7e172bfccee77146468",
+    "Tools/distribution/test_release_macos.py": "6cb02fa8a6c6439b3b7f63600edc1b3dd090b2be52f66547ad0d95cbcaeb1fad"
+  },
+  "source_after": {
+    "script/coverage.sh": "16ff14d63ae76f85cefb145a72e4434231b76682eb20b7e172bfccee77146468",
+    "Tools/distribution/test_release_macos.py": "6cb02fa8a6c6439b3b7f63600edc1b3dd090b2be52f66547ad0d95cbcaeb1fad"
+  },
+  "log": "/tmp/elite-coverage-delegation-python.log",
+  "log_sha256": "23166125ff044e6572b6cecd8a851692d9d2b1395f3fe1e71f0ba69a86ec0370",
+  "scope": "One new delegation regression, exercising status0 and status5 through fake python command. Earlier38case source/results retained;39 distinct cases across the two qualified scopes, not40. No native test/build/diagnostic execution."
+}

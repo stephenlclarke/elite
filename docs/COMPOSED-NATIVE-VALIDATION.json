@@ -1,0 +1,627 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "ec61fde3c32dd6d38953cc05ca6dcbe5d722e5d7",
+  "sourcesTree": "6c87780360711614cfe9d05f2ddbbe2c86ae3f4f",
+  "testBinarySHA256": "b47997bea5deb69178f87a3abc5277e2928da530512be1a5d739cc3fbdfd9470",
+  "freshOriginal": {
+    "method": "NativeMultiBatchRuntimeTests.originalHumanManifestImportRequiresAFullSecondBudgetAcrossActualSaveAndReload",
+    "status": "passed",
+    "methods": 1,
+    "cases": 1,
+    "methodSeconds": 551.18,
+    "commandSeconds": 553.9074200410396,
+    "supervisorSeconds": 555.7709174170159,
+    "deadlineSeconds": 600,
+    "issues": 0,
+    "crashes": 0,
+    "allTraceAndContinuationFlagsOff": true,
+    "assertionsAndBudgetsUnchanged": true,
+    "proofSHA256": "e1c0f0ca5e6f847e0004ec5d8a3c31106bb4e34c19d8b2873756922cb801b50a",
+    "qualificationSHA256": "964b8570549cf4394baf423b25684e3ad2c0384b45a663f6c6d284f44046e964"
+  },
+  "retainedOriginalMatrix": {
+    "passed": {
+      "methods": 82,
+      "cases": 157
+    },
+    "failed": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unknown": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unrun": {
+      "methods": 0,
+      "cases": 0
+    }
+  },
+  "retainedAdditionalScopes": {
+    "passed": {
+      "methods": 63,
+      "cases": 78
+    },
+    "failed": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unknown": {
+      "methods": 0,
+      "cases": 0
+    },
+    "unrun": {
+      "methods": 0,
+      "cases": 0
+    }
+  },
+  "retainedScopePolicy": "Per-row tested sources and unaffected-source qualification; separate from a full make ci run. Historical diagnostics excluded from original acceptance.",
+  "geometryParity": {
+    "methods": 11,
+    "cases": 11,
+    "status": "passed",
+    "proofSHA256": "7e1a16eaf585185df03b87c2b248d5db093ccd0a85f60addb516a34aba0ade42"
+  },
+  "shipRenderer": {
+    "command": "make ships",
+    "check": "make ships-check",
+    "ships": 171,
+    "decodedFrames": 4104,
+    "changedImageBytes": 0,
+    "changedInputFingerprints": 171,
+    "proofSHA256": "3fd014cb59f314377696d8d44e0dd2ac21448a3a2d1e1fa0014e3b6bbb4d5ebc",
+    "sourceCommit": "f3cd08dda43cbc59501d19d06e61bf109aaf63ed",
+    "run": 565
+  },
+  "fullGatePolicy": {
+    "command": "make ci",
+    "minimumCoveragePercent": 80,
+    "requires": [
+      "coverage",
+      "thread sanitizer",
+      "serial address sanitizer",
+      "leaks"
+    ],
+    "resultSource": "Captured full-gate run and required final-head CI checks",
+    "coverageAimPercent": 90
+  },
+  "releasePolicy": {
+    "review": "@codex review completed clean; final-head required checks and independent approval; no admin bypass",
+    "sonar": "clean committed main, exact SHA projectVersion, Previous version",
+    "distribution": "verified signed/notarized artifact and source provenance"
+  },
+  "qualification": "Focused composed-native results only; no full CI, Sonar, release or remaining L337/world/content completion claim.",
+  "followupCIRepairs": {
+    "sourceCommit": "f3cd08dda43cbc59501d19d06e61bf109aaf63ed",
+    "firstFullCI": {
+      "run": 560,
+      "result": "FAILED during coverage tests",
+      "fixedFontIssues": 45,
+      "crash": "Qualified campaign-gallery stack exhaustion",
+      "coveragePercent": null,
+      "notStarted": [
+        "thread sanitizer",
+        "address sanitizer",
+        "leaks"
+      ]
+    },
+    "originalCrashReproducer": {
+      "run": 563,
+      "methods": 1,
+      "cases": 1,
+      "passed": true,
+      "issues": 0,
+      "crashes": 0,
+      "proofSHA256": "f6d23b9975ea4314976c328f0e86649fdb1e779c38bf702f2e7f2f072af77015"
+    },
+    "directRegressions": {
+      "run": 564,
+      "methods": 35,
+      "cases": 39,
+      "passed": true,
+      "issues": 0,
+      "crashes": 0,
+      "proofSHA256": "0db9d79ea625bdbaf4a5e68b811e1f6239268207175dcd5ef7ef8e5ac95024cd"
+    },
+    "runtimePolicy": "Unchanged tests; coverage-enabled binary; default stack and concurrency. Original and direct regressions are distinct scopes.",
+    "packagingResourceRegression": {
+      "run": 561,
+      "methods": 4,
+      "passed": true,
+      "meaningfulRedLayoutFailures": 2,
+      "proofSHA256": "2e9a991fb396379fa013ca262127e49dc60de6f2819a9ade904a71f30c6e2cb9"
+    },
+    "subsequentFullCI": {
+      "run": 566,
+      "sourceCommit": "bb50a4262cc647f8815de7c0e0d2e5aa3f271087",
+      "result": "FAILED during coverage tests",
+      "actualMakeExitCode": 2,
+      "observedIssueCount": 26,
+      "suiteComplete": false,
+      "originalGalleryReproducerPassed": true,
+      "originalTypographyTestPassed": true,
+      "crash": "SIGBUS with stack-guard-region exception in freight dialogue validation",
+      "coveragePercent": null,
+      "notStarted": [
+        "thread sanitizer",
+        "address sanitizer",
+        "leaks"
+      ],
+      "proofSHA256": "050c972b38b97ff9e551da66faa76c34921e64b232a4b123a0ccc280bbdc0c7c"
+    }
+  },
+  "freightAndCombatFollowup": {
+    "sourceCommit": "d38070f7c0c971bbaba5d537c5b7ce04f96d5937",
+    "originalFreight": {
+      "run": 573,
+      "methods": 1,
+      "cases": 1,
+      "passed": true,
+      "issues": 0,
+      "crashes": 0,
+      "proofSHA256": "3f4b5dc814b9f635b08f183a0f1d2ccd55df23db429bb5fe218f1f2976318e62"
+    },
+    "directScope": {
+      "run": 574,
+      "methods": 32,
+      "sourceCases": 67,
+      "passedMethods": 31,
+      "casesInPassingMethods": 55,
+      "failedMethods": 1,
+      "casesInFailedMethod": 12,
+      "issues": 8,
+      "crashes": 0,
+      "unknownMethods": 0,
+      "allSourceArgumentsMatched": true,
+      "proofSHA256": "c64999401c972c9bcf317a4147e732c3011fcabe48656f9fa46cce96cd4c43db",
+      "groupedOutcomeSHA256": "1549a4aeefb4a201b27ce74b45fd918fe40024bf0860960c82b11d22eb0ea318"
+    },
+    "remainingObservedFailure": "Unchanged historical docking method; eight partial/abandoned setup issues facts.live=false, no individual argument-end verdict inference.",
+    "runtimePolicy": "Coverage-enabled; default stack/concurrency; all diagnostic opt-ins off; no failed scope hidden by passing unrelated methods.",
+    "fullCIPass": false,
+    "coveragePercent": null
+  },
+  "stationTrackingFollowup": {
+    "sourceCommit": "ac287a88f18a1a6f78037088b5ffb707e36c807f",
+    "station579": {
+      "status": "PASS focused execution",
+      "newMethods": 5,
+      "newCases": 7,
+      "existingAffectedMethods": 25,
+      "existingAffectedCases": 39,
+      "issues": 0,
+      "unknownMethods": [],
+      "allSourceArgumentSetsMatched": true
+    },
+    "stationProofSHA256": "3b8038617d73608c1b9d222c2575a9c0951fe891b97bf30c7775e91a1293300e",
+    "history578": {
+      "methodVerdict": "FAILED all12case method",
+      "issueCount": 4,
+      "issueStagesDerivedFromActualHeaders": {
+        "partial": 4
+      },
+      "limits": "No individualargumentPASS or current unloggeddeathphase inference."
+    },
+    "historyProofSHA256": "d5d54a6021b36ce9e78bdae146a2f02d262b607386045cd6f8cbb79fc273f02d",
+    "actualIssueHeadersSHA256": "eea84c4afdf3d04d4f69542c2d68dced0efc9b8c080bf865380dd233808481ad",
+    "groupedQualificationSHA256": "34c2b5ef7e673bafe7fb0d99f2b0ba00c64cf9c9ca16a449365e2555dccaa03d",
+    "allDiagnosticsOff": true,
+    "fullCIPass": false
+  },
+  "currentPartialHistoryObservation": {
+    "sourceCommit": "b11b48132665dbd6fd7c6e4d5f73ddd576a0b5f5",
+    "compiledSourceCommit": "ac287a88f18a1a6f78037088b5ffb707e36c807f",
+    "sourceDifference": "Three validation documents only; compiler/test inputs unchanged.",
+    "methodVerdict": "FAILED",
+    "originalArguments": 12,
+    "issueCount": 4,
+    "issueStagesDerivedFromActualHeaders": {
+      "partial": 4
+    },
+    "historyRecorderEnabled": true,
+    "otherDiagnosticsOff": true,
+    "partialFirstFailureAndTraceValid": true,
+    "partialPhase": "history-partial-redock",
+    "partialFailureStep": "63",
+    "playerLaserDischarges": 8,
+    "acceptedCounts": {
+      "playerOwned/laser/hit": 8,
+      "playerVictim/laser/destruction": 1,
+      "playerVictim/laser/hit": 49
+    },
+    "retention": {
+      "sampleCapacity": 64,
+      "incidentCapacity": 128,
+      "samplesDropped": 277,
+      "sampleIntervalSkipped": 1142,
+      "valuesTruncated": 0,
+      "recorderIncidentsDropped": 24,
+      "audioEventsDropped": 0,
+      "outputSamplesDropped": 0,
+      "outputIncidentsDropped": 0
+    },
+    "retainedSamples": 14,
+    "retainedIncidents": 128,
+    "commandSeconds": 52.45461037498899,
+    "supervisedSeconds": 54.45356058399193,
+    "unknownMethods": 0,
+    "matchedCrashes": [],
+    "timedOut": false,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "proofSHA256": "0d60eae0d45970c9bd2c8cb0ed1d1e28a87163152c619bd5a57b12ecdeb2d425",
+    "actualIssueHeadersSHA256": "ce368c646da32655d6ae5bf10b77148e0912751a70bcb87615207513e47cfa6f",
+    "currentPartialEvidenceSHA256": "4d3ff933135bea9fca73b6b9aea653c0e9c24937d29115bdcf8acd4c00d10e1d",
+    "limits": "No abandoned diagnostic emitted or individual argument verdict inferred. Full CI, coverage percentage, sanitizer/leak and release acceptance remain pending."
+  },
+  "defendedHistorySetupQualification": {
+    "sourceCommit": "93a088862c3596846cd7f08f1c0243d0731342fe",
+    "authorCommit": "472947daf42c7f9e47511ffc64cbda64f1a08701",
+    "independentSourceReview": "CLEAN; runtime acceptance separate",
+    "sourceDelta": "Final existing history Self.dock call selects defensivePreflight:true uniformly. All12args39assertions and1090otherSourceTests unchanged.",
+    "compile582ProofSHA256": "7d0d776c74380c08848c2d01c2419973428c44a8a4b0733ee6cc1b5be20c570c",
+    "history583MethodVerdict": "FAILED",
+    "originalArguments": 12,
+    "issueCount": 8,
+    "issueStagesDerivedFromActualHeaders": {
+      "abandoned": 4,
+      "partial": 4
+    },
+    "failureLocation": "ScriptProcurementFixture.swift:410:11 action != .refuse",
+    "recordedPreflightSteps": {
+      "partial": 87,
+      "abandoned": 285
+    },
+    "allDiagnosticsOff": true,
+    "commandSeconds": 42.57156554190442,
+    "supervisedSeconds": 44.1244710420724,
+    "unknownMethods": 0,
+    "matchedCrashes": [],
+    "timedOut": false,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "proofSHA256": "ee6110b2538b0163640d95bf8c288a96487797a4c2572fc3e028a74e9f3eff78",
+    "actualIssueHeadersSHA256": "95c03097b89f377ae3c2fcb7d1e66cfd8e0e059ece4bf5152067495d0acb7809",
+    "limits": "Current liveness/energy/refusal predicate unrecorded; prior combat cause not inferred. No individual argument verdict. No automatic retry, full CI, coverage percentage, sanitizer/leak or release acceptance."
+  },
+  "preflightGuardCapture": {
+    "sourceCommit": "18f40ce477db4fc386e4db79983e4f26f821c4c9",
+    "scope": "Existing failurecomment values only; Comment(rawValue:) equivalentcompilerconventionrepair; no predicate/queries/control/state changes.",
+    "compile584": "FAILED Commenttype before tests; retained old582binary notexecuted",
+    "compile584ProofSHA256": "5f8bba618aed66cad6d8200af24541c6f63d42bfe9d4577369cc91608383c0b9",
+    "compile586": "PASS coherentcoveragebuild",
+    "compile586ProofSHA256": "a81a10e8582d516755aa31f498c9ef0d1996c901333ff6cb3d07958a17164ab6",
+    "history585MethodVerdict": "FAILED",
+    "originalArguments": 12,
+    "issueCount": 8,
+    "issueStagesDerivedFromActualHeaders": {
+      "abandoned": 4,
+      "partial": 4
+    },
+    "recordedPreflightSteps": {
+      "partial": 87,
+      "abandoned": 285
+    },
+    "literalGuardValuesAllEight": {
+      "valid": true,
+      "live": false,
+      "docked": false,
+      "paused": false,
+      "automaticEngaged": false
+    },
+    "soleFailedRefusalPremise": "live is false",
+    "allDiagnosticsOff": true,
+    "commandSeconds": 41.47233354207128,
+    "supervisedSeconds": 42.92642137501389,
+    "unknownMethods": 0,
+    "matchedCrashes": [],
+    "timedOut": false,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "proofSHA256": "729dc06ab056e25490155d7d847d72628b7368f95be6bd84217f3cedfc915f2d",
+    "literalGuardValuesSHA256": "b92f5f11292d642a4a044ed73a9dbc4771a7a0eb1b64b370a31894c88d34983d",
+    "limits": "Energy/screen/death cause unrecorded. Completed guard capture is not fix acceptance or individual argument verdict. No automatic retry/fullCI/percentage/sanitizer/leak/release claim."
+  },
+  "nativeLawFixtureAlignmentQualification": {
+    "sourceCommit": "40125180233b04384b4599e11b85ef226405db90",
+    "independentReview": "CLEAN finaldelta; explicit missile zone consumer preservation included",
+    "compile587ProofSHA256": "21d991905705365cbeedebd2210aabcba15e2f5251b024fbe7970f22487be848",
+    "law589": {
+      "status": "PASS focused execution",
+      "methods": 23,
+      "cases": 80,
+      "groupsDerivedFromActualTerminals": {
+        "new": {
+          "methods": 4,
+          "cases": 7,
+          "status": "PASS"
+        },
+        "existingAffected": {
+          "methods": 19,
+          "cases": 73,
+          "status": "PASS"
+        }
+      },
+      "issues": 0,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "commandSeconds": 12.198701167013496,
+      "supervisedSeconds": 13.452127082971856,
+      "proofSHA256": "e7720f11d6a9ceac9442fff851924201f2aa2858f624fe4742b6f29bf25b3717",
+      "groupedQualificationSHA256": "e91f631c6175f2ba8935c5496fcd8f9f545efe1e5b6fa893657580f199e60ca1"
+    },
+    "history588": {
+      "methodVerdict": "FAILED",
+      "originalArguments": 12,
+      "issues": 8,
+      "stagesDerivedFromActualHeaders": {
+        "abandoned": 4,
+        "partial": 4
+      },
+      "guardValuesAllEight": {
+        "valid": true,
+        "live": false,
+        "docked": false,
+        "paused": false,
+        "automaticEngaged": false
+      },
+      "steps": {
+        "partial": 87,
+        "abandoned": 285
+      },
+      "commandSeconds": 44.72415037499741,
+      "supervisedSeconds": 46.21896862518042,
+      "proofSHA256": "4f80c25ce98b363810e9983d2b587201f32ebe07b165b2ce48a9953ef8c61e64",
+      "literalGuardValuesSHA256": "01d82c0008f7f5de4e038e434d226b4a0ce9f8fe20bd17fcdcb62e7955bf21f5"
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "limits": "Focused native-law correction passes; history journey remains failed. No current damage cause, individual history argument verdict, full CI, coverage percentage, sanitizer/leak or release claim."
+  },
+  "historicalAuthenticationAcceptance": {
+    "sourceCommit": "5943d0715bd45ffd3d0ec1a30dc9e2b3f9206f75",
+    "reviewedAuthorCommits": [
+      "f4113af689b1bbf5624e3d4d27c8ea89a084de6e",
+      "c2721841e35b555e5111756356f32e8058906bf9"
+    ],
+    "independentReview": "CLEAN after missingtargetshipjoin P2 correction before execution",
+    "sourceScope": "Private deterministicnativeAUTHscene via opt-in testcallback; ordinary oncepervisit scenery/unconsumed director. Production/playerresources/routes/physics/nativeproof/authassertions unchanged.",
+    "compile590ProofSHA256": "dd8c2ca67f13006b2f385430e67480545f52705b9e851cd3e71a27706af7fcb9",
+    "history591": {
+      "status": "PASS focused execution",
+      "methods": 1,
+      "cases": 12,
+      "originalAuthenticationAssertions": 39,
+      "sourceArgumentSetsMatched": true,
+      "parameterizedStarts": 12,
+      "aggregateCaseEnds": 12,
+      "issues": 0,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "timedOut": false,
+      "commandSeconds": 33.390464917058125,
+      "supervisedSeconds": 34.95954545796849,
+      "proofSHA256": "19d786dcd2f6f17075a6365e50c279dfa37a7e5f927ae5af41e9bf13974623b1",
+      "qualificationSHA256": "ed8fc04971e0cf108a6ea46b297f70e0e85fea28cef734ca10e456f1dcb1e4b0"
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "nilCallerSmoke": "No genuine nil-path operation/order risk found; retained original operations and prior evidence.",
+    "limits": "History authentication passed at newsource; historical failures remain. Isolatedsecurityscene excludes ambientcombat; no productflight/unattendedcombatsurvival/fullCI/coveragepercentage/sanitizer/leak/release claim."
+  },
+  "finalShipRendererRefresh": {
+    "sourceCommit": "fd6fa2bea5eca2dbcb5868e3948e774b9a13bbbc",
+    "status": "PASS actual maintained make ships + ships-check + independent4104frame qualification",
+    "makeShipsExitCode": 0,
+    "shipsCheckExitCode": 0,
+    "shipCount": 171,
+    "decodedFrames": 4104,
+    "changedGeneratedPaths": [
+      "docs/ships/manifest.json"
+    ],
+    "outputBytesChanged": 0,
+    "referenceDocumentsChanged": false,
+    "commandSeconds": 65.19740862492472,
+    "supervisedSeconds": 65.46329891704954,
+    "allOwnedProcessesClosed": true,
+    "protectedInputsUnchanged": true,
+    "generatedManifestSHA256": "1dc4ce9ddd9f82569778a761fba954f56ce6672190e458cc13cf0d1e8072b2d4",
+    "proofSHA256": "3fbea731a217cb4bd686c3ca464eeb59904fb0cbd30d95ab8f1d7cad4d853244",
+    "qualificationSHA256": "9495456c1cf16409cc6cdffd0b3267fc54c38dd5656926745b444d1b90ef9775",
+    "processObservationLimit": "Owned Swift process initially observed during exec transition; final renderer executable/argv not captured. No inferred renderer PID or argument count. Actual make ships completion log and 171 generator outputs independently qualify renderer execution.",
+    "limits": "Maintainedgenuine renderer result only; finalfullCI/percentage/sanitizer/leak/release acceptance separate."
+  },
+  "fullCIAfterFocusedAcceptance": {
+    "sourceCommit": "0482eb88a3c549b60bbe382bb21e7d8715ef1bc7",
+    "status": "FAILED or partial maintained make ci",
+    "actualMakeExitCode": 2,
+    "terminalSupervisorExitCode": 125,
+    "cleanupNeeded": true,
+    "commandSeconds": 128.2431303751655,
+    "supervisedSeconds": 134.0578952920623,
+    "phaseObservations": [
+      {
+        "phase": "flight-controls-check",
+        "startedSeconds": 0.005311625078320503,
+        "startMarker": "PYTHONDONTWRITEBYTECODE=1 python3 Tools/generate-flight-controls.py --repo-root . --check",
+        "finishedSeconds": 0.3882087080273777,
+        "observedDurationSeconds": 0.3828970829490572,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "homebrew-cask-check",
+        "startedSeconds": 0.388212958117947,
+        "startMarker": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/distribution -p 'test_*.py'",
+        "finishedSeconds": 4.137634000042453,
+        "observedDurationSeconds": 3.7494210419245064,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "ships-check",
+        "startedSeconds": 4.137637083185837,
+        "startMarker": "python3 Tools/showroom/ship-reference.py --check",
+        "finishedSeconds": 7.793103625066578,
+        "observedDurationSeconds": 3.6554665418807417,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "showroom-check",
+        "startedSeconds": 7.793105750111863,
+        "startMarker": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/showroom -p 'test_*.py'",
+        "finishedSeconds": 29.30749254114926,
+        "observedDurationSeconds": 21.514386791037396,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "mission-packs-check",
+        "startedSeconds": 29.307494833134115,
+        "startMarker": "swift run Elite --validate-mission-pack docs/mission-packs/courier.toml",
+        "finishedSeconds": 31.598095416091383,
+        "observedDurationSeconds": 2.2906005829572678,
+        "outcome": "PASS: next maintained prerequisite started"
+      },
+      {
+        "phase": "coverage",
+        "startedSeconds": 31.598098332993686,
+        "startMarker": "./script/coverage.sh",
+        "finishedSeconds": 127.62684341613203,
+        "observedDurationSeconds": 96.02874508313835,
+        "outcome": "FAILED: maintained make ci stopped"
+      }
+    ],
+    "phasesNotStarted": [
+      "threads",
+      "address",
+      "leaks"
+    ],
+    "issueLocations": {
+      "StationTests.swift:59:5": 1,
+      "StationTests.swift:62:5": 1,
+      "StationTests.swift:63:5": 1,
+      "GameCommanderStorageTests.swift:172:5": 1
+    },
+    "crashes": [
+      {
+        "pathName": "swiftpm-testing-helper-2026-10-19-063959.ips",
+        "sha256": "8adcdcc97e381f6f3cb6c66ff89b6669d350ae43e76aa8432448b76947689d8b",
+        "exception": {
+          "codes": "0x0000000000000002, 0x000000016f75bff8",
+          "message": "Thread stack size exceeded",
+          "rawCodes": [
+            2,
+            6164955128
+          ],
+          "type": "EXC_BAD_ACCESS",
+          "signal": "SIGBUS",
+          "subtype": "KERN_PROTECTION_FAILURE at 0x000000016f75bff8"
+        },
+        "testImageUUID": "b5544690-b8ec-3a45-9fe8-cdbc7d94920e",
+        "testBinarySHA256": "89c927a796e3880176eafa26ab6db6cad060fe67b602bd8c0fa4c83dc032b8e5",
+        "testPath": "NativePeopleGalleryTests.isolatedNativeTrialUsesRealProducerAndRestartReturnProtectLiveFiles",
+        "stackPath": [
+          "disableNativeEMPActor",
+          "tick/moveBodies/enemyAction",
+          "emitLegacyNPCBeam/applyCombatHit/applyPlayerHit/recordCombat",
+          "ensurePhysicalActors/populateNativeStations",
+          "systemIdentity/Game.commander.read/Commander copy"
+        ]
+      }
+    ],
+    "coverage": null,
+    "allOwnedProcessesClosed": true,
+    "ownedProcesses": 111,
+    "protectedInputsUnchanged": true,
+    "trackedInputsUnchanged": 2410,
+    "proofSHA256": "8f8148e8f78985b6618fbf5738b5ec64e5e37a1a941ea2d7f1b21580f12f31b4",
+    "issueHeadersSHA256": "c3b658ccd3a22cb074bab0c0ed06496750d9bf8b616404fae36c5cecde1c869e",
+    "matchedCrashQualificationSHA256": "a3b677285d53dfad1b96882787b7c8a4c634125728fb182b32658984c44e115c",
+    "limits": "Incomplete coverage suite; no current percentage/sanitizer/leak/fullCI/release acceptance. Actual failed assertions and qualified crash require bounded repair; no unchanged retry or inferred cause."
+  },
+  "ci593RepairBatchQualification": {
+    "sourceCommit": "318d6536d8ccf855e1647b3a8477666ebd35c53d",
+    "independentReviews": "MC1 getter source CLEAN; G1 mounted and launch oracle source CLEAN",
+    "compile594ProofSHA256": "ef88f828f73ffdc48624eac61747684c1ae9d0f7a5474fcbd7324baef07a7469",
+    "oracle596": {
+      "status": "PASS focused execution",
+      "methods": 3,
+      "cases": 3,
+      "scope": [
+        "Originalmountedlaser damage/rate",
+        "NewheldcombatReturnsideMiningnegative",
+        "OriginalfailedactualLaunchpublication/retryrollback"
+      ],
+      "issues": 0,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "timedOut": false,
+      "commandSeconds": 11.672121749958023,
+      "supervisedSeconds": 13.251357750035822,
+      "proofSHA256": "2727a672434517a9e49badb3f3dfe8054eae9daf8ac9265700c90b23a39234c4"
+    },
+    "originalGallery595": {
+      "status": "FAILED or partial focused execution",
+      "passed": 0,
+      "failed": 1,
+      "issues": 1,
+      "unknown": 0,
+      "matchedCrashes": [],
+      "timedOut": false,
+      "literalFailure": "EMPReleaseBoundaryFixture.swift:172 continuingFlight; frame229 t23 screenGameOver energy-6.794203051789434; observedoneEMPrelease/secondchargeactive",
+      "commandSeconds": 13.781600542133674,
+      "supervisedSeconds": 15.081072083907202,
+      "proofSHA256": "b4ea1a1e5c43ffe0712067cc1aa6ffc6d57ad63334b6010c3a91f00936abca6a",
+      "literalIssueContextSHA256": "416ea2cc86d3e552c101573eb4b0a2750d438d6b8a160d3a1945a13fc59261d0"
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "limits": "Laser/launch oracles qualified. Originalgallery failedordinaryflightguard; priorSIGBUSnotobserved but no complete reproducerPASS or measuredstackmargin claim. No unrecordedflightlosscause/fullCI/media/release acceptance."
+  },
+  "authoredPeopleSceneQualification": {
+    "sourceCommit": "350841a9d795acde0dea79e177a510eeab5dcacd",
+    "independentReview": "CLEAN authoredscene+privatederivedbudget source scope",
+    "compile597ProofSHA256": "88e5c0022456a190e5169027283b6bd404c50816f73eae7bb63c972ca1f68e7e",
+    "runtime598": {
+      "commandStatus": "FAILED or partial focused execution",
+      "methodVerdict": "UNKNOWN no terminal result",
+      "passed": 0,
+      "failedMethodTerminals": 0,
+      "unknown": 1,
+      "recordedIssues": 0,
+      "matchedCrashCount": 1,
+      "timedOut": false,
+      "commandSeconds": 13.287838916992769,
+      "supervisedSeconds": 14.595407291781157,
+      "proofSHA256": "346c7023e1e173857110ea31d96bc63c41f35e853bc7bbe9525be1a1b43c6356",
+      "matchedCrashQualificationSHA256": "614963ea59eae65177683ee0a26c73f61a5004dbd99462c876bd6d69c960a8b9",
+      "exception": {
+        "codes": "0x0000000000000002, 0x000000016afbbff8",
+        "message": "Thread stack size exceeded",
+        "rawCodes": [
+          2,
+          6089850872
+        ],
+        "type": "EXC_BAD_ACCESS",
+        "signal": "SIGBUS",
+        "subtype": "KERN_PROTECTION_FAILURE at 0x000000016afbbff8"
+      },
+      "crashSHA256": "e7f16451e1beb8336601119c56ba98c15a74f21bbe83e770511918f0da3bff21",
+      "capturedTestImageUUID": "fc35e4eb-36d5-3e3a-bbba-3f3f846e5dea",
+      "capturedBinarySHA256": "85ff406196b62de96d279ffff186c7d3dcbadb1607aa11af641c5b3be38b01d4",
+      "stackPath": [
+        "Sequence.first(where:)",
+        "Game.currentMissionActorDescriptor",
+        "combatMissionEntitlement/recordCombat",
+        "applyElectricalPulse/buildEMPPulseEffects/emitEMPPulse/advanceEMPCharge",
+        "tick/disableNativePeopleTrialActor",
+        "originalNativePeopleGallerytest"
+      ]
+    },
+    "allDiagnosticsOff": true,
+    "protectedInputsUnchanged": true,
+    "allOwnedProcessesClosed": true,
+    "limits": "Authoredscene notruntimequalified; no terminal method outcome/recordedassertions beforequalifiedSIGBUS. No newcapture/profiling or inferredgameplaycause. No rendererrefresh/fullCI/release acceptance."
+  }
+}

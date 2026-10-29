@@ -50,10 +50,11 @@ private func afterRobbery() throws -> Game {
 @Test func blackjackUsesExactGalaxySystemsAndNoScoreGate() {
   let galaxy = Universe.galaxy(number: 1)
   for (id, name) in [
-    (241, "Telace"), (88, "Gerebied"), (233, "Tegete"), (127, "Ceinerxe"), (99, "Edater"),
-    (67, "Esdi"),
+    (241, "Torneden"), (88, "Kortar"), (233, "Sararden"), (127, "Darvan"), (99, "Kranenrik"),
+    (67, "Dradar"),
   ] {
-    #expect(galaxy[id].name == name.uppercased())
+    #expect(galaxy[id].name == name)
+    #expect(galaxy[id].original?.key == String(format: "G02-S%03d", id))
   }
   var game = Game(executive: false)
   game.commander.system = 241
@@ -148,17 +149,18 @@ private func afterRobbery() throws -> Game {
   visit(&game, 233)
   game.key("return")
   game.key("b")
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   let before = game.commander
   game.key("return")
   #expect(
     game.commander == before && game.screen == .handoff && game.message.contains("FREE TONNE"))
   game.key("escape")
-  game.commander.cargo[0] = 19
+  game.commander.cargo[0] = hold - 1
   game.key("b")
   game.key("return")
-  #expect(game.commander.cargoTonnes == 20 && game.commander.markedFirearms == 1)
-  #expect(!game.commander.canCarryMissionCargo(capacity: 19))
+  #expect(game.commander.cargoTonnes == hold && game.commander.markedFirearms == 1)
+  #expect(!game.commander.canCarryMissionCargo(capacity: hold - 1))
   game.screen = .sell
   game.selection = 10
   game.trade(buy: false)
@@ -171,20 +173,51 @@ private func afterRobbery() throws -> Game {
   game.commander.credits = 100000
   game.autoTrade()
   #expect(game.commander.cargo[10] >= 1 && game.commander.markedFirearms == 1)
-  game.commander.equipment.insert("Escape Pod")
+  try game.commander.grantEquipment(
+    "Escape Pod", at: .utility(.escapePod), provenance: .grant("blackjack escape fixture"))
+  #expect(game.commander.fittedEquipment(at: .utility(.escapePod)) != nil)
   game.launch()
   game.escapePod()
   #expect(game.commander.cargo[10] == 1 && game.commander.valid)
-  #expect(game.commander.canCarryMissionCargo(capacity: 20))
+  #expect(game.commander.canCarryMissionCargo(capacity: game.commander.tradeCargoCapacity))
   visit(&game, 127)
   game.key("return")
   #expect(game.commander.cargo[10] == 0)
 }
+@Test func onlyConfirmedOwningBlackjackHandoffConsumesItsReservedFirearmOnce() throws {
+  var game = blackjackGame()
+  _ = try defeat(&game, .bolts)
+  visit(&game, 233)
+  game.key("return")
+  game.key("b")
+  game.key("return")
+  try #require(game.commander.blackjack.stage == .deliverFirearm)
+  try #require(game.commander.cargo[10] == 1 && game.commander.markedFirearms == 1)
+  game = try PackReservedCargoTestFixture.refuseExternalRemoval(game, index: 10)
+  if game.screen == .handoff { game.key("escape") }
+  game.missionPacks = MissionPackLibrary.bundled
+  #expect(game.commander.galaxy == 1)
+  visit(&game, 127)
+  let before = game.commander
+  game.key("escape")
+  #expect(game.commander == before)
+  game.key("b")
+  game.key("return")
+  #expect(game.commander.cargo[10] == 0 && game.commander.markedFirearms == 0)
+  #expect(game.commander.blackjack.stage == .huntWitness)
+  #expect(game.commander.blackjack.transfers.contains(.robberyHandoff))
+  #expect(game.commander.legal >= 64 && game.commander.valid)
+  let committed = game.commander
+  game.confirmBlackjackHandoff()
+  #expect(game.commander == committed)
+}
+
 @Test func blackjackGoldFitsATonneFullHoldAndNumericCapacityDefersRatherThanLosesReward() throws {
   var game = blackjackGame()
-  game.commander.cargo[0] = 20
+  let hold = game.commander.tradeCargoCapacity
+  game.commander.cargo[0] = hold
   _ = try defeat(&game, .bolts)
-  #expect(game.commander.cargoTonnes == 20 && game.commander.cargo[13] == 20)
+  #expect(game.commander.cargoTonnes == hold && game.commander.cargo[13] == 20)
   game = blackjackGame()
   game.commander.cargo[13] = Int.max / 17 - 10
   let target = try defeat(&game, .bolts)
@@ -242,6 +275,8 @@ private func afterRobbery() throws -> Game {
   game.docked = false
   game.arrive()
   let index = try #require(game.bodies.firstIndex { $0.blackjackRole == .bolts })
+  game.ensurePhysicalActors()
+  game.bodies[index].physical?.npc?.resources?.laserHeat = 37
   game.bodies[index].energy = 123
   game.bodies[index].missiles = 1
   game.bodies[index].blackjackLaserCooldown = 0.2
@@ -261,6 +296,14 @@ private func afterRobbery() throws -> Game {
   #expect(
     body.blackjackIdentity == id && body.energy == 123 && body.missiles == 1
       && body.blackjackLaserCooldown == 0.2)
+  #expect(body.physical?.npc?.resources?.laserHeat == 37)
+  #expect(body.physical?.npc?.resources?.fuel == nil)
+  #expect(body.physical?.npc?.resources?.frontCapacity == 0)
+  #expect(body.physical?.identity.visit == restored.commander.flightSimulation.visit)
+  var playable = restored
+  let actor = try #require(body.physical?.identity)
+  let rebound = playable.makeAttackOrigin(owner: actor)
+  #expect(rebound?.owner == actor)
   let station = try #require(restored.bodies.first { $0.hull == .station })
   #expect((body.position - station.position - saved.body.position).length < 0.0001)
   #expect(body.orientation == saved.body.orientation)
@@ -401,7 +444,13 @@ private func afterRobbery() throws -> Game {
   visit(&game, 233)
   game.key("return")
   game.key("b")
-  game.commander.installLaser(.military, on: .rear)
+  try game.commander.grantEquipment(
+    "Military Laser", at: .laser(.rear), provenance: .grant("blackjack reload fixture"))
+  #expect(game.commander.fittedEquipment(at: .laser(.rear))?.node.key == "Military Laser")
+  let round = try #require(game.commander.fittedEquipment(at: .missilePylon(2)))
+  let revision = try #require(game.commander.equipmentInventory?.revision)
+  try game.commander.storeEquipment(round, expectedRevision: revision)
+  #expect(game.commander.missiles == 2)
   game.commander.missiles = 2
   let equipment = game.commander.equipment
   let mounts = game.commander.laserMounts

@@ -1,0 +1,603 @@
+{
+  "source_checkpoint": "bb85de185bbd1b39cd4fa763459cdeb8f1eac801",
+  "scope": "One combined repair packet: original55 failures and12 direct consumers; differential retained results, not a full final-head CI or release qualification.",
+  "original_failed_methods": 55,
+  "qualified_original_methods": 55,
+  "qualified_unique_methods": 67,
+  "runs": [
+    {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-m01-bbfb-combined.xml",
+        "--filter",
+        "(?:^|[./])(?:absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder|actorPersistenceAndConcurrentCommands|actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource|actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser|actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget|actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam|actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh|actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer|actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction|actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor|actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement|alignedNPCFrontBeamUsesNativeHitAttributionAndChargesResourcesOnce|bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes|cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty|compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters|currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf|existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool|genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast|interceptedOrdnanceNeverBecomesAShipKillOrBounty|knownBountyAndImmediateDefenceCreditOneKillAndRankChange|lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice|legalPenaltiesSaturateWithoutOverflowOrWeakeningLegacyRecords|lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID|matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents|nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs|nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce|nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem|nativeCourierStalePaintResourceAndViewportCannotAccept|nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState|nativeCourierUnavailablePackageTermsStayReadableAndCannotAccept|nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise|nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople|nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography|nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing|nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts|nativeFrameConversionAndInput|nativeHeldLoanRoundFitsAndStoresThroughItsOwnReceiptWithoutChangingRights|nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap|nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext|nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn|nativeLoanLaserReceiptRestoresTheExactDisplacedPersonalLaserOnReturn|nativeMilitaryCoreCannotSubstituteForMiningModule|nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction|nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce|nativePersonalReplacementGrantAndGenericRemovalCannotTakeAnActiveLoan|nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce|nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce|nativeSalvageApproachDrawAndQPreserveFiniteCustody|nativeSaveIncludesEarlierQueuedCobraRestore|nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority|navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty|normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance|npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit|npcFrontBeamMissesOffAxisHullInsideItsAcquisitionCone|npcFrontBeamRetainsNearestObstructionAndIntendedTargetAdmission|onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock|originCountersPersistAndInvalidOrStaleHitsCannotChangePhysicalState|originalMainArrivalRequiresItsActualNativeDoorwayCrossing|originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages|pendingOreCapacityRefusalLeavesPhysicalRockAndDepletionUnchanged|pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell|policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm|realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting|repeatedNativeLoanPreviewsPreserveAllCommanderAndContextState|requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership|startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame|targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact)\\("
+      ],
+      "exit_code": 1,
+      "wall_seconds": 280.3813554160297,
+      "xml_sha256": "78db035ff45b3851fa3675aa5be9734c4c9270057034a872092ffcbcb4a63757",
+      "log_sha256": "e9149e5c81b748e952247f64dccbe42206e9375d222ee1624fd3ce24fad6b499",
+      "methods": 67,
+      "passed": 54,
+      "failed": 13,
+      "failure_records": 26
+    },
+    {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-m01-5944-followup.xml",
+        "--filter",
+        "(?:^|[./])(?:actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource|actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam|actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction|existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool|genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast|nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem|nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState|nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise|nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople|nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap|nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext|nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn|nativeMilitaryCoreCannotSubstituteForMiningModule|nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction|normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance)\\("
+      ],
+      "exit_code": 1,
+      "wall_seconds": 166.2363279168494,
+      "xml_sha256": "d313581ba54890f1c0c0222b1e919abe00c9fd2b69aa89a5107d35d84ff5f0a2",
+      "log_sha256": "603a7e0d4cb806e99c8fd5778befe88e209283edacabb369b73f377c9d0aec38",
+      "methods": 15,
+      "passed": 8,
+      "failed": 7,
+      "failure_records": 10
+    },
+    {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-m01-a1bf-followup.xml",
+        "--filter",
+        "(?:^|[./])(?:actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource|actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam|alignedNPCFrontBeamUsesNativeHitAttributionAndChargesResourcesOnce|nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem|nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState|nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople|nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn|normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance|npcFrontBeamMissesOffAxisHullInsideItsAcquisitionCone|npcFrontBeamRetainsNearestObstructionAndIntendedTargetAdmission)\\("
+      ],
+      "exit_code": 1,
+      "wall_seconds": 149.56651720777154,
+      "xml_sha256": "cf2ce9b24c8438d453e811eeb69d78b70a7f299786db3283c6ec732f1d109246",
+      "log_sha256": "f63a47947008f1dc583b191c720e815543c008aaeb865c0c9516f499a1195b4a",
+      "methods": 10,
+      "passed": 8,
+      "failed": 2,
+      "failure_records": 8
+    },
+    {
+      "head": "907b3cf495fc74171b577ae6700da50c76281e29",
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-m01-907b-followup.xml",
+        "--filter",
+        "(?:^|[./])(?:actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam|normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance)\\("
+      ],
+      "exit_code": 1,
+      "wall_seconds": 125.20885766670108,
+      "xml_sha256": "4c14555cf3d274c1025812f8693043fa71c7011aa3eeb2058652b8898b8b10fb",
+      "log_sha256": "fd2ceb01c29b6dcf2b8d3239df5ba6ca6e6e41df6b4feb658d954475364800d7",
+      "methods": 2,
+      "passed": 1,
+      "failed": 1,
+      "failure_records": 3
+    },
+    {
+      "head": "bb85de185bbd1b39cd4fa763459cdeb8f1eac801",
+      "command": [
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "test",
+        "--jobs",
+        "3",
+        "--enable-code-coverage",
+        "--xunit-output",
+        "/tmp/elite-m01-bb85-followup.xml",
+        "--filter",
+        "(?:^|[./])normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance\\("
+      ],
+      "exit_code": 0,
+      "wall_seconds": 130.52205695817247,
+      "xml_sha256": "1c5327b3bc8b88fc27c899d92284a2aeb4e2f3c6679565796a17e6755bc2d105",
+      "log_sha256": "2f0511d9eea9b057eb12b95ad327d3cc27cee202895f9d3d92d352ec60621962",
+      "methods": 1,
+      "passed": 1,
+      "failed": 0,
+      "failure_records": 0
+    }
+  ],
+  "latest_method_results": {
+    "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame()",
+      "classname": "EliteCoreTests.StartupSaveTests",
+      "seconds": "9.645930208"
+    },
+    "pendingOreCapacityRefusalLeavesPhysicalRockAndDepletionUnchanged": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "pendingOreCapacityRefusalLeavesPhysicalRockAndDepletionUnchanged()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.799207708"
+    },
+    "knownBountyAndImmediateDefenceCreditOneKillAndRankChange": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "knownBountyAndImmediateDefenceCreditOneKillAndRankChange(_:)",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351676834"
+    },
+    "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock(_:)",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351733958"
+    },
+    "npcFrontBeamMissesOffAxisHullInsideItsAcquisitionCone": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "npcFrontBeamMissesOffAxisHullInsideItsAcquisitionCone()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.30689625"
+    },
+    "originCountersPersistAndInvalidOrStaleHitsCannotChangePhysicalState": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "originCountersPersistAndInvalidOrStaleHitsCannotChangePhysicalState()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.369203209"
+    },
+    "interceptedOrdnanceNeverBecomesAShipKillOrBounty": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "interceptedOrdnanceNeverBecomesAShipKillOrBounty()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351718834"
+    },
+    "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.369326041999999"
+    },
+    "npcFrontBeamRetainsNearestObstructionAndIntendedTargetAdmission": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "npcFrontBeamRetainsNearestObstructionAndIntendedTargetAdmission()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.30672525"
+    },
+    "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351365249999999"
+    },
+    "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351741917"
+    },
+    "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351806833"
+    },
+    "legalPenaltiesSaturateWithoutOverflowOrWeakeningLegacyRecords": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "legalPenaltiesSaturateWithoutOverflowOrWeakeningLegacyRecords(_:)",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.3516345"
+    },
+    "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351791875"
+    },
+    "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.351637041999998"
+    },
+    "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents(_:)",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.3517585"
+    },
+    "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.369407542000001"
+    },
+    "alignedNPCFrontBeamUsesNativeHitAttributionAndChargesResourcesOnce": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "alignedNPCFrontBeamUsesNativeHitAttributionAndChargesResourcesOnce()",
+      "classname": "EliteCoreTests.GameplayCombatTests",
+      "seconds": "9.306673041999998"
+    },
+    "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership()",
+      "classname": "EliteCoreTests.EquipmentOwnershipDisplayTests",
+      "seconds": "10.023501292"
+    },
+    "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser()",
+      "classname": "EliteCoreTests.NativeLoanFittingTests",
+      "seconds": "9.369633"
+    },
+    "repeatedNativeLoanPreviewsPreserveAllCommanderAndContextState": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "repeatedNativeLoanPreviewsPreserveAllCommanderAndContextState()",
+      "classname": "EliteCoreTests.NativeLoanFittingTests",
+      "seconds": "9.369678"
+    },
+    "nativeLoanLaserReceiptRestoresTheExactDisplacedPersonalLaserOnReturn": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeLoanLaserReceiptRestoresTheExactDisplacedPersonalLaserOnReturn()",
+      "classname": "EliteCoreTests.NativeLoanFittingTests",
+      "seconds": "9.369532416"
+    },
+    "nativeHeldLoanRoundFitsAndStoresThroughItsOwnReceiptWithoutChangingRights": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeHeldLoanRoundFitsAndStoresThroughItsOwnReceiptWithoutChangingRights()",
+      "classname": "EliteCoreTests.NativeLoanFittingTests",
+      "seconds": "9.369552249999998"
+    },
+    "nativePersonalReplacementGrantAndGenericRemovalCannotTakeAnActiveLoan": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativePersonalReplacementGrantAndGenericRemovalCannotTakeAnActiveLoan()",
+      "classname": "EliteCoreTests.NativeLoanFittingTests",
+      "seconds": "9.369498709"
+    },
+    "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor()",
+      "classname": "EliteCoreTests.HyperspaceDriveRuntimeTests",
+      "seconds": "9.646853"
+    },
+    "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource()",
+      "classname": "EliteCoreTests.StationSecurityTests",
+      "seconds": "9.417012416999999"
+    },
+    "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes()",
+      "classname": "EliteCoreTests.NativeShipTextureTests",
+      "seconds": "0.862441042"
+    },
+    "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters()",
+      "classname": "EliteCoreTests.NativeStationIntegrationTests",
+      "seconds": "0.295508875"
+    },
+    "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement(guided:)",
+      "classname": "EliteCoreTests.NativeStationIntegrationTests",
+      "seconds": "1.318372333"
+    },
+    "originalMainArrivalRequiresItsActualNativeDoorwayCrossing": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "originalMainArrivalRequiresItsActualNativeDoorwayCrossing(delta:)",
+      "classname": "EliteCoreTests.NativeStationIntegrationTests",
+      "seconds": "1.28230975"
+    },
+    "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority()",
+      "classname": "EliteCoreTests.NativeStationIntegrationTests",
+      "seconds": "0.295503834"
+    },
+    "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast()",
+      "classname": "EliteCoreTests.NativeImportedEMPCompatibilityTests",
+      "seconds": "10.747135375000001"
+    },
+    "nativeMilitaryCoreCannotSubstituteForMiningModule": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "nativeMilitaryCoreCannotSubstituteForMiningModule()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "1.988141792"
+    },
+    "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "28.044902042"
+    },
+    "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "4.944146583"
+    },
+    "nativeCourierStalePaintResourceAndViewportCannotAccept": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeCourierStalePaintResourceAndViewportCannotAccept()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "0.195965541"
+    },
+    "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "2.324037084"
+    },
+    "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "0.382831333"
+    },
+    "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "2.074687375"
+    },
+    "nativeSalvageApproachDrawAndQPreserveFiniteCustody": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeSalvageApproachDrawAndQPreserveFiniteCustody()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "7.700980959000001"
+    },
+    "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "1.181928833"
+    },
+    "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "1.646430167"
+    },
+    "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "84.098669458"
+    },
+    "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "5.132319708"
+    },
+    "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "2.926247417"
+    },
+    "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "3.109534708"
+    },
+    "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "passed": true,
+      "case": "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "1.44299375"
+    },
+    "nativeSaveIncludesEarlierQueuedCobraRestore": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeSaveIncludesEarlierQueuedCobraRestore()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "0.916426875"
+    },
+    "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "4.011907375"
+    },
+    "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "2.050188042"
+    },
+    "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "10.432291375"
+    },
+    "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "27.695658707999996"
+    },
+    "nativeCourierUnavailablePackageTermsStayReadableAndCannotAccept": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeCourierUnavailablePackageTermsStayReadableAndCannotAccept()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "0.154360292"
+    },
+    "nativeFrameConversionAndInput": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "nativeFrameConversionAndInput()",
+      "classname": "EliteCoreTests.NativeViewTests",
+      "seconds": "3.253492333"
+    },
+    "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget(shipID:)",
+      "classname": "EliteCoreTests.AutoTargetCruiseTests",
+      "seconds": "11.032272542000001"
+    },
+    "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam": {
+      "head": "907b3cf495fc74171b577ae6700da50c76281e29",
+      "passed": true,
+      "case": "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam()",
+      "classname": "EliteCoreTests.GameplayOrdnanceRuntimeTests",
+      "seconds": "9.0130275"
+    },
+    "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID()",
+      "classname": "EliteCoreTests.GameplayOrdnanceRuntimeTests",
+      "seconds": "9.369512667"
+    },
+    "actorPersistenceAndConcurrentCommands": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actorPersistenceAndConcurrentCommands()",
+      "classname": "EliteCoreTests",
+      "seconds": "10.320803375"
+    },
+    "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()",
+      "classname": "EliteCoreTests.EquipmentSelectionTests",
+      "seconds": "9.443089416"
+    },
+    "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell(width:)",
+      "classname": "EliteCoreTests.EquipmentSelectionTests",
+      "seconds": "9.369176125"
+    },
+    "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh()",
+      "classname": "EliteCoreTests.AsteroidPresenceRuntimeTests",
+      "seconds": "9.985591792"
+    },
+    "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "passed": true,
+      "case": "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction(reason:)",
+      "classname": "EliteCoreTests.NativeMeasuredExtractionAcquisitionTests",
+      "seconds": "78.52305554099999"
+    },
+    "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf()",
+      "classname": "EliteCoreTests.WayfarerFieldReliefTests",
+      "seconds": "11.088994083000001"
+    },
+    "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance": {
+      "head": "bb85de185bbd1b39cd4fa763459cdeb8f1eac801",
+      "passed": true,
+      "case": "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance(phase:)",
+      "classname": "EliteCoreTests.NativeMeasuredExtractionSaveTests",
+      "seconds": "80.812088875"
+    },
+    "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages()",
+      "classname": "EliteCoreTests.ShipPanelRendererTests",
+      "seconds": "2.626769875"
+    },
+    "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer()",
+      "classname": "EliteCoreTests.ShipPanelRendererTests",
+      "seconds": "10.094879208"
+    },
+    "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "passed": true,
+      "case": "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting()",
+      "classname": "EliteCoreTests.EMPPersistenceAndEquipmentTests",
+      "seconds": "9.647094375"
+    }
+  },
+  "retained_native_runner_fake_units": {
+    "methods": 14,
+    "python": "3.12.14",
+    "source_head": "27cb255f9db254a12d0026a5ca97ebefbe127b70",
+    "result": "PASS",
+    "wall_seconds": 0.17224487522616982
+  },
+  "remaining_gates": [
+    "final published head checks and independent review",
+    "full make ci coverage/sanitizer/leak gates",
+    "committed main exact SHA SonarQube analysis",
+    "protected merge and signed/notarized release acceptance"
+  ]
+}

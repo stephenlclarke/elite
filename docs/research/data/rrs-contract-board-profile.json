@@ -1,0 +1,93 @@
+{
+  "profile_id": "PROJECT-RRS-BOARD-v1",
+  "authorization": "Owner follow-up: support the contract board, in context of native HQ lacking it. Explicit project extension to RRS headquarters; source facts retained separately.",
+  "scope": "ELITE-SPACE-MISSIONS-v4",
+  "docked_only": true,
+  "station_capabilities": [
+    {
+      "source_definition_id": "rescue_station",
+      "native_roles": [
+        "rescue_station",
+        "rrs_group_spacestation"
+      ],
+      "rrs_contract_board": true,
+      "capability_origin": "source"
+    },
+    {
+      "source_definition_id": "rrs_headquarters",
+      "native_roles": [
+        "rrs_galactic_hq",
+        "rrs_group_spacestation"
+      ],
+      "rrs_contract_board": true,
+      "capability_origin": "project_extension",
+      "general_waystation_market_services_granted": false
+    }
+  ],
+  "research_ready_profiles": [
+    "P30-ESCORT-1",
+    "P30-ESCORT-1A-ASTEROIDS",
+    "P30-ESCORT-1B-THARGOID",
+    "PROJECT-P30-COURIER-2-v1",
+    "PROJECT-P30-COURIER-2A-v1",
+    "PROJECT-P30-SOLAR-2B-v1",
+    "PROJECT-P30-BLACKBOX-3-v1",
+    "PROJECT-P30-BLACKBOX-3A-v1",
+    "PROJECT-P30-PERSONNEL-4-v1",
+    "PROJECT-P30-SLAVER-4A-v1",
+    "PROJECT-P30-ASTROMINE-4B-v1",
+    "PROJECT-P30-EMERGENCY-5-v1",
+    "PROJECT-P30-RETURNING-5A-v1",
+    "PROJECT-P30-MATERIALS-6-v1",
+    "PROJECT-P30-MEDICAL-6A-v1"
+  ],
+  "live_offer_requirements": [
+    "Individually research-ready",
+    "Implemented and enabled",
+    "Scope allowlist passed",
+    "Current source/profile eligibility passed",
+    "Destination and safe launch geometry ready",
+    "Actual current cargo/equipment/pylon/cabin fit and legal/reputation gates passed"
+  ],
+  "source_only_reference": "rescue-family1-mechanics.json.station_contract_services preserves original HQ no-board fact",
+  "board_key": [
+    "station_id",
+    "whole_simulation_hour",
+    "profile_revision"
+  ],
+  "offer_preview_has_side_effects": false,
+  "active_rrs_contract_limit": 1,
+  "acceptance": "Explicit Confirm, validate unchanged offer/fit, commit one receipt/reservations/clock atomically",
+  "home_station": "Accepted original offering station identity, never a generic role search",
+  "headquarters_launch_clearance": {
+    "preferred": "Selected source final offset if validated clear",
+    "fallback_project_extension_clearance_units": 1000,
+    "basis": "Assembled station boundary along stable launch axis plus1000; exact scene/renderer collision adapter required, else HQ escort offer not enabled"
+  },
+  "mission_equipment": "Completed solar2b has explicit unique80CRescrow/1400second contract-scoped checkout/return at acceptedwaystation orHQ, no general market grant. Other research-open jobs remain disabled.",
+  "gallery": "Isolated docked board scenario covers both station classes, previews/accept/decline, requirements, active work, identity-sensitive return and persistence",
+  "native_implementation_status": "Pending; research handoff does not establish UI/game implementation",
+  "offer_visibility": {
+    "implemented_eligible_but_bad_fit": "Visible with exact shortfall and disabled Accept; reevaluate fit without reroll after shipyard changes",
+    "unimplemented_or_research_open": "Excluded from live generation; reference/gallery catalogue only",
+    "unknown_launch_clearance": "Acceptance disabled with reason; never spawn into unchecked station geometry"
+  },
+  "deadline_anchor": {
+    "preview": "Quoted duration only, no active deadline",
+    "accept": "Atomic actual simulation timestamp plus selected duration, except individually documented source-clock exception",
+    "stale_hour_revision": "Refuse unchanged-state acceptance, return to current board",
+    "active": "Original deadline persists through refresh/docking/load; ordinary simulation time applies"
+  },
+  "navigation": {
+    "inputs": "Pointer and existing keyboard navigation",
+    "back": "Restore selected row; no acceptance side effects",
+    "disabled_reason": "Readable text, not colour alone",
+    "long_lists_and_briefings": "Scrollable/readable",
+    "empty_offers": "Active assignment remains accessible"
+  },
+  "variant_selection": {
+    "per_board": "Saved shuffled priority, first eligible unused replacement; each variant at most once",
+    "source_shuffle": "Random comparator sort, engine-dependent historical distribution",
+    "project_shuffle": "Saved-seed Fisher-Yates necessary labelled scheduler adapter; existing gates/quota/count guards retained"
+  }
+}

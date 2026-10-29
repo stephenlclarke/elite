@@ -1,0 +1,249 @@
+{
+  "original_failure_run": "40062040085",
+  "original_failure_head": "a890a93c7e7d698fd8a308cbb39dad75fe892278",
+  "original_unique_failed_methods": 55,
+  "original_methods_with_retained_pass": 55,
+  "missing_original_passes": [],
+  "all_retained_unique_pass_methods": 67,
+  "original_pass_map": {
+    "absentOriginalNPCShooterStillOwnsMissileDamageAndPlayerShieldsApplyInOrder": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actorPersistenceAndConcurrentCommands": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actualAnarchyStationReceivesNativeAssaultAndAdmitsPoliceAgainstItsRealSource": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "actualCommanderHullTransferKeepsHistoricalLoanEvidenceAndReturnsTheSamePersonalLaser": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actualFittedHullFarApproachUsesItsAvailableSpeedAndThrustWithoutExceedingOneBudget": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam": {
+      "head": "907b3cf495fc74171b577ae6700da50c76281e29",
+      "receipt": "/tmp/elite-mba-907b-terminal-verification.json"
+    },
+    "actualLegacyLoadPinsCurrentAbsenceAndAllHistoricalGalaxiesIncludingPlugh": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actualMetalPreservesPainterOrderClippingAndOnlyBoundaryCoverageCanDiffer": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actualMiningWithoutSelectedPermissionOrOrdinaryBreakupCannotMintExtraction": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "actualShopDebitsBothSequentialDrivesAndCannotSkipThePaidPredecessor": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "actualWeaponDamageRechargesDuringBothManualAndGuidedPhysicalMovement": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "bothSelectedTexturedShipsRenderThroughActualShowroomAtNativeSizes": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "cleanHitIsRecordedBeforeRetaliationAndMurderGetsNoHostileBounty": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "compiledStationBindingsMatchTheRetainedSourcePopulationAndSeparateHeadquarters": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "currentAdapterEnvelopeReservesItsOwnNumbersAndPreservesExactLeaf": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "genuineImportedHumanEMPSourceParksAndRebindsOneActualHullWithoutOffscreenCoast": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "interceptedOrdnanceNeverBecomesAShipKillOrBounty": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "knownBountyAndImmediateDefenceCreditOneKillAndRankChange": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "lawfulPoliceFireOnWantedPlayerInsideStationZoneDoesNotCreateRoguePolice": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "lostTargetCannotRetargetAnUnrelatedShipWithReusedDisplayID": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "matchedActiveMissionUsesItsSourceRewardWithoutDispatchingRemovalEvents": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeCourierAllSixPaintedAcceptTravelAndDeliverOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeCourierOriginAbandonBackAndPointerConsumeOnlyOwnedItem": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "nativeCourierTrialPaintSaveLoadMenuRestartAndReturnKeepLiveState": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "nativeDeleteBrakesReleasedResidualAndKeyUpPreservesCruise": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "nativeEMPKeysDisableEjectAndPublishTheSameSourceAndPeople": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "nativeEquipmentDrawsCompactAndDoubleScaleFramesWithFixedTypography": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeEquipmentKeysAndWindowPointersSelectWithoutPurchasing": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeEquipmentReturnRefusesAndInventoryPagesPreserveAcquisitionFacts": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeFrameConversionAndInput": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeHeldSteeringInterruptsActualMiningHoldWithoutVelocitySnap": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "nativeInventoryMouseRejectsUnpaintedResizeAndRestoredContext": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "nativeInventoryRequiresPaintAndSafelyRefusesFastFocusBeforeReturn": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "nativeMilitaryCoreCannotSubstituteForMiningModule": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "nativeMiningTabSelectsRealRockAndRHasNoFlightTargetAction": {
+      "head": "594413fcda7a1f4608fbfe7027b3936f286bf1a7",
+      "receipt": "/tmp/elite-mba-5944-terminal-verification.json"
+    },
+    "nativePaintedShopRejectsStaleActionsAndCommitsDuplicateReturnOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeRecoveredFeatureFitsInSpaceFromItsPaintedControlOnlyOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeRecoveredUpgradeFitsInSpaceFromItsPaintedControlOnlyOnce": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeSalvageApproachDrawAndQPreserveFiniteCustody": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeSaveIncludesEarlierQueuedCobraRestore": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "nativeStationWorldRetainsChosenPosesWithoutMintingDockingAuthority": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "navalBombImmunityAndExplicitHuntEntitlementStaySeparateFromHullBounty": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "normalizedPositiveSaveAndRehashedMutationRefuseBrokenOwnProvenance": {
+      "head": "bb85de185bbd1b39cd4fa763459cdeb8f1eac801",
+      "receipt": "/tmp/elite-mba-bb85-terminal-verification.json"
+    },
+    "npcAssaultAttributesLegalDamageAndDefenceToItsActualVictimWithoutPlayerCredit": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "onlyMiningLaserExtractionPublishesOreFromTheActuallyHitRock": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "originalMainArrivalRequiresItsActualNativeDoorwayCrossing": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "originalSH123AndActualFlippedGameViewUseGPUWithoutMutatingRetainedImages": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "pointerSelectionUsesTheRenderedUtilityBoundsAndClearsItForACombatCell": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "policeAndInvulnerableStationUseSpecialisedPenaltiesAndVerifiedAlarm": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "realShopDebitsFiniteCashAndReloadKeepsOneSeparateFitting": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "requirementsDescribeCashAndCanonicalPredecessorsWithoutCreatingOwnership": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "startupRestoreMigratesInMemoryWithoutOverwritingAndFailuresPreserveGame": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    },
+    "targetedMissileChargesBeforeDamageAndKeepsItsOriginalVictimEvidenceUntilImpact": {
+      "head": "bbfb3132cb7ffbacac4dcf36ff49a97dde1ae051",
+      "receipt": "/tmp/elite-mba-bbfb-combined-terminal-verification.json"
+    }
+  },
+  "direct_changed_production_beam_regressions": {
+    "alignedNPCFrontBeamUsesNativeHitAttributionAndChargesResourcesOnce": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "npcFrontBeamMissesOffAxisHullInsideItsAcquisitionCone": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "npcFrontBeamRetainsNearestObstructionAndIntendedTargetAdmission": {
+      "head": "a1bf2333017dc7c118ef6be0653b2b663c4dad44",
+      "receipt": "/tmp/elite-mba-a1bf-terminal-verification.json"
+    },
+    "actualFlightTickAllowsAnOccludingMissileToBeInterceptedByTheVictimsBeam": {
+      "head": "907b3cf495fc74171b577ae6700da50c76281e29",
+      "receipt": "/tmp/elite-mba-907b-terminal-verification.json"
+    }
+  },
+  "qualification": "Individually retained scoped results across67/15/10/2/1method runs at distinct reviewed commits; NOT one fresh full-suite aggregate, NOT fullM01/quality/releasepass. Separatefake14/actualGPU2 receipts retained; compile-only failed attempts4abd/d326 not method runs."
+}
