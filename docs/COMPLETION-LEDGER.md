@@ -4,6 +4,12 @@
 
 Updated 29 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
+## CURRENT M01 Sonar allocation-flow correction — 29 October 2026
+
+PR277 merged normally as main20f8c936 after exactef3 checks passed:3403 tests/395 suites, zero failures/errors, six declared optional skips,90.5014% coverage and zero leaks. Main40869808988 attempt2 then passed both full normal phases (90.5249% and90.5171%) and zero-leak lifecycle checks. The accepted exact-main Sonar analysis failed only reliability/security ratings: C S3807 assumes luaL_error returns after failed output realloc, and Swift S6418 misidentifies a public generated controls checksum as a credential. All other gate conditions passed. Controller33523 exited0 and removed its ephemeral registration; original evidence is preserved outside the checkout.
+
+G1 owns the smallest C branch clarification and precise Swift issue disposition. MC1 confirmed bundled Lua raises through its protected call and frees retained output on error; the explicit return changes no successful behavior. Existing evaluator regression coverage does not force raw operating-system realloc failure. The maintained controls digest exactly matches its public source bytes. Source review, fresh final-head checks, protected merge and exact-main Sonar remain pending. No gate/rule/protection change, credential concealment, test skip, new framework or fleet integration is included. M01 still has no new usable signed release.
+
 ## CURRENT M01 native menu fixture isolation — 29 October 2026
 
 PR277 source2674/executionf02c99c7 completed its actual full normal run40853679144 attempt2 with3403 tests in395 suites,3396 passing methods, six declared optional skips and one Gallery menu issue in2660.410 seconds. Guarded checkout and all hosted fake groups passed; original immutable evidence survived cleanup. No memory-limit failure occurred. The native job failed before leaks or main-only Sonar; the ephemeral runner exited0 and removed its credentials/registration. This is failed evidence, not a final-head qualification.
