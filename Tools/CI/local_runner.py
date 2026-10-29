@@ -71,8 +71,8 @@ def prepare_build_cache(root: Path, key: str) -> Path:
 
 
 def clean_checkout(root: Path) -> None:
-    """Remove other ignored/untracked inputs while retaining only root .build."""
-    subprocess.run(["git", "clean", "-ffdx", "-e", "/.build/"], cwd=root,
+    """Retain build data and immutable phase evidence; remove other stale inputs."""
+    subprocess.run(["git", "clean", "-ffdx", "-e", "/.build/", "-e", "/reports/quality-phases/"], cwd=root,
                    check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 

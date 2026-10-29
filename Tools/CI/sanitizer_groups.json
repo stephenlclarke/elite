@@ -37,7 +37,7 @@
         "Tests/EliteCoreTests/StartupFrameObservationTests.swift": "fcedc006051e53c5aa97ebb71635873a66c841df0d9a0537476c50517e615203",
         "Tests/EliteCoreTests/StartupSaveRegistrationTests.swift": "9ea0dab72185126dc97f2aa9b18573336064ba9327cf4628395e02b57667aaf6",
         "Tests/EliteCoreTests/StartupSaveTests.swift": "5998411ae96e87f99cf05646944d4eac9fb1e0e7dd797d43dbe000f92e967ac8",
-        "Tests/EliteCoreTests/WantedBoardTests.swift": "d2ded1ee9a793a6cbc77b57b42e1e779526625d63725647b09b3043e9b68f7f0"
+        "Tests/EliteCoreTests/WantedBoardTests.swift": "bd60e15511f0908e3c8e5ae8089126a5a2ef7ce1c55ee3b9ad80f1bf7f8e7737"
       },
       "members": [
         "EliteCoreTests.FlightControlInputTests/actorSafetyStopSurvivesAnActualRefusedHotWorkFlush(key:)",
@@ -129,6 +129,7 @@
         "EliteCoreTests.NativeViewTests/nativeSpinInputRecognizesCirclesRebasesAimAndKeepsForwardThrottleSeparate()",
         "EliteCoreTests.NativeViewTests/nativeTargetCameraAndEquipmentRenderResponsiveFrames()",
         "EliteCoreTests.NativeViewTests/nativeTrackpadHoldsControlsAndClearsOnPauseHelpDockingOrFocusLoss()",
+        "EliteCoreTests.NativeViewTests/nativeWantedBoardPointerDetailsBackAndHistoricalRouteUsePrivatePreferences()",
         "EliteCoreTests.NativeViewTests/nativeWindowCloseKeepsARCOwnershipAndJoinsItsCancelledLoop()",
         "EliteCoreTests.NativeViewTests/paintedCabinStorageCannotRemoveAnActualPassengerOrActWhilePaused()",
         "EliteCoreTests.NativeViewTests/paintedNativeCabinPurchaseStoreRefitAndFailedWritePreserveCustody()",
@@ -170,7 +171,6 @@
         "EliteCoreTests.WantedBoardTests/nativeCapacityRefusedKillerCannotCreateAParkedCareerOrRevisitAdmission()",
         "EliteCoreTests.WantedBoardTests/nativeCareersRankTenActualRewardsAndPlayerAmnestyPreservesUnknownHistory()",
         "EliteCoreTests.WantedBoardTests/nativeDeathPaysDisplayedBountyOnceAndPromotesEleventhWithoutABoardBonus()",
-        "EliteCoreTests.WantedBoardTests/nativeWantedBoardPointerDetailsBackAndHistoricalRouteUsePrivatePreferences()",
         "EliteCoreTests.WantedBoardTests/onlyAcceptedShipDeathsCountNeverSelfProjectilesOrDuplicateSettlements()",
         "EliteCoreTests.WantedBoardTests/purpleWorldScannerAndPanelWorkInAllViewsAndPlanetOcclusionStillWins()",
         "EliteCoreTests.WantedBoardTests/tiedCareersKeepIdentityAcrossCullRebindAndCrossSystemParking()",
