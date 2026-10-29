@@ -311,6 +311,10 @@ struct NativeViewTests {
     let notification = Notification(name: NSApplication.didFinishLaunchingNotification)
     delegate.applicationDidFinishLaunching(notification)
     let window = try #require(delegate.window)
+    defer {
+      delegate.windowWillClose(notification)
+      window.orderOut(nil)
+    }
     let view = try #require(window.contentView as? GameView)
     let loop = try #require(delegate.loop)
     loop.cancel()

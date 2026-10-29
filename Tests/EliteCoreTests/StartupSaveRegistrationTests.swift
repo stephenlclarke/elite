@@ -317,6 +317,7 @@ struct StartupSaveRegistrationTests {
     window.contentView = view
     delegate.window = window
     defer {
+      delegate.windowWillClose(Notification(name: NSWindow.willCloseNotification, object: window))
       window.orderOut(nil)
       window.delegate = nil
       preferences.removePersistentDomain(forName: identifier)
