@@ -2,7 +2,17 @@
 
 > Current CI scope (28 October 2026): the user removed ASAN and TSAN as mandatory CI/release steps. Local sanitizer completion and the isolation proposal are stopped. Normal tests, coverage, zero leaks, static checks, Sonar and required reviews remain. Historical sanitizer results below retain their original scope. See [the CI change](PR-ci-without-sanitizers.md).
 
-Updated 28 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
+Updated 29 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
+
+## CURRENT M01 delivery — 29 October 2026
+
+**Owner and scope:** G1 remains the sole native/source/main/release operator. The coherent asset-execution simplification is committed at753d6b84 and independently source-clear (fa0cdcc5), including cancellation and leader-exit cleanup. It retires the external asset policy/MAX1/journal/custody protocol for ordinary media work. The user removed unnecessary operational overhead; no per-command asset review, Root acknowledgement, sanitizer completion, isolation or profiling stage is required. This current entry supersedes those operational requirements and pending-review descriptions below; historical evidence remains unchanged.
+
+**Recovery and actual media:** The same physical Mac booted at07:19:51UTC after the UNKNOWN586 attempt and final source review. One combined independent recovery review (65305df4) approved the existing append-only resolution; it is installed and admission passes. Registry586, raw journal and consumed counters remain unchanged. Maintained `make ships` then completed the real single-worker build and rendered all171animations plus the overview. `make ships-check` passes. All generated image/reference bytes match the previous committed outputs; only the manifest's stale input fingerprints change. This is actual rendering, not a metadata-only waiver. The plain run log and media validation are retained under `.build/ship-media-*/render.log` and `reports/m01-media-validation.txt`.
+
+**Source/test status:** Asset execution has26passing offline cleanup/resource/cancellation/publication tests and seven passing renderer-dependency tests. Earlier cleared CI-removal and fixture/normal-only-installer reviews remain valid for unchanged scope. These results do not establish full normal Swift coverage, zero leaks or a playable release.
+
+**Next handoff and release:** Integrate the reviewed source, actual media fingerprint update and this status; push the final candidate to PR232 with a current description and one review request for that pushed packet. Configure the existing native job for the actual final PR execution/source hashes and singleton native_checks role with both normal/leak resource profiles. Complete actual full normal tests, coverage, zero leaks and static checks; obtain final-head required quality/checks and independent review; then protected merge, exact committed-main Sonar and signed/notarized usable release. M01 remains in progress. No new playable build/release is claimed by this entry, and the primary human working copy is untouched.
 
 ## Current M01 normal-quality follow-up — 28 October 2026
 
