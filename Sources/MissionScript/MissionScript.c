@@ -5,6 +5,9 @@
 #include <string.h>
 #include <stdio.h>
 
+/* luaL_error reaches luaD_throw through lua_error; its public int return is unreachable. */
+extern int luaL_error(lua_State *L, const char *fmt, ...) __attribute__((noreturn));
+
 #define EMS_DEPTH 32
 #define EMS_ITEMS 16384
 #define EMS_HOOK 1000
@@ -126,7 +129,6 @@ static void write_bytes(lua_State *L, const void *bytes, size_t count) {
     void *next = realloc(ctx->result.bytes, capacity);
     if (!next) {
       luaL_error(L, "Output allocation failed.");
-      return;
     }
     ctx->result.bytes = next;
     ctx->output_capacity = capacity;
