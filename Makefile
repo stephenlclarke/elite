@@ -1,10 +1,11 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 RELEASE_PLAN ?= dist/release-plan.json
+ELITE_SANITIZERS ?= 0
 .PHONY: release-plan publish-release release-readme release
-.PHONY: sanitizer-checkpoints-check native-runner-check instance-equality-check ci-capture-check help build run test unit-ci local-runner-check coverage coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
+.PHONY: sanitizer-checkpoints-check native-runner-check instance-equality-check ci-capture-check help build run test unit-ci local-runner-check coverage coverage-check threads threads-full address sanitizers sanitizers-check leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check package-macos homebrew-cask homebrew-cask-check sonar ci
 help:
-	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check release-plan package-macos publish-release release-readme release homebrew-cask homebrew-cask-check sonar ci'
+	@printf '%s\n' 'build run test unit-ci sanitizer-checkpoints-check instance-equality-check local-runner-check ci-capture-check coverage-check threads threads-full address sanitizers sanitizers-check leaks readme-media induction-ark-model induction-crew-log-model ships ships-check showroom-data showroom-import showroom-check liberator-design hull-designs mission-packs-check flight-controls-check release-plan package-macos publish-release release-readme release homebrew-cask homebrew-cask-check sonar ci'
 build:
 	swift build
 run:
@@ -21,12 +22,16 @@ sanitizer-checkpoints-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_sanitizer_checkpoints.py'
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_quality_phase_checkpoints.py'
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_m01_normal_attestation.py'
-threads: sanitizer-checkpoints-check
-	python3 Tools/CI/sanitizer_checkpoints.py thread
-address: sanitizer-checkpoints-check
-	python3 Tools/CI/sanitizer_checkpoints.py address
-threads-full: sanitizer-checkpoints-check
-	python3 Tools/CI/sanitizer_checkpoints.py thread --full-concurrent
+threads:
+	swift test --scratch-path .build/tsan --sanitize=thread
+address:
+	ASAN_OPTIONS=detect_leaks=0 swift test --scratch-path .build/asan --sanitize=address --no-parallel
+threads-full: threads
+sanitizers:
+	$(MAKE) threads
+	$(MAKE) address
+sanitizers-check:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_optional_sanitizers.py'
 leaks: sanitizer-checkpoints-check
 	python3 Tools/CI/quality_phase_checkpoints.py leaks
 readme-media:
@@ -79,8 +84,12 @@ ci-capture-check:
 native-runner-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_native_runner.py'
 
-ci: native-runner-check instance-equality-check ci-capture-check flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check leaks
+ci: sanitizers-check native-runner-check instance-equality-check ci-capture-check flight-controls-check homebrew-cask-check ships-check showroom-check mission-packs-check coverage-check leaks
 
+ifeq ($(ELITE_SANITIZERS),1)
+ci:
+	$(MAKE) sanitizers
+endif
 
 instance-equality-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/CI -p 'test_script_instance_equality.py'

@@ -4,6 +4,10 @@
 
 Updated 29 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
+## CURRENT M01 optional sanitizers — 29 October 2026
+
+Root assigns M01.OPTIONAL-SANITIZERS to G1 after the human requested the original ASan/TSan steps for local use on another Mac, off by default. Scope is Makefile, focused command/default-off regressions, README/native runner guidance and paired handoff notes. Restore the original unpartitioned `swift test` commands without shard plans, checkpoints or new operational protocols. Normal required coverage/leak/static checks remain unchanged. Dependencies are one coherent delta review and final PR checks; previous source/media clears remain valid. Seven Make/fake-Swift interface tests and two existing required-workflow contract tests pass; Markdown and diff checks pass. Status is implementation/focused validation complete, coherent delta review pending. Native setup/publication is paused; PR232 CI40836259057 is pending with no jobs started. No sanitizer run, new native quality pass or release is claimed. Next handoff: independently review this delta, then integrate and resume M01 validation/release.
+
 ## CURRENT M01 delivery — 29 October 2026
 
 **Owner and scope:** G1 remains the sole native/source/main/release operator. The coherent asset-execution simplification is committed at753d6b84 and independently source-clear (fa0cdcc5), including cancellation and leader-exit cleanup. It retires the external asset policy/MAX1/journal/custody protocol for ordinary media work. The user removed unnecessary operational overhead; no per-command asset review, Root acknowledgement, sanitizer completion, isolation or profiling stage is required. This current entry supersedes those operational requirements and pending-review descriptions below; historical evidence remains unchanged.
