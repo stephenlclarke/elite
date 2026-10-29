@@ -4,6 +4,12 @@
 
 Updated 29 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
+## CURRENT M01 native menu fixture isolation — 29 October 2026
+
+PR277 source2674/executionf02c99c7 completed its actual full normal run40853679144 attempt2 with3403 tests in395 suites,3396 passing methods, six declared optional skips and one Gallery menu issue in2660.410 seconds. Guarded checkout and all hosted fake groups passed; original immutable evidence survived cleanup. No memory-limit failure occurred. The native job failed before leaks or main-only Sonar; the ephemeral runner exited0 and removed its credentials/registration. This is failed evidence, not a final-head qualification.
+
+MC1 froze d8cc46c1 on2674. MBA cleared the combined source with the existing cleanup review retained: the native Wanted Board test restored process-wide NSApp.mainMenu across awaits outside the existing serialized NativeViewTests suite. Moving only its extension owner into that suite serializes both fixtures without changing production, assertions, helper access or viewport coverage. The maintained manual group retains170 members with the same method renamed and source hash updated. One existing offline grouping test and a mapped prior3403-method inventory pass; this is not fresh Swift discovery or native execution. G1 integrated the exact patch as9ddc3657 after the actual run terminated. Final PR277 checks, fresh exact-head discovery/full native quality, protected merge, main-only Sonar and signed/notarized release remain pending. Optional full-suite sanitizers remain default-off. No source check, resource gate or branch protection changes.
+
 ## CURRENT M01 immutable evidence cleanup — 29 October 2026
 
 G1 owns the narrow local-runner cleanup, existing unit fixture and operator notes on branch `fix/phase-evidence-cleanup`, based on actual protected main8a3021b7. PR232 is merged with the truthful feature subject. Its exact reviewed source8349eecf/executionee80b425 passed3403 tests in395 suites,90.51238% coverage and zero leaks; independent source/receipt reviews and all required checks passed. Main's tree matches834 and contains the original full-suite sanitizer targets, default-off. No new public release exists yet.
