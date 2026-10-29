@@ -758,6 +758,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     windowWillClose(notification)
   }
   func windowWillClose(_ _: Notification) {
+    (window?.contentView as? GameView)?.audio.shutdown()
     frameProfile?.cancelled()
     loop?.cancel()
     loop = nil

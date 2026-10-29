@@ -4,7 +4,7 @@ import Foundation
 
 @MainActor
 final class AudioPresenter {
-  private var players: [AVAudioPlayer] = []
+  private(set) var players: [AVAudioPlayer] = []
   private let speech = AVSpeechSynthesizer()
   // Keep transition facts without retaining a second world and its copy-on-write storage.
   private var previousDocked = true
@@ -16,7 +16,21 @@ final class AudioPresenter {
   private var dischargeFeed = DischargeAudioFeed()
   private var dischargeEpoch: UUID?
   private var cutterPlayer: AVAudioPlayer?
+  private(set) var isShutdown = false
+
+  /// Closing a view is terminal, including for a frame already suspended in an actor call.
+  func shutdown() {
+    guard !isShutdown else { return }
+    isShutdown = true
+    cutterPlayer?.stop()
+    cutterPlayer = nil
+    for player in players { player.stop() }
+    players.removeAll()
+    speech.stopSpeaking(at: .immediate)
+  }
+
   func update(_ game: Game) {
+    guard !isShutdown else { return }
     players.removeAll { !$0.isPlaying }
     if dischargeEpoch != game.dischargeAudio.epoch {
       dischargeEpoch = game.dischargeAudio.epoch
@@ -53,6 +67,7 @@ final class AudioPresenter {
   }
   @discardableResult
   private func play(_ effect: SoundEffect) -> AVAudioPlayer? {
+    guard !isShutdown else { return nil }
     do {
       let player = try AVAudioPlayer(data: effect.wav())
       player.volume = 0.4
