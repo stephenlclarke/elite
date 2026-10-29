@@ -19,3 +19,7 @@ Focused Python checks pass; independent delta review and final native quality re
 ## Hosted isolation follow-up, 29 October
 
 Actual CI40837312906 exposed remaining fake dependencies on the operator's real custody state and hosted listener environment. Local runs had passed because physical registry state existed and operator variables were absent. The hard-kill Python child does not inherit a parent mock. A nested request/selected fixture also restored mocks out of order, leaving a deleted temporary registry selected after the test. Fix the fixture lifetimes and temporary data, not the production guards. The new hosted-like validation must run the entire native file and active fake classes in one process to detect cross-class pollution.
+
+## Physical job environment follow-up
+
+The real native job then reached another fixture gap: QualityPhaseTests cleared only the policy value while retaining the real native job's GitHub authorization tuple. The production profile selector correctly treated it as hosted quality and refused the empty policy path. The fixture must isolate that tuple entirely while retaining unrelated tool paths and restoring the parent environment. Validate all three files in the required checkpoint Make gate under native-job variables before retrying the real pipeline.

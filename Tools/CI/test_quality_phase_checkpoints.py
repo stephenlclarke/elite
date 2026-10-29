@@ -75,7 +75,9 @@ class QualityPhaseTests(unittest.TestCase):
         from contextlib import ExitStack
         stack = ExitStack()
         # Fake phases must not consume the physical runner's one-off authorization.
-        stack.enter_context(patch.dict(os.environ, {'ELITE_NATIVE_POLICY': ''}))
+        environment = {key: value for key, value in os.environ.items()
+                       if not key.startswith(('GITHUB_', 'RUNNER_', 'ELITE_NATIVE_', 'ELITE_RECOVERABLE_'))}
+        stack.enter_context(patch.dict(os.environ, environment, clear=True))
         stack.enter_context(patch.object(runner, 'ROOT', self.root))
         stack.enter_context(patch.object(runner, 'output', side_effect=self.output))
         stack.enter_context(patch.object(runner, 'executable_inputs', return_value={'Sources/fake.swift': 'fixed'}))
@@ -84,6 +86,23 @@ class QualityPhaseTests(unittest.TestCase):
         stack.enter_context(patch.object(runner.shutil, 'which', return_value='/toolchain/swift'))
         stack.enter_context(patch.object(runner.subprocess, 'run', side_effect=self.fake_run))
         return stack
+
+    def test_fake_phase_context_isolates_and_restores_native_job_authorization(self):
+        physical = dict(GITHUB_ACTIONS='true', GITHUB_JOB='native_checks', GITHUB_RUN_ID='123',
+                        ELITE_NATIVE_POLICY='/physical/policy.json', ELITE_NATIVE_APPROVED_HEAD='f' * 40,
+                        ELITE_RECOVERABLE_POLICY_SHA256='e' * 64)
+        with patch.dict(os.environ, physical):
+            original_path = os.environ.get('PATH')
+            with self.context():
+                self.assertEqual(os.environ.get('PATH'), original_path)
+                self.assertFalse(any(key in os.environ for key in physical))
+                self.fail_leaks = False
+                runner.run_phase('normal', self.root / 'cache')
+                runner.run_phase('leaks', self.root / 'cache')
+            for key, value in physical.items():
+                self.assertEqual(os.environ[key], value)
+        self.assertEqual(sum(command[1] == 'test' for command in self.calls), 1)
+        self.assertEqual(sum(command[0] == '/usr/bin/leaks' for command in self.calls), 1)
 
     def test_later_leak_failure_keeps_normal_success_and_retry_does_not_repeat_tests(self):
         with self.context():
