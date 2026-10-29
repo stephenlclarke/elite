@@ -4,6 +4,16 @@
 
 Updated 29 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
+## CURRENT M01 immutable evidence cleanup — 29 October 2026
+
+G1 owns the narrow local-runner cleanup, existing unit fixture and operator notes on branch `fix/phase-evidence-cleanup`, based on actual protected main8a3021b7. PR232 is merged with the truthful feature subject. Its exact reviewed source8349eecf/executionee80b425 passed3403 tests in395 suites,90.51238% coverage and zero leaks; independent source/receipt reviews and all required checks passed. Main's tree matches834 and contains the original full-suite sanitizer targets, default-off. No new public release exists yet.
+
+Main CI40851436561 attempt2 failed before tests/Sonar at `native_runner.py --checkout` line891 calling `clean_checkout`. Two remaining original phase attempts have directory mode0500 and proof mode0400. The original Git clean command targets those ignored reports; a private copied-tree reproduction returns exit1 with matching phase-file paths and `Permission denied`. The actual workflow retained only the safe SubprocessError category, so the reproduction is not presented as its captured raw stderr. The native attempt exited and removed its ephemeral registration. No original phase evidence was chmodded/deleted by the fix or reproduction; complete prior artifacts are preserved externally.
+
+The correction adds one exact root `reports/quality-phases/` exclusion beside the existing root `.build/` exclusion. The enhanced existing fixture verifies frozen proof bytes/inode/mtime/modes and build data survive, while unexpected source, unrelated reports and a similarly named nested path are removed. All nine local-runner tests pass. Loading the original cleanup in memory makes that regression fail with CalledProcessError; corrected source stays in place. This target already runs in the existing unit workflow. Status is focused validation complete, one coherent independent delta review pending. Next handoff is the follow-up PR and normal protected checks/merge, then fresh exact-main quality/Sonar and one-plan signed/notarized release. No guard, source-cleanliness check, test scope, resource allocation or branch protection is weakened.
+
+The optional human-approved stack sample was never invoked: the owned test phase had already completed before its fresh identity check. There is no retargeted sample, native restart, reset, cache-placement framework or new approval protocol.
+
 ## CURRENT M01 normal build allocation and release scheduling — 29 October 2026
 
 G1 integrates the independently reviewed MC1 release scheduling source dfa4c56e at this terminal boundary. The existing universal Release build and binary-path query now both use one compile job with batch compilation disabled; release optimization, both architectures and all signing/notarization/publication checks remain unchanged. The scheduling test also fails against the original vector. This constrains scheduling and does not prove Release memory fit or introduce a Release authority wrapper.

@@ -4,6 +4,7 @@ from pathlib import Path
 import contextlib
 import io
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -52,7 +53,7 @@ class LocalRunnerTests(unittest.TestCase):
             (root / "Package.swift").write_text("second")
             self.assertNotEqual(first, cache_key(root, "swift-a", "15.5"))
 
-    def test_checkout_cleanup_preserves_build_cache(self):
+    def test_checkout_cleanup_preserves_build_cache_and_frozen_phase_evidence(self):
         with tempfile.TemporaryDirectory() as directory:
             root = (Path(directory) / "checkout").resolve()
             root.mkdir()
@@ -65,12 +66,33 @@ class LocalRunnerTests(unittest.TestCase):
             marker = destination / "compiled-object"
             marker.write_text("keep across failed jobs")
             self.assertEqual(destination, prepare_build_cache(root, "a" * 64))
-            clean_checkout(root)
-            self.assertEqual((root / ".build/compiled-object").read_text(), marker.read_text())
-            self.assertTrue((root / "Sources/Kept.swift").is_file())
-            self.assertFalse((root / "Sources/Unexpected.swift").exists())
-            self.assertFalse(destination.is_symlink())
-            self.assertEqual(confined(destination, root), destination.resolve())
+            attempt = root / "reports/quality-phases/normal/frozen-attempt"
+            attempt.mkdir(parents=True)
+            proof = attempt / "result.json"
+            proof.write_bytes(b'{"status":"passed"}\n')
+            proof.chmod(0o400)
+            attempt.chmod(0o500)
+            original = (proof.read_bytes(), proof.stat().st_ino, proof.stat().st_mtime_ns)
+            (root / "reports/stale-output.txt").write_text("remove old writable output")
+            nested = root / "other/reports/quality-phases/unrelated"
+            nested.mkdir(parents=True)
+            (nested / "stale.txt").write_text("not the anchored evidence directory")
+            try:
+                clean_checkout(root)
+                self.assertEqual((root / ".build/compiled-object").read_text(), marker.read_text())
+                self.assertEqual((proof.read_bytes(), proof.stat().st_ino, proof.stat().st_mtime_ns), original)
+                self.assertEqual(attempt.stat().st_mode & 0o777, 0o500)
+                self.assertEqual(proof.stat().st_mode & 0o777, 0o400)
+                self.assertTrue((root / "Sources/Kept.swift").is_file())
+                self.assertFalse((root / "Sources/Unexpected.swift").exists())
+                self.assertFalse((root / "reports/stale-output.txt").exists())
+                self.assertFalse((root / "other").exists())
+                self.assertFalse(destination.is_symlink())
+                self.assertEqual(confined(destination, root), destination.resolve())
+            finally:
+                # Only this test's temporary directories become writable for disposal.
+                for path, _, _ in os.walk(root):
+                    Path(path).chmod(0o700)
 
     def test_incompatible_owned_cache_is_rebuilt(self):
         with tempfile.TemporaryDirectory() as directory:
