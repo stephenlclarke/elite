@@ -1,0 +1,7 @@
+# fix(tests): place the headquarters volley beyond main-station pursuit
+
+The existing attack fixture now approaches headquarters from the canonical outward radial direction at5,000 units from its centre. Headquarters remains in the existing6,000-unit actual collision/range check, while the player is beyond main-station security's20,000-unit pursuit boundary. The fixture rejects insufficient separation from the actual rotated station mesh and player bounding sphere, and the destruction test asserts the actual main-station distance. The approach does not depend on the fresh saved headquarters orientation.
+
+All world actors and celestials remain live. The actual missile loop, finite health, damage, targeting, required launch count, player survival, station death, tombstone identity and save/load assertions are retained. Ambient pirates remain possible; source reasoning does not claim a universal no-failure result or replace actual execution. No production or manual grouping metadata changes are needed; this test source is not a maintained manual group participant.
+
+Independent source analysis identified the fatal security event and per-frame pursuit rule. Whitespace and Markdown checks pass. Fresh existing headquarters destruction/recharge cases, full normal quality, leak checks and exact-main Sonar remain pending. Prior successful runs remain separate. No rule, gate, source-authorization or branch-protection change is included. See [the issue](ISSUE-headquarters-attack-position.md).

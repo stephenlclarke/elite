@@ -211,17 +211,27 @@ enum NativeStationTestFixture {
           == NativeStationGeometry.Kind.headquarters.sourceDefinition
       }), let identity = body.nativeStationIdentity,
       let saved = game.commander.nativeStations?.pose(for: identity),
-      let orientation = saved.orientation(at: game.commander.flightSimulation.physicalTime)
+      let orientation = saved.orientation(at: game.commander.flightSimulation.physicalTime),
+      let anchors = game.commander.flightSimulation.anchors
     else { throw NativeStationRuntimeError.invalidState }
     let geometry = NativeStationGeometry.headquarters
-    let face = geometry.mesh.faces[0].map { geometry.mesh.vertices[$0] }
-    let center = face.reduce(Vector3(0, 0, 0), +) * (1 / Double(face.count))
-    let outward = (face[1] - face[0]).cross(face[2] - face[0]).unit
+    let main = anchors.station.position
+    let outward = (saved.position - main).unit
     let radius = game.commander.playerMesh.vertices.map(\.length).max() ?? .infinity
-    let separation = geometry.bounds.support(outward) - center.dot(outward) + radius + 1000
+    let support =
+      geometry.mesh.vertices.map { orientation.apply($0).dot(outward) }.max() ?? .infinity
+    let separation = 5000.0
+    guard radius.isFinite, support.isFinite, separation - support > radius else {
+      throw NativeStationRuntimeError.unsafePlacement
+    }
     var pose = ShipPose()
-    pose.position = saved.position + orientation.apply(center + outward * separation)
-    pose.orientation.z = orientation.apply(outward) * -1
+    // Keep the real HQ in missile range, beyond main-station security's 20,000-unit pursuit.
+    // This placement is independent of the saved HQ orientation; all world actors remain live.
+    pose.position = saved.position + outward * separation
+    pose.orientation.z = outward * -1
+    guard (pose.position - main).length > 20000 else {
+      throw NativeStationRuntimeError.unsafePlacement
+    }
     let up = abs(pose.orientation.z.y) < 0.9 ? Vector3(0, 1, 0) : .init(1, 0, 0)
     pose.orientation.y = (up - pose.orientation.z * up.dot(pose.orientation.z)).unit
     pose.orientation.x = pose.orientation.y.cross(pose.orientation.z)
@@ -405,6 +415,8 @@ private func verifyNativeHeadquartersDestruction(
     })
   let identity = try #require(hq.nativeStationIdentity)
   let actor = try #require(hq.physical?.identity)
+  let anchors = try #require(game.commander.flightSimulation.anchors)
+  #expect((game.commander.flightSimulation.pose.position - anchors.station.position).length > 20000)
   #expect(hq.energy == 25000 && !hq.ecmEnabled)
   #expect(game.commander.credits == Commander.xyzzyStartingCredits && !game.commander.unlimitedCash)
   let contact = try #require(

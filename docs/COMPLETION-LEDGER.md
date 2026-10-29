@@ -4,6 +4,12 @@
 
 Updated 29 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
+## CURRENT M01 headquarters attack fixture — 29 October 2026
+
+PR278 merged normally as e2910137 after exact4c52 passed3403 tests/395 suites, six declared optional skips,90.4766% coverage, zero leaks and all required checks. The subsequent main40898297625 attempt2 failed its normal suite: one headquarters-volley method, three related issues, no memory failure. The original retained fatal event identifies a security police pulse laser killing the finite-health player at184.4 physical seconds. Leaks and Sonar were not reached; old proof files do not qualify this main run. Controller64614 exited0 and removed its ephemeral registration; external failure evidence is preserved.
+
+G1 owns the smallest fixture-only radial observation-point correction. MC1 confirmed the per-frame main-station20,000-unit pursuit rule. The candidate retains the actual HQ ray, rotated mesh/player separation, original live world, missile loop, finite damage/health, survival, tombstone and persistence assertions. No UUID selection, actor removal, damage suppression or health refill is included. Independent exact-delta review and actual execution remain pending. The separate Swift checksum false-positive disposition and reviewed C allocation-error clarification remain; fresh exact-main Sonar and usable signed release are still required. Fleet source remains queued after release.
+
 ## CURRENT M01 Sonar allocation-flow correction — 29 October 2026
 
 PR277 merged normally as main20f8c936 after exactef3 checks passed:3403 tests/395 suites, zero failures/errors, six declared optional skips,90.5014% coverage and zero leaks. Main40869808988 attempt2 then passed both full normal phases (90.5249% and90.5171%) and zero-leak lifecycle checks. The accepted exact-main Sonar analysis failed only reliability/security ratings: C S3807 assumes luaL_error returns after failed output realloc, and Swift S6418 misidentifies a public generated controls checksum as a credential. All other gate conditions passed. Controller33523 exited0 and removed its ephemeral registration; original evidence is preserved outside the checkout.
