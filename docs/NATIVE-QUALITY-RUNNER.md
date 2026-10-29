@@ -33,3 +33,9 @@ Keep the console session available for the existing AppKit window and actual-ren
 ## Current CI scope
 
 ASAN and TSAN are optional manual diagnostics. The active reusable workflow runs the real `make ci` command in its authorized `native_checks` job after the hosted fake checks. Normal tests, full inventory and coverage validation, zero leaks, static checks, raw runtime evidence and committed-main-only SonarQube analysis remain required. No sanitizer preparation, shard, local-proof verification or sanitizer-plan aggregate job is part of CI. Normal and leak phases require their own reviewed resource profiles and retain the existing shared executor lease, admission and RSS monitoring. New source and workflow bytes require fresh exact-head runner authorization; old policies and proof files are preserved as historical evidence.
+
+## Ordinary ship-media generation
+
+Use `make ships`, followed by `make ships-check`. The maintained generator owns a normal subprocess/session with shared controller/executor leases, fresh RAM/disk admission, one nonbatch compiler worker, sampled PID/start-lineage RSS, bounded output and timeout/cleanup. A routine metadata or renderer error returns failure after bounded cleanup; it does not write diagnostic custody, create MAX1 policies/journals, wait inertly or impose another approval layer. The external M01 asset wrappers are historical evidence only. Existing unresolved historical custody remains respected until its reviewed recovery. See [the focused correction and remaining OS limits](PR-m01-asset-execution.md).
+
+The per-probe freezes, complete historical-descendant proof and routine-reboot recovery were self-imposed asset coordination rules. They are superseded for ordinary assets by the human's simplification instruction. This does not change trusted GitHub event/head authorization, normal test inventory, coverage, zero leaks, required PR review/checks or main-only exact-SHA Sonar analysis.

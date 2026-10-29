@@ -524,6 +524,8 @@ App versions come from the last published stable ancestor tag and Conventional C
 
 ## Validation and SonarQube
 
+Run `make ships` to regenerate ship animations with the actual game renderer, then `make ships-check` to verify them. The command keeps one compiler worker, shared native leases, resource limits and bounded cleanup. Failures return nonzero and keep a plain log under `.build/ship-media-*/render.log`; they do not create a diagnostic session or a reboot hold. See [asset execution and limits](docs/PR-m01-asset-execution.md). Existing historical holds still require their separately reviewed recovery.
+
 The current M01 candidate consolidates the retained value-lifetime and station-validation fixes. The [nineteen-method affected batch](docs/evidence/M01-outer-game-value-storage.json) passes, including the original crash paths, actor snapshots, epoch writes, quote isolation and failed-writer rollback. Full quality gates and the dependable launch/flight/jump/job/delivery/completed-save journey remain required. No playable M01 release is claimed.
 
 ```sh

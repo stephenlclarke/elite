@@ -4,6 +4,13 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
+import shutil
+import signal
+import sys
+import tempfile
+import time
+from contextlib import ExitStack
 import re
 from pathlib import Path
 import subprocess
@@ -182,6 +189,159 @@ def references(ships, write=True):
     return documents
 
 
+# Local asset generation uses the same resource limits as the physical quality job,
+# but not its diagnostic policies, immutable sessions or persistent custody records.
+ASSET_RSS = 2415919104
+ASSET_SECONDS = 7200
+ASSET_CLEANUP = 4
+ASSET_OUTPUT = 16 * 1024 * 1024
+
+
+def process_memory(timeout=1):
+    """Read kernel identity and RSS metadata only; argv text cannot reject an exec."""
+    raw=subprocess.check_output(['/bin/ps','-axo','pid=,ppid=,pgid=,lstart=,rss='],
+                                timeout=timeout,stderr=subprocess.PIPE).decode()
+    rows={}
+    for line in raw.splitlines():
+        fields=line.split()
+        if len(fields)!=9:raise RuntimeError('Incomplete process/RSS sample')
+        pid,parent,group=map(int,fields[:3])
+        rows[pid]={'parent':parent,'group':group,'start':' '.join(fields[3:8]),'rss':int(fields[8])*1024}
+    return rows
+
+
+def owned_processes(pid,known,rows,leader_unreaped):
+    """Discover visible children and retain their kernel identities across exec/reparenting."""
+    selected={key for key,start in known.items() if key in rows and rows[key]['start']==start}
+    # Until Popen reaps its leader, that PID cannot be reused as a new group.
+    if leader_unreaped:
+        selected.update(key for key,row in rows.items() if row['group']==pid)
+        if pid in rows and pid not in known:selected.add(pid)
+    while True:
+        added={key for key,row in rows.items() if row['parent'] in selected}-selected
+        if not added:break
+        selected.update(added)
+    for key in selected:known[key]=rows[key]['start']
+    return selected
+
+
+def stop_renderer(process,known,deadline):
+    """Bound cancellation/reaping; unbound surviving group members also block success."""
+    signalled=False;unbound=[]
+    def observe():
+        rows=process_memory(min(1,max(.001,deadline-time.monotonic())))
+        selected=owned_processes(process.pid,known,rows,process.returncode is None)
+        group={pid for pid,row in rows.items() if row['group']==process.pid}
+        return rows,selected,group-selected
+    for signum in (signal.SIGTERM,signal.SIGKILL):
+        if time.monotonic()>=deadline:break
+        # Discover the original group before any wait/poll can reap its leader.
+        try:rows,selected,unbound=observe()
+        except Exception:selected=set()
+        if process.returncode is None:
+            try:os.killpg(process.pid,signum);signalled=True
+            except ProcessLookupError:pass
+            except OSError as error:print('Renderer session signal failed: '+type(error).__name__,file=sys.stderr)
+        for pid in sorted(selected,key=lambda value:value==process.pid):
+            if time.monotonic()>=deadline:break
+            try:
+                fresh=process_memory(min(1,deadline-time.monotonic())).get(pid)
+                if fresh and fresh['start']==known[pid]:
+                    try:os.kill(pid,signum);signalled=True
+                    except ProcessLookupError:pass
+            except Exception:pass
+        end=min(deadline,time.monotonic()+2)
+        while time.monotonic()<end:
+            # Retain ordinary group followers before reaping a leader that TERM ended.
+            if process.returncode is None:
+                try:observe()
+                except Exception:pass
+            try:process.wait(timeout=min(.1,max(.001,end-time.monotonic())))
+            except subprocess.TimeoutExpired:pass
+            if time.monotonic()<deadline:
+                try:
+                    rows,remaining,unbound=observe()
+                    if process.returncode is not None and not remaining and not unbound:return True,signalled
+                except Exception:pass
+            time.sleep(min(.05,max(0,end-time.monotonic())))
+    if process.returncode is None:
+        try:process.wait(timeout=0)
+        except subprocess.TimeoutExpired:pass
+    print('Renderer cleanup incomplete for leader '+str(process.pid)+'; unresolved group members '+str(sorted(unbound)),file=sys.stderr)
+    return False,signalled
+
+
+def run_renderer(command,root,log,descriptors,deadline):
+    """Ordinary owned subprocess/session, sampled RSS and one bounded cleanup path."""
+    process=None;known={};code=1;cancelled=[None];handlers={}
+    def cancel(signum,frame):
+        # Recording cancellation never raises inside startup or bounded cleanup.
+        if cancelled[0] is None:cancelled[0]=signum
+    try:
+        for signum in (signal.SIGINT,signal.SIGTERM):
+            previous=signal.getsignal(signum)
+            signal.signal(signum,cancel);handlers[signum]=previous
+        if time.monotonic()>=deadline-ASSET_CLEANUP:raise TimeoutError('Renderer deadline')
+        if cancelled[0] is not None:return 128+cancelled[0]
+        process=subprocess.Popen(command,cwd=root,stdout=log,stderr=subprocess.STDOUT,
+            start_new_session=True,pass_fds=tuple(descriptors))
+        while True:
+            if cancelled[0] is not None:code=128+cancelled[0];break
+            if time.monotonic()>=deadline-ASSET_CLEANUP:raise TimeoutError('Renderer deadline')
+            if log.tell()>ASSET_OUTPUT:raise RuntimeError('Renderer output limit')
+            rows=process_memory(min(1,max(.001,deadline-ASSET_CLEANUP-time.monotonic())))
+            selected=owned_processes(process.pid,known,rows,process.returncode is None)
+            selected.update(pid for pid,row in rows.items() if pid==os.getpid() or row['parent']==os.getpid())
+            if sum(rows[pid]['rss'] for pid in selected)>ASSET_RSS:raise RuntimeError('Renderer RSS limit')
+            # First observation precedes poll: even a short-lived leader reserves its group.
+            if process.poll() is not None:code=process.returncode;break
+            time.sleep(.1)
+        if log.tell()>ASSET_OUTPUT:raise RuntimeError('Renderer output limit')
+    except KeyboardInterrupt:
+        code=130
+    except Exception as error:
+        print('Ship render failed: '+str(error),file=sys.stderr)
+        code=124 if isinstance(error,TimeoutError) else 1
+    finally:
+        try:
+            if process is not None:
+                clean,signalled=stop_renderer(process,known,min(deadline,time.monotonic()+ASSET_CLEANUP))
+                if not clean or (code==0 and signalled):code=125
+        finally:
+            for signum,previous in handlers.items():signal.signal(signum,previous)
+    if cancelled[0] is not None and code==0:code=128+cancelled[0]
+    return code
+
+
+def render_media(ids):
+    """Keep make ships as the sole asset route, with normal shared leases and no bespoke protocol."""
+    root=Path.cwd()
+    sys.path.insert(0,str(root/'Tools/CI'))
+    from recoverable_shards import file_claim,worker_limit
+    import native_runner
+    controls=native_runner.diagnostic_custody_root().parent
+    deadline=time.monotonic()+ASSET_SECONDS
+    with ExitStack() as stack:
+        locks=[stack.enter_context(file_claim(path)) for path in (
+            controls/'recoverable-control.lock',controls/'sanitizer-checkpoints/executor.lock')]
+        # Preserve any existing historical hold. Fresh developer Macs need no diagnostic bootstrap.
+        if native_runner.diagnostic_custody_root().exists():native_runner.require_diagnostic_custody_clear()
+        text=subprocess.check_output(['/usr/bin/vm_stat'],timeout=1,stderr=subprocess.PIPE).decode()
+        page=re.search(r'page size of (\d+) bytes',text)
+        counts=[re.search(re.escape(key)+r':\s*(\d+)\.',text) for key in ('Pages free','Pages inactive','Pages speculative')]
+        if page is None or any(value is None for value in counts):raise RuntimeError('RAM admission sample unavailable')
+        worker_limit(explicit=1,cpu_budget=min(1,os.cpu_count() or 0),
+            ram_available=int(page[1])*sum(int(value[1]) for value in counts),ram_reserve=2147483648,
+            peak_per_worker=ASSET_RSS,disk_available=shutil.disk_usage(root).free,
+            disk_reserve=42949672960,disk_per_worker=85899345920)
+        (root/'.build').mkdir(exist_ok=True)
+        directory=Path(tempfile.mkdtemp(prefix='ship-media-',dir=root/'.build'))
+        with (directory/'render.log').open('wb',buffering=0) as log:
+            command=['swift','run','--jobs','1','-Xswiftc','-disable-batch-mode','Elite','--ship-media',*ids]
+            code=run_renderer(command,root,log,[lock.fileno() for lock in locks],deadline)
+        if code:raise RuntimeError('Ship renderer exited '+str(code)+'; log: '+str(directory/'render.log'))
+
+
 def main():
     """Render changed ships first, then rebuild the central reference deterministically."""
     parser=argparse.ArgumentParser(description=__doc__)
@@ -199,7 +359,7 @@ def main():
             assert doc.count('## '+ship['id']+' - ')==1
             assert '(ships/'+ship['id']+'.gif)' in doc
         print('All',len(ships),'TOMLs/GIFs/reference sections current');return
-    if changed:subprocess.run(['swift','run','Elite','--ship-media',*changed],check=True)
+    if changed:render_media(changed)
     MEDIA.mkdir(parents=True,exist_ok=True)
     manifest={s['id']:dict(input=fingerprint((ship_files.SHIP_FOLDER/(s['id']+'.toml')).read_bytes(),shared),output=digest((MEDIA/(s['id']+'.gif')).read_bytes())) for s in ships}
     manifest_path.write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
