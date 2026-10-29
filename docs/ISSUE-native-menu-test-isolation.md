@@ -1,0 +1,9 @@
+# Serialize the native Wanted Board menu fixture
+
+The full normal run on `f02c99c7` failed `nativeCampaignGalleryMenusUseTheSamePaintedTrialAndRetryProofs` at `NativeCampaignGalleryTests.swift:227`: the process-wide main menu no longer contained the Game submenu. The log records the native Wanted Board method finishing between the gallery method starting and its failed lookup. The previous `ee80b425` run passed the gallery method before the Wanted Board method finished. This chronology supports the source-proven interference path; it is not an instruction-level trace of the menu assignment.
+
+`nativeWantedBoardPointerDetailsBackAndHistoricalRouteUsePrivatePreferences` saves `NSApp.mainMenu`, launches a real AppDelegate and restores the saved menu during teardown. Its asynchronous method belongs to `WantedBoardTests`, outside the existing serialized `NativeViewTests` suite. Main actor isolation permits the two methods to interleave at suspension points. Serializing two separate suites would still allow that cross-suite interference.
+
+Move only this native method's extension into `NativeViewTests`, keeping it in the same source file. Retain the original helper, actual menu/window lifecycle, private preferences, both viewport sizes and all behavior assertions. Update its explicit member ID and the source hash in the maintained AppKit grouping manifest. The pure Wanted Board tests retain their suite. See [the patch details](PR-native-menu-test-isolation.md).
+
+Scope is the test extension, its existing grouping metadata and this note pair, based on the cleanup packet `2674bfa6` in [PR 277](https://github.com/stephenlclarke/elite/pull/277). G1 owns integration after the live run terminates; Root owns the combined independent review. Static validation alone does not qualify the changed native method or a new full normal run. Existing exact-head results retain their original scope.

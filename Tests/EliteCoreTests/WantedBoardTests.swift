@@ -402,7 +402,7 @@ struct WantedBoardTests {
   }
 }
 
-extension WantedBoardTests {
+extension NativeViewTests {
   @MainActor @Test func nativeWantedBoardPointerDetailsBackAndHistoricalRouteUsePrivatePreferences()
     async throws
   {
