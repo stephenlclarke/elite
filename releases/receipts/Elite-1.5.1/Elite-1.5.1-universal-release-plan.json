@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "repository": "stephenlclarke/elite",
+  "policy": "conventional-nonmerge-max-impact-v1",
+  "baseTag": "v1.5.0",
+  "baseRevision": "ca2e5b2865f808e1d3c4fde4e7f076b6c7a9ce09",
+  "sourceRevision": "e691630ccc3065748d4c02e90eed6a333da0d8b1",
+  "impact": "patch",
+  "releaseRequired": true,
+  "version": "1.5.1",
+  "tag": "v1.5.1",
+  "authoritative": true,
+  "commits": [
+    {
+      "sha": "e691630ccc3065748d4c02e90eed6a333da0d8b1",
+      "subject": "fix(controls): align target help and showroom comparisons (#282)",
+      "impact": "patch"
+    }
+  ],
+  "historySha256": "f9a996b7db2280b68ed072aa1753757d042b978fb695d031ef57762badde2a51"
+}

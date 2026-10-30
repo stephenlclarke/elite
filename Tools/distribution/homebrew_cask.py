@@ -156,7 +156,7 @@ def main():
             parser.error("The closed Elite 1.5 check accepts no alternate version, source or tap.")
         from historical_elite import verify_historical
         verify_historical(ROOT / "Casks/elite.rb", download=options.verify_download)
-        print("Historical Elite 1.5.0 cask verified; no L337 publication is implied.")
+        print("Historical Elite cask verified; no L337 publication is implied.")
         return
     planned = options.release_plan or (options.check and "# Source commit:" in cask.read_text())
     if not options.check and not planned:
