@@ -4,7 +4,15 @@
 
 Updated 30 October 2026. This is the current delivery guide, not a content-complete claim. Root prioritises; authoring developers merge their own reviewed feature PRs, and G1 publishes releases. There is no separate integrator or integration queue. Historical [delivery evidence](DELIVERY-BACKLOG.md) remains intact.
 
-## Current M03 full-normal correction — 30 October 2026
+## Current M03 focused and media qualification — 30 October 2026
+
+Coherent a4250b1e passed23 affected methods in11 suites with zero issues/failures/skips, including all20 earlier failures, three new presentation methods/five cases and actual HQ destruction/tombstone/cold load. Build129.01 seconds, tests111.203 seconds; total245.083 seconds. Independent actual source/composition and result reviews are clear. The original3434-method failed run and all historical counters remain retained; this focused result does not establish full CI/coverage/leaks/main Sonar/release.
+
+The actual same-source README renderer and guarded171-ship renderer both passed. The80-frame tape includes16frames each of authenticated Gyrfalcon Assault SH002 and Stag Liner SH035, with actual visible geometry, textures, canonical names and rotation. All80frames decode; all32 new frames retain opaque common header/footer. The earlier48 scene-generation path is preserved, with measured decoded colour differences rather than pixel identity. All171 gallery animations were rendered/zero reused and pass structure/current-input checks.179 of181 inventoried outputs remain byte-identical; only the tape and gallery input manifest change. [Complete final media evidence](evidence/M03-a425-final-media.json) retains every source/input/output/frame binding and the exact pixel-comparison limits. No raw ship/texture changes, fake images or bot requests were made.
+
+G1 next hands the actual generated outputs/current README to independent bounded media review, then pushes the final packet and binds a fresh PR event/execution policy for required checks. Ordinary protected merge, fresh committed-main quality/zero leaks/exact-main Sonar and signed/notarized public delivery remain required. No L337 public release is claimed; the usable published delivery remains Elite1.5.1, with Homebrew tap1.4.0 pending its independent approval.
+
+## Historical M03 full-normal correction checkpoint — 30 October 2026
 
 PR283 source e10c06e4/execution69f8b98db8dd71e88368bad7332e89d1968ce208 run41025652854 attempt2 completed failure. The coverage build passed in609.17 seconds;3434 methods/400 suites produced3408 passes,20 failed methods, six declared skips, zero errors and36 issues in2850.043 seconds. The complete reports/XML/controller evidence and independent reconciliation are retained under `/Users/sclarke/Library/EliteNativeCI/operator-recovery/m03-pr283/e10-fullnormal-failure/`; the portable receipt is [M03-full-normal-failure.json](evidence/M03-full-normal-failure.json). Cleanup completed, registration/credentials are absent and used1/max1 remains. No normal coverage gate, leaks, exact-main Sonar or M03 release passed. Earlier focused passes remain scoped evidence, not a whole-candidate pass.
 
