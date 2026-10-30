@@ -183,7 +183,7 @@ public enum PlayerHelp {
           ]))
       if !game.docked {
         if !screen.isFlight { pages.append(context(for: .front, game: game)) }
-        pages.append(contentsOf: flightReference)
+        pages.append(contentsOf: flightReference(for: contextGame))
       }
     }
     pages.append(
@@ -533,6 +533,15 @@ public enum PlayerHelp {
     }
   }
 
+  private static let targetPagingHint = "OPTION-UP/DOWN - PAGE TARGET DETAILS"
+
+  private static func flightReference(for game: Game) -> [HelpPage] {
+    guard (game.targetDetailsWindow?.last ?? 0) == 0 else { return flightReference }
+    return flightReference.map { page in
+      HelpPage(title: page.title, rows: page.rows.filter { $0 != targetPagingHint })
+    }
+  }
+
   private static let flightReference: [HelpPage] = [
     .init(
       title: "FINDING THE STATION",
@@ -572,7 +581,7 @@ public enum PlayerHelp {
         "TAB SELECTS TARGET / STATION AUTO",
         "Q - RELEASE HOLD; P - CANCEL AUTO",
         "I - TARGET CAMERA DETAILS / HIDE",
-        "OPTION-UP/DOWN - PAGE TARGET DETAILS",
+        targetPagingHint,
         "COMMAND-SHIFT-E - LAUNCH ESCAPE POD",
         "FLIGHT MENU: DETONATE ENERGY BOMB",
         "SCOOPS: PASS CARGO BELOW YOUR NOSE",

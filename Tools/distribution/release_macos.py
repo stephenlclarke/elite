@@ -64,6 +64,26 @@ def optional_github(path: str) -> dict | None:
     return payload
 
 
+def find_release(plan: dict, root: Path = ROOT) -> dict | None:
+    # Authenticated lists include drafts that the public by-tag route can omit.
+    pages = json.loads(command("gh", "api", f"repos/{REPO}/releases",
+                               "--paginate", "--slurp", root=root))
+    matches = [release for page in pages for release in page
+               if release["tag_name"] == plan["tag"]]
+    if not matches:
+        return None
+    if len(matches) != 1:
+        raise ValueError("Release tag matches more than one release")
+    listed = matches[0]
+    if listed["target_commitish"] != plan["sourceRevision"]:
+        raise ValueError("An existing release belongs to different source")
+    release = github(f"releases/{listed['id']}")
+    if (release["id"] != listed["id"] or release["tag_name"] != plan["tag"]
+            or release["target_commitish"] != plan["sourceRevision"]):
+        raise ValueError("Release identity, tag or source changed during lookup")
+    return release
+
+
 def publish(plan: dict, root: Path = ROOT) -> dict:
     require_main(plan["sourceRevision"])
     checks = github(f"commits/{plan['sourceRevision']}/check-runs")["check_runs"]
@@ -74,10 +94,7 @@ def publish(plan: dict, root: Path = ROOT) -> dict:
     files = verify_local(plan, root)
     # A failed upload remains a draft. No published-success receipt is written
     # until every immutable asset and the exact tag target have been verified.
-    existing = optional_github("releases/tags/" + plan["tag"])
-    if existing is not None and (existing["tag_name"] != plan["tag"]
-                                 or existing["target_commitish"] != plan["sourceRevision"]):
-        raise ValueError("An existing release belongs to different source")
+    existing = find_release(plan, root)
     reference = optional_github("git/ref/tags/" + plan["tag"])
     if reference is None:
         command("gh", "api", f"repos/{REPO}/git/refs", "-f", "ref=refs/tags/" + plan["tag"],
@@ -97,7 +114,9 @@ def publish(plan: dict, root: Path = ROOT) -> dict:
         missing = [str(path) for name, path in files.items() if name not in present]
         if missing:
             command("gh", "release", "upload", plan["tag"], "--repo", REPO, *missing, root=root)
-    draft = github("releases/tags/" + plan["tag"])
+    draft = find_release(plan, root)
+    if draft is None or (existing is not None and draft["id"] != existing["id"]):
+        raise ValueError("The planned release disappeared or changed identity")
     if tag_revision(plan["tag"]) != plan["sourceRevision"]:
         raise ValueError("Draft release tag differs from the planned source")
     verify_assets(draft, files)

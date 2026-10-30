@@ -110,6 +110,9 @@ extension Game {
       guard comparableShowroomField(a, b, baseline: baseline, selected: selected),
         let left = a?.number, let right = b?.number, left != right
       else { return nil }
+      // Native hints must agree with the same displayed precision as their rating.
+      let rating = ComparisonRating.compare(a, b, compatible: true)
+      guard showroom.sourceProfiles || rating == .better || rating == .worse else { return nil }
       return right > left ? higher : lower
     }
   }

@@ -35,6 +35,12 @@ extension Game {
     let balance = commander.unlimitedCash ? commander.credits : commander.credits - net
     var issues: [String] = []
     if next.price <= 0 { issues.append("This hull is unpriced and not for sale.") }
+    if selected.catalogue.purchasePolicy == .never {
+      issues.append("This hull is not for sale.")
+    }
+    if selected.catalogue.purchasePolicy == .xyzzyOnly && !commander.xyzzyActive {
+      issues.append("This hull requires XYZZY access.")
+    }
     if !docked || !dockedAtMainStation { issues.append("Exchange requires a main station.") }
     if selected.id == commander.shipID { issues.append("You already own this hull.") }
     if balance < 0 { issues.append("Insufficient cash for this exchange.") }

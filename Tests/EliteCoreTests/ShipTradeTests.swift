@@ -304,6 +304,107 @@ import Testing
   #expect(throws: ShipFileError.self) { try ShipCatalogue.load(from: folder) }
 }
 
+struct ShipPurchasePolicyUnitTests {
+  @Test(arguments: [false, true])
+  func pricedNeverForSaleHullCannotExchangeOtherwiseCompatibleOwnedProperty(enabled: Bool) throws {
+    var game = hullTradeGame(missiles: 0)
+    game.commander.fuel = 0
+    game.commander.credits = 10_000_000
+    try game.commander.prepareEquipment(legacy: false)
+    game.commander.mirrorFittedEquipment()
+    game.commander.xyzzyActive = enabled
+    try #require(game.commander.valid)
+    let capsule = try #require(ShipCatalogue.ship("SH040"))
+    let performance = try #require(capsule.game)
+    try #require(
+      capsule.catalogue.purchasePolicy == .never && !capsule.catalogue.normalPurchaseEligible
+        && performance.price > 0)
+    let projected = try game.commander.projectedEquipmentTransfer(to: capsule.id)
+    try #require(projected.valid && projected.fuel == 0 && projected.missiles == 0)
+    game.screen = .status
+    game.key("6")
+    game.showroom.selection = capsule.id
+    let before = game.commander
+    let quote = try #require(game.shipTradeQuote)
+    #expect(!quote.allowed && quote.issues == ["This hull is not for sale."])
+    game.key("showroom-trade")
+    game.key("right")
+    game.key("return")
+    #expect(game.commander == before && game.showroom.trading)
+    game.key("escape")
+    game.showroom.selection = "SH013"
+    #expect(game.shipTradeQuote?.allowed == true)
+    #expect(game.commander == before)
+  }
+
+  @Test(arguments: [false, true])
+  func restrictedHullExchangeRequiresActualXYZZYAccessAndRetainsPortableIdentities(
+    enabled: Bool
+  ) throws {
+    var game = hullTradeGame(missiles: 0)
+    game.commander.fuel = 0
+    game.commander.credits = 10_000_000
+    try game.commander.prepareEquipment(legacy: false)
+    game.commander.mirrorFittedEquipment()
+    game.commander.xyzzyActive = enabled
+    try #require(game.commander.valid)
+    let selected = try #require(ShipCatalogue.ship("SH171"))
+    try #require(
+      selected.catalogue.purchasePolicy == .xyzzyOnly && !selected.catalogue.normalPurchaseEligible)
+    let projected = try game.commander.projectedEquipmentTransfer(to: selected.id)
+    try #require(projected.valid)
+    game.screen = .status
+    game.key("6")
+    game.showroom.selection = selected.id
+    let before = game.commander
+    let inventory = try #require(before.equipmentInventory)
+    let quote = try #require(game.shipTradeQuote)
+    #expect(quote.allowed == enabled)
+    #expect(quote.issues == (enabled ? [] : ["This hull requires XYZZY access."]))
+    game.key("showroom-trade")
+    game.key("right")
+    game.key("return")
+    if enabled {
+      #expect(game.commander.shipID == selected.id && game.commander.credits == quote.balance)
+      #expect(!game.showroom.trading && game.commander.valid)
+      let transferred = try #require(game.commander.equipmentInventory)
+      #expect(
+        transferred.owner == inventory.owner && transferred.activeHull != inventory.activeHull)
+      let portable = inventory.items.filter { $0.boundHull == nil }
+      #expect(transferred.items.map(\.id) == portable.map(\.id))
+      for original in portable {
+        let item = try #require(transferred.items.first { $0.id == original.id })
+        #expect(item.node == original.node && item.provenance == original.provenance)
+        #expect(
+          item.component == original.component && item.preferredSlot == original.preferredSlot)
+      }
+      #expect(game.commander.fuel == before.fuel && game.commander.missiles == before.missiles)
+    } else {
+      #expect(game.commander == before && game.showroom.trading)
+    }
+  }
+
+  @Test func restrictedHullConfirmationRechecksAccessWithoutChangingOwnedProperty() throws {
+    var game = hullTradeGame(missiles: 0)
+    game.commander.fuel = 0
+    game.commander.credits = 10_000_000
+    try game.commander.prepareEquipment(legacy: false)
+    game.commander.mirrorFittedEquipment()
+    game.commander.xyzzyActive = true
+    game.screen = .status
+    game.key("6")
+    game.showroom.selection = "SH171"
+    try #require(game.shipTradeQuote?.allowed == true)
+    game.key("showroom-trade")
+    game.key("right")
+    game.commander.xyzzyActive = false
+    let before = game.commander
+    game.key("return")
+    #expect(game.commander == before && game.showroom.trading)
+    #expect(game.shipTradeQuote?.issues == ["This hull requires XYZZY access."])
+  }
+}
+
 // Declare stock hulls for these model-specific trade and flight scenarios.
 private func hullTradeGame(shipID: String = "SH023", missiles: Int? = nil) -> Game {
   var game = Game(executive: false)
