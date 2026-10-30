@@ -1,0 +1,7 @@
+# The staged historical verifier rejects the delivered Elite 1.5.1 cask
+
+The reviewed M03 identity checkpoint `f6a79e4947ecb369c6dde971914fcebbf260fe91` has a closed verifier for the exact Elite 1.5.0 delivery only. The actual current product is now Elite 1.5.1 from `e691630ccc3065748d4c02e90eed6a333da0d8b1`, archive SHA256 `8398f6b03e44796ecc88ba3ad0b28a9d72fffd5f9d47a96d43942de0d51b941b`. Metadata checkpoint `e3a6cdcbf9e52bc0773517185998ddab08a229b4` retains its exact cask. The old single-cask hash refuses this genuine delivery during the identity port.
+
+Add a separate closed 1.5.1 record using the five actual immutable local public metadata/publication files, while retaining every original 1.5.0 pin and fixture byte. Select only these two known releases by exact cask SHA. No arbitrary version, path, source, repository or URL may become historical authority. Current strict L337 validation must keep rejecting both old-product plans and archives. Default checking must create no unpublished L337 cask.
+
+Only the historical verifier, its mocked tests, exact historical metadata/cask fixtures, a single truthful CLI success literal and paired documentation belong to this correction. Preserve the actual public 1.5.1 README/cask/history and released artifacts when G1 ports the owned hunks. No archive is copied or downloaded. All tests remain UNRUN under the source-only lease. See [the narrow correction](PR-m03-closed-elite-1-5-1.md).

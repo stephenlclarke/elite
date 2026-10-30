@@ -32,7 +32,7 @@ concurrency:
 jobs:
   isolated-units:
     # External PRs remain hosted. Enable the isolated VM only after provisioning.
-    runs-on: ${{ github.event_name == 'push' && github.repository == 'stephenlclarke/elite' && github.actor_id == '22142777' && vars.ELITE_LOCAL_RUNNER_ENABLED == 'true' && fromJSON('["self-hosted", "macOS", "ARM64", "elite-ci"]') || 'macos-15' }}
+    runs-on: ${{ github.event_name == 'push' && github.repository == 'stephenlclarke/l337' && github.actor_id == '22142777' && vars.ELITE_LOCAL_RUNNER_ENABLED == 'true' && fromJSON('["self-hosted", "macOS", "ARM64", "elite-ci"]') || 'macos-15' }}
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -1,0 +1,44 @@
+{
+  "appVersion": "1.5.1",
+  "sourceRevision": "e691630ccc3065748d4c02e90eed6a333da0d8b1",
+  "releasePlanSha256": "446cb61a49d36ff22beca1e437af28a467f0033c5418841c7367cd9ed3225637",
+  "builtAtUTC": "2026-10-30T06:03:25.951162+00:00",
+  "minimumMacOS": "14.0",
+  "verifiedMachOMinimums": [
+    "14.0",
+    "14.0"
+  ],
+  "architectures": [
+    "arm64",
+    "x86_64"
+  ],
+  "archive": "Elite-1.5.1-universal.zip",
+  "archiveBytes": 48388200,
+  "sha256": "8398f6b03e44796ecc88ba3ad0b28a9d72fffd5f9d47a96d43942de0d51b941b",
+  "signature": "Developer ID Application",
+  "signatureDetails": [
+    "Executable=Elite.app/Contents/MacOS/Elite",
+    "Identifier=io.xyzzy.elite",
+    "Format=app bundle with Mach-O universal (x86_64 arm64)",
+    "CodeDirectory v=20500 size=94490 flags=0x10000(runtime) hashes=2946+3 location=embedded",
+    "Signature size=9044",
+    "Authority=Developer ID Application: Steve Clarke (4MEB7MUTAV)",
+    "Authority=Developer ID Certification Authority",
+    "Authority=Apple Root CA",
+    "Timestamp=30 Oct 2026 at 06:02:27",
+    "Notarization Ticket=stapled",
+    "Info.plist entries=12",
+    "TeamIdentifier=4MEB7MUTAV",
+    "Runtime Version=14.0.0",
+    "Sealed Resources version=2 rules=13 files=534",
+    "Internal requirements count=1 size=176",
+    "Total signatures=1",
+    "Chosen signature=1"
+  ],
+  "hardenedRuntime": true,
+  "secureTimestamp": true,
+  "notarized": true,
+  "gatekeeperAccepted": true,
+  "gatekeeperAssessment": "Elite.app: accepted\nsource=Notarized Developer ID",
+  "verification": "Extracted ZIP: strict deep signature, architectures, exact resources and diagnostics passed."
+}

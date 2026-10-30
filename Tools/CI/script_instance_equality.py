@@ -7,8 +7,8 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "Sources/EliteCore/ScriptMissionState.swift"
-COMMANDER_SOURCE = ROOT / "Sources/EliteCore/Game.swift"
+SOURCE = ROOT / "Sources/L337Core/ScriptMissionState.swift"
+COMMANDER_SOURCE = ROOT / "Sources/L337Core/Game.swift"
 
 
 ORIGINAL_INFERRED_DECLARATIONS = {

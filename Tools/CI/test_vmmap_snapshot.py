@@ -119,7 +119,7 @@ class Fixture(unittest.TestCase):
         self.clock = FakeClock()
         self.source = self.root / "project"
         (self.source / "Tools/CI").mkdir(parents=True)
-        self.image = self.root / "worker/.build/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests"
+        self.image = self.root / "worker/.build/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests"
         self.image.parent.mkdir(parents=True)
         self.image.write_bytes(b"fake prepared image, not an executable")
         self.python = self.root / "python-image"
@@ -1060,7 +1060,7 @@ class ProvisioningTests(Fixture):
         def run(argv, **kwargs):
             provision._require_provisioning(executor=True)
             if Path(argv[0]).name == "config.sh":
-                write_json(runner / ".runner", dict(agentName="fixture-runner", gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work"))
+                write_json(runner / ".runner", dict(agentName="fixture-runner", gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work"))
             return type("Result", (), dict(returncode=0, stdout='{"token":"fixture"}'))()
         def listener(argv, **kwargs):
             custody = provision._require_provisioning()

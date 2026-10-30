@@ -27,7 +27,7 @@ HEAD = "a" * 40
 ADMISSION = dict(explicit=2, cpu_budget=2, ram_available=20, ram_reserve=4,
                  peak_per_worker=6, disk_available=100, disk_reserve=20, disk_per_worker=20,
                  ram_capacity=20, disk_capacity=100)
-METHODS = ["EliteCoreTests.A/one()", "EliteCoreTests.A/two()", "EliteCoreTests.B/three()"]
+METHODS = ["L337CoreTests.A/one()", "L337CoreTests.A/two()", "L337CoreTests.B/three()"]
 
 
 def xml(path, methods, skips=None):
@@ -160,7 +160,7 @@ class PlanningTests(Fixture):
         self.assertEqual([row["estimated_seconds"] for row in first["shards"]], [5100, 70])
         self.assertTrue(first["shards"][0]["oversized"])
         self.assertEqual(first["shards"][0]["methods"], METHODS[:2])
-        extra = "EliteCoreTests.Z/four()"
+        extra = "L337CoreTests.Z/four()"
         second = shards.make_plan(self.runtimes["thread"], [extra, *reversed(METHODS)],
                                   history={**weights, shards.fingerprint([extra]): 700}, budget=300)
         self.assertIn(first["shards"][0]["id"], [row["id"] for row in second["shards"]])
@@ -170,7 +170,7 @@ class PlanningTests(Fixture):
         root = Path(__file__).resolve().parents[2]
         manifest = shards.load_json(root / "Tools/CI/sanitizer_groups.json")
         self.assertEqual([(len(group["members"]), len(group["sources"]))
-                          for group in manifest["groups"]], [(173, 33), (13, 2)])
+                          for group in manifest["groups"]], [(175, 33), (13, 2)])
         methods = []
         for group in manifest["groups"]:
             for member in group["members"]:
@@ -846,7 +846,7 @@ shards.execute_process([sys.executable, '-c', "import time; print('\\u25c7 Test 
                 script = ("import os,pathlib; "
                           "pathlib.Path(os.environ['TMPDIR'],'leftover').write_text('temp'); "
                           + "pathlib.Path(" + repr(str(report)) + ").write_text(" + repr(
-                              '<testsuites><testcase classname="EliteCoreTests.A" name="one()" time="1"/>'
+                              '<testsuites><testcase classname="L337CoreTests.A" name="one()" time="1"/>'
                               '</testsuites>') + ")")
                 return shards.execute_process([sys.executable, "-c", script], self.root, attempt,
                                                timeout, descriptors, {"LANG": "C"})
@@ -1050,7 +1050,7 @@ class NativeAdapterTests(Fixture):
         def build(root, swift, flags, environment, lock, report):
             mode = next(flag for flag in flags if flag.startswith("--sanitize=")).split("=", 1)[1]
             calls.append(mode)
-            image = root / flags[1] / "fake.xctest/Contents/MacOS/EliteCoreTests"
+            image = root / flags[1] / "fake.xctest/Contents/MacOS/L337CoreTests"
             image.parent.mkdir(parents=True, mode=0o700)
             image.write_bytes(self.image.read_bytes())
             return image, METHODS, 0.001
@@ -1423,7 +1423,7 @@ class WorkflowTests(Fixture):
         authority.environment["GITHUB_RUN_ATTEMPT"] = "1"
         authority.environment["GITHUB_REF"] = "refs/heads/approved"
         authority.environment["GITHUB_EVENT_NAME"] = "workflow_dispatch"
-        authority.environment["GITHUB_WORKFLOW_REF"] = "stephenlclarke/elite/.github/workflows/recoverable-quality.yml@refs/heads/approved"
+        authority.environment["GITHUB_WORKFLOW_REF"] = "stephenlclarke/l337/.github/workflows/recoverable-quality.yml@refs/heads/approved"
         authority.config["admission"]["disk_per_worker"] = 2 * 1024 * 1024
         artifact = dict(id=1, name=name, expired=False, digest="sha256:" + hashlib.sha256(payload).hexdigest(),
                         size_in_bytes=len(payload), workflow_run={"id": 123, "head_sha": HEAD})
@@ -1497,15 +1497,15 @@ class WorkflowTests(Fixture):
         activation = dict(schema=1, enabled=True, revoked=False, expires_at=time.time() + 60,
                           head=HEAD, ref="refs/pull/7/merge", pr_head="b" * 40,
                           workflow_file="ci.yml", workflow_sha256="c" * 64,
-                          runners={"owned-one": {"workspace": "/fixture/native-runner/_work/elite/elite"}})
+                          runners={"owned-one": {"workspace": "/fixture/native-runner/_work/l337/l337"}})
         env = dict(ACTIVATION=json.dumps(activation), POLICY_DIGESTS=json.dumps({"owned-one": "d" * 64}),
-                   REQUESTED_NATIVE="true", GITHUB_REPOSITORY="stephenlclarke/elite",
+                   REQUESTED_NATIVE="true", GITHUB_REPOSITORY="stephenlclarke/l337",
                    GITHUB_ACTOR_ID="22142777", GITHUB_EVENT_NAME="pull_request", GITHUB_SHA=HEAD,
                    GITHUB_REF="refs/pull/7/merge",
-                   GITHUB_WORKFLOW_REF="stephenlclarke/elite/.github/workflows/ci.yml@refs/pull/7/merge",
+                   GITHUB_WORKFLOW_REF="stephenlclarke/l337/.github/workflows/ci.yml@refs/pull/7/merge",
                    GITHUB_EVENT_PATH=str(self.root / "hosted-pr-event.json"),
                    GITHUB_OUTPUT=str(self.root / "hosted-pr-output"), GITHUB_TOKEN="must-not-log-this-token")
-        repo = {"full_name": "stephenlclarke/elite", "fork": False}
+        repo = {"full_name": "stephenlclarke/l337", "fork": False}
         event = {"repository": deepcopy(repo), "sender": {"id": 22142777}, "number": 7,
                  "pull_request": {"head": {"sha": "b" * 40, "repo": deepcopy(repo)},
                                   "base": {"ref": "main", "repo": deepcopy(repo)},
@@ -1575,16 +1575,16 @@ class WorkflowTests(Fixture):
         activation = dict(schema=1, enabled=True, revoked=False, expires_at=time.time() + 60,
                           head=HEAD, ref="refs/heads/approved", workflow_file="recoverable-quality.yml", workflow_sha256="a" * 64,
                           assignment_root=str(self.root / "owned-assignments"),
-                          runners={"owned-one": {"workspace": "/fixture/runner/_work/elite/elite", "jobs": ["native_shards"]}})
+                          runners={"owned-one": {"workspace": "/fixture/runner/_work/l337/l337", "jobs": ["native_shards"]}})
         env = dict(ACTIVATION=json.dumps(activation), POLICY_DIGESTS=json.dumps({"owned-one": "b" * 64}),
                    REQUESTED_NATIVE="true", RUNNER_ENVIRONMENT="self-hosted", RUNNER_NAME="owned-one",
-                   GITHUB_REPOSITORY="stephenlclarke/elite", GITHUB_ACTOR_ID="22142777", GITHUB_EVENT_NAME="workflow_dispatch",
+                   GITHUB_REPOSITORY="stephenlclarke/l337", GITHUB_ACTOR_ID="22142777", GITHUB_EVENT_NAME="workflow_dispatch",
                    GITHUB_SHA=HEAD, GITHUB_REF="refs/heads/approved", GITHUB_JOB="native_shards",
-                   GITHUB_WORKSPACE="/fixture/runner/_work/elite/elite", GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1",
+                   GITHUB_WORKSPACE="/fixture/runner/_work/l337/l337", GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1",
                    PLAN_DIGEST="e" * 64, ELITE_RECOVERABLE_PLAN_SHA256="e" * 64,
                    ELITE_RECOVERABLE_REQUEST_MODE="thread", ELITE_RECOVERABLE_REQUEST_SHARD="f" * 64,
                    ELITE_RECOVERABLE_REQUEST_WORKER="one",
-                   GITHUB_WORKFLOW_REF="stephenlclarke/elite/.github/workflows/recoverable-quality.yml@refs/heads/approved",
+                   GITHUB_WORKFLOW_REF="stephenlclarke/l337/.github/workflows/recoverable-quality.yml@refs/heads/approved",
                    ELITE_NATIVE_APPROVED_HEAD=HEAD, ELITE_RECOVERABLE_CODE_ENABLED="true",
                    ELITE_NATIVE_POLICY="/fixture/owned-policy.json",
                    ELITE_RECOVERABLE_ACTIVATION_SHA256=shards.fingerprint(activation),
@@ -2173,9 +2173,9 @@ class ActiveArtifactJobTests(unittest.TestCase):
         authority.environment.update(RUNNER_NAME="owned-native", GITHUB_JOB="prepare_address")
         authority.policy.update(runner_root=str(root))
         authority.policy["recoverable_activation"]["runners"] = {"owned-native": {
-            "workspace": str(root / "_work/elite/elite"), "jobs": ["prepare_address"]}}
+            "workspace": str(root / "_work/l337/l337"), "jobs": ["prepare_address"]}}
         run.update(status=status, conclusion=None)
-        agent = dict(agentId=49, agentName="owned-native", gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")
+        agent = dict(agentId=49, agentName="owned-native", gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work")
         job = dict(id=901, run_id=123, runner_id=49, runner_name="owned-native", head_sha=run["head_sha"],
                    status="in_progress", conclusion=None)
         value = SimpleNamespace(authority=authority, run=run, agent=agent, registration=root / ".runner",
@@ -2187,7 +2187,7 @@ class ActiveArtifactJobTests(unittest.TestCase):
 
         def api(path):
             value.requests.append(path)
-            base = "repos/stephenlclarke/elite/actions/runs/123"
+            base = "repos/stephenlclarke/l337/actions/runs/123"
             if path == base:
                 return value.run
             prefix = base + "/attempts/2/jobs?per_page=100&page="
@@ -2220,8 +2220,8 @@ class ActiveArtifactJobTests(unittest.TestCase):
                         raw = value.registration.read_bytes()
                         self.authorize(value)
                         self.assertEqual(value.registration.read_bytes(), raw)
-                        self.assertEqual(value.requests, ["repos/stephenlclarke/elite/actions/runs/123",
-                            "repos/stephenlclarke/elite/actions/runs/123/attempts/2/jobs?per_page=100&page=1"])
+                        self.assertEqual(value.requests, ["repos/stephenlclarke/l337/actions/runs/123",
+                            "repos/stephenlclarke/l337/actions/runs/123/attempts/2/jobs?per_page=100&page=1"])
         value = self.fixture("in_progress")
         value.registration.unlink()
         self.authorize(value)
@@ -2408,10 +2408,10 @@ class GranularityTests(Fixture):
     def test_bounded_packing_breaks_96_id_collection_but_preserves_whole_shared_cohort(self):
         counts = [4, 5, 4, 2, 9, 5, 5, 10, 3, 4, 4, 5, 3, 2, 3, 2, 1, 8, 10, 7]
         self.assertEqual(sum(counts), 96)
-        methods = [f"EliteCoreTests.Cohort{i}/case{j}()" for i, count in enumerate(counts) for j in range(count)]
+        methods = [f"L337CoreTests.Cohort{i}/case{j}()" for i, count in enumerate(counts) for j in range(count)]
         # Cohort8 is the three-case AppKit consumer; its actual shared-process contract is retained.
-        appkit = [m for m in methods if m.startswith("EliteCoreTests.Cohort8/")]
-        appkit += [f"EliteCoreTests.SharedAppKit/case{j}()" for j in range(167)]
+        appkit = [m for m in methods if m.startswith("L337CoreTests.Cohort8/")]
+        appkit += [f"L337CoreTests.SharedAppKit/case{j}()" for j in range(167)]
         full = sorted(set(methods + appkit))
         plan = shards.make_plan(self.runtimes["address"], full, [appkit], max_methods=shards.PACKED_ID_TARGET)
         reverse = shards.make_plan(self.runtimes["address"], list(reversed(full)), [appkit], max_methods=shards.PACKED_ID_TARGET)
@@ -2424,7 +2424,7 @@ class GranularityTests(Fixture):
         self.assertTrue(all(entry["label"].endswith(entry["shard"][:8]) for entry in complete["matrix"]["include"]))
 
     def test_indivisible_timeout_is_explicit_blocker_instead_of_automatic_replay(self):
-        methods = [f"EliteCoreTests.Indivisible/case{i}()" for i in range(3)]
+        methods = [f"L337CoreTests.Indivisible/case{i}()" for i in range(3)]
         plan = shards.make_plan(self.runtimes["thread"], methods)
         self.executor.exit_code = 124
         self.executor.damage = lambda attempt: shards.durable_json(attempt / "timeout.json", {
@@ -2439,7 +2439,7 @@ class GranularityTests(Fixture):
         self.assertTrue(list((self.store.root / "attempts").glob("*/*/failure.json")))
 
     def test_authenticated_timeout_survives_cache_loss_and_blocks_only_same_identity_and_bound(self):
-        methods = [f"EliteCoreTests.Indivisible/case{i}()" for i in range(3)]
+        methods = [f"L337CoreTests.Indivisible/case{i}()" for i in range(3)]
         plan = shards.make_plan(self.runtimes["thread"], methods)
         identity = shards.shard_identity(plan["runtime"], plan["shards"][0])
         self.executor.exit_code = 124
@@ -2545,7 +2545,7 @@ class GranularityTests(Fixture):
             self.run_one()
             after = shards.report_progress(self.plan, self.store, "completed", self.plan["shards"][0])
             self.assertEqual(after["completed"], 1)
-            methods = [f"EliteCoreTests.Huge/case{i}()" for i in range(70)]
+            methods = [f"L337CoreTests.Huge/case{i}()" for i in range(70)]
             huge = shards.make_plan(self.runtimes["thread"], methods, max_methods=shards.PACKED_ID_TARGET)
             record = shards.report_progress(huge, self.store, "timed out", huge["shards"][0])
             self.assertTrue(record["indivisible_over_target_ids"])
@@ -2587,9 +2587,9 @@ class GranularityTests(Fixture):
 
 class AsanTestMemoryTests(Fixture):
     def test_address_caps_all_planning_inputs_and_preserves_full_atomic_union(self):
-        solo = [f"EliteCoreTests.C{i}/one()" for i in range(80)]
-        big = [f"EliteCoreTests.Big/case{i}()" for i in range(170)]
-        salvage = [f"EliteCoreTests.Salvage{i}/one()" for i in range(13)]
+        solo = [f"L337CoreTests.C{i}/one()" for i in range(80)]
+        big = [f"L337CoreTests.Big/case{i}()" for i in range(170)]
+        salvage = [f"L337CoreTests.Salvage{i}/one()" for i in range(13)]
         methods = sorted(solo + big + salvage)
         for target in (None, 16, 64, 500):
             plan = shards.make_plan(self.runtimes["address"], methods, [big, salvage], max_methods=target)
@@ -2604,7 +2604,7 @@ class AsanTestMemoryTests(Fixture):
         self.assertEqual(sorted(len(row["methods"]) for row in thread["shards"]), [16, 64])
 
     def test_untrusted_old_packed_address_plan_is_refused_even_with_rehashed_identity(self):
-        methods = [f"EliteCoreTests.C{i}/one()" for i in range(40)]
+        methods = [f"L337CoreTests.C{i}/one()" for i in range(40)]
         thread = shards.make_plan(self.runtimes["thread"], methods,
             history=shards.workflow_history(methods, "thread", []), max_methods=64)
         self.assertEqual(len(thread["shards"]), 1)
@@ -2616,7 +2616,7 @@ class AsanTestMemoryTests(Fixture):
 
     def monitor(self, mode="address", budget=4096):
         workspace = self.root / ("memory-worker-" + mode)
-        image = workspace / ".build/fake.xctest/Contents/MacOS/EliteCoreTests"
+        image = workspace / ".build/fake.xctest/Contents/MacOS/L337CoreTests"
         image.parent.mkdir(parents=True, mode=0o700)
         image.write_bytes(self.image.read_bytes())
         uuids = {"fake-arm64": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
@@ -3380,7 +3380,7 @@ class LocalTsanMemoryTests(Fixture):
             row["id"] = shards.fingerprint(shards.shard_identity(old["runtime"], row))
         with self.assertRaises(ValueError):
             shards.verify_local_plan(authority, old, value.session["plan_sha256"])
-        methods = sorted(f"EliteCoreTests.Small{i}/one()" for i in range(64))
+        methods = sorted(f"L337CoreTests.Small{i}/one()" for i in range(64))
         plan = shards.make_plan(value.plan["runtime"], methods,
             history=shards.workflow_history(methods, "thread", []), max_methods=64)
         authority.activation.update(inventory_sha256=shards.fingerprint(methods), inventory_count=64, shard_count=1)
@@ -3389,9 +3389,9 @@ class LocalTsanMemoryTests(Fixture):
 
     def test_local_thread16_retains_atomic_groups_and_global_thread64(self):
         value = self.controls("thread")
-        solo = [f"EliteCoreTests.Small{i}/one()" for i in range(64)]
-        shared = [f"EliteCoreTests.Shared{i}/one()" for i in range(170)]
-        salvage = [f"EliteCoreTests.Salvage{i}/one()" for i in range(13)]
+        solo = [f"L337CoreTests.Small{i}/one()" for i in range(64)]
+        shared = [f"L337CoreTests.Shared{i}/one()" for i in range(170)]
+        salvage = [f"L337CoreTests.Salvage{i}/one()" for i in range(13)]
         full = sorted(solo + shared + salvage)
         groups = [shared, salvage]
         history = shards.workflow_history(full, "thread", groups)

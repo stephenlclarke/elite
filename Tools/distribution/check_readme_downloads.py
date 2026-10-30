@@ -238,6 +238,9 @@ def check(readme, repo, expected=None, fetch_latest=False, requester=request):
     overall = "BROKEN_LINKS" if "broken" in states else "INCONCLUSIVE" if "inconclusive" in states or fetch_latest and published["state"] != "published" else "REACHABLE" if states else "NO_RELEASE_LINKS"
     native_repo = urllib.parse.urlsplit(RELEASES).path.removesuffix("/releases/download").strip("/")
     expected_link = release_url(expected) if expected and repo == native_repo else None
+    if repo == "stephenlclarke/elite" and expected == "1.5.0":
+        from historical_elite import PREFIX, RELEASES as historical_releases
+        expected_link = f"{historical_releases}/v1.5.0/{PREFIX}.zip"
     return {"state": overall, "repository": repo, "expectedPublishedVersion": expected,
             "published": published, "expectedAssetURLFromExistingCaskHelper": expected_link,
             "expectedVersionDiffersFromPublicMetadata": bool(expected and published.get("version") and expected != published["version"]),

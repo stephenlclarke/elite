@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-  name: "Elite",
+  name: "L337",
   platforms: [.macOS(.v14)],
-  products: [.executable(name: "Elite", targets: ["EliteMac"])],
+  products: [.executable(name: "L337", targets: ["L337Mac"])],
   dependencies: [.package(url: "https://github.com/dduan/TOMLDecoder.git", exact: "0.4.5")],
   targets: [
     .target(
@@ -15,7 +15,7 @@ let package = Package(
       ], publicHeadersPath: "include"),
     .target(name: "MissionScript", dependencies: ["CLua"], publicHeadersPath: "include"),
     .target(
-      name: "EliteCore",
+      name: "L337Core",
       dependencies: ["MissionScript", .product(name: "TOMLDecoder", package: "TOMLDecoder")],
       resources: [
         .copy("Resources/Ships"), .copy("Resources/MissionPacks"), .process("Resources/Legal"),
@@ -29,7 +29,7 @@ let package = Package(
         .process("Resources/RescueStations-LICENSE.txt"), .process("Resources/Vector-MANIFEST.txt"),
         .process("Resources/CatalogueInputs.json"),
       ]),
-    .executableTarget(name: "EliteMac", dependencies: ["EliteCore"]),
-    .testTarget(name: "EliteCoreTests", dependencies: ["EliteCore", "EliteMac"]),
+    .executableTarget(name: "L337Mac", dependencies: ["L337Core"]),
+    .testTarget(name: "L337CoreTests", dependencies: ["L337Core", "L337Mac"]),
   ]
 )

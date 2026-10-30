@@ -104,7 +104,7 @@ def publish(plan: dict, root: Path = ROOT) -> dict:
     if existing is None:
         command("gh", "release", "create", plan["tag"], *map(str, files.values()),
                 "--repo", REPO, "--target", plan["sourceRevision"], "--verify-tag", "--draft",
-                "--title", "Elite " + plan["version"], "--generate-notes",
+                "--title", "L337 " + plan["version"], "--generate-notes",
                 "--notes-start-tag", plan["baseTag"], root=root)
     elif existing["draft"]:
         present = {asset["name"] for asset in existing["assets"]}
@@ -137,7 +137,7 @@ def readme_text(text: str, plan: dict, manifest: dict) -> str:
     validate_artifact(plan, manifest)
     import re
     block = ("<!-- current-release:start -->\n"
-             f"The latest signed release is [Elite {plan['version']}](https://github.com/{REPO}/releases/tag/{plan['tag']}). "
+             f"The latest signed release is [L337 {plan['version']}](https://github.com/{REPO}/releases/tag/{plan['tag']}). "
              f"Its [universal Mac download](https://github.com/{REPO}/releases/download/{plan['tag']}/{manifest['archive']}) "
              "includes the matching checksum, signing manifest, release plan and Apple notarization report. "
              "The Homebrew badge links to the actual published tap cask; tap updates pass review separately.\n"

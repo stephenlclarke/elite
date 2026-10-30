@@ -1,0 +1,80 @@
+{
+  "method": "Independent Python stdlib implementation of documented ScriptWire string/integer byte framing + SHA256 and contract-board seed + xorshift32(13,17,5); not observed Swift output",
+  "base": "15f28f956e2983b8a24e7c3d79a25b237ca1341b",
+  "records": {
+    "generated-procurement": {
+      "old": {
+        "version": "1.1.0",
+        "manifestSHA256": "adcd1c608400221c34512ef80452dac5496a403d8b8fdb3404bfc2aadb94de49",
+        "contentDigest": "7c005213865792314f9966db54c7acfddadd614260219a2b39d66e41906103b7",
+        "boardKey": "7c005213865792314f9966db54c7acfddadd614260219a2b39d66e41906103b7/procurement-jobs/main-orbital:0:0",
+        "seedHex": "c46e085a42493b29",
+        "initialState": 1112095529,
+        "draws": [
+          3232308831,
+          2402513454,
+          3484323893,
+          2830099137,
+          3389718522,
+          726357248
+        ],
+        "finalState": 726357248
+      },
+      "new": {
+        "version": "1.1.1",
+        "manifestSHA256": "dc706e5a6b66380787031d0c201312543a3103c455e9860283db87822bfa2ff2",
+        "contentDigest": "5232aa1d5ba82c5014bfe70594470d8b37d344a82b4f301d51d456d5f3d48fa4",
+        "boardKey": "5232aa1d5ba82c5014bfe70594470d8b37d344a82b4f301d51d456d5f3d48fa4/procurement-jobs/main-orbital:0:0",
+        "seedHex": "fd78a415778b07ac",
+        "initialState": 2005600172,
+        "draws": [
+          4172222067,
+          894253731,
+          3510330959,
+          61460086,
+          1988459493,
+          3872347193
+        ],
+        "finalState": 3872347193
+      },
+      "unchangedLuaSHA256": "9f6e9173d0bf6c7958c502903680c292f6594d69c961b9805f35e0e81a2b5f7a"
+    },
+    "generated-supplied-freight": {
+      "old": {
+        "version": "1.0.0",
+        "manifestSHA256": "29d3a1d4b5a598acecc182567665ddbdc2873ef267af9a4777d0854a4522c163",
+        "contentDigest": "5bb4ef1fb9d4541ef190056fbc20116ddea75ea7687e73588912de1263e0084b",
+        "boardKey": "5bb4ef1fb9d4541ef190056fbc20116ddea75ea7687e73588912de1263e0084b/freight-jobs/main-orbital:0:0",
+        "seedHex": "916bfaff6f434213",
+        "initialState": 1866678803,
+        "draws": [
+          3877966835,
+          3996220062,
+          3979976655,
+          113378639,
+          2333280570,
+          2897459232
+        ],
+        "finalState": 2897459232
+      },
+      "new": {
+        "version": "1.0.1",
+        "manifestSHA256": "aece98579f4b2839d4862ed1d4f0551974422cb131193bc0cfa62650f6b6eada",
+        "contentDigest": "bdbb1bf15e576a3c4d8202ff10323a051bf4c20549ea7e81c1f19cba44bd01ce",
+        "boardKey": "bdbb1bf15e576a3c4d8202ff10323a051bf4c20549ea7e81c1f19cba44bd01ce/freight-jobs/main-orbital:0:0",
+        "seedHex": "1bc2abef275dfcea",
+        "initialState": 660471018,
+        "draws": [
+          2162090442,
+          3222698137,
+          4021206139,
+          1008323851,
+          2997703991,
+          427597682
+        ],
+        "finalState": 427597682
+      },
+      "unchangedLuaSHA256": "28e2392686a27d7a1bba8edc7f3f53f1254f455a3ea361f0b0f83d80d496fe99"
+    }
+  }
+}

@@ -1,6 +1,14 @@
 # Integration and validation workflow
 
-## Current ordinary profile-face projection qualification — 28 October 2026
+## Current required validation - 30 October 2026
+
+The current [agent rules](../AGENTS.md) and [Makefile](../Makefile) define required validation. Default `make ci` requires normal tests, full inventory and coverage validation, zero leaks and static checks. ASAN and TSAN are optional manual diagnostics, off by default including hosted CI. `make threads` and `make address` retain their original whole-suite commands; `ELITE_SANITIZERS=1 make ci` opts into both after normal checks. Sanitizer preparation, shards and local-proof bridges are not prerequisites for normal CI or delivery.
+
+G1 owns native execution. Independent source and result review, final-head required checks and approvals, protected merge, committed-main-only exact-SHA SonarQube analysis and release gates remain required. Do not request or wait for automated bot reviews. Existing actionable automated findings still require correction and independent review. These instructions change no runner authorization, guard, counter or physical identity.
+
+All dated 28 October assignments below are superseded historical records, including their preparation, sanitizer and review requirements. Preserve their raw failures, source identities, counters and physical paths as evidence; they do not define the current validation workflow.
+
+## Historical ordinary profile-face projection qualification — 28 October 2026
 
 Root selected the source-reviewed per-face temporary-array removal after the prior ordinary refusal and single same-source diagnostic. The diagnostic again ended at SH061 emp-before without proving initializer state, ownership, changed-branch reach or cause. MC1 owns concrete source/test findings; G1 owns the sole native lease. Source/model parity is retained separately from unverified Swift numeric behavior, assertions and RSS effect.
 

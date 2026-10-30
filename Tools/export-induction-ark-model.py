@@ -10,10 +10,10 @@ import re
 def export(check=False, crew_log=False):
     """Preserve exact design values and refresh the one declared internal model hash."""
     repo = Path(__file__).resolve().parents[1]
-    resources = repo / "Sources/EliteCore/Resources"
+    resources = repo / "Sources/L337Core/Resources"
     models = resources / "OriginalFleetShowroomModels"
     manifest_bytes = (models / "manifest.json").read_bytes()
-    authority = (repo / "Sources/EliteCore/OriginalFleetShowroomModels.swift").read_text()
+    authority = (repo / "Sources/L337Core/OriginalFleetShowroomModels.swift").read_text()
     pin = re.search(r'manifestSHA256 = "([a-f0-9]{64})"', authority)
     if pin is None or hashlib.sha256(manifest_bytes).hexdigest() != pin[1]:
         raise ValueError("Original model manifest does not match the native loader authority")

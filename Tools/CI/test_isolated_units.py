@@ -30,7 +30,7 @@ class IsolatedReportTests(unittest.TestCase):
         root, suite = self.report()
         self.write(root)
         result = units.inspect_report(self.path)
-        self.assertEqual(result["methods"], 534)
+        self.assertEqual(result["methods"], 559)
         self.assertEqual(result["reported_testcases"], len(suite))
 
     def test_empty_report_does_not_pass_on_zero_process_exit(self):
@@ -71,10 +71,10 @@ class IsolatedReportTests(unittest.TestCase):
         pattern = re.compile(units.selection())
         for suite, methods in units.METHODS.items():
             for method in methods:
-                self.assertIsNotNone(pattern.search(f"EliteCoreTests.{suite}/{method}()"))
-                self.assertIsNone(pattern.search(f"EliteCoreTests.OtherSuite/{method}()"))
-                self.assertIsNone(pattern.search(f"EliteCoreTests.{suite}/{method}Journey()"))
-        self.assertIsNone(pattern.search("EliteCoreTests.NativeMeasuredExtractionJourneyTests/fullJourney()"))
+                self.assertIsNotNone(pattern.search(f"L337CoreTests.{suite}/{method}()"))
+                self.assertIsNone(pattern.search(f"L337CoreTests.OtherSuite/{method}()"))
+                self.assertIsNone(pattern.search(f"L337CoreTests.{suite}/{method}Journey()"))
+        self.assertIsNone(pattern.search("L337CoreTests.NativeMeasuredExtractionJourneyTests/fullJourney()"))
 
 
 if __name__ == "__main__":

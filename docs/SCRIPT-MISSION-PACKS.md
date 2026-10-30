@@ -30,12 +30,12 @@ The persistence definition is `pack.id/mission.id`. Each accepted assignment als
 
 ## Install and inspect
 
-Choose **Commander > Install Mission Pack...** and select the complete folder, with `manifest.toml` at its root. The same picker accepts legacy TOML files. The schema 2 installer retains immutable content versions in `~/.xyzzy/elite/script-packs/`, separate from the legacy file library. Manual copying of a complete folder into that directory is also supported after restarting; keep each content version separate. Up to 128 external library entries can be loaded. The app also loads the bundled [generated courier provider](../Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml); the other example folders linked here are authoring examples, not automatically installed packs.
+Choose **Commander > Install Mission Pack...** and select the complete folder, with `manifest.toml` at its root. The same picker accepts legacy TOML files. The schema 2 installer retains immutable content versions in `~/.xyzzy/l337/script-packs/`, separate from the legacy file library. Manual copying of a complete folder into that directory is also supported after restarting; keep each content version separate. Up to 128 external library entries can be loaded. The app also loads the bundled [generated courier provider](../Sources/L337Core/Resources/ScriptPacks/generated-couriers/manifest.toml); the other example folders linked here are authoring examples, not automatically installed packs.
 
 Validate either a legacy file or a schema 2 folder with the same command:
 
 ```sh
-swift run Elite --validate-mission-pack path/to/pack-folder
+swift run L337 --validate-mission-pack path/to/pack-folder
 ```
 
 Folder validation reuses the protected reader: it checks the manifest, declared modules/assets and Lua handler exports, then reports the version and content digest. It does not install anything or establish runtime availability. Unsupported capabilities are reported, and dependency requirements are listed as declared `id@version` pairs rather than claimed installed. A well-formed unavailable pack can still be installed as a Gallery reference; existing dependency, capability, commander-save and acceptance gates remain authoritative. Selecting `manifest.toml` itself does not substitute for selecting its folder. `make mission-packs-check` continues to check the legacy example.
@@ -56,7 +56,7 @@ Contact handlers use `dialogue.offer` for a declared station dialogue. On `dialo
 
 ## Capabilities and working references
 
-Declare only the capabilities needed by the corresponding native operations. `script-lua-v1` is mandatory. The [implemented capability set and manifest validation](../Sources/EliteCore/ScriptPack.swift) are authoritative; command-specific checks also apply.
+Declare only the capabilities needed by the corresponding native operations. `script-lua-v1` is mandatory. The [implemented capability set and manifest validation](../Sources/L337Core/ScriptPack.swift) are authoritative; command-specific checks also apply.
 
 | Feature | Capability or capabilities | Complete reference |
 | --- | --- | --- |
@@ -64,7 +64,7 @@ Declare only the capabilities needed by the corresponding native operations. `sc
 | Cash and protected tonne payloads | `economy-v2`, `cargo-v2` | [Scripted courier](mission-packs/scripted-courier/scripts/main.lua) |
 | Repeatable station offers | `contracts-basic-v2`, `local-flight-clocks-v2`; `durable-commands-v2` for this example | [Sample contracts](mission-packs/scripted-contracts/manifest.toml) |
 | Commander calendar offers | Above, plus `calendar-clocks-v2` | [Calendar contracts](mission-packs/calendar-contracts/manifest.toml) |
-| Native generated courier custody | `courier-contracts-basic-v2`, `mission-calendar-v2` and the bundled declarations | [Bundled courier](../Sources/EliteCore/Resources/ScriptPacks/generated-couriers/manifest.toml) |
+| Native generated courier custody | `courier-contracts-basic-v2`, `mission-calendar-v2` and the bundled declarations | [Bundled courier](../Sources/L337Core/Resources/ScriptPacks/generated-couriers/manifest.toml) |
 | Declared classic or profiled actors | `classic-encounters-v2` or `profiled-encounters-v2` | [Patrol](mission-packs/scripted-patrol/manifest.toml), [profiled skirmish](mission-packs/profiled-skirmish/manifest.toml) |
 | Passenger parties and equipment custody | `charter-passengers-v2`, `owned-equipment-v2` respectively | [Passengers](mission-packs/scripted-passengers/manifest.toml), [equipment](mission-packs/scripted-equipment/manifest.toml) |
 | Exclusive branches or repeatable answers | `exclusive-choices-v2` or `dialogue-choices-v2` | [Branch choice](mission-packs/branch-choice/manifest.toml), [conversation](mission-packs/station-conversation/manifest.toml) |
@@ -111,7 +111,7 @@ Hand in or cancel the exact instance's cargo through its actual contact. `missio
 | `missionCalendar` | Native generated courier profile clock; requires the supported courier declarations, not an arbitrary timer domain. |
 | `transit` | Reserved for actual admitted native transit; ordinary mission timers do not advance it. |
 
-No clock here is offline wall time. Calendar launch adds 600 seconds; an admitted completed jump adds `distance² * 3600` seconds using the current original-world Cartesian light-year distance, without BBC coordinate conversion. Do not use a fixed number of rendered frames as a deadline. See [clock advancement](../Sources/EliteCore/ScriptDirector.swift) and [calendar policy](../Sources/EliteCore/ScriptCalendar.swift). Generic contract deadlines and the bundled courier's inclusive confirmation deadline have distinct native policies; retain the policy of the example you adapt.
+No clock here is offline wall time. Calendar launch adds 600 seconds; an admitted completed jump adds `distance² * 3600` seconds using the current original-world Cartesian light-year distance, without BBC coordinate conversion. Do not use a fixed number of rendered frames as a deadline. See [clock advancement](../Sources/L337Core/ScriptDirector.swift) and [calendar policy](../Sources/L337Core/ScriptCalendar.swift). Generic contract deadlines and the bundled courier's inclusive confirmation deadline have distinct native policies; retain the policy of the example you adapt.
 
 The bundled courier uses a closed native profile, frozen route/reward terms and identified data/package custody. Its handlers use `courier.issue`, `courier.deliver` and `courier.abandon`, not generic payload/payment commands. Its balancing and duration text explicitly labels project estimates; it is not a general promise of recovered server behavior.
 
@@ -127,7 +127,7 @@ For owned campaigns, declare exact `[[children]]` pins and request `child.ensure
 
 Each evaluation creates a fresh Lua interpreter. Persist progress only in returned `data` and native receipts, not globals or closure caches. The host exposes a restricted base/math subset, with ordered `ipairs` traversal and native deterministic inputs. It does not open I/O, OS, package, debug, coroutine, string or table libraries; `pairs`, `next`, loaders, metatables, `pcall`/`xpcall`, printing and `math.random`/`randomseed` are unavailable. `tostring` accepts scalars only. Declared `[[modules]]` with `pack-modules-v2` provide a closed pack-local `require` map; undeclared or cyclic imports fail.
 
-Resources must be regular files with canonical relative paths, at most eight path components; symlinks and traversal paths are rejected. Each file and the combined module source have a 256 KiB limit. Lua source is UTF-8 text without NUL bytes; bytecode is not accepted. Default evaluation budgets are 50,000 instructions, 8 MiB live heap, 32 MiB cumulative allocation and 512 KiB output. A result has at most 256 commands; its returned data map must fit 256 KiB, finite numeric values and the bounded value nesting/item count. A manifest has 1-64 handlers, 1-64 milestones, at most 64 dialogues and at most 16 auxiliary modules. See [evaluation](../Sources/EliteCore/ScriptEvaluator.swift), [value encoding](../Sources/EliteCore/ScriptValue.swift) and [sandbox implementation](../Sources/MissionScript/MissionScript.c).
+Resources must be regular files with canonical relative paths, at most eight path components; symlinks and traversal paths are rejected. Each file and the combined module source have a 256 KiB limit. Lua source is UTF-8 text without NUL bytes; bytecode is not accepted. Default evaluation budgets are 50,000 instructions, 8 MiB live heap, 32 MiB cumulative allocation and 512 KiB output. A result has at most 256 commands; its returned data map must fit 256 KiB, finite numeric values and the bounded value nesting/item count. A manifest has 1-64 handlers, 1-64 milestones, at most 64 dialogues and at most 16 auxiliary modules. See [evaluation](../Sources/L337Core/ScriptEvaluator.swift), [value encoding](../Sources/L337Core/ScriptValue.swift) and [sandbox implementation](../Sources/MissionScript/MissionScript.c).
 
 Saves retain exact content identities, instance data, native receipts and relevant physical world/custody state. Keep the commander save and its associated `.missions` directory together, and retain the matching pack folders separately when moving computers. Missing, changed or incompatible content suspends work while preserving its property; restoring exact content and using the supported Resume action retries pending work. Loading does not intentionally reissue acceptance rewards or replace progress with a fresh mission. Changing identity/version/digest requires an explicit supported migration; renaming an active mission to bypass checks is not a migration.
 

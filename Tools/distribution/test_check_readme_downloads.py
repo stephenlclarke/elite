@@ -7,7 +7,7 @@ from email.message import Message
 import check_readme_downloads as TOOL
 
 
-URL = "https://github.com/stephenlclarke/elite/releases/download/v1.4.0/Elite-1.4.0-universal.zip"
+URL = "https://github.com/stephenlclarke/l337/releases/download/v1.4.0/L337-1.4.0-universal.zip"
 
 
 class Response:
@@ -36,7 +36,7 @@ class Opener:
 
 class ReadmeDownloadsTests(unittest.TestCase):
     def test_indented_examples_not_probed_and_nested_list_prose_is_probed(self):
-        base = 'https://github.com/stephenlclarke/elite/releases/tag/'
+        base = 'https://github.com/stephenlclarke/l337/releases/tag/'
         text = f'''    [four spaces]({base}v9.0.0)
 
         [continued code]({base}v9.0.1)
@@ -60,26 +60,26 @@ An ordinary paragraph
         def requester(url, **kwargs):
             calls.append(url)
             return {'httpStatus': 404 if '/v9.' in url else 200, 'finalURL': url, 'body': b''}
-        result = TOOL.check(text, 'stephenlclarke/elite', requester=requester)
+        result = TOOL.check(text, 'stephenlclarke/l337', requester=requester)
         self.assertEqual(result['state'], 'REACHABLE')
         self.assertEqual(set(calls), {base+'v1.4.0', base+'v1.3.1', base+'v1.2.0'})
         self.assertFalse(any('/v9.' in url for url in calls))
 
     def test_real_links_not_code_comments_or_badges(self):
         text = f'''[Old archive]({URL})
-<a href="https://github.com/stephenlclarke/elite/releases/latest">Latest release</a>
+<a href="https://github.com/stephenlclarke/l337/releases/latest">Latest release</a>
 [Current][release]
-[release]: https://github.com/stephenlclarke/elite/releases/tag/v1.4.0
+[release]: https://github.com/stephenlclarke/l337/releases/tag/v1.4.0
 `[not a link]({URL.replace('1.4.0','9.9.9')})`
 ```
 [example]({URL.replace('1.4.0','8.8.8')})
 ```
 <!-- [hidden]({URL.replace('1.4.0','7.7.7')}) -->
-![badge](https://img.shields.io/github/v/release/stephenlclarke/elite)
+![badge](https://img.shields.io/github/v/release/stephenlclarke/l337)
 '''
-        found = TOOL.links(text, "stephenlclarke/elite")
+        found = TOOL.links(text, "stephenlclarke/l337")
         self.assertEqual(len(found), 3)
-        self.assertEqual(next(r for r in found if r['url'] == URL)['asset'], 'Elite-1.4.0-universal.zip')
+        self.assertEqual(next(r for r in found if r['url'] == URL)['asset'], 'L337-1.4.0-universal.zip')
 
     def test_head_has_no_body_and_range_fallback_reads_one_byte(self):
         head, ranged = Response(), Response(206, b"abc" * 100)
@@ -112,18 +112,18 @@ An ordinary paragraph
             with self.assertRaises(ValueError):
                 TOOL.official(url)
         credentialled = URL.replace('https://', 'https://user:secret@') + '?token=secret'
-        report = TOOL.check(f'[unsafe]({credentialled})', 'stephenlclarke/elite')
+        report = TOOL.check(f'[unsafe]({credentialled})', 'stephenlclarke/l337')
         self.assertNotIn('secret', json.dumps(report))
         self.assertEqual(report['links'][0]['state'], 'inconclusive')
 
     def test_historical_broken_and_inconclusive_are_distinct(self):
         def requester(url, **kwargs):
             if 'api.github.com' in url:
-                body = json.dumps({'tag_name': 'v1.5.0', 'assets': [{'name': 'Elite-1.5.0-universal.zip'}]}).encode()
+                body = json.dumps({'tag_name': 'v1.5.0', 'assets': [{'name': 'L337-1.5.0-universal.zip'}]}).encode()
                 return {'httpStatus': 200, 'finalURL': url, 'body': body}
             status = 404 if '1.2.0' in url else 429 if '1.3.0' in url else 200
             return {'httpStatus': status, 'finalURL': url, 'body': b''}
-        old = TOOL.check(f'[Historical]({URL})', 'stephenlclarke/elite', '1.4.0', True, requester)
+        old = TOOL.check(f'[Historical]({URL})', 'stephenlclarke/l337', '1.4.0', True, requester)
         self.assertEqual(old['state'], 'REACHABLE')
         self.assertEqual(old['links'][0]['versionRelationship'], 'historical_or_different')
         self.assertTrue(old['expectedVersionDiffersFromPublicMetadata'])
@@ -132,14 +132,26 @@ An ordinary paragraph
         limited = TOOL.probe(URL.replace('1.4.0', '1.3.0'), requester)
         self.assertEqual((broken['state'], limited['state']), ('broken', 'inconclusive'))
 
+    def test_historical_elite_expected_asset_stays_separate_from_current_l337(self):
+        original = "https://github.com/stephenlclarke/elite/releases/download/v1.5.0/Elite-1.5.0-universal.zip"
+        def requester(url, **kwargs):
+            return {"httpStatus": 200, "finalURL": url, "body": b""}
+        report = TOOL.check(f"[Historical Elite 1.5]({original})", "stephenlclarke/elite",
+                            "1.5.0", requester=requester)
+        self.assertEqual(report["expectedAssetURLFromExistingCaskHelper"], original)
+        self.assertEqual(report["links"][0]["asset"], "Elite-1.5.0-universal.zip")
+        current = TOOL.check("", "stephenlclarke/l337", "2.0.0", requester=requester)
+        self.assertEqual(current["expectedAssetURLFromExistingCaskHelper"],
+                         "https://github.com/stephenlclarke/l337/releases/download/v2.0.0/L337-2.0.0-universal.zip")
+
     def test_budget_and_network_failures_are_bounded(self):
-        content = '\n'.join(f'[release](https://github.com/stephenlclarke/elite/releases/tag/v1.0.{i})' for i in range(13))
+        content = '\n'.join(f'[release](https://github.com/stephenlclarke/l337/releases/tag/v1.0.{i})' for i in range(13))
         with self.assertRaises(ValueError):
-            TOOL.links(content, 'stephenlclarke/elite')
+            TOOL.links(content, 'stephenlclarke/l337')
         def failed(url, **kwargs):
             raise urllib.error.URLError('offline')
         self.assertEqual(TOOL.probe(URL, failed)['state'], 'inconclusive')
-        self.assertEqual(TOOL.latest('stephenlclarke/elite', failed)['state'], 'inconclusive')
+        self.assertEqual(TOOL.latest('stephenlclarke/l337', failed)['state'], 'inconclusive')
 
 
 if __name__ == '__main__':

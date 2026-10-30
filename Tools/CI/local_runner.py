@@ -24,9 +24,9 @@ def require_trusted_push(environment: dict[str, str], event: dict) -> None:
     repository = event.get("repository", {})
     if not (
         environment.get("GITHUB_EVENT_NAME") == "push"
-        and environment.get("GITHUB_REPOSITORY") == "stephenlclarke/elite"
+        and environment.get("GITHUB_REPOSITORY") == "stephenlclarke/l337"
         and environment.get("GITHUB_ACTOR_ID") == "22142777"
-        and repository.get("full_name") == "stephenlclarke/elite"
+        and repository.get("full_name") == "stephenlclarke/l337"
         and repository.get("fork") is False
     ):
         raise ValueError("Local runner accepts only Stephen's internal Elite pushes.")

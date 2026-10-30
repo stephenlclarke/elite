@@ -18,13 +18,13 @@ from local_runner import SWIFT, cache_key, clean_checkout, prepare_build_cache, 
 class LocalRunnerTests(unittest.TestCase):
     def test_trusted_push(self):
         require_trusted_push(
-            {"GITHUB_EVENT_NAME": "push", "GITHUB_REPOSITORY": "stephenlclarke/elite",
+            {"GITHUB_EVENT_NAME": "push", "GITHUB_REPOSITORY": "stephenlclarke/l337",
              "GITHUB_ACTOR_ID": "22142777"},
-            {"repository": {"full_name": "stephenlclarke/elite", "fork": False}},
+            {"repository": {"full_name": "stephenlclarke/l337", "fork": False}},
         )
 
     def test_rejects_untrusted_events(self):
-        original = {"GITHUB_EVENT_NAME": "push", "GITHUB_REPOSITORY": "stephenlclarke/elite",
+        original = {"GITHUB_EVENT_NAME": "push", "GITHUB_REPOSITORY": "stephenlclarke/l337",
                     "GITHUB_ACTOR_ID": "22142777"}
         for key, value in (("GITHUB_EVENT_NAME", "pull_request"),
                            ("GITHUB_EVENT_NAME", "workflow_dispatch"),
@@ -32,10 +32,10 @@ class LocalRunnerTests(unittest.TestCase):
                            ("GITHUB_ACTOR_ID", "123")):
             with self.subTest(key=key, value=value), self.assertRaises(ValueError):
                 require_trusted_push(dict(original, **{key: value}),
-                                     {"repository": {"full_name": "stephenlclarke/elite",
+                                     {"repository": {"full_name": "stephenlclarke/l337",
                                                      "fork": False}})
         for repository in ({}, {"full_name": "other/elite", "fork": False},
-                           {"full_name": "stephenlclarke/elite", "fork": True}):
+                           {"full_name": "stephenlclarke/l337", "fork": True}):
             with self.subTest(repository=repository), self.assertRaises(ValueError):
                 require_trusted_push(original, {"repository": repository})
 
@@ -149,9 +149,9 @@ class LocalRunnerTests(unittest.TestCase):
             (root / "Package.swift").write_text("package")
             event_path = root / "event.json"
             event_path.write_text(json.dumps({"repository": {
-                "full_name": "stephenlclarke/elite", "fork": False}}))
+                "full_name": "stephenlclarke/l337", "fork": False}}))
             environment = {"GITHUB_EVENT_NAME": "push",
-                           "GITHUB_REPOSITORY": "stephenlclarke/elite",
+                           "GITHUB_REPOSITORY": "stephenlclarke/l337",
                            "GITHUB_ACTOR_ID": "22142777",
                            "GITHUB_EVENT_PATH": str(event_path)}
             for model, swift, sdk in (("Mac17,9", SWIFT, "15.5"),
@@ -179,9 +179,9 @@ class LocalRunnerTests(unittest.TestCase):
             (root / "Package.swift").write_text("package")
             event_path = root / "event.json"
             event_path.write_text(json.dumps({"repository": {
-                "full_name": "stephenlclarke/elite", "fork": False}}))
+                "full_name": "stephenlclarke/l337", "fork": False}}))
             environment = {"GITHUB_EVENT_NAME": "push",
-                           "GITHUB_REPOSITORY": "stephenlclarke/elite",
+                           "GITHUB_REPOSITORY": "stephenlclarke/l337",
                            "GITHUB_ACTOR_ID": "22142777",
                            "GITHUB_EVENT_PATH": str(event_path)}
             def fingerprint(*args):

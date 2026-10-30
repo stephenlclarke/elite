@@ -1,0 +1,39 @@
+{
+  "version": "1.5.1",
+  "tag": "v1.5.1",
+  "sourceRevision": "e691630ccc3065748d4c02e90eed6a333da0d8b1",
+  "releasePlanSha256": "446cb61a49d36ff22beca1e437af28a467f0033c5418841c7367cd9ed3225637",
+  "releaseURL": "https://github.com/stephenlclarke/elite/releases/tag/v1.5.1",
+  "assets": [
+    {
+      "name": "Elite-1.5.1-universal-notarization.json",
+      "size": 1322,
+      "digest": "sha256:377c65ae110953193e5f32d31f95aa74e68240a78dc6cb2ede75068c923c39dc",
+      "browser_download_url": "https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal-notarization.json"
+    },
+    {
+      "name": "Elite-1.5.1-universal-release-plan.json",
+      "size": 657,
+      "digest": "sha256:c464e2995449c413977971320d9d750d2004b6221b031de7f11e218a1e1b2523",
+      "browser_download_url": "https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal-release-plan.json"
+    },
+    {
+      "name": "Elite-1.5.1-universal.json",
+      "size": 1629,
+      "digest": "sha256:48629bd6733f4593a5b054b32c69a150ebecf136abb17089fa8bb1c0de693951",
+      "browser_download_url": "https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal.json"
+    },
+    {
+      "name": "Elite-1.5.1-universal.sha256",
+      "size": 92,
+      "digest": "sha256:5dd79724df745a794ace2cd29e65352248f686f17fb5f3e6edde52428d409a68",
+      "browser_download_url": "https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal.sha256"
+    },
+    {
+      "name": "Elite-1.5.1-universal.zip",
+      "size": 48388200,
+      "digest": "sha256:8398f6b03e44796ecc88ba3ad0b28a9d72fffd5f9d47a96d43942de0d51b941b",
+      "browser_download_url": "https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal.zip"
+    }
+  ]
+}

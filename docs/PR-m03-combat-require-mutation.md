@@ -1,0 +1,5 @@
+# fix(test): stage mutating combat results before required assertions
+
+The two test actions now store their Boolean results in local constants before the existing required checks. The reserve is still drained with its current capacity/time before assigning it to the commander. The missile is still fired once after selecting and arming its target and before observing the resulting projectile. No action is duplicated, reordered or weakened; the same required success conditions and all later physical-resource, damage, immunity and custody assertions remain.
+
+The retained failed build at cb058b37 is the negative witness. It completed zero methods and contains the two exact macro expansion diagnostics. The corrected source needs bounded independent review and the unchanged 40-method focused command. No guessed retry, RAM adjustment, probe, renderer change, production fix or selector change is included. Historical source reviews remain valid outside these two macro expressions. See [the issue](ISSUE-m03-combat-require-mutation.md).

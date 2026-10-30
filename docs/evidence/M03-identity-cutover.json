@@ -1,0 +1,34 @@
+{
+  "status": "EXTERNAL_IDENTITY_CUTOVER_COMPLETE_NEW_EVENT_QUALIFICATION_PENDING",
+  "source": "e24618af85bbf30aada22664710e5f32fd4449a1",
+  "repositoryID": 1416155405,
+  "oldRepository": "stephenlclarke/elite",
+  "repository": "stephenlclarke/l337",
+  "main": "e691630ccc3065748d4c02e90eed6a333da0d8b1",
+  "protection": "Unchanged after URL normalization; no administrator bypass",
+  "preserved": [
+    "repository visibility/security/permissions/merge settings",
+    "ELITE_LOCAL_RUNNER_ENABLED=false",
+    "physical EliteNativeCI and EliteNativeAuthorization roots",
+    "owner-marker filename,0644 mode and UID",
+    "diagnostic custody registry, counters, caches and historical receipts",
+    "old runner workspace and human primary checkouts/remotes"
+  ],
+  "changed": [
+    "GitHub repository name",
+    "owned G1 operator origin URL",
+    "owner-marker content to stephenlclarke/l337",
+    "new physical independent _work/l337/l337 repository clone without symlink or alternates"
+  ],
+  "workspaceState": "No checkout; fresh exact new-repository PR event must supply execution revision",
+  "receipts": {
+    "repository-immediate-before.json": "4e4b80513c474701d5542304bf63e4c6105d930e0e6fec72b57dcb1437886f13",
+    "repository-renamed.json": "4462ffe419e8a7aac72b8cc5d8f9da62bf4754978cebeadf5690a44c4a642a1e",
+    "main-protection-immediate-before.json": "34952136304d7a40730d7fa67bfd2ff67a6bcf5374a9086da8ee187c5d950c3c",
+    "main-protection-after.json": "c59f37d9bf185ce3e0322ad512858b24cf723caa653801d3a57d1399b48d900c",
+    "owner-marker-transition.json": "ca0128cac4a7c5b1005fd06bea56b2054f326ac63269e8f8056054dab991b1f1",
+    "owned-remote-transition.json": "895aefd2965ddf71a26291721fdf011c2da7cb91b4f7d8d0d8789507ea172930",
+    "physical-workspace-created.json": "676787fef46e0a2553096d278384a01ba8695d5180d07393afaab4f5860f359a"
+  },
+  "limits": "No runner registered. No M03 PR/main full CI, main Sonar, signed package or L337 public release. Existing Elite1.5.1 remains public historical delivery."
+}

@@ -186,7 +186,7 @@ def run_phase(phase, cache, profile_policy=None, profile_sha256=None):
                 listing = output([swift, 'test', *flags, 'list', '--skip-build'], root, environment, lock)
                 methods = inventory(listing)
             else:
-                images, methods = [bins / 'Elite'], []
+                images, methods = [bins / 'L337'], []
             if len(images) != 1 or not images[0].is_file():
                 raise ValueError('Expected exactly one actual phase image')
             image = images[0].resolve() if build_profile is not None else images[0]

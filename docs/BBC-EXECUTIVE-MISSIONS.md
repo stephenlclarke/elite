@@ -61,7 +61,7 @@ The added XYZZY Naval Laser is grant-only and deals a prototype 64 damage, reduc
 
 ## Mission-pack implementation
 
-Campaign content and progression are maintained in `Sources/EliteCore/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.
+Campaign content and progression are maintained in `Sources/L337Core/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.
 
 ## Current original-world location bindings
 

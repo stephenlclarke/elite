@@ -16,7 +16,7 @@ spec.loader.exec_module(author)
 class LiberatorDesignTests(unittest.TestCase):
     def setUp(self):
         self.ship = tomllib.loads(
-            Path("Sources/EliteCore/Resources/Ships/SH171.toml").read_text()
+            Path("Sources/L337Core/Resources/Ships/SH171.toml").read_text()
         )
         self.design = self.ship["design"]
 

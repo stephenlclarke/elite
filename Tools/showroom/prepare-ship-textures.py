@@ -121,6 +121,6 @@ def prepare(archive_path, output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('archive', type=Path)
-    parser.add_argument('--output', type=Path, default=Path('Sources/EliteCore/Resources/ShipTextures'))
+    parser.add_argument('--output', type=Path, default=Path('Sources/L337Core/Resources/ShipTextures'))
     args = parser.parse_args()
     prepare(args.archive, args.output)

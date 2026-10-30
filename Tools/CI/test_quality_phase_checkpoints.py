@@ -20,10 +20,10 @@ class QualityPhaseTests(unittest.TestCase):
         self.image = self.bins / 'Tests.xctest/Contents/MacOS/Tests'
         self.image.parent.mkdir(parents=True)
         self.image.write_bytes(b'fake test image')
-        (self.bins / 'Elite').write_bytes(b'fake application image')
+        (self.bins / 'L337').write_bytes(b'fake application image')
         (self.bins / 'codecov').mkdir()
         (self.bins / 'codecov/default.profdata').write_bytes(b'fake profile')
-        self.methods = ['EliteCoreTests.First/one()', 'EliteCoreTests.Second/two()']
+        self.methods = ['L337CoreTests.First/one()', 'L337CoreTests.Second/two()']
         self.head = 'a' * 40
         self.calls = []
         self.fail_leaks = True
@@ -331,7 +331,7 @@ class OwnedPhaseBuildTests(unittest.TestCase):
                 self.assertEqual(result['validation']['percent'], 100.0)
             else:
                 leak = next(c for c in self.calls if c[0] == '/usr/bin/leaks')
-                self.assertEqual(leak, ['/usr/bin/leaks', '--atExit', '--', str(self.bins / 'Elite'), '--diagnostics'])
+                self.assertEqual(leak, ['/usr/bin/leaks', '--atExit', '--', str(self.bins / 'L337'), '--diagnostics'])
             self.assertTrue(result['identity']['parallel'] == (phase == 'normal'))
 
     def test_selected_phase_rejects_other_source_and_rechecks_policy_before_success(self):
@@ -383,8 +383,8 @@ class OwnedPhaseBuildTests(unittest.TestCase):
                 patch.object(runner, 'output', side_effect=output):
             runner.run_phase('leaks', self.root / 'physical-leaks', '/owned/policy', 'f' * 64)
         result = json.loads(next((self.root / 'physical-leaks').glob('phases/*/*/result.json')).read_text())
-        self.assertEqual(result['identity']['phase_image'], str(self.bins / 'Elite'))
-        self.assertEqual(result['command'], ['/usr/bin/leaks', '--atExit', '--', str(self.bins / 'Elite'), '--diagnostics'])
+        self.assertEqual(result['identity']['phase_image'], str(self.bins / 'L337'))
+        self.assertEqual(result['command'], ['/usr/bin/leaks', '--atExit', '--', str(self.bins / 'L337'), '--diagnostics'])
 
 
 if __name__ == '__main__':

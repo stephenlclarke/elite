@@ -17,7 +17,7 @@ class HomebrewCaskTests(unittest.TestCase):
     def setUp(self):
         self.revision = "a" * 40
         self.manifest = {
-            "appVersion": "1.3.1", "archive": "Elite-1.3.1-universal.zip",
+            "appVersion": "1.3.1", "archive": "L337-1.3.1-universal.zip",
             "sha256": "b" * 64, "minimumMacOS": "14.0",
             "architectures": ["arm64", "x86_64"],
             "signature": "Developer ID Application", "notarized": True,
@@ -29,10 +29,10 @@ class HomebrewCaskTests(unittest.TestCase):
         self.assertEqual(existing_release(cask), ("1.3.1", self.revision))
         self.assertIn('sha256 "' + "b" * 64 + '"', cask)
         self.assertIn("# Artifact commit: " + self.revision, cask)
-        self.assertIn("github.com/stephenlclarke/elite/releases/download/v#{version}/", cask)
+        self.assertIn("github.com/stephenlclarke/l337/releases/download/v#{version}/", cask)
         self.assertEqual(release_url("1.3.1"),
-                         "https://github.com/stephenlclarke/elite/releases/download/"
-                         "v1.3.1/Elite-1.3.1-universal.zip")
+                         "https://github.com/stephenlclarke/l337/releases/download/"
+                         "v1.3.1/L337-1.3.1-universal.zip")
         self.assertIn("    url :homepage\n    strategy :github_latest", cask)
         self.assertIn("depends_on macos: :sonoma", cask)
         for forbidden in ("no_quarantine", "zap", "preflight", "postflight", "uninstall"):

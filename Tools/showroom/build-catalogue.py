@@ -222,9 +222,9 @@ def main():
         importer = importlib.util.module_from_spec(module_spec)
         module_spec.loader.exec_module(importer)
         core_raw = {d['definition_id']:d['resolved_core_fields'] for d in definitions}
-        extra_models, extra_provenance = importer.import_models(args.model_inventory,args.model_cache,core_raw,dat_mesh,Path('Sources/EliteCore/Resources'))
+        extra_models, extra_provenance = importer.import_models(args.model_inventory,args.model_cache,core_raw,dat_mesh,Path('Sources/L337Core/Resources'))
         if args.additional_inventory.exists():
-            additional, additional_provenance = importer.import_additional_models(args.additional_inventory,args.model_cache,core_raw,dat_mesh,Path('Sources/EliteCore/Resources'))
+            additional, additional_provenance = importer.import_additional_models(args.additional_inventory,args.model_cache,core_raw,dat_mesh,Path('Sources/L337Core/Resources'))
             assert not (extra_models.keys() & additional.keys()), 'Duplicate new canonical model mappings'
             extra_models.update(additional)
             extra_provenance['additional'] = additional_provenance

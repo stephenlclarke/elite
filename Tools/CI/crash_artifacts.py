@@ -55,7 +55,7 @@ def coverage_helper(pid, row, workspace):
     argv = arguments(row)
     if not argv or not Path(argv[0]).is_absolute() or Path(argv[0]).name != 'swiftpm-testing-helper':
         return None
-    image = Path(workspace) / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
+    image = Path(workspace) / '.build/arm64-apple-macosx/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests'
     expected = [argv[0], '--test-bundle-path', str(image), '--enable-code-coverage',
                 str(image), '--testing-library', 'swift-testing']
     if argv != expected:
@@ -79,8 +79,8 @@ def checkpoint_coverage_image(argv, workspace):
         return None
     image = Path(argv[2])
     layouts = [Path(workspace) / '.build' / path for path in (
-        'arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests',
-        'out/Products/Debug/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests')]
+        'arm64-apple-macosx/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests',
+        'out/Products/Debug/L337CoreTests.xctest/Contents/MacOS/L337CoreTests')]
     if image not in layouts:
         return None
     report = Path(argv[6])

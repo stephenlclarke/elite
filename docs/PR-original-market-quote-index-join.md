@@ -1,0 +1,9 @@
+# Join original live market slots by stable commodity ID
+
+The live initial-state projection now sorts validated quotes by their explicit commodity index before constructing MarketItem slots. The existing authenticated seed initialization calls that same narrow pure adapter. Source states retain their original sequence; authored display order remains independent of storage order.
+
+Current bundled states already use ID order, so their prices, bid prices and finite stock remain identical. The PLUGH derivation continues to apply the existing discount once and stock sixty-three units per commodity. Schema/identity validation, fingerprints, original resources, current mutable stock, quote epochs, transaction authority and save behavior are unchanged.
+
+Three meaningful methods cover reversed valid states with unique prices and stock; authored display order and another permutation while preserving source data; and representative actual bundled states plus existing secret-port discount behavior. The first two methods exercise schema-valid inputs that the previous positional adapter would join incorrectly. The tests assert each stable commodity slot's independent ask, bid and quantity values rather than comparing only two projections using the same helper.
+
+This local source component starts from `e29101377580361c0289076c0af8ebcc0c9be13c`. Only standalone formatting, Markdown, whitespace and bounded source-preservation checks are run. All three Swift methods remain UNRUN; no compiler, native execution, GUI, GPU, media, sanitizer or probe is used. The methods are not added to CI selection in this owned scope. Independent review and later execution through the existing owner remain required. No push, merge, integration or usable release is claimed. [Motivation](ISSUE-original-market-quote-index-join.md).

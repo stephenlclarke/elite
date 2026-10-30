@@ -15,8 +15,8 @@ Actual jumps use the fitted reach, current fuel and effective fuel cost. Compati
 | Energy | Stock capacity versus hull base | Stock recharge versus hull base | Acquisition |
 | --- | ---: | ---: | --- |
 | Basic | 1 | 1 | Included foundation |
-| Intermediate | 1 | 2 | 1,500 CR; legacy Extra Energy Unit |
-| Advanced | 1 | 3 | 4,500 CR at displayed TL12; also Naval mission reward or PLUGH |
+| Intermediate | 1 | 2 | 7,200 CR at displayed TL9; legacy Extra Energy Unit |
+| Advanced | 1 | 3 | 19,600 CR at displayed TL17; also Naval mission reward or PLUGH |
 | Elite | 1 | 4 | 13,500 CR at displayed TL14; also XYZZY or PLUGH |
 
 | Shield | Stock front/rear capacity versus hull base | Stock recharge versus hull base | Acquisition |
@@ -49,4 +49,4 @@ Inventory offers Fit, Store and matching recovered upgrades only at an authentic
 
 Saved laser-named shield keys remain readable. Their actual old strengths are retained: legacy Mining's 5× shield is reconciled to the Advanced grade with excess progress, and legacy Beam's 1.5× strength maps to Basic II. Those historical values differ from newly purchased Intermediate and Intermediate II stock; migration does not weaken an old component to match a renamed shop row. Legacy reward identities, legal/mission progress and paid history remain intact.
 
-Source authorities are [module templates](../Sources/EliteCore/EquipmentModuleTemplates.swift), [purchase identities](../Sources/EliteCore/EquipmentPurchaseProgression.swift), [runtime fittings](../Sources/EliteCore/EquipmentRuntimeCatalog.swift) and [upgrade progression](../Sources/EliteCore/ComponentProgression.swift). This guide describes implemented source; final composed CI/release acceptance is tracked in the [qualified ledger](WHOLE-APP-REMEDIATION.md). It does not claim these development changes shipped in the published 1.4.0 app.
+Source authorities are [module templates](../Sources/L337Core/EquipmentModuleTemplates.swift), [purchase identities](../Sources/L337Core/EquipmentPurchaseProgression.swift), [runtime fittings](../Sources/L337Core/EquipmentRuntimeCatalog.swift) and [upgrade progression](../Sources/L337Core/ComponentProgression.swift). This guide describes implemented source; final composed CI/release acceptance is tracked in the [qualified ledger](WHOLE-APP-REMEDIATION.md). It does not claim these development changes shipped in the published 1.4.0 app.

@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "repository": "stephenlclarke/elite",
+  "policy": "conventional-nonmerge-max-impact-v1",
+  "baseTag": "v1.4.0",
+  "baseRevision": "bba862c558530ea2d40d634f84fbd490d9cc3401",
+  "sourceRevision": "ca2e5b2865f808e1d3c4fde4e7f076b6c7a9ce09",
+  "impact": "minor",
+  "releaseRequired": true,
+  "version": "1.5.0",
+  "tag": "v1.5.0",
+  "authoritative": true,
+  "commits": [
+    {
+      "sha": "20f8c9361921c86b3ff3cd3db0e66510ed1745d0",
+      "subject": "fix(ci): preserve phase evidence and isolate native menu tests",
+      "impact": "patch"
+    },
+    {
+      "sha": "8a3021b75fabf01b4743538aba0ffe7ca0bfb161",
+      "subject": "feat(m01): add scripted missions and original-world gameplay",
+      "impact": "minor"
+    },
+    {
+      "sha": "a99dafbf9864029ac857a7dd67a348c5eddb2a3a",
+      "subject": "fix(script): declare Lua errors non-returning (#280)",
+      "impact": "patch"
+    },
+    {
+      "sha": "ca2e5b2865f808e1d3c4fde4e7f076b6c7a9ce09",
+      "subject": "fix(audio): stop playback when its window closes (#281)",
+      "impact": "patch"
+    },
+    {
+      "sha": "df3fb56952d83b36aaa012a873c59af2ff007a8c",
+      "subject": "fix(tests): place the headquarters volley beyond station pursuit",
+      "impact": "patch"
+    },
+    {
+      "sha": "e29101377580361c0289076c0af8ebcc0c9be13c",
+      "subject": "fix(script): make the output allocation error exit explicit",
+      "impact": "patch"
+    }
+  ],
+  "historySha256": "00fc8e04b13227ad931f2249c56fb466c088857b2dc09184d606860de0c56460"
+}

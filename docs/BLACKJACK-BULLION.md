@@ -61,6 +61,6 @@ Native regressions cover exact seeded system names, automatic enrolment, all sev
 
 ## Mission-pack implementation
 
-Campaign content and progression are maintained in `Sources/EliteCore/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.
+Campaign content and progression are maintained in `Sources/L337Core/Resources/MissionPacks/` using the same validated [TOML schema](MISSION-PACKS.md) as external packs. Existing encounter/combat/custody primitives remain in Swift; legacy saved stages and unique targets retain their identities. Installing a new supported pack does not change this campaign or replay its rewards.
 
 The current original-world catalogue binds the existing campaign to the same Galaxy 2 system IDs: G02-S241, S088, S233, S127, S099 and S067. Displayed names now match those authenticated worlds. Stages, encounter IDs, custody, handoff requirements, rewards and one-time receipts are unchanged. This is a binding repair for the existing campaign, without new mission content or compatibility aliases; runtime validation is pending.

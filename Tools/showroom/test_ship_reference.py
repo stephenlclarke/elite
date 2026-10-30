@@ -18,7 +18,7 @@ class ShipReferenceTests(unittest.TestCase):
             path = root/name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b'unchanged renderer')
-        (root/'Sources/EliteCore/Game.swift').write_text(
+        (root/'Sources/L337Core/Game.swift').write_text(
             '// unrelated mission before\n' + reference.VIEW_START
             + '    return p\n  }\n' + reference.VIEW_END + '// unrelated mission after\n')
 
@@ -46,14 +46,14 @@ class ShipReferenceTests(unittest.TestCase):
             original = reference.shared_hash(root)
             for name in ['NativeSafeGunneryRuntime.swift', 'NativeIsolationProgrammerCustody.swift',
                          'NativeWayfarerInductionCrewLogSave.swift']:
-                path = root/'Sources/EliteCore'/name
+                path = root/'Sources/L337Core'/name
                 path.write_bytes(b'new mission')
                 self.assertEqual(reference.shared_hash(root), original)
                 path.write_bytes(b'changed custody')
                 self.assertEqual(reference.shared_hash(root), original)
                 path.unlink()
                 self.assertEqual(reference.shared_hash(root), original)
-            game = root/'Sources/EliteCore/Game.swift'
+            game = root/'Sources/L337Core/Game.swift'
             game.write_text(game.read_text().replace('unrelated mission', 'new service state'))
             self.assertEqual(reference.shared_hash(root), original)
 
@@ -61,7 +61,7 @@ class ShipReferenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             self.render_root(root)
-            path = root/'Sources/EliteCore/Game.swift'
+            path = root/'Sources/L337Core/Game.swift'
             source = path.read_text()
             original = reference.shared_hash(root)
             path.write_text(source.replace('return p', 'return p * 2'))

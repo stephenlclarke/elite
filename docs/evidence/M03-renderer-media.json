@@ -1,0 +1,51 @@
+{
+  "source": "f257b4cc8808b710081d977d894da64ff8009ff9",
+  "sourceTree": "5dd1310c87cbb8b96a03f82d20237911cc8261c2",
+  "command": [
+    "make",
+    "readme-media"
+  ],
+  "exit": 0,
+  "durationSeconds": 43.58239388465881,
+  "logSHA256": "9f617e7e2778f7212dead9e7b041753071799ed9d7792969546f8f4cb574a7f3",
+  "inputs": {
+    "Sources/L337Mac/L337App.swift": "4a5a2dc065934c0e084e6ae45adf6edb89f2b8173a28a6db1391d1c7f7600e6d",
+    "Sources/L337Mac/AppIconMedia.swift": "d5e7daac7ab7c60e5d9e632cf4a8b0bc0bc7e4ecb273112baf825d33c4fa04af",
+    "Sources/L337Mac/RouteReadmeMedia.swift": "16e391772546772afbba14f534596ca67118a38bbf3ed823ec480890583d3061",
+    "Sources/L337Core/AppIcon.swift": "bebd9fac3b7f81d16e776bee81562425c70cd9b9807985d2e254dfae5e20994c",
+    "Makefile": "288ab84c62906c1b9dee480ffec832ba68077e1db34295ad58656fec4ef4ce95"
+  },
+  "outputs": {
+    "Resources/L337.icns": {
+      "sha256": "7e84a7df3b8e5c20fa854b5512491cefdd926ad63465376608449be2a1ac2525",
+      "bytes": 545663
+    },
+    "docs/images/l337-icon.png": {
+      "sha256": "490d644303fd55f718c62330e53bc08e3f600a4eb000e2070955d3040e63691d",
+      "bytes": 271772
+    },
+    "docs/images/route-alternatives-galaxy.png": {
+      "sha256": "00b39b0eeeabfe3a26f3a6c1dd6fa6ff5cdd763190a9052919774c90f8e587d2",
+      "bytes": 176386
+    },
+    "docs/images/route-alternatives-local.png": {
+      "sha256": "24ea74ac969ce80bc483c249bb7d4f8ef314c8d24413eb5c1c7f51a45c472efc",
+      "bytes": 132990
+    },
+    "docs/l337.png": {
+      "sha256": "fc3243af5c0787d8925ded7d25de46e4732f919ec17ef55526c232e10e9c5dc9",
+      "bytes": 146924
+    },
+    "docs/start-sequence.gif": {
+      "sha256": "181059a4cdc6677c33e8d325bb22025caf0257efd688584d0671b39d42ea3af3",
+      "bytes": 851754
+    }
+  },
+  "visualChecks": [
+    "1024x768 gameplay frame",
+    "1024x1024 jade Larvaal Sovereign icon",
+    "48-frame 1024x768 infinitely looping GIF",
+    "demo and L337 title frames inspected"
+  ],
+  "limits": "Development renderer media only; no signed release identity, physical gesture, full-window performance or manual acceptance claim. No source or raw ship geometry change."
+}

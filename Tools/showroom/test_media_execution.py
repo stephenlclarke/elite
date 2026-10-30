@@ -37,7 +37,7 @@ class ExecutionTests(unittest.TestCase):
              patch.object(media,'stop_renderer',return_value=(cleanup,False)) as stop,\
              patch.object(media.time,'monotonic',side_effect=clock if callable(clock) else None,return_value=clock),\
              patch.object(media.time,'sleep'),patch('sys.stderr',io.StringIO()):
-            result=media.run_renderer(['swift','run','Elite'],Path('/workspace'),log or io.BytesIO(),[3,4],10)
+            result=media.run_renderer(['swift','run','L337'],Path('/workspace'),log or io.BytesIO(),[3,4],10)
         return result,spawn,stop
 
     def test_metadata_failure_cleans_child_and_returns_failure_without_custody_or_hold(self):
@@ -193,7 +193,7 @@ class EntryPointTests(unittest.TestCase):
                  patch.object(media.shutil,'disk_usage',return_value=SimpleNamespace(free=200*1024**3)),\
                  patch.object(media,'run_renderer',return_value=0) as run:
                 media.render_media(['SH001'])
-            self.assertEqual(run.call_args.args[0],['swift','run','--jobs','1','-Xswiftc','-disable-batch-mode','Elite','--ship-media','SH001'])
+            self.assertEqual(run.call_args.args[0],['swift','run','--jobs','1','-Xswiftc','-disable-batch-mode','L337','--ship-media','SH001'])
             self.assertEqual(len(list((root/'.build').glob('ship-media-*/render.log'))),1)
             self.assertEqual(list(root.rglob('policy.json')),[]);self.assertEqual(list(root.rglob('state.json')),[])
 
