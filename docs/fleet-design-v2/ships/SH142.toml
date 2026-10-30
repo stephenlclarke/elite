@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH142"
+name = "Buzzard Mk II"
+family = "buzzard"
+classification = "bountyHunter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "salvage-hunter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Buzzard Mk II"
+statsFile = "fleet-specs/SH142.toml"
+statsSHA256 = "1b8f36ccf4d811e5f6daf2707a1ff16386c05b0433e7facd5ce0463c49b37a75"
+geometryFile = "replacement-hulls/SH142-design.toml"
+geometrySHA256 = "8c2947c09d24d7990ff0cbe901220def8e5b52b1bd5b1f1990076167be9bd053"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two unequal open hoops frame a compact pursuit cockpit, linked by a narrow keel with a sheltered aft drive bank."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "salvage-hunter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 30
+maxSpeed = 46.5
+acceleration = 15.0
+energyCapacity = 460
+energyRecharge = 6.5
+roll = 1.28
+pitch = 1.13
+yaw = 1.05
+shieldCapacityPerBank = 270
+shieldRechargePerBank = 1.99
+fuelTankLY = 13.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 6
+laserFacingMask = 15
+cargoExpansionTonnes = 10
+hullPriceCR = 412000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 3
+intrinsicCrewPlaces = 3
+nativeAutonomous = false
+nativeCrew = 3
+playerConversionCrew = 3
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 6
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 26
+utilityMounts = 4
+compatibleUtilities = ["salvageCutter", "cargoScoop", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["salvageBeam", "salvageCutter", "cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

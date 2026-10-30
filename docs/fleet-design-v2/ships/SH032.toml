@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH032"
+name = "Panther Explorer"
+family = "panther"
+classification = "leisure"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "fast-explorer"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Panther Explorer"
+statsFile = "fleet-specs/SH032.toml"
+statsSHA256 = "f48b1280e7ab8713c10fa10fe243bcef82973dd9cb9cac35bb1685ecf4ff140c"
+geometryFile = "fleet-completion-20261019/batch-01-native-lod/SH032-design.toml"
+geometrySHA256 = "d87094362d608526b5e257173478f305b0b2f786d573abdb51f7ef613a4bb131"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Deep equipment keel below a broad panoramic pressure cabin; curved side supports carry low long-range sled drives."
+dimensionsWHLMetres = [19.658, 13.76, 37.09]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "fast-explorer"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 32
+maxSpeed = 47.0
+acceleration = 12.5
+energyCapacity = 220
+energyRecharge = 3.6
+roll = 1.07
+pitch = 0.94
+yaw = 0.88
+shieldCapacityPerBank = 200
+shieldRechargePerBank = 1.7
+fuelTankLY = 14.0
+maxJumpLY = 12.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 10
+hullPriceCR = 312000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 6
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 22
+utilityMounts = 3
+compatibleUtilities = ["surveyArray", "rescueReceiver", "cargoScoop", "auxiliaryFuelTank"]
+recommendedRoleKit = ["surveyArray", "flightRecorder"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

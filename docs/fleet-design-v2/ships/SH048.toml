@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH048"
+name = "Lanner"
+family = "lanner"
+classification = "bountyHunter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "sprint-pursuit"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Lanner"
+statsFile = "fleet-specs/SH048.toml"
+statsSHA256 = "b95e38a26b285a4daa1d14d0041a8bca46c28e86710a38e56bcf4c78ab379ae6"
+geometryFile = "replacement-hulls/SH048-design.toml"
+geometrySHA256 = "e55137ce5a91f7b2fc6521f3ebe11be865ee7b2c1467452844f33bb10edc90f6"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "A deep open horseshoe bow curves around a slim central cockpit, with twin aft drive cylinders and inset weapon rails."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "sprint-pursuit"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 10
+maxSpeed = 65.3
+acceleration = 21.62
+energyCapacity = 190
+energyRecharge = 3.6
+roll = 1.882
+pitch = 1.658
+yaw = 1.546
+shieldCapacityPerBank = 190
+shieldRechargePerBank = 1.9
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 10
+missileCapacity = 4
+laserFacingMask = 1
+cargoExpansionTonnes = 5
+hullPriceCR = 302000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 2
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 14
+utilityMounts = 1
+compatibleUtilities = ["salvageCutter", "cargoScoop", "surveyArray", "rescueReceiver"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

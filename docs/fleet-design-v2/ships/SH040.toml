@@ -1,0 +1,79 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH040"
+name = "Newt Escape Pod"
+family = "newt-escape-pod"
+classification = "capsule"
+objectKind = "capsule"
+capital = false
+origin = "human"
+primaryUse = "escape"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "never"
+discoveryPolicy = "existing-explicit-native-gallery-milestone; no-purchase-right"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Newt Escape Pod"
+statsFile = "fleet-specs/SH040.toml"
+statsSHA256 = "75c4cc44d54261be21ae459f533715b42bb48277e21f8c8c9e3a0be5c689fe9f"
+geometryFile = "replacement-hulls/SH040-design.toml"
+geometrySHA256 = "94125f9da5db004437ac784ba47be3267271fe2401cf506f9a3715f2b2e3ae3a"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Compact faceted rescue seed with a broad glazed hatch, protective end bands and recessed attitude thrusters."
+dimensionsWHLMetres = [4.0, 3.0, 6.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "capsule"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 0
+maxSpeed = 18.0
+acceleration = 3.0
+energyCapacity = 70
+energyRecharge = 0.6
+roll = 0.55
+pitch = 0.48
+yaw = 0.45
+shieldCapacityPerBank = 30
+shieldRechargePerBank = 0.4
+fuelTankLY = 0
+maxJumpLY = 0.0
+jumpChargeSeconds = 0
+missileCapacity = 0
+laserFacingMask = 0
+cargoExpansionTonnes = 0
+hullPriceCR = 0
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 0
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 0
+utilityMounts = 0
+compatibleUtilities = []
+recommendedRoleKit = []
+roleKitIncludedInBareHull = false
+passengerCabinGrades = []
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"

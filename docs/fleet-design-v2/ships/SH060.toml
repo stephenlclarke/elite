@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH060"
+name = "Wombat"
+family = "wombat"
+classification = "miner"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "deep-work-miner"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Wombat"
+statsFile = "fleet-specs/SH060.toml"
+statsSHA256 = "452cbe728ba2f2af37077db0e798e08a5fdcfd7ca258a8d48204169b9c75c0c8"
+geometryFile = "replacement-hulls/SH060-design.toml"
+geometrySHA256 = "d7e3fcf666702d6cdd5b8b78f73fdb0117a58a8b5a219b9107da04e1fb1c4b70"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Squat box ore cart with an open front tool scoop, wide stabiliser shoulders and a recessed rear crew compartment."
+dimensionsWHLMetres = [30.0, 16.0, 46.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "deep-work-miner"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 88
+maxSpeed = 28.5
+acceleration = 9.5
+energyCapacity = 430
+energyRecharge = 5.8
+roll = 0.73
+pitch = 0.64
+yaw = 0.6
+shieldCapacityPerBank = 290
+shieldRechargePerBank = 1.8
+fuelTankLY = 12.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 3
+cargoExpansionTonnes = 30
+hullPriceCR = 365000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 3
+intrinsicCrewPlaces = 3
+nativeAutonomous = false
+nativeCrew = 3
+playerConversionCrew = 3
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 17
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 28
+utilityMounts = 3
+compatibleUtilities = ["miningLaser", "cargoScoop", "salvageCutter", "surveyArray", "salvageBeam"]
+recommendedRoleKit = ["miningLaser", "cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

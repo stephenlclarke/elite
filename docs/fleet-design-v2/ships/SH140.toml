@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH140"
+name = "Chimango"
+family = "chimango"
+classification = "bountyHunter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "long-pursuit"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Chimango"
+statsFile = "fleet-specs/SH140.toml"
+statsSHA256 = "8e878446c5700a7260a6ae1955ec93611795d74cb22eca0311799b6f9470bb9c"
+geometryFile = "fleet-completion-20261019/batch-04/SH140-design.toml"
+geometrySHA256 = "eb4503a63f35300965be5c0f892894e7d727dfd19a4d238bdd1a691ca812a8d7"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original raised reverse shoulder pursuit craft; coherent named family construction, closed pressure volumes and independently placed structural parts. Human surfaces retain sparse wells, louvres, piping and instrumentation in the detailed design."
+dimensionsWHLMetres = [24.0, 6.68, 40.09]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "long-pursuit"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 20
+maxSpeed = 55.0
+acceleration = 17.92
+energyCapacity = 280
+energyRecharge = 4.2
+roll = 1.512
+pitch = 1.333
+yaw = 1.243
+shieldCapacityPerBank = 240
+shieldRechargePerBank = 1.9
+fuelTankLY = 13.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 3
+cargoExpansionTonnes = 10
+hullPriceCR = 335000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 4
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 2
+compatibleUtilities = ["salvageCutter", "cargoScoop", "surveyArray", "rescueReceiver"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

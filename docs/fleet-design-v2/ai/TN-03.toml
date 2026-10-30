@@ -1,0 +1,33 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design-variant/2"
+id = "TN-03"
+name = "Tithe Transport"
+parentHullID = "SH005"
+faction = "tithe-network"
+primaryUse = "bulk-resource-haulage"
+cataloguePolicy = "variant-under-parent; separate-appearance-and-blueprint-evidence"
+performanceSource = "ships/SH005.toml"
+missionReserveCount = 2
+
+[design]
+brief = "Four socketed machinery tiers sit around a straight bus; lateral radiator slabs and rear thrusters remain clear."
+style = "blocky-functional-autonomous"
+units = "metres"
+boxComponentsXYZWHL = [[0.0, 0.0, 0.0, 12.0, 12.0, 80.0], [-16.0, 0.0, -27.0, 18.0, 18.0, 15.0], [-16.0, 0.0, -9.0, 18.0, 18.0, 15.0], [-16.0, 0.0, 9.0, 18.0, 18.0, 15.0], [-16.0, 0.0, 27.0, 18.0, 18.0, 15.0], [16.0, 0.0, -27.0, 18.0, 18.0, 15.0], [16.0, 0.0, -9.0, 18.0, 18.0, 15.0], [16.0, 0.0, 9.0, 18.0, 18.0, 15.0], [16.0, 0.0, 27.0, 18.0, 18.0, 15.0], [-6.5, 0.0, -27.0, 3.0, 4.0, 8.0], [-6.5, 0.0, -9.0, 3.0, 4.0, 8.0], [-6.5, 0.0, 9.0, 3.0, 4.0, 8.0], [-6.5, 0.0, 27.0, 3.0, 4.0, 8.0], [6.5, 0.0, -27.0, 3.0, 4.0, 8.0], [6.5, 0.0, -9.0, 3.0, 4.0, 8.0], [6.5, 0.0, 9.0, 3.0, 4.0, 8.0], [6.5, 0.0, 27.0, 3.0, 4.0, 8.0], [0.0, 7.0, -15.0, 8.0, 6.0, 12.0], [0.0, 12.0, -15.0, 28.0, 8.0, 16.0]]
+cockpit = false
+windows = false
+humanBridge = false
+palette = ["gunmetal", "oxidised-steel", "amber-status"]
+detail = "Service panels, cable trunks, radiators, bolt access and keyed docking sockets only."
+collisionRule = "Separate collision and service aperture bounds; no silhouette-only collision box."
+
+[conversion]
+nativeCrew = 0
+crewRetrofitRequiredForPlayer = true
+retrofitService = "PLUGH"
+retrofitPriceCR = 122000
+retrofitEquipmentUnits = 5
+retrofitHoldTonnes = 60
+retrofitCrew = 12
+rogueAISoftwareTransferred = false
+blueprint = "commander-EMP-disable-and-lawful-physical-salvage-of-this-actual-variant"

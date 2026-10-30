@@ -1,0 +1,36 @@
+{
+  "revision": "2.2",
+  "findings": [
+    "FLEET-R2-G3-001",
+    "FD-R2-MC1-01",
+    "FD-R2-MC1-02",
+    "G4-FD2-PHYS-01"
+  ],
+  "authorStatus": "Corrected; own-finding independent verification pending",
+  "preservation": {
+    "scope": "Bounded authoring-only review corrections; no runtime/native/game/compiler execution",
+    "revision": "2.2 single review correction batch",
+    "markdownFiles": 17,
+    "localLinksChecked": 217,
+    "missingLocalLinks": [],
+    "authoringAST": "PASS",
+    "aiSVGXMLFiles": 3,
+    "medusaControllerCommit": "a91c899589e226c01adb180c4bee6b162cb0ee67",
+    "medusaExactStockFieldGuards": 17,
+    "medusaConfigurationCount": 4,
+    "noFreeCabinAndBareRoleKitGuards": true,
+    "negativeAuthoringCases": 21,
+    "all171PerformanceRecordsUnchanged": true,
+    "169OtherHullContractsByteUnchanged": true,
+    "metadataOnlyHullChanges": [
+      "SH171",
+      "SH123"
+    ],
+    "SH123EffectiveDisplayPinnedSeparatelyFromHistoricalProvenance": true,
+    "geometryChanged": false,
+    "nativeFitOrFullyUpgradedPowerVerified": false,
+    "independentFindingVerification": "Pending reviewers own narrow checks",
+    "runtimeOrReservationsChanged": false
+  },
+  "originalR2Archive": "fleet-design-v2-20261030-r2.zip"
+}

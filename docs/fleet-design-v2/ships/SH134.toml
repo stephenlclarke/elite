@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH134"
+name = "Warthog Heavy"
+family = "warthog"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "heavy-industrial-freighter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Warthog 9 Heavy"
+statsFile = "fleet-specs/SH134.toml"
+statsSHA256 = "9b63716288d1da3ae5f8032868cef23c0eb2e9ccbd3230292bf2fda5e8060787"
+geometryFile = "fleet-completion-20261019/batch-03/SH134-design.toml"
+geometrySHA256 = "405632ced74ba51a1a9c76ecedad1cc42488dff8b9a1dc4f582212a9472c0de6"
+nameDecision = "Name the larger cargo model."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original extended wide fender heavy carrier; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [35.788, 20.24, 55.215]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "heavy-industrial-freighter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 620
+maxSpeed = 18.0
+acceleration = 4.64
+energyCapacity = 980
+energyRecharge = 6.0
+roll = 0.361
+pitch = 0.318
+yaw = 0.292
+shieldCapacityPerBank = 500
+shieldRechargePerBank = 1.7
+fuelTankLY = 13.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 14
+missileCapacity = 8
+laserFacingMask = 15
+cargoExpansionTonnes = 175
+hullPriceCR = 661000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 9
+intrinsicCrewPlaces = 9
+nativeAutonomous = false
+nativeCrew = 9
+playerConversionCrew = 9
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 124
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 44
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

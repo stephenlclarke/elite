@@ -1,0 +1,42 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH028"
+name = "Lion Citadel"
+family = "lion-citadel"
+classification = "station"
+objectKind = "station"
+capital = true
+origin = "human"
+primaryUse = "station-services"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "dock"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Lion Citadel"
+statsFile = "fleet-specs/SH028.toml"
+statsSHA256 = "8a3933819a2facf7c614afeae4919e6a50e8ca20cb8183c184e8789403bfff5d"
+geometryFile = "replacement-hulls/SH028-design.toml"
+geometrySHA256 = "739d9bb076fcb0212ca48e7a00312e87f1f959d37d6ab1ff247b75ff2b39305a"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Eight elongated habitat capsules around a hollow axial harbour, supported by an open orbital frame with a rectangular docking throat."
+dimensionsWHLMetres = [120.0, 64.0, 180.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "station"
+nativeFaceLimit = 512
+
+[environment]
+playerCrewRequired = false
+purchasePolicy = "never"
+physicalService = "station-services"

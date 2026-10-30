@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH007"
+name = "Impala Voyager"
+family = "impala"
+classification = "leisure"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "expedition-voyager"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Impala Voyager"
+statsFile = "fleet-specs/SH007.toml"
+statsSHA256 = "a75681f60d15795e2db03b783671fbe3d572bfd75a39f62658a7dca09ac666ea"
+geometryFile = "fleet-completion-20261019/batch-01-native-lod/SH007-design.toml"
+geometrySHA256 = "911be33ac10be443afd3d33c6d20f65079bb9a5c20b58752597c52d50d12aad3"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Wide forward lounge and two separate aft passenger galleries above an engineering keel; curved bow arch and long inset observation strips."
+dimensionsWHLMetres = [20.3, 11.44, 41.39]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "expedition-voyager"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 60
+maxSpeed = 38.0
+acceleration = 11.0
+energyCapacity = 260
+energyRecharge = 3.8
+roll = 1.01
+pitch = 0.89
+yaw = 0.83
+shieldCapacityPerBank = 220
+shieldRechargePerBank = 1.7
+fuelTankLY = 14.0
+maxJumpLY = 12.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 15
+hullPriceCR = 319000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 12
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 26
+utilityMounts = 3
+compatibleUtilities = ["surveyArray", "rescueReceiver", "cargoScoop", "auxiliaryFuelTank"]
+recommendedRoleKit = ["surveyArray", "flightRecorder"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

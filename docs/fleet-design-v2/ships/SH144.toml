@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH144"
+name = "Razorback"
+family = "razorback"
+classification = "trader"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "armed-express"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Razorback"
+statsFile = "fleet-specs/SH144.toml"
+statsSHA256 = "0289d994547917faa299e632222c4fb1334e4e845b11d325a826e0fd31c95c13"
+geometryFile = "fleet-completion-20261019/batch-04/SH144-design.toml"
+geometrySHA256 = "e30c1a84cb44852ddfbe6d397aa27f637a4387160af448859423e85437c04ac5"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original long low freight hull with high narrow cargo ridge; coherent named family construction, closed pressure volumes and independently placed structural parts. Human surfaces retain sparse wells, louvres, piping and instrumentation in the detailed design."
+dimensionsWHLMetres = [21.664, 14.972, 37.09]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "armed-express"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 66
+maxSpeed = 38.4
+acceleration = 10.4
+energyCapacity = 250
+energyRecharge = 3.2
+roll = 0.92
+pitch = 0.81
+yaw = 0.75
+shieldCapacityPerBank = 210
+shieldRechargePerBank = 1.5
+fuelTankLY = 13.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 6
+laserFacingMask = 3
+cargoExpansionTonnes = 25
+hullPriceCR = 295000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 13
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 2
+compatibleUtilities = ["cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

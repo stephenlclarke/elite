@@ -1,0 +1,42 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH102"
+name = "Dhole Haven"
+family = "dhole"
+classification = "station"
+objectKind = "station"
+capital = true
+origin = "human"
+primaryUse = "station-services"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "dock"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Dhole Haven"
+statsFile = "fleet-specs/SH102.toml"
+statsSHA256 = "8b150a8cadd56e60ca89ee526314d67347738a7845060701de4f9a0b9893132d"
+geometryFile = "replacement-hulls/SH102-design.toml"
+geometrySHA256 = "1af4b8817f6a2abc85c6445e4131f3571a135cde24f95125c61ce16be9d23723"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Paired curved protective cages surround a clearly open rectangular dock and four service habitats; no source asteroid mesh is retained."
+dimensionsWHLMetres = [120.0, 64.0, 180.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "station"
+nativeFaceLimit = 512
+
+[environment]
+playerCrewRequired = false
+purchasePolicy = "never"
+physicalService = "station-services"

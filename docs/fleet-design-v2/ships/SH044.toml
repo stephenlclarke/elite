@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH044"
+name = "Harpy Assault"
+family = "harpy"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "armoured-assault"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Harpy Assault"
+statsFile = "fleet-specs/SH044.toml"
+statsSHA256 = "573f32a6b6f32e1b6152572725264d4e044d524c423d9ab1b83cc24d4ab3ac69"
+geometryFile = "fleet-completion-20261019/batch-01-native-lod/SH044-design.toml"
+geometrySHA256 = "6221e902c9893e7c3e9b9557e7f3331dc95da26282b76c1edfdbeba8f9f94f25"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Three broad armoured pressure keels joined by thick shoulder webs; protected cockpit and recessed forward cannon shrouds."
+dimensionsWHLMetres = [24.0, 9.32, 33.29]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "armoured-assault"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 18
+maxSpeed = 42.4
+acceleration = 14.0
+energyCapacity = 480
+energyRecharge = 6.0
+roll = 1.15
+pitch = 1.01
+yaw = 0.94
+shieldCapacityPerBank = 290
+shieldRechargePerBank = 2.0
+fuelTankLY = 14.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 12
+missileCapacity = 8
+laserFacingMask = 7
+cargoExpansionTonnes = 5
+hullPriceCR = 394000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 3
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 20
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

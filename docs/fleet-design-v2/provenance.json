@@ -1,0 +1,12 @@
+{
+  "fleetManifestSHA256": "d6feeaf3d4e7bd8eac41061382a73a4ca83dcbda8ce30efc3cf18d849c4e71b0",
+  "deliveryIndexSHA256": "3fbc5198639819f4bafbbe538c2af688dfe6a6564c92807f9fe54825115dedff",
+  "sharedChat": "https://chatgpt.com/share/6ae4555e-326c-83ed-8736-f0d1f16d4a60?ogimg=plain",
+  "sharedChatTreatment": "Reference inspiration and critique; third-party illustrative images are not owned ship assets.",
+  "sharedChatRetrievedUTCDate": "2026-10-30",
+  "sharedChatHTMLSHA256": "56d9d5585b98ee3ef4bba0730681972019ca07c74f7ddcd2a8088b09a6cc4e8e",
+  "salvageResearcherCommit": "a91c899589e226c01adb180c4bee6b162cb0ee67",
+  "salvageContractSHA256": "7c0d9f9067d69f0ebfc562f8801046d395e7004420729a3a124e2f3a26e2ef04",
+  "medusaFlagshipSHA256": "0e2e6639721f77392cdc5566a0df3b9eb41b038d61564d7753b7f64d760b8771",
+  "medusaClarificationPacketSHA256": "ae837946fe3ddd5e8af0cfa07bdb25ab90a35878ab132c75efedd9f602e03118"
+}

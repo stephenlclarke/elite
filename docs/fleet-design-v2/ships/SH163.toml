@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH163"
+name = "Lammergeier"
+family = "lammergeier"
+classification = "pirate"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "salvage-raider"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Lammergeier"
+statsFile = "fleet-specs/SH163.toml"
+statsSHA256 = "99c96d7b1ca71fe33606eed9c7ff320bf7d15334daca98d39691a3cabee6a8e6"
+geometryFile = "replacement-hulls/SH163-design.toml"
+geometrySHA256 = "35c56db12a269759f3c87d95be388022146d95bfa4f8b8e4e09a4214cc84c9cc"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "A long armoured salvage spine with four large swept radiator teeth, recessed forward cockpit and broad low stern engines."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "salvage-raider"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 36
+maxSpeed = 44.0
+acceleration = 14.0
+energyCapacity = 410
+energyRecharge = 5.4
+roll = 1.1
+pitch = 1.0
+yaw = 0.9
+shieldCapacityPerBank = 300
+shieldRechargePerBank = 1.8
+fuelTankLY = 14.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 15
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 16
+hullPriceCR = 389000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 3
+intrinsicCrewPlaces = 3
+nativeAutonomous = false
+nativeCrew = 3
+playerConversionCrew = 3
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 7
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 28
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "surveyArray", "salvageBeam"]
+recommendedRoleKit = ["salvageBeam", "salvageCutter", "cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

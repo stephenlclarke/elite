@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH150"
+name = "Reindeer Freighter"
+family = "reindeer"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "winter-convoy-freighter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Reindeer Freighter"
+statsFile = "fleet-specs/SH150.toml"
+statsSHA256 = "e9af1dd50859504b55562cd074ad6ca0127d90b0a2a5e4799d635cd64655743d"
+geometryFile = "replacement-hulls/SH150-design.toml"
+geometrySHA256 = "06cbe5e88f8d62e9f65b09c5cb74ba85b7d84ee183ceed0f40f6a8f3a1542f34"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Independent festive freight barge with six boxed cargo modules in a metal lattice, a high observation cabin and compact corner thrusters."
+dimensionsWHLMetres = [68.0, 30.0, 110.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "winter-convoy-freighter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 528
+maxSpeed = 20.8
+acceleration = 5.2
+energyCapacity = 740
+energyRecharge = 5.2
+roll = 0.41
+pitch = 0.36
+yaw = 0.34
+shieldCapacityPerBank = 480
+shieldRechargePerBank = 1.7
+fuelTankLY = 13.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 14
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 210
+hullPriceCR = 556000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 8
+intrinsicCrewPlaces = 8
+nativeAutonomous = false
+nativeCrew = 8
+playerConversionCrew = 8
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 105
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 40
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

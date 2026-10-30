@@ -1,0 +1,42 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH156"
+name = "Lion Bastion"
+family = "lion-bastion"
+classification = "platform"
+objectKind = "platform"
+capital = true
+origin = "human"
+primaryUse = "weapons-platform"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "existing-explicit-native-gallery-milestone; no-purchase-right"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Lion Bastion"
+statsFile = "fleet-specs/SH156.toml"
+statsSHA256 = "0197d2d781f64c95303e119b85cb4eef85a01415f8e26a9a8e6ff6f56b4ec5f8"
+geometryFile = "replacement-hulls/SH156-design.toml"
+geometrySHA256 = "9a1147d23fa4a9e514afad7f5d9264746ff135f12729de23878750f4d7f1870d"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Four armoured pillars frame a large rectangular docking bay; peripheral batteries, radiator leaves and service pipes surround the open entrance."
+dimensionsWHLMetres = [120.0, 64.0, 180.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "platform"
+nativeFaceLimit = 512
+
+[environment]
+playerCrewRequired = false
+purchasePolicy = "never"
+physicalService = "weapons-platform"

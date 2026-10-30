@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH047"
+name = "Harpy Gunship"
+family = "harpy"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "sustained-gunship"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Harpy Gunship"
+statsFile = "fleet-specs/SH047.toml"
+statsSHA256 = "4186c90ac3c6e695df1f27ff02bc3b37f53ac608d9c323490dd3dc015cdfbca2"
+geometryFile = "fleet-completion-20261019/batch-01-native-lod/SH047-design.toml"
+geometrySHA256 = "7cb0dad60b3f677c8710677403cba2213ffd5bfb1a7ee1a2d2b012cacc381dd7"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Harpy common pressure hull with paired ventral weapon housings and a deep protected power-conversion deck."
+dimensionsWHLMetres = [24.0, 10.22, 33.29]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "sustained-gunship"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 14
+maxSpeed = 38.0
+acceleration = 12.04
+energyCapacity = 560
+energyRecharge = 8.2
+roll = 0.989
+pitch = 0.869
+yaw = 0.808
+shieldCapacityPerBank = 290
+shieldRechargePerBank = 2.0
+fuelTankLY = 14.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 12
+missileCapacity = 9
+laserFacingMask = 15
+cargoExpansionTonnes = 5
+hullPriceCR = 436000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 3
+intrinsicCrewPlaces = 3
+nativeAutonomous = false
+nativeCrew = 3
+playerConversionCrew = 3
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 2
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 24
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

@@ -1,0 +1,125 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH171"
+name = "Medusa"
+family = "medusa"
+classification = "alien"
+objectKind = "ship"
+capital = false
+origin = "larvaal"
+primaryUse = "finale-upgrade-platform"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "plughQuestFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "Q01-full-clue-trail-EMP-salvage-lattice-receiving-PLUGH"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Medusa"
+statsFile = "fleet-specs/SH171.toml"
+statsSHA256 = "0b1e8d7e11800ee47ccf1767e39a98df8a9f03681cec057d9684b9bae6261bb7"
+geometryFile = "replacement-hulls/SH171-design.toml"
+geometrySHA256 = "d093d9fb10c2319b93f807cf2b02977fa6df91c37e6735df5da33df886216e5b"
+nameDecision = "Retain the accepted animal stem and identity."
+medusaFlagshipSource = "references/salvage/MEDUSA-FLAGSHIP.json"
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Grown seed core, curved cartilage ribs, a uniform rounded elliptical living crown and eight backward-curving propulsion organs with bioluminescent glands. Pearl carapace, deep teal folds and warm tendons."
+dimensionsWHLMetres = [30.0, 12.0, 38.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "retained-organic-medusa"
+variantFeature = "finale-upgrade-platform"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 22
+maxSpeed = 50.3
+acceleration = 18.0
+energyCapacity = 410
+energyRecharge = 4.7
+roll = 1.37
+pitch = 1.21
+yaw = 1.12
+shieldCapacityPerBank = 300
+shieldRechargePerBank = 2.1
+fuelTankLY = 13.0
+maxJumpLY = 9
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 15
+cargoExpansionTonnes = 10
+hullPriceCR = 288000
+
+[medusaConfigurations]
+configurationKeys = ["catalogueBase", "missionInstance", "plughShowroom", "fullyUpgradedPlayer"]
+catalogueBase = "unupgraded baseline; greatest upgrade potential, not all leading stock statistics"
+missionInstance = "quest-limited; separately authored real finite equipment; beatable; never inherit player maximum"
+missionFullyUpgraded = false
+plughShowroom = "paid stock fit explicitly listed in quote; upgrades purchased afterwards"
+purchaseGrantsMaximumFit = false
+fullyUpgradedPlayerRequirement = "most powerful legal fully upgraded ship at matched external contributions and condition"
+stockEquipmentBudget = 13
+candidatePaidExpansionBudget = 32
+expansionStatus = "proposal only; requires real compatible paid upgrade and physical fitting contract"
+completeLoadoutPowerComparison = "pending; stock-only comparison is not proof"
+
+[candidatePlayerUpgradeTargets]
+status = "candidate fully upgraded targets only; not stock, mission, approved upgrade nodes or verified superiority"
+maxSpeed = 80.0
+acceleration = 24.0
+energyCapacity = 2000
+energyRecharge = 14.0
+roll = 2.4
+pitch = 2.1
+yaw = 2.0
+shieldCapacityPerBank = 800
+shieldRechargePerBank = 3.0
+fuelTankLY = 20.0
+maxJumpLY = 15
+jumpChargeSeconds = 6
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 4
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 13
+utilityMounts = 4
+compatibleUtilities = ["miningLaser", "cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver", "salvageBeam", "auxiliaryFuelTank"]
+recommendedRoleKit = ["combatLaser", "ECM", "EMP"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "internal-organic"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"
+questActorCrew = 0
+sample = "original 50kg outer reconstruction lattice; sovereign core protected"
+receiving = "same intact lattice consumed by later PLUGH AI receiving; story/fabrication right together; paid ship optional"
+retry = "same unlocked cradle, new legitimate construct after actual loss; retain clues/trail; no duplicate old sample"
+loan = "no-fee/no-deposit compatible real service hull, crew and tools when needed; no permanent ownership grant"

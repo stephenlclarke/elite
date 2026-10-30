@@ -1,0 +1,86 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH123"
+name = "Larvaal Sovereign"
+family = "larvaal-sovereign"
+classification = "alien"
+objectKind = "ship"
+capital = true
+origin = "larvaal"
+primaryUse = "alien-capital"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "existing-explicit-native-gallery-milestone; no-purchase-right"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Larvaal Sovereign"
+statsFile = "fleet-specs/SH123.toml"
+statsSHA256 = "e01f7ade1ef416578e851086bafa54c2995ec140780719524c87ba5d2c41c9d8"
+geometryFile = "replacement-hulls/SH123-design.toml"
+geometrySHA256 = "a430c5e8946db1d2f27d5030ae3f245f0838e52f2dadf1409323a16fc1c67499"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-current-selected-branding-display-source; historical geometry is audit provenance only"
+originalIntent = "Historical audit only: A large smooth jade vessel with paired elongated crescent shells, a raised living vault, recessed folds and a gold luminous core. Shares the Warship and Drone material language without a radial petal-disc outline."
+dimensionsWHLMetres = [120.0, 64.0, 180.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "smooth-jade-organic"
+variantFeature = "alien-capital"
+nativeFaceLimit = 512
+currentAcceptedDisplaySource = "branding-proposal/selected-ship.toml"
+currentAcceptedDisplaySourceSHA256 = "2179227760376ed17b276153cb7cb20894f4f1bad5bf48e339b7dc874f70fe69"
+currentAcceptedDisplayResource = "Sources/L337Core/Resources/OriginalFleetShowroomModels/SH123.json"
+currentAcceptedDisplayResourceSHA256 = "f6648d12e2a476092088c7a79c8e1220b272f6370fddfde779f97db7d216f163"
+currentAcceptedDisplayCommit = "e10c06e45c36df450b0d60074c8d2faef6b9cd18"
+displayIsPhysicalCalibration = false
+nativeRule = "Separately author/calibrate native LOD and clearance retaining the selected appearance; display source grants no physical scale, inertia, purchase or activation."
+
+[performance]
+cargoTonnes = 180
+maxSpeed = 27.7
+acceleration = 7.2
+energyCapacity = 1660
+energyRecharge = 9.5
+roll = 0.52
+pitch = 0.46
+yaw = 0.43
+shieldCapacityPerBank = 620
+shieldRechargePerBank = 2.1
+fuelTankLY = 15.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 18
+missileCapacity = 8
+laserFacingMask = 15
+cargoExpansionTonnes = 70
+hullPriceCR = 0
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 18
+intrinsicCrewPlaces = 18
+nativeAutonomous = false
+nativeCrew = 18
+playerConversionCrew = 18
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 36
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 64
+utilityMounts = 4
+compatibleUtilities = ["miningLaser", "cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "internal-organic"

@@ -1,0 +1,93 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH166"
+name = "Camel Rescue"
+family = "camel"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "rescue-transport"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Camel Rescue"
+statsFile = "fleet-specs/SH166.toml"
+statsSHA256 = "eabb74956453f0a083925b36cf58ad8f5d11cc7e442064dbe3e249d8840eb7fd"
+geometryFile = "replacement-hulls/SH166-design.toml"
+geometrySHA256 = "5d782369e19a839d28bce557aa327701b0d9904e6381880fbabe9cf161f56db4"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Open rescue cradle around an independently authored crew capsule, twin rear thrusters and broad forward recovery jaws."
+dimensionsWHLMetres = [44.0, 20.0, 76.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "rescue-transport"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 280
+maxSpeed = 25.0
+acceleration = 5.9
+energyCapacity = 820
+energyRecharge = 6.7
+roll = 0.45
+pitch = 0.4
+yaw = 0.37
+shieldCapacityPerBank = 460
+shieldRechargePerBank = 1.7
+fuelTankLY = 13.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 14
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 140
+hullPriceCR = 555000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 8
+intrinsicCrewPlaces = 8
+nativeAutonomous = false
+nativeCrew = 8
+playerConversionCrew = 8
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 56
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 46
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["salvageCutter", "cargoScoop", "rescueReceiver"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+recommendedCabinGrade = "economy"
+recommendedCabinModules = 16
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

@@ -1,0 +1,93 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH046"
+name = "Harpy Dropship"
+family = "harpy"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "orbital-dropship"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Harpy Dropship"
+statsFile = "fleet-specs/SH046.toml"
+statsSHA256 = "22887ffdc80bcc21897d2a14ca65f7c4db2e3a862208e9050f1a1d32cef93f9d"
+geometryFile = "fleet-completion-20261019/batch-01-native-lod/SH046-design.toml"
+geometrySHA256 = "2619b8ca62cad610226c8f3862882d17de9b6b83186c192eb0e099dc66eb1c4f"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Harpy common three-keel roof and engines over a deep troop bay, actual rear hatch outline and stout landing rails."
+dimensionsWHLMetres = [24.0, 12.72, 33.29]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "orbital-dropship"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 48
+maxSpeed = 36.8
+acceleration = 14.0
+energyCapacity = 450
+energyRecharge = 5.8
+roll = 1.15
+pitch = 1.01
+yaw = 0.94
+shieldCapacityPerBank = 290
+shieldRechargePerBank = 2.0
+fuelTankLY = 14.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 5
+hullPriceCR = 384000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 5
+intrinsicCrewPlaces = 5
+nativeAutonomous = false
+nativeCrew = 5
+playerConversionCrew = 5
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 9
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 30
+utilityMounts = 4
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop", "salvageBeam"]
+recommendedRoleKit = ["lifeSupportService", "passengerCabin"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+recommendedCabinGrade = "standard"
+recommendedCabinModules = 4
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

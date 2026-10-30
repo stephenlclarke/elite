@@ -1,0 +1,93 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH106"
+name = "Tapir Mk II"
+family = "tapir"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "passenger-transport"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Tapir Mk II"
+statsFile = "fleet-specs/SH106.toml"
+statsSHA256 = "27a0632c075a64702f74e72a908a167b0c0ba0d9a3b8d024092a589a347743b1"
+geometryFile = "replacement-hulls/SH106-design.toml"
+geometrySHA256 = "20131f3bbc888dc52c51e0e950a50a7b2ee72ce62c47cf42dae0151d5db8fc65"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "A tall oval protective hoop surrounds a compact passenger capsule, joined to a short horizontal equipment deck and rear drive."
+dimensionsWHLMetres = [44.0, 20.0, 76.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "passenger-transport"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 360
+maxSpeed = 21.5
+acceleration = 5.2
+energyCapacity = 800
+energyRecharge = 6.2
+roll = 0.41
+pitch = 0.36
+yaw = 0.34
+shieldCapacityPerBank = 540
+shieldRechargePerBank = 1.78
+fuelTankLY = 13.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 14
+missileCapacity = 5
+laserFacingMask = 7
+cargoExpansionTonnes = 195
+hullPriceCR = 558000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 7
+intrinsicCrewPlaces = 7
+nativeAutonomous = false
+nativeCrew = 7
+playerConversionCrew = 7
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 72
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 44
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["lifeSupportService", "passengerCabin"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+recommendedCabinGrade = "economy"
+recommendedCabinModules = 24
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"
