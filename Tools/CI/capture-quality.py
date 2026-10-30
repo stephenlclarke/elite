@@ -212,8 +212,8 @@ try:
     for name, command in [('os', ['sw_vers']), ('xcode', ['xcodebuild', '-version']),
                           ('swift', ['swift', '--version']),
                           ('xcrunSwift', ['xcrun', 'swift', '--version']),
-                          ('sdk', ['xcrun', '--show-sdk-path']),
-                          ('sdkVersion', ['xcrun', '--show-sdk-version']),
+                          ('sdk', ['xcrun', '--sdk', 'macosx', '--show-sdk-path']),
+                          ('sdkVersion', ['xcrun', '--sdk', 'macosx', '--show-sdk-version']),
                           ('architecture', ['uname', '-m'])]:
         result = subprocess.run(command, cwd=root, capture_output=True, text=True, check=False)
         metadata[name] = {'command': command, 'exitCode': result.returncode,

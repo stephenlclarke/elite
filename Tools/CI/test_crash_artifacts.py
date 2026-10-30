@@ -1,4 +1,5 @@
 """Filesystem/report fixtures only: never launch make, the app or a native test image."""
+import ast
 from datetime import datetime, timedelta
 import hashlib
 import io
@@ -13,6 +14,85 @@ import unittest
 from unittest.mock import patch
 
 import crash_artifacts as artifacts
+
+
+class CaptureMetadataSDKTests(unittest.TestCase):
+    def metadata_block(self):
+        source = Path(__file__).with_name('capture-quality.py')
+        tree = ast.parse(source.read_text())
+        # Pin the complete unique metadata block, including its real failure assertion.
+        candidates = [node for node in tree.body if isinstance(node, ast.Try)
+                      and any(isinstance(item, ast.Assign) and any(
+                          isinstance(target, ast.Name) and target.id == 'metadata'
+                          for target in item.targets) for item in node.body)]
+        self.assertEqual(len(candidates), 1)
+        body = candidates[0].body
+        starts = [index for index, item in enumerate(body) if isinstance(item, ast.Assign)
+                  and any(isinstance(target, ast.Name) and target.id == 'metadata'
+                          for target in item.targets)]
+        ends = [index for index, item in enumerate(body) if isinstance(item, ast.Assign)
+                and isinstance(item.value, ast.Call) and isinstance(item.value.func, ast.Name)
+                and item.value.func.id == 'run']
+        self.assertEqual(len(starts), 1)
+        self.assertEqual(len(ends), 1)
+        block = body[starts[0]:ends[0]]
+        self.assertEqual([type(item) for item in block],
+                         [ast.Assign, ast.For, ast.Expr, ast.Expr, ast.Assert])
+        self.assertIsInstance(block[0].value, ast.Dict)
+        self.assertEqual(block[0].value.keys, [])
+        for item, function in [(block[2], 'write'), (block[3], 'print')]:
+            self.assertIsInstance(item.value, ast.Call)
+            self.assertIsInstance(item.value.func, ast.Name)
+            self.assertEqual(item.value.func.id, function)
+        expected = ast.parse("assert all(value['exitCode'] == 0 for value in metadata.values())")
+        self.assertEqual(ast.dump(block[4]), ast.dump(expected.body[0]))
+        self.assertIsInstance(block[1].iter, ast.List)
+        self.assertEqual(len(block[1].iter.elts), 7)
+        return compile(ast.Module(body=block, type_ignores=[]), str(source), 'exec')
+
+    def capture(self, rejected=None):
+        calls, saved = [], {}
+
+        def command(argv, **options):
+            calls.append(list(argv))
+            # Reproduce the broken default SDK while the explicitly selected SDK is valid.
+            bare = argv in (['xcrun', '--show-sdk-path'], ['xcrun', '--show-sdk-version'])
+            failure = bare or argv == rejected
+            return SimpleNamespace(returncode=1 if failure else 0,
+                                   stdout='' if failure else 'selected-sdk-fixture\n',
+                                   stderr='SDK cannot be located\n' if failure else '')
+
+        namespace = dict(subprocess=SimpleNamespace(run=command), root=Path('/fixture'),
+                         head='fixture-source-never-executed',
+                         evidence=Path('/fixture/reports'), json=json, print=lambda *args, **kwargs: None,
+                         write=lambda path, value: saved.update(value))
+        error = None
+        try:
+            exec(self.metadata_block(), namespace)
+        except AssertionError as failure:
+            error = failure
+        return calls, saved, error
+
+    def test_explicit_macos_sdk_avoids_broken_default_and_retains_actual_metadata(self):
+        calls, saved, error = self.capture()
+        self.assertIsNone(error)
+        for name, flag in [('sdk', '--show-sdk-path'), ('sdkVersion', '--show-sdk-version')]:
+            argv = ['xcrun', '--sdk', 'macosx', flag]
+            self.assertIn(argv, calls)
+            self.assertEqual(saved[name], dict(command=argv, exitCode=0,
+                                               stdout='selected-sdk-fixture\n', stderr=''))
+        self.assertEqual(saved['swift']['command'], ['swift', '--version'])
+        self.assertEqual(saved['xcrunSwift']['command'], ['xcrun', 'swift', '--version'])
+
+    def test_explicit_sdk_failure_retains_raw_error_and_still_refuses_quality(self):
+        for name, flag in [('sdk', '--show-sdk-path'), ('sdkVersion', '--show-sdk-version')]:
+            with self.subTest(command=flag):
+                argv = ['xcrun', '--sdk', 'macosx', flag]
+                calls, saved, error = self.capture(rejected=argv)
+                self.assertIsInstance(error, AssertionError)
+                self.assertIn(argv, calls)
+                self.assertEqual(saved[name], dict(command=argv, exitCode=1, stdout='',
+                                                   stderr='SDK cannot be located\n'))
 
 
 class RuntimeChildEnvironmentTests(unittest.TestCase):

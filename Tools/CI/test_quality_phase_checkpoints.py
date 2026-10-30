@@ -305,6 +305,58 @@ class OwnedPhaseBuildTests(unittest.TestCase):
                                    disk_capacity=100, disk_reserve=10, disk_per_worker=20),
                     flags=['--jobs', '1', '-Xswiftc', '-disable-batch-mode'])
 
+    def test_explicit_sdk_queries_bind_each_actual_phase_identity_with_broken_defaults(self):
+        self.fail_leaks = False
+        for phase in ('normal', 'leaks'):
+            with self.subTest(phase=phase):
+                queries = []
+
+                def query(command, *args):
+                    queries.append(command)
+                    if command in (['xcrun', '--show-sdk-path'], ['xcrun', '--show-sdk-version']):
+                        raise subprocess.CalledProcessError(1, command, stderr='broken default SDK')
+                    if command == ['xcrun', '--sdk', 'macosx', '--show-sdk-version']:
+                        return 'explicit-sdk-fixture'
+                    if command == ['xcrun', '--sdk', 'macosx', '--show-sdk-path']:
+                        return '/fixture/explicit-macos.sdk'
+                    return self.output(command, *args)
+
+                cache = self.root / ('sdk-identity-' + phase)
+                with self.context(), patch.dict(os.environ, {'GITHUB_SHA': self.head}), \
+                        patch.object(runner, 'reviewed_build_profile', return_value=self.profile(phase)), \
+                        patch.object(runner, 'output', side_effect=query):
+                    runner.run_phase(phase, cache, '/owned/policy', 'f' * 64)
+                result = json.loads(next(cache.glob('phases/*/*/result.json')).read_text())
+                self.assertEqual(result['status'], 'passed')
+                self.assertEqual(result['identity']['sdk'], 'explicit-sdk-fixture')
+                self.assertEqual(result['identity']['sdk_path'], '/fixture/explicit-macos.sdk')
+                for flag in ('--show-sdk-path', '--show-sdk-version'):
+                    self.assertIn(['xcrun', '--sdk', 'macosx', flag], queries)
+
+    def test_explicit_sdk_query_failure_cannot_qualify_normal_or_leaks(self):
+        for phase in ('normal', 'leaks'):
+            for index, flag in enumerate(('--show-sdk-path', '--show-sdk-version')):
+                with self.subTest(phase=phase, command=flag):
+                    rejected = ['xcrun', '--sdk', 'macosx', flag]
+                    queries = []
+
+                    def query(command, *args):
+                        queries.append(command)
+                        if command in (rejected, ['xcrun', '--show-sdk-path'],
+                                       ['xcrun', '--show-sdk-version']):
+                            raise subprocess.CalledProcessError(1, command, stderr='SDK unavailable')
+                        return self.output(command, *args)
+
+                    cache = self.root / ('sdk-refusal-' + phase + '-' + str(index))
+                    with self.context(), patch.dict(os.environ, {'GITHUB_SHA': self.head}), \
+                            patch.object(runner, 'reviewed_build_profile', return_value=self.profile(phase)), \
+                            patch.object(runner, 'output', side_effect=query):
+                        with self.assertRaises(subprocess.CalledProcessError):
+                            runner.run_phase(phase, cache, '/owned/policy', 'f' * 64)
+                    self.assertIn(rejected, queries)
+                    self.assertFalse(list(cache.glob('phases/*/*/result.json')))
+                    self.assertFalse(list((self.root / 'reports').glob('quality-phases/*/*/summary.json')))
+
     def test_each_phase_changes_only_build_argv_and_seals_its_actual_log_and_profile(self):
         self.fail_leaks = False
         for phase in ('normal', 'leaks'):
