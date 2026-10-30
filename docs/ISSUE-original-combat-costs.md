@@ -1,0 +1,7 @@
+# Apply the approved original missile, ECM and bomb costs
+
+The accepted original-world equipment data declares ordinary missile damage160, ECM activation energy22 and Energy Bomb use energy180. Current native consumers still use250 missile damage,10 ECM energy and no bomb energy debit. These three original values are already authorized; the separate unresolved fuel denominator, energy-grade progression and laser cadence decisions do not select different values for this slice.
+
+Root reserved the exact three production hunks and existing numeric assertions before edits. Root also retained the existing positive-hull-energy convention: ECM requires energy greater than22 and a physical bomb requires finite hull energy greater than180. Exact cost funding refuses unchanged. Preserve the bomb's EMP-disabled emergency use, exact fitted-item custody, target immunity, legacy missile target exception and alien relative multiplier. All bomb effects must remain inside the existing candidate's single publication.
+
+Author meaningful actual-consumer tests for funding/refusal, once-only debit, item ownership, downstream failure rollback, EMP-disabled use, native immunity and ordinary/alien finite missile impacts. Keep existing assertions except the explicitly superseded numeric expectations. New Swift tests remain UNRUN; no compiler, native execution or CI selection change is authorized in this source lease. See [the source handoff](PR-original-combat-costs.md).

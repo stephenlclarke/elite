@@ -56,7 +56,7 @@ class OwnedFaultStackTests(unittest.TestCase):
         self.workspace = Path(temporary.name).resolve()
         self.evidence = self.workspace / 'evidence'
         self.evidence.mkdir()
-        self.image = self.workspace / '.build/arm64-apple-macosx/debug/ElitePackageTests.xctest/Contents/MacOS/ElitePackageTests'
+        self.image = self.workspace / '.build/arm64-apple-macosx/debug/L337PackageTests.xctest/Contents/MacOS/L337PackageTests'
         self.image.parent.mkdir(parents=True)
         self.image.write_bytes(b'fake-image-never-executed')
         self.argv = ['/toolchain/swiftpm-testing-helper', '--test-bundle-path', str(self.image),

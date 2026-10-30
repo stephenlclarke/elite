@@ -52,7 +52,7 @@ class M01NormalAttestationTests(unittest.TestCase):
                              'inputs': {self.tool: old_hash, 'Sources/fake.swift': 'fixed',
                                         '.build/checkouts/dependency.swift': 'fixed dependency'},
                              'environment': runtime_identity(old_environment),
-                             'inventory': ['EliteCoreTests.Fixture/pass()'],
+                             'inventory': ['L337CoreTests.Fixture/pass()'],
                              'opt_in_policy': {'expected_skips': []}, 'image_sha256': 'same image',
                              'image_uuid': 'same UUID', 'sdk': 'same SDK', 'swift': 'same compiler'}
         self.current = deepcopy(self.old_identity)
@@ -71,7 +71,7 @@ class M01NormalAttestationTests(unittest.TestCase):
                  'coverage.xml': '<coverage><file path="Sources/fake.swift">'
                                  '<lineToCover lineNumber="1" covered="true"/></file></coverage>',
                  'tests-swift-testing.xml': '<testsuites><testsuite tests="1" failures="0" errors="0" skipped="0">'
-                                            '<testcase classname="EliteCoreTests.Fixture" name="pass()" time="1"/>'
+                                            '<testcase classname="L337CoreTests.Fixture" name="pass()" time="1"/>'
                                             '</testsuite></testsuites>'}
         for name, value in files.items():
             (self.attempt / name).write_text(value)

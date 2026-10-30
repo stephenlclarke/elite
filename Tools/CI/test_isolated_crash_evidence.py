@@ -45,7 +45,7 @@ class IsolatedCrashEvidenceTests(unittest.TestCase):
         original = row(1, '/tool/swift test --filter selected')
         executed = row(1, '/tool/swift-test --filter selected')
         helper = row(10, '/tool/swiftpm-testing-helper --test-bundle-path native')
-        native = row(11, '/build/ElitePackageTests')
+        native = row(11, '/build/L337PackageTests')
         capture = self.capture_snapshots([
             ({10: original}, None),
             ({10: executed, 11: helper}, None),

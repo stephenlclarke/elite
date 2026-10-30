@@ -16,6 +16,47 @@ from isolated_crash_evidence import IsolatedCrashEvidence
 
 ROOT = Path(__file__).resolve().parents[2]
 METHODS = {
+    "GameplayOrdnanceRuntimeTests": (
+        "nativeShieldedNPCReceivesFiniteDamageInsteadOfLegacyInstantDestruction",
+    ),
+    "ScriptG03FlightPreparationTests": (
+        "insufficientBudgetRefusesWithoutPublishingAnyPaidPredecessor",
+        "declaredTrialBuysItsWholeFitAtTheActualOriginalShop",
+    ),
+    "EliteEnergyUnitTests": (
+        "ordinaryTechnologyGatesThePaidAdvancedAndEliteRows",
+        "normalShopRequiresPaidEnergyPredecessorsAndDebitsEachActualPrice",
+    ),
+    "EquipmentRuntimeTransactionTests": (
+        "storageAndSeparateWorkToolsChargeExactlyWithoutRefillingOrReplacingCombatWeapons",
+        "actualShopAllowsAllFourMiningFacingsAndTheDeclaredIndependentTool",
+    ),
+    "OriginalEquipmentStockValuesTests": (
+        "originalStockPricesAndOneBasedTechnologyUseTheAuthenticatedFourteenRows",
+        "actualStockQuotesDebitTheApprovedPriceOnceAndRetainPhysicalCustody",
+        "originalTechnologyBoundariesAndDockServicesStillRefuseUnavailableOffers",
+        "supersededStockPricesCannotBecomeAuthoritativePaidReceipts",
+        "higherStockPricesDoNotBypassPaidPredecessorsCashOrAlienAcquisition",
+        "unresolvedFuelPriceStillChargesMissingSupplyAndDiscountsTheWholeRefillOnce",
+    ),
+    "OriginalCombatCostsUnitTests": (
+        "actualECMUsesTwentyTwoEnergyOnceAndKeepsItsPositiveEnergyBoundary",
+        "physicalBombDebitsOneHundredEightyOnceAndRefusesUnfundedOrNonfiniteUse",
+        "missingHeldAndDockedBombsCannotSpendEnergyOrChangeOwnedProperty",
+        "aRefusedDeathIncidentRollsBackTheBombEnergyItemAndEveryVictim",
+        "refusedConsumptionBroadcastPreservesBombEnergyCustodyAndVictims",
+        "empDisabledPhysicalBombKeepsNativeImmunityAndPaysHullEnergyWithoutElectricalPower",
+        "actualFiniteMissileImpactKeepsOrdinaryAndAlienRelativeDamageAndPhysicalAmmunition",
+    ),
+    "NativeViewTests": (
+        "l337DefaultsKeepCommanderAndPackNamespacesTogether",
+        "freshPreferenceDomainDoesNotImportAnotherDomainsRememberedSave",
+    ),
+    "OriginalMarketQuoteJoinUnitTests": (
+        "reversedValidatedQuotesKeepStableCommodityPriceAndStockSlots",
+        "authoredDisplayOrderAndRotationPreserveSourceOrderAndCommodityIdentity",
+        "canonicalBundledSeedsAndSecretPortDiscountKeepExistingValues",
+    ),
     "NativeTrainingReservationCodecUnitTests": (
         "reservationAndTrainingArchivesRetainClosedNamespacesAndValueSemantics",
     ),

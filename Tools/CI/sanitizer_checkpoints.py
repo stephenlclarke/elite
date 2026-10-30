@@ -163,14 +163,14 @@ def grouping_policy(root, methods, mode, target, full_concurrent=False):
         groups.append([by_name[name] for name in members])
     # A new AppKit consumer must be audited instead of silently losing shared-process coverage.
     appkit = next(entry for entry in manifest['groups'] if entry['name'] == 'appkit-shared-process')
-    consumers = {str(path.relative_to(root)) for path in (root / 'Tests/EliteCoreTests').glob('*.swift')
+    consumers = {str(path.relative_to(root)) for path in (root / 'Tests/L337CoreTests').glob('*.swift')
                  if '@Test' in path.read_text() and re.search(
-                     r'import (?:AppKit|EliteMac)\b|PlanetRenderer\.|NSApplication\.shared|NSApp\b',
+                     r'import (?:AppKit|L337Mac)\b|PlanetRenderer\.|NSApplication\.shared|NSApp\b',
                      path.read_text())}
     if consumers != set(appkit['sources']):
         raise ValueError('AppKit participant source set requires grouping review')
     salvage = next(entry for entry in manifest['groups'] if entry['name'] == 'salvage-shared-release')
-    consumers = {str(path.relative_to(root)) for path in (root / 'Tests/EliteCoreTests').glob('*.swift')
+    consumers = {str(path.relative_to(root)) for path in (root / 'Tests/L337CoreTests').glob('*.swift')
                  if re.search(r'NativeSalvageAdmissionTestFixture|NativeSalvageReleaseSnapshot', path.read_text())}
     if consumers != set(salvage['sources']):
         raise ValueError('Salvage shared fixture participant set requires grouping review')
@@ -197,8 +197,8 @@ LEGACY_VALIDATION_INPUTS = {
 
 def opt_in_policy(root, environment):
     """Bind only six existing, source-declared opt-ins; never allow a general skip."""
-    gpu_path = 'Tests/EliteCoreTests/PlanetGPUShaderTests.swift'
-    diagnostic_path = 'Tests/EliteCoreTests/NativeMultiBatchRuntimeTests.swift'
+    gpu_path = 'Tests/L337CoreTests/PlanetGPUShaderTests.swift'
+    diagnostic_path = 'Tests/L337CoreTests/NativeMultiBatchRuntimeTests.swift'
     gpu = (root / gpu_path).read_text()
     diagnostic = (root / diagnostic_path).read_text()
     compact = lambda value: re.sub(r'\s+', '', value)
@@ -219,10 +219,10 @@ def opt_in_policy(root, environment):
     }
     skipped = []
     if controls['ELITE_PLANET_GPU_EXPERIMENT'] != '1':
-        skipped.extend({'classname': 'EliteCoreTests.PlanetGPUShaderTests', 'name': name,
+        skipped.extend({'classname': 'L337CoreTests.PlanetGPUShaderTests', 'name': name,
                         'reason': None} for name in GPU_OPT_IN)
     if not (controls['ELITE_NATIVE_WORK_CONTINUATION'] == '1' and bool(source)):
-        skipped.append({'classname': 'EliteCoreTests.NativeMultiBatchRuntimeTests',
+        skipped.append({'classname': 'L337CoreTests.NativeMultiBatchRuntimeTests',
                         'name': DIAGNOSTIC_METHOD, 'reason': DIAGNOSTIC_REASON})
     return {'controls': controls, 'declarations': {name: digest(root / name)
             for name in (gpu_path, diagnostic_path)}, 'expected_skips': skipped}
@@ -331,8 +331,8 @@ def legacy_requalification(attempt, identity, methods):
                 and controls['continuation_source_nonempty'])):
         raise ValueError('Enabled opt-in requirements cannot reuse disabled outcomes')
     expected = selected_opt_in_skips(identity, methods)
-    exact = {('EliteCoreTests.PlanetGPUShaderTests', name): None for name in GPU_OPT_IN}
-    exact[('EliteCoreTests.NativeMultiBatchRuntimeTests', DIAGNOSTIC_METHOD)] = DIAGNOSTIC_REASON
+    exact = {('L337CoreTests.PlanetGPUShaderTests', name): None for name in GPU_OPT_IN}
+    exact[('L337CoreTests.NativeMultiBatchRuntimeTests', DIAGNOSTIC_METHOD)] = DIAGNOSTIC_REASON
     if expected != exact:
         raise ValueError('Legacy requalification requires exactly the six declared opt-ins')
     report = prior['report']
@@ -472,7 +472,7 @@ def ensure_no_live_tests():
     processes = subprocess.check_output(['ps', '-axo', 'pid=,command='], text=True)
     for line in processes.splitlines():
         if ('swiftpm-testing-helper' in line
-                and '.xctest/Contents/MacOS/EliteCoreTests' in line):
+                and any(name in line for name in ('.xctest/Contents/MacOS/EliteCoreTests', '.xctest/Contents/MacOS/L337CoreTests'))):
             raise ValueError('An Elite test helper is still active; no replacement started')
 
 

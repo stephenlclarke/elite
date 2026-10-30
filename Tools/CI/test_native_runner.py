@@ -5,7 +5,7 @@ import unittest
 from native_runner import require_trusted_job
 
 SHA = "a" * 40
-REPO = {"full_name": "stephenlclarke/elite", "fork": False}
+REPO = {"full_name": "stephenlclarke/l337", "fork": False}
 
 
 def owned_control_fixture(root):
@@ -119,7 +119,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         workflow = REPO["full_name"] + "/.github/workflows/recoverable-quality.yml@refs/heads/approved"
         env.update(GITHUB_JOB="native_shards", GITHUB_EVENT_NAME="workflow_dispatch", GITHUB_SHA=SHA,
                    GITHUB_REF="refs/heads/approved", GITHUB_WORKFLOW_REF=workflow, RUNNER_NAME="owned-one",
-                   GITHUB_WORKSPACE="/fixture/native-runner/_work/elite/elite",
+                   GITHUB_WORKSPACE="/fixture/native-runner/_work/l337/l337",
                    GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="1", PLAN_DIGEST="e" * 64,
                    ELITE_RECOVERABLE_CODE_ENABLED="true",
                    ELITE_NATIVE_APPROVED_HEAD=SHA, ELITE_NATIVE_POLICY="/fixture/owned-policy.json",
@@ -594,10 +594,10 @@ class RecoverableAuthorizationTests(unittest.TestCase):
             (workflow / name).write_text("# pinned workflow " + name + "\n")
         legacy = home / "sanitizer-checkpoints"
         activation = dict(schema=1, enabled=True, revoked=False, expires_at=10000, head=SHA,
-                          workflow_ref="stephenlclarke/elite/.github/workflows/ci.yml@refs/heads/main",
+                          workflow_ref="stephenlclarke/l337/.github/workflows/ci.yml@refs/heads/main",
                           workflow_sha256=hashlib.sha256((workflow / "ci.yml").read_bytes()).hexdigest(),
                           reusable_workflow_sha256=hashlib.sha256((workflow / "recoverable-quality.yml").read_bytes()).hexdigest(),
-                          runners={"elite-mbp-native": {"workspace": str(home / "native-runner/_work/elite/elite"),
+                          runners={"elite-mbp-native": {"workspace": str(home / "native-runner/_work/l337/l337"),
                                    "jobs": sorted(install.RECOVERABLE_ROLES)}},
                           assignment_root=str(home.parent / "assignments"), guard_files=helpers)
         manifest = {k: activation[k] for k in ("schema", "enabled", "revoked", "expires_at", "head", "workflow_sha256",
@@ -791,7 +791,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
                 ticket = install.owned_json(home / "recoverable-sessions/ticket.json")
                 self.assertEqual(ticket["ordinal"], len(registered) + 1)
                 (home / "native-runner/.runner").write_text(json.dumps(dict(agentName=runner_name,
-                    gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")))
+                    gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work")))
                 registered.append(runner_name)
             class Listener:
                 def wait(inner, timeout):
@@ -833,7 +833,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
             actual = install.prepare(SHA, archive, archive_hash, reviewed, checksum)
             def register(run, runner_name, **bounds):
                 (home / "native-runner/.runner").write_text(json.dumps(dict(agentName=runner_name,
-                    gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")))
+                    gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work")))
             with install.recoverable_control() as lock, patch.object(install, "session_run_active", return_value=True), patch.object(
                     install, "register_and_run", side_effect=register) as token:
                 self.assertEqual(install.renew_recoverable(actual, "123", "1", 2, 9000, True, False, lock)["reason"], "registered only")
@@ -888,7 +888,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
             actual = install.prepare(SHA, archive, archive_hash, reviewed, checksum)
             def register(run, runner_name, **bounds):
                 (home / "native-runner/.runner").write_text(json.dumps(dict(agentName=runner_name,
-                    gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")))
+                    gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work")))
             listener = Mock()
             def wait(timeout):
                 install.time.time.return_value = 1000
@@ -912,7 +912,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
             actual = install.prepare(SHA, archive, archive_hash, reviewed, checksum)
             def register(run, runner_name, **bounds):
                 (home / "native-runner/.runner").write_text(json.dumps(dict(agentName=runner_name,
-                    gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")))
+                    gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work")))
             listener = Mock()
             listener.wait.side_effect = [subprocess.TimeoutExpired("fixture-listener", 30), 0]
             with install.recoverable_control() as lock, patch.object(install, "session_run_active", side_effect=[True, False]), patch.object(
@@ -931,7 +931,7 @@ class RecoverableAuthorizationTests(unittest.TestCase):
         stack, home, archive, archive_hash, reviewed, checksum, policy = self.recoverable_installation_fixture()
         with stack, install.recoverable_control(), install.quiescent_legacy(policy):
             binding = {"run_id": "123", "run_attempt": "1", "expires_at": 9000}
-            run = dict(id=123, run_attempt=1, head_sha=SHA, repository={"full_name": "stephenlclarke/elite"},
+            run = dict(id=123, run_attempt=1, head_sha=SHA, repository={"full_name": "stephenlclarke/l337"},
                        actor={"id": 22142777}, triggering_actor={"id": 22142777}, status="in_progress",
                        event="push", path=".github/workflows/ci.yml", head_branch="main")
             for changes in ({}, {"status": "completed"}, {"head_sha": "b" * 40}, {"run_attempt": 2}, {"path": ".github/workflows/other.yml"}):
@@ -1407,7 +1407,7 @@ class PhysicalIdentityTests(unittest.TestCase):
         from pathlib import Path
         from native_runner import require_physical_host
         policy = self.policy()
-        env = {"GITHUB_WORKSPACE": "/fixture/native-runner/_work/elite/elite",
+        env = {"GITHUB_WORKSPACE": "/fixture/native-runner/_work/l337/l337",
                "DEVELOPER_DIR": "/fixture/Xcode"}
         values = ["Mac14,12", "fixture Swift", "fixture SDK"]
         with patch("native_runner.platform.system", return_value="Darwin"), \
@@ -1425,12 +1425,12 @@ class PhysicalIdentityTests(unittest.TestCase):
         from unittest.mock import patch
         from native_runner import require_physical_host
         for system, machine, workspace, developer, values in [
-            ("Linux", "arm64", "/fixture/native-runner/_work/elite/elite", "/fixture/Xcode", []),
-            ("Darwin", "x86_64", "/fixture/native-runner/_work/elite/elite", "/fixture/Xcode", []),
+            ("Linux", "arm64", "/fixture/native-runner/_work/l337/l337", "/fixture/Xcode", []),
+            ("Darwin", "x86_64", "/fixture/native-runner/_work/l337/l337", "/fixture/Xcode", []),
             ("Darwin", "arm64", "/fixture/other", "/fixture/Xcode", ["Mac14,12"]),
-            ("Darwin", "arm64", "/fixture/native-runner/_work/elite/elite", "/other", ["Mac14,12"]),
-            ("Darwin", "arm64", "/fixture/native-runner/_work/elite/elite", "/fixture/Xcode", ["Mac14,12", "other Swift"]),
-            ("Darwin", "arm64", "/fixture/native-runner/_work/elite/elite", "/fixture/Xcode", ["Mac14,12", "fixture Swift", "other SDK"]),
+            ("Darwin", "arm64", "/fixture/native-runner/_work/l337/l337", "/other", ["Mac14,12"]),
+            ("Darwin", "arm64", "/fixture/native-runner/_work/l337/l337", "/fixture/Xcode", ["Mac14,12", "other Swift"]),
+            ("Darwin", "arm64", "/fixture/native-runner/_work/l337/l337", "/fixture/Xcode", ["Mac14,12", "fixture Swift", "other SDK"]),
         ]:
             with self.subTest(system=system, machine=machine, workspace=workspace, values=values), \
                     patch("native_runner.platform.system", return_value=system), \
@@ -1464,7 +1464,7 @@ class ProvisioningFailureTests(unittest.TestCase):
         replacement.start()
         self.addCleanup(replacement.stop)
         policy = {"recoverable_activation": {"runners": {"owned-one": {}}}}
-        value = dict(agentName="owned-one", gitHubUrl="https://github.com/stephenlclarke/elite", workFolder="_work")
+        value = dict(agentName="owned-one", gitHubUrl="https://github.com/stephenlclarke/l337", workFolder="_work")
         return install, runner / ".runner", policy, value
 
     def test_registration_accepts_utf8_with_or_without_bom_without_rewriting_vendor_bytes(self):
@@ -1606,7 +1606,7 @@ class MaintainedMakeTargetsTests(unittest.TestCase):
                 flags = command[3:]
                 self.assertEqual(flags, ["--scratch-path", scratch, "--sanitize=" + mode])
                 test = checkpoints.batch_command(
-                    "/toolchain/swift", flags, mode, fixture, ["EliteCoreTests.Smoke/always()"])
+                    "/toolchain/swift", flags, mode, fixture, ["L337CoreTests.Smoke/always()"])
                 self.assertIn("--sanitize=" + mode, test)
                 self.assertEqual("--no-parallel" in test, mode == "address")
                 self.assertIn("--filter", test)

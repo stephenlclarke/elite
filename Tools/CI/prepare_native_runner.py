@@ -99,7 +99,7 @@ def _prepare_locked(approved: str, archive: Path, archive_hash: str, reviewed_po
                 or RUNNER.stat().st_mode & 0o022):
             raise ValueError("Existing runner directory is not owned by this setup.")
         marker = RUNNER / ".elite-native-owner"
-        if marker.is_symlink() or not marker.is_file() or marker.read_text() != "stephenlclarke/elite\n":
+        if marker.is_symlink() or not marker.is_file() or marker.read_text() != "stephenlclarke/l337\n":
             raise ValueError("Existing runner ownership marker differs.")
         if (RUNNER / ".runner").exists() or (RUNNER / ".runner").is_symlink():
             if not (reviewed_policy is not None and registered):
@@ -109,7 +109,7 @@ def _prepare_locked(approved: str, archive: Path, archive_hash: str, reviewed_po
         RUNNER.mkdir(mode=0o700)
         with tarfile.open(archive) as source:
             source.extractall(RUNNER, filter="data")
-        (RUNNER / ".elite-native-owner").write_text("stephenlclarke/elite\n")
+        (RUNNER / ".elite-native-owner").write_text("stephenlclarke/l337\n")
     verify_installed_archive(RUNNER, archive)
     installation = RUNNER / ".elite-native-installation.json"
     installation_bytes = (json.dumps({"archive_sha256": archive_hash}) + "\n").encode()
@@ -199,14 +199,14 @@ def _register_locked(runner_name="elite-mbp-native", deadline=None, descriptors=
             raise ValueError("Registration deadline expired.")
         return {"timeout": min(60, remaining), "pass_fds": tuple(descriptors)}
     result = subprocess.run(
-        ["gh", "api", "--method", "POST", "repos/stephenlclarke/elite/actions/runners/registration-token"],
+        ["gh", "api", "--method", "POST", "repos/stephenlclarke/l337/actions/runners/registration-token"],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, **bounds())
     if result.returncode:
         raise ValueError("Repository runner registration token was unavailable.")
     token = json.loads(result.stdout)["token"]
     environment = dict(os.environ, DEVELOPER_DIR=DEVELOPER)
     configured = subprocess.run(
-        [str(RUNNER / "config.sh"), "--url", "https://github.com/stephenlclarke/elite",
+        [str(RUNNER / "config.sh"), "--url", "https://github.com/stephenlclarke/l337",
          "--token", token, "--name", runner_name, "--labels", "elite-native",
          "--work", "_work", "--unattended", "--ephemeral", "--disableupdate"],
         cwd=RUNNER, env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **bounds())
@@ -295,7 +295,7 @@ def reviewed_recoverable_policy(path, checksum, base):
             or not time.time() < activation["expires_at"] <= time.time() + MAX_SESSION_SECONDS
             or activation["head"] != base["approved_head"]):
         raise ValueError("Recoverable activation is missing, expired or outside its finite bound.")
-    prefix = "stephenlclarke/elite/.github/workflows/ci.yml@"
+    prefix = "stephenlclarke/l337/.github/workflows/ci.yml@"
     if not activation["workflow_ref"].startswith(prefix):
         raise ValueError("Installer supports only the actual required CI caller.")
     ref = activation["workflow_ref"].removeprefix(prefix)
@@ -323,7 +323,7 @@ def reviewed_recoverable_policy(path, checksum, base):
     allowed_roles = (LOCAL_COMPONENT_ROLES,) if backend == LOCAL_COMPONENTS_BACKEND else (RECOVERABLE_ROLES, ASAN_RECOVERABLE_ROLES, NORMAL_CI_ROLES)
     if (not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", runner_name)
             or set(instance) != {"workspace", "jobs"}
-            or instance["workspace"] != str(RUNNER / "_work/elite/elite")
+            or instance["workspace"] != str(RUNNER / "_work/l337/l337")
             or set(instance["jobs"]) not in allowed_roles
             or len(instance["jobs"]) != len(set(instance["jobs"]))):
         raise ValueError("Recoverable runner/workspace/role reservation differs.")
@@ -458,14 +458,14 @@ def require_registration(policy):
     require_owned_activation_file(registration)
     value = json.loads(registration.read_text(encoding="utf-8-sig"))
     name = next(iter(policy["recoverable_activation"]["runners"]))
-    if value.get("agentName") != name or value.get("gitHubUrl") != "https://github.com/stephenlclarke/elite" or value.get("workFolder") != "_work":
+    if value.get("agentName") != name or value.get("gitHubUrl") != "https://github.com/stephenlclarke/l337" or value.get("workFolder") != "_work":
         raise ValueError("Existing registration is not this approved repository/runner.")
 
 
 def session_run_active(policy, binding):
     """Read only this exact approved run; a new attempt requires a new session."""
     _require_provisioning()
-    result = subprocess.run(["gh", "api", "repos/stephenlclarke/elite/actions/runs/" + binding["run_id"]],
+    result = subprocess.run(["gh", "api", "repos/stephenlclarke/l337/actions/runs/" + binding["run_id"]],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
                             timeout=min(60, max(1, binding["expires_at"] - time.time())))
     if result.returncode:
@@ -478,7 +478,7 @@ def session_run_active(policy, binding):
     paths = {workflow, workflow + "@" + ref, workflow + "@" + str(run.get("head_branch")), workflow + "@" + expected}
     if (str(run["id"]) != binding["run_id"] or str(run["run_attempt"]) != binding["run_attempt"]
             or run.get("path") not in paths or run.get("event") not in (("pull_request",) if "pr_head" in activation else ("push", "workflow_dispatch"))
-            or run["head_sha"] != expected or run["repository"]["full_name"] != "stephenlclarke/elite"
+            or run["head_sha"] != expected or run["repository"]["full_name"] != "stephenlclarke/l337"
             or str(run["actor"]["id"]) != "22142777" or str(run["triggering_actor"]["id"]) != "22142777"):
         raise ValueError("Workflow run/attempt/source differs; renewal stopped.")
     if run["status"] == "completed":

@@ -8,7 +8,7 @@ import importlib.util
 import tomllib
 from pathlib import Path
 
-SHIP_FOLDER = Path('Sources/EliteCore/Resources/Ships')
+SHIP_FOLDER = Path('Sources/L337Core/Resources/Ships')
 _balance_spec = importlib.util.spec_from_file_location('catalogue_balance', Path(__file__).with_name('catalogue-balance.py'))
 catalogue_balance = importlib.util.module_from_spec(_balance_spec)
 _balance_spec.loader.exec_module(catalogue_balance)

@@ -52,20 +52,20 @@ jobs:
           assert type(a['schema']) is int and a['schema'] == 1
           assert a['enabled'] is True and a['revoked'] is False
           assert time.time() < a['expires_at'] < float('inf')
-          assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/elite'
+          assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/l337'
           assert e['GITHUB_ACTOR_ID'] == '22142777'
           assert a['head'] == e['GITHUB_SHA'] and a['ref'] == e['GITHUB_REF'], (
               'Approved execution SHA/ref mismatch: approved=' + str((a['head'], a['ref'])) +
               ' actual=' + str((e['GITHUB_SHA'], e['GITHUB_REF'])))
           assert a['workflow_file'] in ('ci.yml', 'recoverable-quality.yml')
           assert e['GITHUB_WORKFLOW_REF'] == (
-              'stephenlclarke/elite/.github/workflows/' + a['workflow_file'] + '@' + a['ref'])
+              'stephenlclarke/l337/.github/workflows/' + a['workflow_file'] + '@' + a['ref'])
           assert re.fullmatch('[0-9a-f]{64}', a['workflow_sha256'])
           assert set(p) == set(a['runners']) and p and len(set(p.values())) == 1
           assert all(re.fullmatch('[0-9a-f]{64}', v) for v in p.values())
           with open(e['GITHUB_EVENT_PATH']) as f:
               event = json.load(f)
-          assert event['repository']['full_name'] == 'stephenlclarke/elite'
+          assert event['repository']['full_name'] == 'stephenlclarke/l337'
           assert event['repository']['fork'] is False
           assert str(event['sender']['id']) == '22142777'
           name = e['GITHUB_EVENT_NAME']
@@ -82,9 +82,9 @@ jobs:
               assert re.fullmatch('[0-9a-f]{40}', a['pr_head']), 'Invalid approved PR source SHA'
               assert pull['head']['sha'] == a['pr_head'], (
                   'PR source SHA mismatch: approved=' + a['pr_head'] + ' actual=' + pull['head']['sha'])
-              assert pull['head']['repo']['full_name'] == 'stephenlclarke/elite'
+              assert pull['head']['repo']['full_name'] == 'stephenlclarke/l337'
               assert pull['head']['repo']['fork'] is False
-              assert pull['base']['repo']['full_name'] == 'stephenlclarke/elite'
+              assert pull['base']['repo']['full_name'] == 'stephenlclarke/l337'
               assert pull['base']['ref'] == 'main'
               assert str(pull['user']['id']) == '22142777'
           else:
@@ -232,13 +232,13 @@ jobs:
           assert a['enabled'] is True and a['revoked'] is False
           assert time.time() < a['expires_at'] < float('inf')
           assert e['RUNNER_ENVIRONMENT'] == 'self-hosted'
-          assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/elite'
+          assert e['GITHUB_REPOSITORY'] == 'stephenlclarke/l337'
           assert e['GITHUB_ACTOR_ID'] == '22142777'
           assert e['GITHUB_EVENT_NAME'] in ('workflow_dispatch', 'push', 'pull_request')
           assert a['head'] == e['GITHUB_SHA']
           assert a['ref'] == e['GITHUB_REF']
           assert e['GITHUB_WORKFLOW_REF'] == (
-              'stephenlclarke/elite/.github/workflows/' +
+              'stephenlclarke/l337/.github/workflows/' +
               a['workflow_file'] + '@' + a['ref'])
           assert e['ELITE_NATIVE_APPROVED_HEAD'] == e['GITHUB_SHA']
           assert e['ELITE_RECOVERABLE_CODE_ENABLED'] == 'true'
@@ -251,7 +251,7 @@ jobs:
           assert os.path.isabs(instance['workspace'])
           assert os.path.normpath(instance['workspace']) == (
               instance['workspace'])
-          assert instance['workspace'].endswith('/_work/elite/elite')
+          assert instance['workspace'].endswith('/_work/l337/l337')
           request_names = (
               'GITHUB_JOB', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
               'GITHUB_SHA', 'RUNNER_NAME',

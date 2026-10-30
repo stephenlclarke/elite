@@ -35,9 +35,9 @@ sanitizers-check:
 leaks: sanitizer-checkpoints-check
 	python3 Tools/CI/quality_phase_checkpoints.py leaks
 readme-media:
-	swift run Elite --readme-media
+	swift run L337 --readme-media
 	mkdir -p Resources
-	iconutil -c icns .build/Elite.iconset -o Resources/Elite.icns
+	iconutil -c icns .build/L337.iconset -o Resources/L337.icns
 
 induction-ark-model:
 	python3 Tools/export-induction-ark-model.py
@@ -59,7 +59,7 @@ liberator-design:
 sonar:
 	./script/sonar.sh
 mission-packs-check:
-	swift run Elite --validate-mission-pack docs/mission-packs/courier.toml
+	swift run L337 --validate-mission-pack docs/mission-packs/courier.toml
 flight-controls-check:
 	PYTHONDONTWRITEBYTECODE=1 python3 Tools/generate-flight-controls.py --repo-root . --check
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tools/tests -p 'test_flight_controls.py'

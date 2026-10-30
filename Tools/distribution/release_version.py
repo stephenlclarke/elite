@@ -9,7 +9,7 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
-REPO = "stephenlclarke/elite"
+REPO = "stephenlclarke/l337"
 POLICY = "conventional-nonmerge-max-impact-v1"
 VERSION = r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
 HEADER = re.compile(r"^([a-z][a-z0-9-]*)(?:\([^\n)]+\))?(!)?: \S[^\n]*$")
@@ -142,7 +142,8 @@ def generate(preview: bool = False, root: Path = ROOT) -> dict:
 
 
 def validate_plan(plan: dict, root: Path = ROOT, current: bool = False) -> dict:
-    if (not isinstance(plan, dict) or type(plan.get("schema")) is not int
+    if (not isinstance(plan, dict) or plan.get("repository") != REPO
+            or type(plan.get("schema")) is not int
             or not isinstance(plan.get("authoritative"), bool)
             or not isinstance(plan.get("baseTag"), str)
             or not re.fullmatch("v?" + VERSION, plan["baseTag"])):
@@ -179,7 +180,7 @@ def load_plan(path: Path, current: bool = False, root: Path = ROOT) -> dict:
 
 
 def artifact_prefix(plan: dict) -> str:
-    return f"Elite-{plan['version']}-universal"
+    return f"L337-{plan['version']}-universal"
 
 
 def validate_artifact(plan: dict, manifest: dict) -> None:

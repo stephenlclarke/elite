@@ -15,8 +15,8 @@ Actual jumps use the fitted reach, current fuel and effective fuel cost. Compati
 | Energy | Stock capacity versus hull base | Stock recharge versus hull base | Acquisition |
 | --- | ---: | ---: | --- |
 | Basic | 1 | 1 | Included foundation |
-| Intermediate | 1 | 2 | 1,500 CR; legacy Extra Energy Unit |
-| Advanced | 1 | 3 | 4,500 CR at displayed TL12; also Naval mission reward or PLUGH |
+| Intermediate | 1 | 2 | 7,200 CR at displayed TL9; legacy Extra Energy Unit |
+| Advanced | 1 | 3 | 19,600 CR at displayed TL17; also Naval mission reward or PLUGH |
 | Elite | 1 | 4 | 13,500 CR at displayed TL14; also XYZZY or PLUGH |
 
 | Shield | Stock front/rear capacity versus hull base | Stock recharge versus hull base | Acquisition |

@@ -170,7 +170,7 @@ def generate(staging, repo, expected=171):
     lines += [f"    {i.lower()}()," for i in sorted(wanted)]
     lines += ["  ]", "", *functions, "}", ""]
     data = "\n".join(lines).encode()
-    path = safe(repo, "Sources/EliteCore/OriginalFleetDefinitions.generated.swift")
+    path = safe(repo, "Sources/L337Core/OriginalFleetDefinitions.generated.swift")
     if path.exists():
         raise ValueError("Refusing to overwrite an existing generated handoff")
     path.parent.mkdir(parents=True, exist_ok=True)

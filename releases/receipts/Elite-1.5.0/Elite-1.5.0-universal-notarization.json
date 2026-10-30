@@ -1,0 +1,43 @@
+{
+  "logFormatVersion": 1,
+  "jobId": "836458f4-ba5c-4180-9bfa-406449fe287a",
+  "status": "Accepted",
+  "statusSummary": "Ready for distribution",
+  "statusCode": 0,
+  "archiveFilename": "submission.zip",
+  "uploadDate": "2026-10-30T01:41:52.959Z",
+  "sha256": "df173d4d5d2147a7144c2103a03dd48d7424b022787f676672533a501093ac1b",
+  "ticketContents": [
+    {
+      "path": "submission.zip/Elite.app/Contents/Resources/Elite_EliteCore.bundle",
+      "digestAlgorithm": "SHA-256",
+      "cdhash": "7368f41cb63b233da3ac4e45d2fdd42a9526c64e",
+      "arch": null
+    },
+    {
+      "path": "submission.zip/Elite.app",
+      "digestAlgorithm": "SHA-256",
+      "cdhash": "060be1d4a62c7df3dace0e217a5120b1cf41d31b",
+      "arch": "x86_64"
+    },
+    {
+      "path": "submission.zip/Elite.app",
+      "digestAlgorithm": "SHA-256",
+      "cdhash": "44c4b841c1c6e99d36c7ab31a734e87a9f18be49",
+      "arch": "arm64"
+    },
+    {
+      "path": "submission.zip/Elite.app/Contents/MacOS/Elite",
+      "digestAlgorithm": "SHA-256",
+      "cdhash": "060be1d4a62c7df3dace0e217a5120b1cf41d31b",
+      "arch": "x86_64"
+    },
+    {
+      "path": "submission.zip/Elite.app/Contents/MacOS/Elite",
+      "digestAlgorithm": "SHA-256",
+      "cdhash": "44c4b841c1c6e99d36c7ab31a734e87a9f18be49",
+      "arch": "arm64"
+    }
+  ],
+  "issues": null
+}

@@ -30,7 +30,7 @@ INDICATOR_TEXT = (
 )
 TEXT_FIELDS = ("scope", "footer", "automaticSelection", "asteroidDestruction")
 LIST_FIELDS = ("helpPolicy", "selectionRules", "holdRules")
-SWIFT_PATH = Path("Sources/EliteCore/FlightControlAuthority.swift")
+SWIFT_PATH = Path("Sources/L337Core/FlightControlAuthority.swift")
 MARKDOWN_PATH = Path("docs/FLIGHT-CONTROLS.generated.md")
 MAX_AUTHORITY_BYTES = 1024 * 1024
 

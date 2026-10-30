@@ -1,6 +1,7 @@
 """Preserve copied resource paths and exact bytes in either macOS bundle layout."""
 
 import re
+import plistlib
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,13 +11,33 @@ import package_macos
 
 
 class PackagedResourceTests(unittest.TestCase):
+    def test_bundle_uses_one_current_product_identity_and_preserves_payload_bytes(self):
+        binaries = self.root / "binaries"
+        self.write(binaries / "L337", b"fixture executable")
+        self.write(binaries / "L337_L337Core.bundle/resource", b"fixture resource")
+        self.write(self.root / "Resources/L337.icns", b"fixture icon")
+        self.write(self.root / "LICENSE", b"unchanged license")
+        self.write(self.root / "NOTICE.md", b"unchanged notice")
+        app = package_macos.create_bundle(self.root / "delivery", binaries, "2.0.0", "a" * 40)
+        self.assertEqual(app.name, "L337.app")
+        info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+        self.assertEqual(info["CFBundleIdentifier"], "io.xyzzy.l337")
+        self.assertEqual(info["CFBundleExecutable"], "L337")
+        self.assertEqual(info["CFBundleDisplayName"], "L337")
+        self.assertEqual(info["L337SourceRevision"], "a" * 40)
+        self.assertNotIn("EliteSourceRevision", info)
+        self.assertEqual((app / "Contents/MacOS/L337").read_bytes(), b"fixture executable")
+        self.assertEqual((app / "Contents/Resources/L337_L337Core.bundle/resource").read_bytes(),
+                         b"fixture resource")
+        self.assertEqual((app / "Contents/Resources/NOTICE.md").read_bytes(), b"unchanged notice")
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.source = self.root / "Sources/EliteCore/Resources"
-        self.app = self.root / "Elite.app"
-        self.bundle = self.app / "Contents/Resources/Elite_EliteCore.bundle"
+        self.source = self.root / "Sources/L337Core/Resources"
+        self.app = self.root / "L337.app"
+        self.bundle = self.app / "Contents/Resources/L337_L337Core.bundle"
         self.resources = {
             "Ships/ship.toml": b"ship",
             "MissionPacks/campaign/manifest.toml": b"legacy campaign",

@@ -67,36 +67,36 @@ def source_checkpoint(action="packaging"):
 
 def create_bundle(directory, binary_directory, version, revision):
     """Package the release executable and its exact runtime resources."""
-    app = directory / "Elite.app"
+    app = directory / "L337.app"
     contents = app / "Contents"
     macos = contents / "MacOS"
     resources = contents / "Resources"
     macos.mkdir(parents=True)
     resources.mkdir()
-    shutil.copy2(binary_directory / "Elite", macos / "Elite")
+    shutil.copy2(binary_directory / "L337", macos / "L337")
     shutil.copytree(
-        binary_directory / "Elite_EliteCore.bundle",
-        resources / "Elite_EliteCore.bundle",
+        binary_directory / "L337_L337Core.bundle",
+        resources / "L337_L337Core.bundle",
     )
     for source, name in [
-        ("Resources/Elite.icns", "Elite.icns"),
+        ("Resources/L337.icns", "L337.icns"),
         ("LICENSE", "LICENSE"),
         ("NOTICE.md", "NOTICE.md"),
     ]:
         shutil.copy2(ROOT / source, resources / name)
     info = {
-        "CFBundleExecutable": "Elite",
-        "CFBundleIdentifier": "io.xyzzy.elite",
-        "CFBundleName": "Elite",
-        "CFBundleDisplayName": "XYZZY Elite - Right-On Commander",
+        "CFBundleExecutable": "L337",
+        "CFBundleIdentifier": "io.xyzzy.l337",
+        "CFBundleName": "L337",
+        "CFBundleDisplayName": "L337",
         "CFBundlePackageType": "APPL",
-        "CFBundleIconFile": "Elite.icns",
+        "CFBundleIconFile": "L337.icns",
         "CFBundleShortVersionString": version,
         "CFBundleVersion": version,
         "LSMinimumSystemVersion": "14.0",
         "NSPrincipalClass": "NSApplication",
         "NSHighResolutionCapable": True,
-        "EliteSourceRevision": revision,
+        "L337SourceRevision": revision,
     }
     with (contents / "Info.plist").open("wb") as stream:
         plistlib.dump(info, stream)
@@ -105,13 +105,13 @@ def create_bundle(directory, binary_directory, version, revision):
 
 def verify_resources(app):
     """Verify maintained resources using SwiftPM's copied/processed layouts."""
-    bundle = app / "Contents/Resources/Elite_EliteCore.bundle"
+    bundle = app / "Contents/Resources/L337_L337Core.bundle"
     if (bundle / "Contents/Resources").is_dir():
         bundle = bundle / "Contents/Resources"
-    for source in (ROOT / "Sources/EliteCore/Resources").rglob("*"):
+    for source in (ROOT / "Sources/L337Core/Resources").rglob("*"):
         if not source.is_file():
             continue
-        relative = source.relative_to(ROOT / "Sources/EliteCore/Resources")
+        relative = source.relative_to(ROOT / "Sources/L337Core/Resources")
         target = (
             bundle / relative
             if relative.parts[0] in COPIED_RESOURCE_DIRECTORIES
@@ -152,7 +152,7 @@ def package(options):
     name = artifact_prefix(plan)
     archive = output / (name + ".zip")
     with tempfile.TemporaryDirectory(
-        prefix="elite-package-", dir=ROOT / ".build"
+        prefix="l337-package-", dir=ROOT / ".build"
     ) as temporary:
         directory = Path(temporary)
         app = create_bundle(directory, binary_directory, version, revision)
@@ -163,7 +163,7 @@ def package(options):
             "--timestamp",
             "--sign",
             options.identity,
-            str(app / "Contents/Resources/Elite_EliteCore.bundle"),
+            str(app / "Contents/Resources/L337_L337Core.bundle"),
         )
         run(
             "codesign",
@@ -225,7 +225,7 @@ def package(options):
             )
         extracted = directory / "extracted"
         run("ditto", "-x", "-k", str(archive), str(extracted))
-        delivered = extracted / "Elite.app"
+        delivered = extracted / "L337.app"
         run("codesign", "--verify", "--strict", "--deep", "--verbose=2", str(delivered))
         details = run("codesign", "-dvv", str(delivered), capture=True).stderr
         if (
@@ -237,7 +237,7 @@ def package(options):
                 "Expected a timestamped Developer ID signature with hardened runtime."
             )
         architectures = run(
-            "lipo", "-archs", str(delivered / "Contents/MacOS/Elite"), capture=True
+            "lipo", "-archs", str(delivered / "Contents/MacOS/L337"), capture=True
         ).stdout.split()
         if set(architectures) != {"arm64", "x86_64"}:
             raise RuntimeError("Universal artifact is missing an architecture.")
@@ -245,14 +245,14 @@ def package(options):
             "xcrun",
             "vtool",
             "-show-build",
-            str(delivered / "Contents/MacOS/Elite"),
+            str(delivered / "Contents/MacOS/L337"),
             capture=True,
         ).stdout
         minimums = re.findall(r"minos\s+([0-9.]+)", build_versions)
         if minimums != ["14.0", "14.0"]:
             raise RuntimeError("Both executable slices must target macOS 14.0.")
         verify_resources(delivered)
-        run(str(delivered / "Contents/MacOS/Elite"), "--diagnostics")
+        run(str(delivered / "Contents/MacOS/L337"), "--diagnostics")
         gatekeeper = run(
             "spctl",
             "--assess",
@@ -284,7 +284,7 @@ def package(options):
             "sha256": digest,
             "signature": "Developer ID Application",
             "signatureDetails": [
-                "Executable=Elite.app/Contents/MacOS/Elite"
+                "Executable=L337.app/Contents/MacOS/L337"
                 if line.startswith("Executable=")
                 else line
                 for line in details.splitlines()
@@ -295,7 +295,7 @@ def package(options):
             "gatekeeperAccepted": gatekeeper.returncode == 0,
             "gatekeeperAssessment": (gatekeeper.stdout + gatekeeper.stderr)
             .strip()
-            .replace(str(delivered), "Elite.app"),
+            .replace(str(delivered), "L337.app"),
             "verification": "Extracted ZIP: strict deep signature, architectures, exact resources and diagnostics passed.",
         }
         (output / (name + ".json")).write_text(json.dumps(manifest, indent=2) + "\n")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Maintain a cask for an already published, signed Elite archive."""
+"""Maintain a cask for an already published, signed L337 archive."""
 
 import argparse
 import hashlib
@@ -12,8 +12,8 @@ from pathlib import Path
 from release_version import (artifact_prefix, load_plan, plan_digest, published_plan,
                              validate_artifact)
 ROOT = Path(__file__).resolve().parents[2]
-REPOSITORY = "https://raw.githubusercontent.com/stephenlclarke/elite"
-RELEASES = "https://github.com/stephenlclarke/elite/releases/download"
+REPOSITORY = "https://raw.githubusercontent.com/stephenlclarke/l337"
+RELEASES = "https://github.com/stephenlclarke/l337/releases/download"
 
 
 def committed_file(revision, path):
@@ -26,11 +26,16 @@ def committed_file(revision, path):
 
 def validate_manifest(manifest):
     """Require the distributable properties promised by the cask."""
+    validate_manifest_properties(manifest)
+    if manifest["archive"] != f"L337-{manifest['appVersion']}-universal.zip":
+        raise ValueError("Archive name does not match its version.")
+
+
+def validate_manifest_properties(manifest):
+    """Shared signing/platform checks; product identity belongs to the calling verifier."""
     version = manifest["appVersion"]
     if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
         raise ValueError("The archive must have a stable three-part version.")
-    if manifest["archive"] != f"Elite-{version}-universal.zip":
-        raise ValueError("Archive name does not match its version.")
     if not re.fullmatch(r"[a-f0-9]{64}", manifest["sha256"]):
         raise ValueError("The archive requires an exact SHA-256.")
     if manifest["minimumMacOS"] != "14.0":
@@ -46,7 +51,7 @@ def validate_manifest(manifest):
 
 def release_url(version):
     """Use the separately published, versioned GitHub Release asset."""
-    return f"{RELEASES}/v{version}/Elite-{version}-universal.zip"
+    return f"{RELEASES}/v{version}/L337-{version}-universal.zip"
 
 
 def render_cask(manifest, revision, release_assets=True, source_revision=False):
@@ -55,21 +60,21 @@ def render_cask(manifest, revision, release_assets=True, source_revision=False):
     if not re.fullmatch(r"[a-f0-9]{40}", revision):
         raise ValueError("Use the exact protected-main source/artifact commit.")
     if release_assets:
-        archive_url = f"{RELEASES}/v#{{version}}/Elite-#{{version}}-universal.zip"
+        archive_url = f"{RELEASES}/v#{{version}}/L337-#{{version}}-universal.zip"
         provenance = f"  # {'Source' if source_revision else 'Artifact'} commit: {revision}\n"
         livecheck = '    url :homepage\n    strategy :github_latest'
     else:
-        archive_url = f"{REPOSITORY}/{revision}/releases/macos/Elite-#{{version}}-universal.zip"
+        archive_url = f"{REPOSITORY}/{revision}/releases/macos/L337-#{{version}}-universal.zip"
         provenance = ""
         livecheck = '    skip "Published archives are pinned to a reviewed repository commit"'
-    return f'''cask "elite" do
+    return f'''cask "l337" do
   version "{manifest["appVersion"]}"
   sha256 "{manifest["sha256"]}"
 
 {provenance}  url "{archive_url}"
-  name "Elite"
+  name "L337"
   desc "Space trading and combat game inspired by BBC Micro Elite"
-  homepage "https://github.com/stephenlclarke/elite"
+  homepage "https://github.com/stephenlclarke/l337"
 
   livecheck do
 {livecheck}
@@ -77,7 +82,7 @@ def render_cask(manifest, revision, release_assets=True, source_revision=False):
 
   depends_on macos: :sonoma
 
-  app "Elite.app"
+  app "L337.app"
 end
 '''
 
@@ -94,7 +99,7 @@ def existing_release(cask):
 
 
 def public_json(version: str, suffix: str) -> dict:
-    url = f"{RELEASES}/v{version}/Elite-{version}-universal{suffix}"
+    url = f"{RELEASES}/v{version}/L337-{version}-universal{suffix}"
     with urllib.request.urlopen(url, timeout=60) as response:
         data = response.read(2 * 1024 * 1024 + 1)
     if len(data) > 2 * 1024 * 1024:
@@ -143,7 +148,16 @@ def main():
     parser.add_argument("--tap", type=Path, help="Existing homebrew-tap checkout")
     parser.add_argument("--release-plan", type=Path, help="Generated authoritative release plan")
     options = parser.parse_args()
-    cask = ROOT / "Casks/elite.rb"
+    cask = ROOT / "Casks/l337.rb"
+    # Until a real L337 release exists, verify only the pinned, unchanged Elite 1.5 cask.
+    # This path cannot generate a current cask or consume a new-product release plan.
+    if options.check and not cask.exists() and not options.release_plan:
+        if options.version or options.asset_commit or options.tap:
+            parser.error("The closed Elite 1.5 check accepts no alternate version, source or tap.")
+        from historical_elite import verify_historical
+        verify_historical(ROOT / "Casks/elite.rb", download=options.verify_download)
+        print("Historical Elite 1.5.0 cask verified; no L337 publication is implied.")
+        return
     planned = options.release_plan or (options.check and "# Source commit:" in cask.read_text())
     if not options.check and not planned:
         parser.error("Cask updates require --release-plan; manual versions are not release inputs.")
@@ -155,7 +169,7 @@ def main():
         if options.tap:
             if not (options.tap / ".git").exists():
                 parser.error("--tap must name an existing Git checkout.")
-            paths.append(options.tap / "Casks/elite.rb")
+            paths.append(options.tap / "Casks/l337.rb")
         for path in paths:
             if options.check:
                 if not path.is_file() or path.read_text() != expected:
@@ -163,7 +177,7 @@ def main():
             else:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(expected)
-        print(f"Elite {version} cask {'verified' if options.check else 'synchronized'} at {revision}.")
+        print(f"L337 {version} cask {'verified' if options.check else 'synchronized'} at {revision}.")
         return
     version, revision = options.version, options.asset_commit
     if options.check and version is None and revision is None:
@@ -172,7 +186,7 @@ def main():
         parser.error("Supply --version and an exact --asset-commit, or use --check.")
     if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
         parser.error("Invalid stable archive version.")
-    relative = f"releases/macos/Elite-{version}-universal"
+    relative = f"releases/macos/L337-{version}-universal"
     subprocess.run(
         ["git", "merge-base", "--is-ancestor", revision, "origin/main"],
         cwd=ROOT, check=True,
@@ -199,7 +213,7 @@ def main():
     if options.tap:
         if not (options.tap / ".git").exists():
             parser.error("--tap must name an existing Git checkout.")
-        paths.append(options.tap / "Casks/elite.rb")
+        paths.append(options.tap / "Casks/l337.rb")
     for path in paths:
         if options.check:
             if not path.is_file() or path.read_text() != expected:
@@ -208,7 +222,7 @@ def main():
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(expected)
     action = "verified" if options.check else "synchronized"
-    print(f"Elite {version} cask {action} at {revision}.")
+    print(f"L337 {version} cask {action} at {revision}.")
 
 
 if __name__ == "__main__":

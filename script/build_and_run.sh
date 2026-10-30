@@ -4,24 +4,24 @@ cd "$(dirname "$0")/.."
 MODE="${1:-run}"
 case "$MODE" in run|--debug|--logs|--telemetry|--verify|--build-only) ;; *) printf 'Usage: %s [--debug|--logs|--telemetry|--verify|--build-only]\n' "$0" >&2; exit 2 ;; esac
 swift build
-APP_BUNDLE="$PWD/dist/Elite.app"
+APP_BUNDLE="$PWD/dist/L337.app"
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
-cp Resources/Elite.icns "$APP_BUNDLE/Contents/Resources/Elite.icns"
-cp "$(swift build --show-bin-path)/Elite" "$APP_BUNDLE/Contents/MacOS/Elite"
-rm -rf "$APP_BUNDLE/Contents/Resources/Elite_EliteCore.bundle"
-cp -R "$(swift build --show-bin-path)/Elite_EliteCore.bundle" "$APP_BUNDLE/Contents/Resources/"
+cp Resources/L337.icns "$APP_BUNDLE/Contents/Resources/L337.icns"
+cp "$(swift build --show-bin-path)/L337" "$APP_BUNDLE/Contents/MacOS/L337"
+rm -rf "$APP_BUNDLE/Contents/Resources/L337_L337Core.bundle"
+cp -R "$(swift build --show-bin-path)/L337_L337Core.bundle" "$APP_BUNDLE/Contents/Resources/"
 cp LICENSE "$APP_BUNDLE/Contents/Resources/LICENSE"
 cp NOTICE.md "$APP_BUNDLE/Contents/Resources/NOTICE.md"
 cat > "$APP_BUNDLE/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-<key>CFBundleExecutable</key><string>Elite</string>
-<key>CFBundleIdentifier</key><string>io.xyzzy.elite</string>
-<key>CFBundleName</key><string>Elite</string>
-<key>CFBundleIconFile</key><string>Elite.icns</string>
-<key>CFBundleDisplayName</key><string>XYZZY Elite - Right-On Commander</string>
+<key>CFBundleExecutable</key><string>L337</string>
+<key>CFBundleIdentifier</key><string>io.xyzzy.l337</string>
+<key>CFBundleName</key><string>L337</string>
+<key>CFBundleIconFile</key><string>L337.icns</string>
+<key>CFBundleDisplayName</key><string>L337</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>NSPrincipalClass</key><string>NSApplication</string>
@@ -31,19 +31,19 @@ PLIST
 BUILD_REVISION="$(git rev-parse HEAD)"
 BUILD_VERSION="$(git describe --tags --always --dirty)"
 /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $BUILD_VERSION" "$APP_BUNDLE/Contents/Info.plist"
-/usr/libexec/PlistBuddy -c "Add :EliteSourceRevision string $BUILD_REVISION" "$APP_BUNDLE/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Add :L337SourceRevision string $BUILD_REVISION" "$APP_BUNDLE/Contents/Info.plist"
 codesign --force --sign - "$APP_BUNDLE" >/dev/null
 if [[ "$MODE" == --build-only ]]; then exit 0; fi
 # Stop only this checkout's staged application before relaunching it.
-APP_PID="$(pgrep -f "^$APP_BUNDLE/Contents/MacOS/Elite([[:space:]]|$)" || true)"
+APP_PID="$(pgrep -f "^$APP_BUNDLE/Contents/MacOS/L337([[:space:]]|$)" || true)"
 if [[ -n "$APP_PID" ]]; then
   while IFS= read -r pid; do kill "$pid"; done <<< "$APP_PID"
 fi
-if [[ "$MODE" == --debug ]]; then exec lldb -- "$APP_BUNDLE/Contents/MacOS/Elite"; fi
+if [[ "$MODE" == --debug ]]; then exec lldb -- "$APP_BUNDLE/Contents/MacOS/L337"; fi
 LAUNCH_ARGS=()
 if [[ -n "${ELITE_WINDOW_SIZE:-}" ]]; then LAUNCH_ARGS=(--args "--window-size=$ELITE_WINDOW_SIZE"); fi
 /usr/bin/open -n "$APP_BUNDLE" "${LAUNCH_ARGS[@]}"
 case "$MODE" in
-  --logs|--telemetry) /usr/bin/log stream --info --style compact --predicate 'process == "Elite"' ;;
-  --verify) sleep 1; pgrep -f "^$APP_BUNDLE/Contents/MacOS/Elite([[:space:]]|$)" >/dev/null ;;
+  --logs|--telemetry) /usr/bin/log stream --info --style compact --predicate 'process == "L337"' ;;
+  --verify) sleep 1; pgrep -f "^$APP_BUNDLE/Contents/MacOS/L337([[:space:]]|$)" >/dev/null ;;
 esac

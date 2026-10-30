@@ -2236,7 +2236,7 @@ class NativeBuilder:
                 # Legacy workers cannot overlap this build, even after a future activation.
                 legacy.ensure_no_live_tests()
                 if any("swiftpm-testing-helper" in row["command"]
-                       or ".xctest/Contents/MacOS/Elite" in row["command"]
+                       or any(name in row["command"] for name in (".xctest/Contents/MacOS/Elite", ".xctest/Contents/MacOS/L337"))
                        for row in self.authority.snapshot().values()):
                     raise ValueError("A live test helper blocks exclusive preparation")
                 self.authority.admission() if phase is None else self.authority.admission(phase=phase)
@@ -3115,7 +3115,7 @@ class NativeExecutor:
     def unknown_live_helpers(self):
         rows = self.authority.snapshot()
         owned = descendants(self.registered_processes(rows), rows)
-        return any(("swiftpm-testing-helper" in row["command"] or ".xctest/Contents/MacOS/Elite" in row["command"]
+        return any(("swiftpm-testing-helper" in row["command"] or any(name in row["command"] for name in (".xctest/Contents/MacOS/Elite", ".xctest/Contents/MacOS/L337"))
                    or (arguments(row) and Path(arguments(row)[0]).name in ("swift", "swift-test")
                        and "test" in arguments(row)))
                    and pid not in owned for pid, row in rows.items())
@@ -3303,7 +3303,7 @@ def owned_active_artifact_job(authority, run, expected_run, api):
     name, attempt = environment.get("RUNNER_NAME"), environment.get("GITHUB_RUN_ATTEMPT", "")
     instance = policy.get("recoverable_activation", {}).get("runners", {}).get(name, {})
     if (not root.is_absolute() or root != root.resolve()
-            or instance.get("workspace") != str(root / "_work/elite/elite")
+            or instance.get("workspace") != str(root / "_work/l337/l337")
             or not re.fullmatch(r"[1-9][0-9]*", attempt)):
         return False
     registration = root / ".runner"

@@ -13,7 +13,7 @@ import re
 import subprocess
 import time
 
-REPOSITORY = "stephenlclarke/elite"
+REPOSITORY = "stephenlclarke/l337"
 ACTOR = "22142777"
 RECOVERABLE_JOBS = {"prepare_native", "prepare_thread", "prepare_address", "native_checks", "native_phase",
                     "native_shards", "thread_shards", "address_shards", "native_aggregate", "native_local_components"}
@@ -487,7 +487,7 @@ def require_recoverable_identity(policy: dict, environment: dict, event: dict, n
     if (environment.get("GITHUB_JOB") not in instance.get("jobs", [])
             or not set(instance.get("jobs", [])) <= RECOVERABLE_JOBS
             or not workspace.is_absolute() or str(workspace) != instance.get("workspace")
-            or workspace.parts[-3:] != ("_work", "elite", "elite")
+            or workspace.parts[-3:] != ("_work", "l337", "l337")
             or workspace != workspace.resolve()):
         raise ValueError("Recoverable native runner/workspace is not reserved.")
     if not all(re.fullmatch(r"[1-9][0-9]*", environment.get(name, "")) for name in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT")):
@@ -797,7 +797,7 @@ def require_physical_host(policy: dict, environment: dict) -> Path:
         raise ValueError("The isolated VM is not the native quality runner.")
     root = Path(policy["runner_root"]).resolve()
     workspace = Path(environment["GITHUB_WORKSPACE"]).resolve()
-    if workspace != root / "_work" / "elite" / "elite":
+    if workspace != root / "_work" / "l337" / "l337":
         raise ValueError("Native quality requires its dedicated owned checkout.")
     if environment.get("DEVELOPER_DIR") != policy["developer_dir"]:
         raise ValueError("Native quality developer directory changed.")

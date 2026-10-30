@@ -15,7 +15,7 @@ class SanitizerCheckpointTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
-        self.methods = ['EliteCoreTests.First/plain()', 'EliteCoreTests.First/rows(value:)']
+        self.methods = ['L337CoreTests.First/plain()', 'L337CoreTests.First/rows(value:)']
         self.identity = {'mode': 'address', 'image_sha256': 'image', 'inputs': {'source': 'hash'}}
 
     def xml(self, methods=None, child=None):
@@ -51,16 +51,16 @@ class SanitizerCheckpointTests(unittest.TestCase):
         import re
         from sanitizer_checkpoints import batch_command, xml_identity
         methods = [
-            'EliteCoreTests.topPlain()',
-            'EliteCoreTests.courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row:)/Courier.swift:12:3',
-            'EliteCoreTests.Outer/Inner/nested(row:)/Nested.swift:9:4',
-            'EliteCoreTests.Outer/plain()',
+            'L337CoreTests.topPlain()',
+            'L337CoreTests.courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row:)/Courier.swift:12:3',
+            'L337CoreTests.Outer/Inner/nested(row:)/Nested.swift:9:4',
+            'L337CoreTests.Outer/plain()',
         ]
         expected_xml = [
-            ('EliteCoreTests', 'topPlain()'),
-            ('EliteCoreTests', 'courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row:)'),
-            ('EliteCoreTests.Outer.Inner', 'nested(row:)'),
-            ('EliteCoreTests.Outer', 'plain()'),
+            ('L337CoreTests', 'topPlain()'),
+            ('L337CoreTests', 'courierEveryDifficultyAndVariantUsesRuntimeTravelAndDurableContact(row:)'),
+            ('L337CoreTests.Outer.Inner', 'nested(row:)'),
+            ('L337CoreTests.Outer', 'plain()'),
         ]
         self.assertEqual([xml_identity(method) for method in methods], expected_xml)
         self.assertEqual(inventory('Building...\n' + '\n'.join(methods)), sorted(methods))
@@ -89,7 +89,7 @@ class SanitizerCheckpointTests(unittest.TestCase):
             inventory('\n'.join([*methods, duplicate_xml_id]))
 
     def test_asan_partition_keeps_whole_suites_and_exact_disjoint_union(self):
-        methods = [f'EliteCoreTests.{suite}/method{index}()'
+        methods = [f'L337CoreTests.{suite}/method{index}()'
                    for suite, count in [('A', 2), ('B', 4), ('C', 1)] for index in range(count)]
         batches = partition(methods, 'address', target=3)
         self.assertEqual([len(batch) for batch in batches], [2, 4, 1])
@@ -106,17 +106,17 @@ class SanitizerCheckpointTests(unittest.TestCase):
         self.assertIn('--no-parallel', address)
         pattern = address[address.index('--filter') + 1]
         self.assertTrue(__import__('re').search(pattern, self.methods[1]))
-        self.assertFalse(__import__('re').search(pattern, 'EliteCoreTests.FirstOther/plain()'))
+        self.assertFalse(__import__('re').search(pattern, 'L337CoreTests.FirstOther/plain()'))
 
     def test_tsan_is_one_full_concurrent_group_even_above_target(self):
         self.assertEqual(partition(self.methods, 'thread', target=1, full_concurrent=True), [self.methods])
 
     def test_grouped_tsan_keeps_suites_and_shared_participants_intact(self):
-        methods = ['EliteCoreTests.A/one()', 'EliteCoreTests.A/two()',
-                   'EliteCoreTests.B/three()', 'EliteCoreTests.C/four()']
+        methods = ['L337CoreTests.A/one()', 'L337CoreTests.A/two()',
+                   'L337CoreTests.B/three()', 'L337CoreTests.C/four()']
         batches = partition(methods, 'thread', target=1, shared_groups=[methods[:3]])
         self.assertEqual(batches, [methods[:3], methods[3:]])
-        for group in [methods[:1], methods + ['EliteCoreTests.Foreign/no()']]:
+        for group in [methods[:1], methods + ['L337CoreTests.Foreign/no()']]:
             with self.assertRaises(ValueError):
                 partition(methods, 'thread', shared_groups=[group])
         with self.assertRaises(ValueError):
@@ -124,7 +124,7 @@ class SanitizerCheckpointTests(unittest.TestCase):
 
     def test_shared_group_membership_and_source_drift_require_review(self):
         from sanitizer_checkpoints import grouping_policy
-        folder = self.root / 'Tests/EliteCoreTests'
+        folder = self.root / 'Tests/L337CoreTests'
         folder.mkdir(parents=True)
         app = folder / 'App.swift'
         app.write_text('import AppKit\n@Test func one() {}')
@@ -132,16 +132,16 @@ class SanitizerCheckpointTests(unittest.TestCase):
         salvage.write_text('@Test func two() { NativeSalvageAdmissionTestFixture.released() }')
         manifest = {'schema': 1, 'groups': [
             {'name': 'appkit-shared-process', 'sources': {str(app.relative_to(self.root)): digest(app)},
-             'members': ['EliteCoreTests.First/plain()', 'EliteCoreTests.First/rows(value:)']},
+             'members': ['L337CoreTests.First/plain()', 'L337CoreTests.First/rows(value:)']},
             {'name': 'salvage-shared-release', 'sources': {str(salvage.relative_to(self.root)): digest(salvage)},
-             'members': ['EliteCoreTests.Other/two()']}]}
+             'members': ['L337CoreTests.Other/two()']}]}
         path = self.root / 'Tools/CI/sanitizer_groups.json'
         path.parent.mkdir(parents=True)
         path.write_text(json.dumps(manifest))
-        methods = self.methods + ['EliteCoreTests.Other/two()']
+        methods = self.methods + ['L337CoreTests.Other/two()']
         self.assertEqual(len(grouping_policy(self.root, methods, 'thread', 100)['shared_groups']), 2)
         with self.assertRaises(ValueError):
-            grouping_policy(self.root, methods + ['EliteCoreTests.First/new()'], 'thread', 100)
+            grouping_policy(self.root, methods + ['L337CoreTests.First/new()'], 'thread', 100)
         foreign = folder / 'New.swift'
         foreign.write_text('@Test func new() { NativeSalvageAdmissionTestFixture.released() }')
         with self.assertRaisesRegex(ValueError, 'Salvage'):
@@ -160,7 +160,7 @@ class SanitizerCheckpointTests(unittest.TestCase):
     def test_xml_requires_exact_complete_unique_method_inventory(self):
         self.assertEqual(inspect_xml(self.xml(), self.methods), self.methods)
         for methods in [self.methods[:1], self.methods * 2,
-                        self.methods + ['EliteCoreTests.Foreign/other()']]:
+                        self.methods + ['L337CoreTests.Foreign/other()']]:
             with self.subTest(methods=methods), self.assertRaises(ValueError):
                 inspect_xml(self.xml(methods), self.methods)
         (self.root / 'tests.xml').write_text('<testsuites>')
@@ -303,7 +303,7 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
 
     def test_disconnected_existing_helper_blocks_replacement(self):
         from sanitizer_checkpoints import ensure_no_live_tests
-        row = '42 /toolchain/swiftpm-testing-helper --test-bundle-path /owned/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests'
+        row = '42 /toolchain/swiftpm-testing-helper --test-bundle-path /owned/L337CoreTests.xctest/Contents/MacOS/L337CoreTests'
         with patch('sanitizer_checkpoints.subprocess.check_output', return_value=row):
             with self.assertRaisesRegex(ValueError, 'still active'):
                 ensure_no_live_tests()
@@ -315,10 +315,10 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
         import sanitizer_checkpoints as runner
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder).resolve()
-            image = root / 'bin/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests'
+            image = root / 'bin/L337CoreTests.xctest/Contents/MacOS/L337CoreTests'
             image.parent.mkdir(parents=True)
             image.write_bytes(b'fixed instrumented image')
-            methods = ['EliteCoreTests.A/rows(value:)', 'EliteCoreTests.B/plain()']
+            methods = ['L337CoreTests.A/rows(value:)', 'L337CoreTests.B/plain()']
             head = ['a' * 40]
             fail_second = [True]
             executions = []
@@ -390,10 +390,10 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
         import sanitizer_checkpoints as runner
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder).resolve()
-            image = root / 'bin/EliteCoreTests.xctest/Contents/MacOS/EliteCoreTests'
+            image = root / 'bin/L337CoreTests.xctest/Contents/MacOS/L337CoreTests'
             image.parent.mkdir(parents=True)
             image.write_bytes(b'fixed instrumented image')
-            methods = ['EliteCoreTests.A/rows(value:)', 'EliteCoreTests.B/plain()']
+            methods = ['L337CoreTests.A/rows(value:)', 'L337CoreTests.B/plain()']
             head = ['a' * 40]
             fail_second = [True]
             executions = []
@@ -470,11 +470,11 @@ class DeclaredOptInPolicyTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
         for name in ['PlanetGPUShaderTests.swift', 'NativeMultiBatchRuntimeTests.swift']:
-            target = self.root / 'Tests/EliteCoreTests' / name
+            target = self.root / 'Tests/L337CoreTests' / name
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(runner.ROOT / 'Tests/EliteCoreTests' / name, target)
+            shutil.copyfile(runner.ROOT / 'Tests/L337CoreTests' / name, target)
         self.policy = runner.opt_in_policy(self.root, {})
-        self.methods = ['EliteCoreTests.Required/plain()'] + [
+        self.methods = ['L337CoreTests.Required/plain()'] + [
             entry['classname'] + '/' + entry['name'] for entry in self.policy['expected_skips']]
         self.old = self.root / 'legacy'
         self.old.mkdir()
@@ -534,7 +534,7 @@ class DeclaredOptInPolicyTests(unittest.TestCase):
         self.assertEqual(runner.inspect_xml(path, self.methods, allowed), self.methods)
 
     def test_source_guard_or_added_opt_in_method_requires_review(self):
-        path = self.root / 'Tests/EliteCoreTests/PlanetGPUShaderTests.swift'
+        path = self.root / 'Tests/L337CoreTests/PlanetGPUShaderTests.swift'
         original = path.read_text()
         for changed in [original.replace('== "1"', '== "2"', 1),
                         original + '\n@MainActor @Test func newOptionalTest() {}\n']:
@@ -542,7 +542,7 @@ class DeclaredOptInPolicyTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.runner.opt_in_policy(self.root, {})
         path.write_text(original)
-        path = self.root / 'Tests/EliteCoreTests/NativeMultiBatchRuntimeTests.swift'
+        path = self.root / 'Tests/L337CoreTests/NativeMultiBatchRuntimeTests.swift'
         path.write_text(path.read_text().replace('== false,', '== true,', 1))
         with self.assertRaises(ValueError):
             self.runner.opt_in_policy(self.root, {})
@@ -590,7 +590,7 @@ class DeclaredOptInPolicyTests(unittest.TestCase):
             changed[key] = value
             with self.subTest(key=key), self.assertRaises(ValueError):
                 self.runner.legacy_requalification(self.old, changed, self.methods)
-        for key in ['Sources/game.swift', 'Package.resolved', 'Tests/EliteCoreTests/PlanetGPUShaderTests.swift']:
+        for key in ['Sources/game.swift', 'Package.resolved', 'Tests/L337CoreTests/PlanetGPUShaderTests.swift']:
             changed = json.loads(json.dumps(self.identity))
             changed['inputs'][key] = 'changed'
             with self.subTest(input=key), self.assertRaises(ValueError):

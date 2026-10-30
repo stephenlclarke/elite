@@ -12,6 +12,25 @@ The one release plan derived patch1.5.1 from published1.5.0; no version override
 
 The original failed Liberator fixture run and earlier M01 evidence remain historical and retained. The M02 section below now records this delivery and explicitly retains the old PR69/1.4.903/issue88 status paragraph as dated history. Physical trackpad/full-screen/human usability acceptance remains unperformed; automated native tests are credited only for their actual scope. G1 owns release metadata and the next narrowly ported M03 candidate on this delivered base; no later source-clear packet is runtime-qualified by this release. Tap publication still needs its normal required independent approval. Historical checkpoint wording below, including older CURRENT labels, describes its original date rather than the current release.
 
+## Parallel source queue snapshot — 30 October 2026
+
+These are bounded source assignments, not integrated or runtime-qualified deliveries. G1 owns the current M03 composition on delivered M02; all later work remains in milestone order. Root owns the queue and dispatches one MBA review at a time.
+
+| Owner | Bounded assignment and status at this snapshot | Execution status |
+| --- | --- | --- |
+| MC1 High | C32 frozen2a946ddd on3bda: opening, original loan, writer/custody/loss and save fields173/174;21-path final source review83140b is clear. | 20 methods/41 cases UNRUN. |
+| MC1 High | C38.P01 (M05) Signed Passage opening, original combined1t loan, fields181/182; approved21-path scope on source-clear C32. | Implementation pending; UNRUN. |
+| MC1 High | C10ab195 has final source review251abe. | 33 methods/56 cases UNRUN. |
+| G4 | C28ff0ac corrected the optional-claims guard; final source review2a4874 is clear, including genuine normalAlien mixed-save assertions. | 20 methods/46 cases UNRUN. |
+| G4 | C33abeacaa6 Laris opening/original loan, fields175/176;22-path final source review0c622d is clear. | 20 methods/48 cases UNRUN. |
+| G4 | C35.P01 (M07) Shared Pulse opening, fields179/180; source implementation and validation pending. | UNRUN. |
+| G3 | Priority M03 additive closed historical Elite1.5.1 receipt/verifier correction; preserve1.5.0 pins and strict current L337 validation. | Authoring; no runtime claim. |
+| G3 | C29 corrected8b286f4d has final source review47830c clear after the three notification literal corrections. | 20 methods/42 cases UNRUN. |
+| G3 | C34.P01 Valtor opening/original loan, fields177/178; authored, freeze handoff pending. | UNRUN. |
+| MBA | M03 cutover-consumer constraints are reviewed; actual historical correction and final-port reviews follow singly as Root dispatches. | Read-only review; source-clear is not executed validation. |
+
+Reservation receipts are retained in `/tmp/elite-root-c32-save-envelope-reservation.json`, `/tmp/elite-root-c33-save-envelope-reservation.json` and `/tmp/elite-root-c34-save-envelope-reservation.json`. Earlier source and failure statuses below remain dated history; no later packet inherits the completed M02 tests or release.
+
 ## Historical M02 fixture correction — 30 October 2026
 
 PR282 source 4e1bd50f/execution 338aa0cf passed both hosted 534-method selections and the 55-test focused native run. Its full native run40989890158 attempt2 completed at02:59:31 UTC with 3,416 tests in397 Swift suites, one failed method, ten cascading issues, zero errors and six declared optional skips in2,562.089 seconds. Only the positive Liberator purchase method failed: it never enabled access for the already declared XYZZY-only hull. The correct new quote refusal left its original Cobra unchanged. No later leak/coverage/quality pass is claimed. Controller34893 exited0 and removed its registration; its original budget and failure evidence remain retained under `/Users/sclarke/Library/EliteNativeCI/operator-recovery/m02-pr282-liberator-failure/`.
@@ -2048,6 +2067,8 @@ Superseded execution notes are retained for traceability. They describe earlier 
 ### M03 - Start and trade in the original L337 universe
 
 **Status:** in development. **Owner:** G1; Root coordinates rename. **Dependencies:** M01, M02.
+
+**Current source composition:** G1 has narrowly ported quote dc37013f, identity f6a79e49 and final content c7aecd52 onto delivered M02 main e691630c plus verified1.5.1 metadata e3a6cdcb. All1,820 source/test/resource/package blobs and the40-method focused cohort's source hashes exactly match the reviewed M03 packet. The delivered Liberator fix, newer fixture-qualification note, actual public-download block and ledger history are preserved. G3's additive closed historical1.5.1 correction is pending. Six selector/report Python methods pass; Swift execution remains UNRUN at this checkpoint. Full-file Swift lint still reports inherited diagnostics on byte-identical reviewed files; no new implementation formatting is inferred or rewritten. The external repository/runner cutover is approved but unperformed; no strict new guard has been activated or branch pushed.
 
 **Player journey:** Start as the approved commander at Avenor in SH025 with720CR/full fuel, then trade and travel through the original named galaxies and economy.
 
