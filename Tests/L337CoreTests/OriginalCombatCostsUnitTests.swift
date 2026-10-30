@@ -170,7 +170,8 @@ struct OriginalCombatCostsUnitTests {
         capacity: game.commander.performance.energy,
         recharge: game.commander.performance.recharge * game.commander.energyRechargeMultiplier,
         at: game.commander.flightSimulation.physicalTime))
-    try #require(reserve.drain(reserve.capacity, at: reserve.physicalTime))
+    let reserveDrained = reserve.drain(reserve.capacity, at: reserve.physicalTime)
+    try #require(reserveDrained)
     game.commander.savedPlayerElectrical = reserve
     try #require(game.playerEMPDisabled)
     let before = game
@@ -203,7 +204,8 @@ struct OriginalCombatCostsUnitTests {
       try #require(game.bodies[0].physical?.npc?.resources == resources)
       game.weaponsTargetID = 70
       game.missileArmed = true
-      try #require(game.fireMissile())
+      let missileFired = game.fireMissile()
+      try #require(missileFired)
       let projectile = try #require(game.bodies.first { $0.physical?.ordnance != nil })
       let state = try #require(projectile.physical?.ordnance)
       try #require(state.profile == profile && state.profile.damage == damage)

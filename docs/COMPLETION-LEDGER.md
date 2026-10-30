@@ -12,6 +12,12 @@ The one release plan derived patch1.5.1 from published1.5.0; no version override
 
 The original failed Liberator fixture run and earlier M01 evidence remain historical and retained. The M02 section below now records this delivery and explicitly retains the old PR69/1.4.903/issue88 status paragraph as dated history. Physical trackpad/full-screen/human usability acceptance remains unperformed; automated native tests are credited only for their actual scope. G1 owns release metadata and the next narrowly ported M03 candidate on this delivered base; no later source-clear packet is runtime-qualified by this release. Tap publication still needs its normal required independent approval. Historical checkpoint wording below, including older CURRENT labels, describes its original date rather than the current release.
 
+## Current M03 focused-build correction — 30 October 2026
+
+The first focused build on frozen cb058b37 completed with exit1 and zero started/completed methods. Swift Testing expands the required mutating reserve.drain and game.fireMissile calls through an immutable receiver, producing the two actual compiler errors at OriginalCombatCostsUnitTests lines173 and206. The other failed batch entries cascade from these errors. No native assertion, memory limit or gameplay failure is inferred. Raw log and failed receipt remain under `/Users/sclarke/Library/EliteNativeCI/operator-recovery/m03-cb058-build-failure/`.
+
+G1 owns the exact two-call test-only correction and paired notes: evaluate each action once into a Boolean local, then retain the required success check at the same point. All production, parameters, amounts, state sequence, subsequent assertions,559-method selection and unrelated tests remain unchanged. Independent bounded correction review and one corrected-source40-method run are pending; prior source-clear reviews do not constitute execution. External repository/runner cutover remains unperformed, and usable Elite1.5.1 remains unchanged.
+
 ## Parallel source queue snapshot — 30 October 2026
 
 These are bounded source assignments, not integrated or runtime-qualified deliveries. G1 owns the current M03 composition on delivered M02; all later work remains in milestone order. Root owns the queue and dispatches one MBA review at a time.
