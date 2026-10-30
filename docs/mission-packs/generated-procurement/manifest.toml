@@ -1,7 +1,7 @@
 schemaVersion = 2
 missionAPI = 2
 id = "project.generated-procurement"
-version = "1.1.0"
+version = "1.1.1"
 minimumEngine = "2.0.0"
 capabilities = ["script-lua-v1", "story-v2", "local-flight-clocks-v2", "contracts-basic-v2", "procurement-contracts-basic-v2", "mission-calendar-v2", "durable-commands-v2", "partial-collections-v2", "gallery-basic-v2"]
 priority = 565
@@ -61,7 +61,7 @@ function = "confirm"
 ship = "SH023"
 galaxy = 0
 system = 7
-credits = 157000
+credits = 164875
 cabins = 0
 flight = true
 offer = 0

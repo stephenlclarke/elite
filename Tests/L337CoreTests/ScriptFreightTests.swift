@@ -228,7 +228,7 @@ func freightActualAllRemainingPaysFrozenTierReward(row: Int) async throws {
   game.rearShield = game.commander.rearShieldCapacity
   game.scriptPacks = [fixture.pack]
   // Preserve the 14,000-unit post-fit budget and every paid G03 fitting receipt.
-  try #require(game.commander.credits == 157000)
+  try #require(game.commander.credits == 164875)
   try game.prepareG03FlightEquipment()
   try ScriptProcurementFixture.requirePaidG03Preparation(game)
   let runtime = GameRuntime(game: game, saveURL: fixture.save)

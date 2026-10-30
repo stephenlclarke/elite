@@ -18,7 +18,7 @@ extension Game {
       (TargetingTier.basic.equipmentName, 8000, .targetingCore),
       (TargetingTier.advanced.equipmentName, 20000, .targetingCore),
       (TargetingTier.docking.equipmentName, 40000, .targetingCore),
-      (ShieldBooster.pulse.equipmentName, 3000, .shield),
+      (ShieldBooster.pulse.equipmentName, 10875, .shield),
       ("Extra Energy Unit", 72000, .energy),
     ]
     var candidate = self
@@ -35,7 +35,7 @@ extension Game {
         candidate.commander.fittedEquipment(at: slot)?.id == quote.request.newItem
       else { throw EquipmentRuntimeError.incompatibleFit }
     }
-    guard candidate.commander.credits == before.credits - 143000,
+    guard candidate.commander.credits == before.credits - 150875,
       candidate.commander.equipmentOwnerID == before.equipmentOwnerID,
       candidate.commander.hullInstanceID == before.hullInstanceID,
       candidate.commander.cargo == before.cargo, candidate.commander.fuel == before.fuel,

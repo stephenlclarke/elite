@@ -33,7 +33,7 @@ struct InitialMainStationDockingTests {
         "Targeting: Docking", 40000, .targetingCore, EquipmentPurchaseCatalog.targeting,
         "Targeting: Advanced"
       ),
-      ("Pulse Shield Booster", 3000, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
+      ("Pulse Shield Booster", 10875, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
       ("Extra Energy Unit", 72000, .energy, EquipmentPurchaseCatalog.energy, "Basic Energy System"),
     ]
     try #require(history.paid.count == rows.count && history.legacy.isEmpty)
@@ -42,7 +42,7 @@ struct InitialMainStationDockingTests {
     let first = try #require(history.paid.first)
     var expectedItems = first.binding.snapshot.items
     let foundation = expectedItems
-    var funds = 157000
+    var funds = 164875
     for (index, row) in rows.enumerated() {
       let (name, price, slot, family, predecessor) = row
       let receipt = history.paid[index]

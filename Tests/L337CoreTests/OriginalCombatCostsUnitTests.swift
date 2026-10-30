@@ -185,16 +185,43 @@ struct OriginalCombatCostsUnitTests {
   }
 
   @Test func actualFiniteMissileImpactKeepsOrdinaryAndAlienRelativeDamageAndPhysicalAmmunition()
-    throws
+    async throws
   {
+    let folder = try nativeSalvageTestDirectory()
+    defer { try? FileManager.default.removeItem(at: folder) }
     for (name, profile, damage) in [
       ("Missile", OrdnanceProfile.standardMissile, 160.0),
       (AlienMissileDefinition.name, OrdnanceProfile.alienSeeker, 200.0),
     ] {
-      var game = try flight(bomb: false, rounds: 0)
-      try game.commander.grantEquipment(
-        name, at: .missilePylon(0), provenance: .grant("finite missile cost fixture"))
-      let round = try #require(game.commander.fittedEquipment(at: .missilePylon(0)))
+      var game: Game
+      let round: OwnedEquipmentItem
+      if profile == .alienSeeker {
+        let (runtime, prototype) = try await researchAlienSeeker(
+          folder.appendingPathComponent("commander.json"))
+        try await loadAlienRound(runtime, id: prototype)
+        game = await runtime.snapshot()
+        round = try #require(
+          game.commander.equipmentInventory?.items.first { $0.id == prototype })
+        let location = try #require(round.location)
+        let research = try #require(
+          game.commander.alienStorageState?.current.salvage.missileResearch.first)
+        try #require(game.commander.fittedEquipment(at: location.slot)?.id == prototype)
+        try #require(
+          round.provenance == .paid(owner: research.owner, transaction: research.operation))
+        game.launch()
+        game.speed = 0
+        game.celestials = []
+        // Retain the original controlled impact scene after genuine native acquisition.
+        game.commander.flightSimulation.pose.position = .init(0, 0, -3000)
+        game.bodies = [.init(id: 70, hull: .cobra, position: .init(0, 0, 1000))]
+        game.ensurePhysicalActors()
+        try #require(!game.docked && game.commander.valid)
+      } else {
+        game = try flight(bomb: false, rounds: 0)
+        try game.commander.grantEquipment(
+          name, at: .missilePylon(0), provenance: .grant("finite missile cost fixture"))
+        round = try #require(game.commander.fittedEquipment(at: .missilePylon(0)))
+      }
       let resources = NPCResources(
         profile: .nativeHull, energyCapacity: 100, energyRecharge: 0,
         frontCapacity: 500, rearCapacity: 500, shieldRecharge: 0,

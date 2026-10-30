@@ -42,7 +42,7 @@ struct ScriptProcurementFixture {
     game.systems = Universe.systemsIncludingPlugh(number: origin.galaxy)
     game.selectedSystem = origin.system
     game.market = MarketItem.at(game.currentSystem)
-    game.commander.credits = escapeReady ? 183000 : 157000
+    game.commander.credits = escapeReady ? 190875 : 164875
     try #require(game.currentSystem.original == origin)
     return game
   }
@@ -161,7 +161,7 @@ struct ScriptProcurementFixture {
         "Targeting: Docking", 40000, .targetingCore, EquipmentPurchaseCatalog.targeting,
         "Targeting: Advanced"
       ),
-      ("Pulse Shield Booster", 3000, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
+      ("Pulse Shield Booster", 10875, .shield, EquipmentPurchaseCatalog.shields, "Basic Shield"),
       ("Extra Energy Unit", 72000, .energy, EquipmentPurchaseCatalog.energy, "Basic Energy System"),
     ]
     if escapeReady {
@@ -173,7 +173,7 @@ struct ScriptProcurementFixture {
     let first = try #require(history.paid.first)
     var expectedItems = first.binding.snapshot.items
     let foundation = expectedItems
-    var funds = escapeReady ? 183000 : 157000
+    var funds = escapeReady ? 190875 : 164875
     for (index, row) in rows.enumerated() {
       let (name, price, slot, family, predecessor) = row
       let receipt = history.paid[index]

@@ -10,6 +10,7 @@ private func originalEquipmentShop(atPlugh: Bool = false) throws -> Game {
   game.commander.fuel = game.commander.fuelCapacity - 3
   game.commander.credits = 1_000_000
   if atPlugh {
+    game.commander.discoverPlugh(in: game.commander.galaxy)
     game.commander.system = Plugh.systemID
   } else {
     game.commander.system = try #require(

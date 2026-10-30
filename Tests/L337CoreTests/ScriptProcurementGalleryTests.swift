@@ -22,7 +22,7 @@ import Testing
   let trial = await runtime.snapshot()
   try #require(namespace != nil)
   #expect(trial.isMissionTrial && !trial.docked && trial.screen.isFlight)
-  #expect(trial.trialSeed == 42 && fixture.pack.manifest.trial?.credits == 157000)
+  #expect(trial.trialSeed == 42 && fixture.pack.manifest.trial?.credits == 164875)
   #expect(trial.currentSystem.original?.key == "G01-S007")
   #expect(trial.commander.galaxy == 0 && trial.commander.system == 7)
   try ScriptProcurementFixture.requirePaidG03Preparation(trial)

@@ -19,7 +19,7 @@ private func recoveredArtefactAtPlugh(_ file: URL) async throws -> (GameRuntime,
   return (runtime, held.key)
 }
 
-private func researchAlienSeeker(_ file: URL) async throws -> (GameRuntime, UUID) {
+func researchAlienSeeker(_ file: URL) async throws -> (GameRuntime, UUID) {
   let (runtime, source) = try await recoveredArtefactAtPlugh(file)
   let before = await runtime.snapshot()
   let command = try #require(before.inventoryActionPreview(for: .alienResearch(source)).command)
@@ -31,7 +31,7 @@ private func researchAlienSeeker(_ file: URL) async throws -> (GameRuntime, UUID
   return (runtime, prototype)
 }
 
-private func loadAlienRound(_ runtime: GameRuntime, id: UUID) async throws {
+func loadAlienRound(_ runtime: GameRuntime, id: UUID) async throws {
   let game = await runtime.snapshot()
   let item = try #require(game.commander.equipmentInventory?.items.first { $0.id == id })
   let command = try #require(game.inventoryActionPreview(for: .equipment(item)).command)

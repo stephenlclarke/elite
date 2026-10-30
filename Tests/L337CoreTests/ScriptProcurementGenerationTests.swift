@@ -237,14 +237,14 @@ func procurementV2SelectsFromStableFeasibleCandidatesBeforeItsFrozenDraw(row: In
   #expect(plan.routeIndex == index && plan.path == eligible[index])
   #expect(plan.calendarLowerBoundSeconds < plan.duration)
   #expect(
-    fixture.pack.manifest.version == "1.1.0"
-      && fixture.pack.digest == "7c005213865792314f9966db54c7acfddadd614260219a2b39d66e41906103b7")
+    fixture.pack.manifest.version == "1.1.1"
+      && fixture.pack.digest == "5232aa1d5ba82c5014bfe70594470d8b37d344a82b4f301d51d456d5f3d48fa4")
   // Exact current content includes the Avenor trial declaration; this policy origin stays zero.
-  #expect(plan.seedHex == "c46e085a42493b29" && plan.initialState == 1_112_095_529)
+  #expect(plan.seedHex == "fd78a415778b07ac" && plan.initialState == 2_005_600_172)
   #expect(
     plan.draws == [
-      3_232_308_831, 2_402_513_454, 3_484_323_893, 2_830_099_137, 3_389_718_522, 726_357_248,
-    ] && plan.finalState == 726_357_248)
+      4_172_222_067, 894_253_731, 3_510_330_959, 61_460_086, 1_988_459_493, 3_872_347_193,
+    ] && plan.finalState == 3_872_347_193)
 }
 
 @Test(arguments: [0, 1, 2])
