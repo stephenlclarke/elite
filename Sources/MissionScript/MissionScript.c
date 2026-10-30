@@ -212,7 +212,7 @@ static void write_value(lua_State *L, int index, unsigned depth) {
 static int scalar_string(lua_State *L) {
   int type = lua_type(L, 1);
   if (type != LUA_TSTRING && type != LUA_TNUMBER && type != LUA_TBOOLEAN && type != LUA_TNIL)
-    return luaL_error(L, "tostring accepts scalar values only.");
+    luaL_error(L, "tostring accepts scalar values only.");
   luaL_tolstring(L, 1, NULL);
   return 1;
 }
@@ -236,28 +236,28 @@ static int run(lua_State *L) {
   int status = luaL_loadbufferx(L, (const char *)ctx->source, ctx->source_count, "mission", "t");
   if (status != LUA_OK) return lua_error(L);
   lua_call(L, 0, 1);
-  if (!lua_istable(L, -1)) return luaL_error(L, "Module must return a handler table.");
+  if (!lua_istable(L, -1)) luaL_error(L, "Module must return a handler table.");
   if (!ctx->handler[0]) {
     read_value(L, 0);
     size_t count = lua_rawlen(L, -1);
-    if (count > 64) return luaL_error(L, "Too many declared handlers.");
+    if (count > 64) luaL_error(L, "Too many declared handlers.");
     for (size_t i = 1; i <= count; ++i) {
       lua_rawgeti(L, -1, (lua_Integer)i);
       const char *name = luaL_checkstring(L, -1);
       lua_getfield(L, -3, name);
-      if (!lua_isfunction(L, -1)) return luaL_error(L, "Missing declared handler: %s", name);
+      if (!lua_isfunction(L, -1)) luaL_error(L, "Missing declared handler: %s", name);
       lua_pop(L, 2);
     }
     write_tag(L, 2);
     return 0;
   }
   lua_getfield(L, -1, ctx->handler);
-  if (!lua_isfunction(L, -1)) return luaL_error(L, "Missing named handler.");
+  if (!lua_isfunction(L, -1)) luaL_error(L, "Missing named handler.");
   ctx->items = 0;
   read_value(L, 0); /* event */
   read_value(L, 0); /* scoped snapshot */
   read_value(L, 0); /* explicit state copy */
-  if (ctx->cursor != ctx->input_count) return luaL_error(L, "Trailing input bytes.");
+  if (ctx->cursor != ctx->input_count) luaL_error(L, "Trailing input bytes.");
   lua_call(L, 3, 1);
   ctx->items = 0;
   write_value(L, -1, 0);
