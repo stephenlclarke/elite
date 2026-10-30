@@ -5565,3 +5565,7 @@ C38 preserves its e427 opening and existing courier/dock/survey/writer plumbing.
 ### Historical F27 status wording — superseded 30 October 2026
 
 | F27 | M08 | Four independently stackable alien stat attachment types | G1 | in development | Energy capacity/recharge and shield capacity/recharge remain separate; no arbitrary module-count cap. Actual recovery, fitting, aggregate effects and safe current saves required. |
+
+### Current review process override — 30 October 2026
+
+The latest direct user instruction removes automated bot-review requests from CI and delivery. G1 found no request calls in `.github` or `Tools`, then removed the mandatory request/wait/retry wording from AGENTS.md and both current README review descriptions. Independent actual final-source/result review, correction of existing actionable findings, final required checks/approvals and ordinary protected merge remain required. Historical request and generic-error receipts are retained as dated evidence and do not set the current process. No new bot request will be sent for the next packet. This small documentation child follows the independently cleared gallery correction; it does not change workflow code, permissions, runtime, media, test evidence or source/event authorization.
