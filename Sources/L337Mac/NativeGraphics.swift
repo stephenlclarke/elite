@@ -10,6 +10,15 @@ func drawGame(_ game: Game, context: CGContext, rect: CGRect) {
 
 @MainActor
 func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGImage? {
+  guard width >= 320, height >= 320, width <= 4096, height <= 4096, (1...2).contains(scale)
+  else { return nil }
+  return imageForFrame(
+    Display.presentation(game, width: Double(width), height: Double(height)),
+    width: width, height: height, scale: scale)
+}
+
+@MainActor
+func imageForFrame(_ frame: Frame, width: Int, height: Int, scale: Int = 1) -> CGImage? {
   guard width >= 320, height >= 320, width <= 4096, height <= 4096, (1...2).contains(scale),
     let context = CGContext(
       data: nil, width: width * scale, height: height * scale, bitsPerComponent: 8,
@@ -20,7 +29,7 @@ func imageForGame(_ game: Game, width: Int, height: Int, scale: Int = 1) -> CGIm
   context.fill(CGRect(x: 0, y: 0, width: width * scale, height: height * scale))
   context.translateBy(x: 0, y: Double(height * scale))
   context.scaleBy(x: Double(scale), y: Double(-scale))
-  drawGame(game, context: context, rect: CGRect(x: 0, y: 0, width: width, height: height))
+  drawFrame(frame, context: context, rect: CGRect(x: 0, y: 0, width: width, height: height))
   return context.makeImage()
 }
 

@@ -1146,12 +1146,25 @@ struct L337App {
     guard
       let gif = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/start-sequence.gif") as CFURL, UTType.gif.identifier as CFString,
-        48, nil)
+        80, nil)
     else { throw SaveError.invalidCommander }
     CGImageDestinationSetProperties(
       gif, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]] as CFDictionary)
     game = Game()
-    for index in 0..<48 {
+    for index in 0..<80 {
+      if index >= 48 {
+        let shipID = index < 64 ? "SH002" : "SH035"
+        let frame = try Display.originalDesignPresentation(
+          game, shipID: shipID, time: Double((index - 48) % 16) / 6,
+          width: 1024, height: 768)
+        guard let image = imageForFrame(frame, width: 1024, height: 768) else {
+          throw SaveError.invalidCommander
+        }
+        CGImageDestinationAddImage(
+          gif, image,
+          [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 0.16]] as CFDictionary)
+        continue
+      }
       game.time = Double(index) / 6
       if index >= 16 { game.screen = .title }
       if index >= 24 { game.screen = .status }

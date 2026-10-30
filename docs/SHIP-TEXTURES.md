@@ -3,8 +3,8 @@
 This source slice adds actual diffuse image sampling for SH169 Sunray and SH170
 Military Stingray. It does not texture the entire catalogue. The combined app compiled
 and actual renderer generation/currentness passed for all 171 ships at checkpoint 177.
-Focused pixel/native tests, visual/performance acceptance and the composed quality gate
-remain pending.
+At that checkpoint, focused pixel/native tests, visual/performance acceptance and
+the composed quality gate remained pending.
 
 The original DAT tokens, per-corner UVs, geometry, source profiles, IDs and custody
 records stay unchanged. Each selected TOML adds an independent `resolvedTextures`
@@ -44,10 +44,12 @@ readability and native frame cost before acceptance. Texture bytes, manifests an
 notices participate in ship media fingerprints; renderer media is regenerated only
 after the integrated source has passed its assigned validation.
 
+The separate [original fleet texture path](ORIGINAL-FLEET-STAGING.md) uses the authenticated `l337-` assets and authored face materials. Its shared raster preserves the lit original palette while the surface map supplies relief. See [palette fidelity and its exact-source validation](PR-original-texture-palette-fidelity.md). This path retains its own MIT asset custody; it does not change the imported SH169/SH170 image licences.
+
 ## Archival texture notes and current selected bindings
 
 The original DAT texture tokens, UV records and import-scope notes remain preserved in SH169/SH170 definitions and appearance/source profiles. Statements such as `reference only, no pixels bundled` describe what the original DAT import established; DAT tokens alone establish neither a bitmap licence nor a resolved image. They do not describe the later selected rendering addition.
 
-For the current selected adaptation, the separate `resolvedTextures` bindings and [texture manifest](../Sources/EliteCore/Resources/ShipTextures/manifest.json) identify the three approved diffuse images, exact member/cache hashes and unchanged source notices. Only SH169 Sunray and SH170 Military Stingray use those bindings. Their current selected pixel custody is CC-BY-NC-SA-3.0, as recorded above and in [project notices](../NOTICE.md). Other archival texture references remain unbundled; the addition does not license unrelated images or claim normal/specular/shader parity. Historical profile text, original notices and geometry are retained rather than globally rewritten.
+For the current selected adaptation, the separate `resolvedTextures` bindings and [texture manifest](../Sources/L337Core/Resources/ShipTextures/manifest.json) identify the three approved diffuse images, exact member/cache hashes and unchanged source notices. Only SH169 Sunray and SH170 Military Stingray use those bindings. Their current selected pixel custody is CC-BY-NC-SA-3.0, as recorded above and in [project notices](../NOTICE.md). Other archival texture references remain unbundled; the addition does not license unrelated images or claim normal/specular/shader parity. Historical profile text, original notices and geometry are retained rather than globally rewritten.
 
-The first combined app compile passed at checkpoint 176, but export failed at its legacy plain-panel guard. The clipped textured-surface export/front-visibility repair then passed actual renderer generation and currentness for all 171 ships at checkpoint 177. Its authored focused tests still await execution. Successful media generation is not evidence that every flight view has passed native visual or performance inspection.
+The first combined app compile passed at checkpoint 176, but export failed at its legacy plain-panel guard. The clipped textured-surface export/front-visibility repair then passed actual renderer generation and currentness for all 171 ships at checkpoint 177. Its authored focused tests were still pending at that checkpoint. Later exact-source pixel and palette validation is recorded in the [palette-fidelity handoff](PR-original-texture-palette-fidelity.md); those results retain their original source identity. Successful media generation is not evidence that every flight view has passed native visual or performance inspection.

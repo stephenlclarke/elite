@@ -1,6 +1,6 @@
 # Liberator DSV2
 
-The Liberator from Blake's 7 is a purchasable, flyable native adaptation at stable save ID `SH171`. Search **Liberator**, **DSV2** or **SH171** in the station shipyard. Its individual [TOML](../Sources/EliteCore/Resources/Ships/SH171.toml) supplies the actual geometry, materials, gameplay, price and source notes; [the rotating catalogue entry](SHIP-CATALOGUE.md#sh171---liberator-dsv2) is rendered from that same definition. Existing ship records are preserved. Research reserves SH168-SH170 for three other craft, so those IDs are not reused.
+The Liberator from Blake's 7 is a purchasable, flyable native adaptation at stable save ID `SH171`. Search **Liberator**, **DSV2** or **SH171** in the station shipyard. Its individual [TOML](../Sources/L337Core/Resources/Ships/SH171.toml) supplies the actual geometry, materials, gameplay, price and source notes; [the rotating catalogue entry](SHIP-CATALOGUE.md#sh171---liberator-dsv2) is rendered from that same definition. Existing ship records are preserved. Research reserves SH168-SH170 for three other craft, so those IDs are not reused.
 
 ## Visual references and authoring
 

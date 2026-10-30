@@ -4,7 +4,7 @@ The local runner runs the existing `isolated-units` GitHub job inside an isolate
 
 ## Routing and isolation
 
-The repository variable `ELITE_LOCAL_RUNNER_ENABLED=true` selects the local runner only for `push` events in `stephenlclarke/elite` made by Stephen's account ID `22142777`. Pull requests, including fork pull requests, remain on `macos-15`. An absent or false variable keeps the hosted route. The local preflight independently rejects other events, repositories, actors and forks.
+The repository variable `ELITE_LOCAL_RUNNER_ENABLED=true` selects the local runner only for `push` events in `stephenlclarke/l337` made by Stephen's account ID `22142777`. Pull requests, including fork pull requests, remain on `macos-15`. An absent or false variable keeps the hosted route. The local preflight independently rejects other events, repositories, actors and forks.
 
 The runner is dedicated to this repository and has labels `self-hosted`, `macOS`, `ARM64`, `elite-ci`. Run only one runner process. Use the isolated VM without shared host directories, personal credentials, SSH agents or signing keys. Review workflow changes before approving external contributions: repository routing expressions are configuration, not a security boundary against a deliberately modified workflow. Do not route external code to the VM.
 

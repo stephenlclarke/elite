@@ -1,6 +1,35 @@
 import Foundation
 
 extension Display {
+  /// Export-only design presentation; creates no ownership, discovery or flight evidence.
+  public static func originalDesignPresentation(
+    _ game: Game, shipID: String, time: Double, width: Double, height: Double
+  ) throws -> Frame {
+    guard let ship = ShipCatalogue.ship(shipID), let definition = ship.originalDefinition else {
+      throw OriginalFleetShowroomModels.Failure.unknownID
+    }
+    let model = try OriginalFleetShowroomModels.model(for: shipID)
+    guard model.id == definition.id else {
+      throw OriginalFleetShowroomModels.Failure.invalidAsset
+    }
+    var frame = Frame()
+    frame.responsive = true
+    frame.rasterizeGraphics = false
+    frame.canvas = .init(x: 0, y: 0, width: width, height: height)
+    frame.flightClip = .init(x: 16, y: 84, width: width - 32, height: height - 204)
+    centeredLabel("ORIGINAL SHIP DESIGN", y: 18, into: &frame)
+    centeredLabel(shipID + " - " + definition.name, y: 52, into: &frame)
+    centeredLabel("DESIGN PRESENTATION", y: height - 58, into: &frame)
+    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400))
+    body.orientation.rotate(pitch: 0.35, roll: time * 0.12, yaw: time * 0.7)
+    let projection = FlightProjection(
+      center: .init(width / 2, height * 0.47), focal: min(width, height) * 1.15)
+    draw(
+      body, game: game, into: &frame, projection: projection,
+      mesh: model.displayMesh.showroomNormalised, screen: .title)
+    return frame
+  }
+
   static func startupScreen(_ game: Game, width: Double, height: Double) -> Frame {
     var frame = Frame()
     frame.responsive = true

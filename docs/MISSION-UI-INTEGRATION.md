@@ -2,7 +2,7 @@
 
 ## Ownership and prerequisites
 
-Apply the UI slice onto the accepted mission engine composition. G1 owns `Game.swift`, its screen enum/state, `GameRuntime`, and `EliteMac/EliteApp.swift`. This document is an integration recipe, not a claim that those hooks are implemented. The UI slice has no shadow engine state or stub APIs.
+Apply the UI slice onto the accepted mission engine composition. G1 owns `Game.swift`, its screen enum/state, `GameRuntime`, and `L337Mac/L337App.swift`. This document is an integration recipe, not a claim that those hooks are implemented. The UI slice has no shadow engine state or stub APIs.
 
 Add `.contracts` and `.library` to `Screen`; compose the accepted mission fields including `library = ScriptLibraryState()` and `contractBoard = ContractBoardUI()` and the accepted campaign/trial/script fields required by their existing extensions. Preserve current actor isolation and physical equipment APIs. Preserve the current context-specific C and W bindings and TAB-only flight targeting; do not copy obsolete shortcuts from older source revisions.
 
