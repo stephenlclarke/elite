@@ -17,3 +17,7 @@ MC1's supplied trial-install README text and insertion anchor are retained in th
 The isolated parent is exact `e10c06e45c36df450b0d60074c8d2faef6b9cd18`. Root approved the eleven text paths before editing. Static verification checks scoped Markdown and whitespace, local link targets, current-source/evidence bindings, the exact generated 1.5.1 block, retained historical external links, all media bytes and every unowned tracked path. The frozen manifest records actual results and limitations for independent review.
 
 No build, compiler, unit/native test, renderer, GUI/GPU, VHS/media, CI, network verification, push/PR, publication or shared-ledger action occurs. Historical source and media receipts are credited without promoting them to qualification of this documentation head. Frozen Besra, winter, C34 and M03 implementation branches remain intact. See the [issue](ISSUE-m03-current-user-docs.md).
+
+## Final current README metadata — 30 October 2026
+
+The isolated-unit badge now tracks main instead of the obsolete development branch. The security paragraph lists the actual four pinned external actions, including cache; workflow and permission bytes are unchanged. This is a two-line README correction with a ledger record, not a runtime or media change. Existing source,23-method and181-output reviews remain valid. Markdown and whitespace checks apply. The prior88ed policy and stale-activation run remain unused historical evidence; no runner registration occurred before this documentation correction.

@@ -5603,3 +5603,7 @@ Latest design authority is a91c899589e226c01adb180c4bee6b162cb0ee67, following5c
 ### Later source queue receipts retained at this boundary
 
 F32 bba2fc999f515cad222e4ae0722a0a28990487ff is independently source-clear across nine current-context paths, with two methods/three cases UNRUN. It follows M03 and M04; the later175/33-to176/34 inventory delta must preserve the final M03 source hashes when ported. It is not integrated here or credited by this candidate. Other later Redtail/Besra/F19/F25/F26/campaign packets retain their existing scope and UNRUN limits.
+
+### Final M03 README metadata correction — 30 October 2026
+
+Before any new native registration, G1 corrected the remaining obsolete isolated-unit badge branch to main and the security paragraph's external-action count from three to the actual four, including cache. Exact workflow/permission/runtime/media bytes remain unchanged. This small text child retains the clearedsource23PASS/media181 evidence. The prior d5b/88ed first CI run failed closed on the previous activation and its native job was skipped; the prepared88ed policy remains unused and retained. A fresh final-head event/policy and required checks follow independent bounded documentation review. No bot request or test/media replay is introduced.
