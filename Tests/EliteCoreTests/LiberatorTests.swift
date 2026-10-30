@@ -26,6 +26,9 @@ import Testing
     #expect(game.showroomShips.map(\.id) == ["SH171"])
   }
   game.showroom.selection = "SH171"
+  try #require(ship.catalogue.purchasePolicy == .xyzzyOnly)
+  game.commander.xyzzyActive = true
+  try #require(!game.commander.unlimitedCash)
   let original = game.commander
   let inventory = try #require(original.equipmentInventory)
   try #require(inventory.items.allSatisfy { $0.boundHull == nil })

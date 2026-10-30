@@ -88,6 +88,79 @@ struct ShowroomComparisonUnitTests {
     }
   }
 
+  @Test func equalDisplayedSpeedsKeepSameRatingWithoutContradictoryTradeoffHints() throws {
+    for (baseline, selected) in [("SH062", "SH025"), ("SH025", "SH062")] {
+      var game = game()
+      game.showroom.baselineUsesCurrent = false
+      game.showroom.baseline = baseline
+      game.showroom.selection = selected
+      let before = game.commander
+      let left = try #require(
+        game.showroomBaselineProfile?.fields.first {
+          $0.key == "maximum_speed_project_units"
+        })
+      let right = try #require(
+        game.showroomProfile?.fields.first {
+          $0.key == "maximum_speed_project_units"
+        })
+      #expect(left.number != right.number)
+      #expect(left.text == "34.3 speed" && right.text == left.text)
+      let row = try #require(game.showroomComparison.first { $0.label == "Top speed" })
+      #expect(row.rating == .same)
+      #expect(!game.showroomTradeoffs.contains("Higher maximum speed"))
+      #expect(!game.showroomTradeoffs.contains("Lower maximum speed"))
+      #expect(
+        game.showroomTradeoffs.contains(
+          selected == "SH025" ? "Less cargo capacity" : "More cargo capacity"))
+      #expect(game.commander == before)
+    }
+  }
+
+  @Test func visibleSpeedDifferencesRetainTheirHigherAndLowerTradeoffHints() throws {
+    for (baseline, selected, rating, hint) in [
+      ("SH023", "SH013", ComparisonRating.worse, "Lower maximum speed"),
+      ("SH013", "SH023", .better, "Higher maximum speed"),
+    ] {
+      var game = game()
+      game.showroom.baselineUsesCurrent = false
+      game.showroom.baseline = baseline
+      game.showroom.selection = selected
+      let row = try #require(game.showroomComparison.first { $0.label == "Top speed" })
+      #expect(row.baseline != row.selected && row.rating == rating)
+      #expect(game.showroomTradeoffs.contains(hint))
+      #expect(
+        !game.showroomTradeoffs.contains(
+          hint == "Higher maximum speed" ? "Lower maximum speed" : "Higher maximum speed"))
+    }
+  }
+
+  @Test func sourceProfileTradeoffsKeepTheirOwnNumbersAndUnits() throws {
+    var game = game()
+    game.showroom.baselineUsesCurrent = false
+    game.showroom.baseline = "SH062"
+    game.showroom.selection = "SH025"
+    game.showroom.sourceProfiles = true
+    game.showroom.profileIndex = try #require(
+      game.showroomProfiles.firstIndex {
+        $0.group == "project-refit-v1"
+      })
+    let left = try #require(
+      game.showroomBaselineProfile?.fields.first {
+        $0.key == "maximum_speed_project_units"
+      })
+    let right = try #require(
+      game.showroomProfile?.fields.first {
+        $0.key == "maximum_speed_project_units"
+      })
+    #expect(left.number == 375 && right.number == 34.3)
+    #expect(left.unit == "project units/s" && right.unit == left.unit)
+    let row = try #require(game.showroomComparison.first { $0.label == right.label })
+    #expect(row.difference == ShipComparisonRow.difference(left, right, comparable: true))
+    #expect(!row.difference.isEmpty)
+    #expect(game.showroomTradeoffs.contains("Lower maximum speed"))
+    #expect(!game.showroomTradeoffs.contains("Higher maximum speed"))
+  }
+
   @Test func comparisonMatchesQuotedPriceAndActualTransferredFitWithHonestRatings() throws {
     var game = game()
     try game.commander.prepareEquipment()

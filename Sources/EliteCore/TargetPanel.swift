@@ -41,14 +41,19 @@ struct TargetPanelLayout {
 }
 
 extension Game {
-  mutating func pageTargetDetails(_ direction: Int) {
+  var targetDetailsWindow: ScrollWindow? {
     guard let info = targetInformation,
       commander.targetingTier.map({ $0 >= .identification }) == true,
       targetPanelExpanded ?? (viewportWidth >= 1100)
-    else { return }
+    else { return nil }
     let cockpit = CockpitLayout(game: self, width: viewportWidth, height: viewportHeight)
     let layout = TargetPanelLayout(game: self, info: info, cockpit: cockpit)
-    targetPanelScroll = layout.window.moved(direction * layout.window.visible)
+    return layout.window
+  }
+
+  mutating func pageTargetDetails(_ direction: Int) {
+    guard let window = targetDetailsWindow else { return }
+    targetPanelScroll = window.moved(direction * window.visible)
   }
 }
 

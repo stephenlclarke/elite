@@ -1,0 +1,9 @@
+# Align native showroom hints with displayed comparison ratings
+
+The showroom now omits native higher/lower tradeoff hints when the comparison rating is SAME or unavailable. SH062 speed 34.286 and SH025 speed 34.3 still display their common 34.3 speed value and SAME rating, and no longer claim a higher or lower speed. Visible native differences keep their existing direction; source-profile hints retain their own numbers and units.
+
+The production change is confined to `Game.showroomTradeoffs` in `ShipShowroom.swift`. It reuses `ComparisonRating.compare` after the existing compatibility and numeric checks. No rounding rule, comparison value, fit projection, transaction, equipment, mission, Game/save schema, renderer, shared rotation, geometry, CI or ledger changes. `ShowroomDisplay.swift` and `ShowroomGeometry.swift` remain unchanged because the side-by-side rendering and common orientation are already implemented.
+
+Three focused methods extend `ShowroomComparisonUnitTests`: the real SH062/SH025 pair in both directions verifies unequal raw values, equal display/SAME, no contradictory hint, preserved cargo hint and unchanged Commander; a clearly different SH023/SH013 pair verifies both visible speed directions; source-profile coverage retains explicit 375 versus 34.3 project units/s, the numeric difference and the lower-speed hint.
+
+Static validation is formatting, whitespace and a bounded read-only source/resource check. All new Swift methods are UNRUN; no native/compiler/GUI/media/probe/sanitizer or component execution is performed while G1 owns M01. The methods are not added to the shared maintained selector in this packet. Independent review and assigned focused validation remain before publication. This is source preparation, with no push, merge, playable-build or release claim. [Problem](ISSUE-showroom-comparison-tradeoffs.md).

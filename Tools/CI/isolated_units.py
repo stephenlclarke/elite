@@ -220,6 +220,7 @@ METHODS = {
     "ContextControlHintUnitTests": (
         "systemScrollHintsFollowActualViewportAndHelpReturnContext",
         "inventoryPagingHintsDisappearWhenAllRowsFitAndRetainSharedFlightControls",
+        "targetPagingHelpFollowsActualIdentificationExpansionAndViewportWithoutChangingSelection",
     ),
     "NativeWayfarerInductionWorkshopUnitTests": (
         "originalBatchKeepsSixDistinctFailedSerialsSeparateFromClinicCargoAndAllWindows",
@@ -474,10 +475,23 @@ METHODS = {
         "missingUnitsForeignIdentityAndChangedSourceCannotBecomePhysicalAuthority",
         "offCentreOriginRequiresLargerClearanceThanNormalisedOrCentredHalfExtents",
     ),
+    "ShipPurchasePolicyUnitTests": (
+        "pricedNeverForSaleHullCannotExchangeOtherwiseCompatibleOwnedProperty",
+        "restrictedHullExchangeRequiresActualXYZZYAccessAndRetainsPortableIdentities",
+        "restrictedHullConfirmationRechecksAccessWithoutChangingOwnedProperty",
+    ),
+    "ShowroomUnitCompatibilityUnitTests": (
+        "differentCharterUnitsNeverGainBenefitsFromTheirSharedProfileGroup",
+        "matchingBlankAndExplicitSourceUnitsKeepTheirExistingComparisons",
+        "nativePrecisionAndCrossProfileCapacityPolicyRemainUnchanged",
+    ),
     "ShowroomComparisonUnitTests": (
         "compactAndWideSpecsShowBothCurrentAndPinnedModelsWithoutChangingBrowseMode",
         "bothRenderedPreviewsKeepTheSamePitchRollAndYawThroughRotationAndPause",
         "comparisonMatchesQuotedPriceAndActualTransferredFitWithHonestRatings",
+        "equalDisplayedSpeedsKeepSameRatingWithoutContradictoryTradeoffHints",
+        "visibleSpeedDifferencesRetainTheirHigherAndLowerTradeoffHints",
+        "sourceProfileTradeoffsKeepTheirOwnNumbersAndUnits",
     ),
     "ShipComparisonPrecisionUnitTests": (
         "equalDisplayedTenthsIncludingHalfwayValuesAlwaysReceiveSameRating",
