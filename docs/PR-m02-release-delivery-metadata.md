@@ -1,0 +1,7 @@
+# Record the usable M02 release and preserve its history
+
+The existing release-readme and homebrew-cask targets consume the unchanged 1.5.1 plan and verified public artifacts. README and cask point to that exact release and archive hash. The ledger records protected PR282 integration, exact-main normal/coverage/leak/Sonar/quality results, natural runner cleanup, and actual anonymous public download plus fresh public-app trust/runtime checks. Each normal phase accounts for 3,416 XML cases: 3,410 completed and six declared inactive optional skips, with zero failures/errors.
+
+The old M02 dependency-status paragraph is retained verbatim under a dated historical heading. The original failed Liberator run and earlier M01 evidence remain intact. Physical finger input, full-screen Space transitions and human usability acceptance are explicitly unperformed. Homebrew publication still requires its ordinary checks, independent review and required approval. This metadata accompanies the next coherent M03 candidate; it changes neither the qualified release source nor its immutable artifacts.
+
+Cask generation verifies the public plan, metadata and ZIP bytes. Distribution/cask consistency, Markdown, Ruby syntax and whitespace checks are the relevant metadata validation. Source/main and public-delivery evidence have independent clear reviews; no new native run is implied by these documentation changes. See [the issue](ISSUE-m02-release-delivery-metadata.md).

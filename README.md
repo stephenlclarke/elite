@@ -386,7 +386,7 @@ brew uninstall --cask stephenlclarke/tap/elite
 ```
 
 <!-- current-release:start -->
-The latest signed release is [Elite 1.5.0](https://github.com/stephenlclarke/elite/releases/tag/v1.5.0). Its [universal Mac download](https://github.com/stephenlclarke/elite/releases/download/v1.5.0/Elite-1.5.0-universal.zip) includes the matching checksum, signing manifest, release plan and Apple notarization report. The Homebrew badge links to the actual published tap cask; tap updates pass review separately.
+The latest signed release is [Elite 1.5.1](https://github.com/stephenlclarke/elite/releases/tag/v1.5.1). Its [universal Mac download](https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal.zip) includes the matching checksum, signing manifest, release plan and Apple notarization report. The Homebrew badge links to the actual published tap cask; tap updates pass review separately.
 <!-- current-release:end -->
 
 Uninstalling preserves saved commanders and mission packs in `~/.xyzzy/elite/`. See [Homebrew distribution](docs/HOMEBREW.md) for the maintained cask, checksums and release synchronization.
