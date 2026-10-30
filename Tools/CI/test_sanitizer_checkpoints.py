@@ -324,6 +324,10 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
             executions = []
 
             def fake_output(command, *_):
+                if command == ['xcrun', '--show-sdk-version']:
+                    raise subprocess.CalledProcessError(1, command, stderr='broken default SDK')
+                if command == ['xcrun', '--sdk', 'macosx', '--show-sdk-version']:
+                    return 'explicit-sdk-fixture'
                 if command[:2] == ['git', 'rev-parse']:
                     return head[0]
                 if command[:2] == ['git', 'status']:
@@ -374,6 +378,7 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
                 self.assertEqual(len(summaries), 1)
                 summary = json.loads(summaries[0].read_text())
                 self.assertEqual(summary['current_head'], 'b' * 40)
+                self.assertEqual(summary['identity']['sdk'], 'explicit-sdk-fixture')
                 self.assertEqual([batch['reused'] for batch in summary['batches']], [True, False])
                 self.assertEqual(summary['batches'][0]['tested_head'], 'a' * 40)
                 self.assertEqual(summary['batches'][1]['tested_head'], 'b' * 40)
@@ -399,6 +404,10 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
             executions = []
 
             def fake_output(command, *_):
+                if command == ['xcrun', '--show-sdk-version']:
+                    raise subprocess.CalledProcessError(1, command, stderr='broken default SDK')
+                if command == ['xcrun', '--sdk', 'macosx', '--show-sdk-version']:
+                    return 'explicit-sdk-fixture'
                 if command[:2] == ['git', 'rev-parse']:
                     return head[0]
                 if command[:2] == ['git', 'status']:
@@ -450,6 +459,7 @@ class SanitizerExecutionBoundaryTests(unittest.TestCase):
                 self.assertEqual(len(summaries), 1)
                 summary = json.loads(summaries[0].read_text())
                 self.assertEqual(summary['current_head'], 'b' * 40)
+                self.assertEqual(summary['identity']['sdk'], 'explicit-sdk-fixture')
                 self.assertEqual([batch['reused'] for batch in summary['batches']], [True, False])
                 self.assertEqual(summary['batches'][0]['tested_head'], 'a' * 40)
                 self.assertEqual(summary['batches'][1]['tested_head'], 'b' * 40)

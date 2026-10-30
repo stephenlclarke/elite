@@ -543,7 +543,7 @@ def run_mode(mode, cache, target=100, requalify_attempt=None, full_concurrent=Fa
                     'runner': digest(Path(__file__)), 'mode': mode, 'flags': flags,
                     'parallel': mode == 'thread', 'architecture': platform.machine(),
                     'swift': output([swift, '--version'], root, environment, lock),
-                    'sdk': output(['xcrun', '--show-sdk-version'], root, environment, lock),
+                    'sdk': output(['xcrun', '--sdk', 'macosx', '--show-sdk-version'], root, environment, lock),
                     'swift_executable': swift, 'image_sha256': digest(image),
                     'image_uuid': output(['xcrun', 'dwarfdump', '--uuid', str(image)], root, environment, lock),
                     'environment': runtime_identity(environment), 'inventory': methods,

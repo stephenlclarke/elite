@@ -1028,9 +1028,11 @@ class NativeAdapterTests(Fixture):
                         "Pages free: 100.\nPages inactive: 100.\nPages speculative: 100.\n")
             if command[0] == "fake-swift":
                 return "fake Swift 6"
-            if command == ["xcrun", "--show-sdk-version"]:
+            if command in (["xcrun", "--show-sdk-version"], ["xcrun", "--show-sdk-path"]):
+                raise subprocess.CalledProcessError(1, command, stderr="broken default SDK")
+            if command == ["xcrun", "--sdk", "macosx", "--show-sdk-version"]:
                 return "fake-sdk"
-            if command == ["xcrun", "--show-sdk-path"]:
+            if command == ["xcrun", "--sdk", "macosx", "--show-sdk-path"]:
                 return "/fake/sdk"
             return ""
         with patch.object(shards, "PHYSICAL_EXECUTION_ENABLED", True), patch.object(
@@ -1092,6 +1094,10 @@ class NativeAdapterTests(Fixture):
         self.assertEqual(runtime["environment"]["ASAN_OPTIONS"],
                          shards.legacy.runtime_identity({"ASAN_OPTIONS": "detect_leaks=0"})["ASAN_OPTIONS"])
         self.assertIsNone(runtime["phase_environment"]["ASAN_OPTIONS"])
+        self.assertEqual(runtime["sdk"], shards.fingerprint({"version": "fake-sdk", "path": "/fake/sdk"}))
+        for flag in ("--show-sdk-version", "--show-sdk-path"):
+            self.assertIn(["xcrun", "--sdk", "macosx", flag],
+                          [command for command, _, _ in authority.calls])
         self.assertEqual(runtime["image_sha256"], shards.legacy.digest(self.image))
         self.assertEqual(runtime["host"], authority.config["host"])
         shards.validate_runtime(runtime)

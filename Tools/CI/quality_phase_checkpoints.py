@@ -204,8 +204,8 @@ def run_phase(phase, cache, profile_policy=None, profile_sha256=None):
                     'architecture': platform.machine(),
                     'os_version': {'release': os.uname().release, 'version': os.uname().version},
                     'swift_executable': swift, 'swift': output([swift, '--version'], root, environment, lock),
-                    'sdk': output(['xcrun', '--show-sdk-version'], root, environment, lock),
-                    'sdk_path': output(['xcrun', '--show-sdk-path'], root, environment, lock),
+                    'sdk': output(['xcrun', '--sdk', 'macosx', '--show-sdk-version'], root, environment, lock),
+                    'sdk_path': output(['xcrun', '--sdk', 'macosx', '--show-sdk-path'], root, environment, lock),
                     'image_sha256': digest(image),
                     'image_uuid': output(['xcrun', 'dwarfdump', '--uuid', str(image)], root, environment, lock),
                     'opt_in_policy': opt_in_policy(root, environment) if phase == 'normal' else {}}
