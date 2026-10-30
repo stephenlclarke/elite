@@ -1133,10 +1133,8 @@ struct L337App {
     try exportAppIcon()
     try exportRouteReadmeMedia()
     try FileManager.default.createDirectory(atPath: "docs", withIntermediateDirectories: true)
-    var game = Game()
-    game.launch()
-    game.bodies[1].position = .init(-35, 10, 320)
-    game.prepareFlightWeaponDisplay()
+    var game = try ReadmeMedia.dockingUnderAttackScene(
+      sourceDirectory: URL(fileURLWithPath: "docs/mission-packs/profiled-skirmish"))
     guard let image = imageForGame(game, width: 1024, height: 768),
       let png = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/l337.png") as CFURL, UTType.png.identifier as CFString, 1, nil)
@@ -1146,25 +1144,12 @@ struct L337App {
     guard
       let gif = CGImageDestinationCreateWithURL(
         URL(fileURLWithPath: "docs/start-sequence.gif") as CFURL, UTType.gif.identifier as CFString,
-        80, nil)
+        ReadmeMedia.frameCount, nil)
     else { throw SaveError.invalidCommander }
     CGImageDestinationSetProperties(
       gif, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]] as CFDictionary)
     game = Game()
-    for index in 0..<80 {
-      if index >= 48 {
-        let shipID = index < 64 ? "SH002" : "SH035"
-        let frame = try Display.originalDesignPresentation(
-          game, shipID: shipID, time: Double((index - 48) % 16) / 6,
-          width: 1024, height: 768)
-        guard let image = imageForFrame(frame, width: 1024, height: 768) else {
-          throw SaveError.invalidCommander
-        }
-        CGImageDestinationAddImage(
-          gif, image,
-          [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 0.16]] as CFDictionary)
-        continue
-      }
+    for index in 0..<ReadmeMedia.introductionFrameCount {
       game.time = Double(index) / 6
       if index >= 16 { game.screen = .title }
       if index >= 24 { game.screen = .status }
@@ -1180,7 +1165,27 @@ struct L337App {
       }
       CGImageDestinationAddImage(
         gif, image,
-        [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 0.16]] as CFDictionary)
+        [
+          kCGImagePropertyGIFDictionary:
+            [kCGImagePropertyGIFDelayTime: ReadmeMedia.introductionFrameDelay]
+        ] as CFDictionary)
+    }
+    for shipID in ReadmeMedia.galleryShipIDs {
+      for angle in ReadmeMedia.galleryAngles {
+        try autoreleasepool {
+          let frame = try Display.galleryShipPresentation(
+            game, shipID: shipID, angle: angle, width: 1024, height: 768)
+          guard frame.hasShipSurfaces,
+            let image = imageForFrame(frame, width: 1024, height: 768)
+          else { throw ShipFileError.invalid(shipID) }
+          CGImageDestinationAddImage(
+            gif, image,
+            [
+              kCGImagePropertyGIFDictionary:
+                [kCGImagePropertyGIFDelayTime: ReadmeMedia.galleryFrameDelay]
+            ] as CFDictionary)
+        }
+      }
     }
     guard CGImageDestinationFinalize(gif) else { throw SaveError.invalidCommander }
   }

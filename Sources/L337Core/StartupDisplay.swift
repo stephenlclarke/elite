@@ -1,6 +1,38 @@
 import Foundation
 
 extension Display {
+  /// The tape uses the gallery's exact catalogue mesh and name, with an explicit yaw angle.
+  public static func galleryShipPresentation(
+    _ game: Game, shipID: String, angle: Double, width: Double, height: Double
+  ) throws -> Frame {
+    guard angle.isFinite, let ship = ShipCatalogue.ship(shipID), let mesh = ship.previewMesh else {
+      throw ShipFileError.invalid(shipID)
+    }
+    var frame = Frame()
+    frame.responsive = true
+    frame.rasterizeGraphics = false
+    frame.canvas = .init(x: 0, y: 0, width: width, height: height)
+    frame.flightClip = .init(x: 16, y: 84, width: width - 32, height: height - 204)
+    centeredLabel("SHIP GALLERY", y: 18, into: &frame)
+    let caption = shipID + " - " + ship.name
+    let captionScale = min(GameTypography.scale, (width - 32) / Double(caption.count * 6))
+    frame.label(
+      caption, (width - Double(caption.count * 6) * captionScale) / 2, 52,
+      scale: captionScale)
+    centeredLabel("1.5 FULL ROTATIONS", y: height - 58, into: &frame)
+    var presentation = game
+    presentation.screen = .front
+    presentation.commander.shipDisplayStyle = .shadedPanels
+    var body = SpaceBody(id: 0, hull: .cobra, position: .init(0, 0, 400))
+    body.orientation.rotate(pitch: 0.3, roll: 0.15, yaw: angle)
+    draw(
+      body, game: presentation, into: &frame,
+      projection: .init(
+        center: .init(width / 2, height * 0.47), focal: min(width, height) * 1.15),
+      mesh: mesh, screen: .front)
+    return frame
+  }
+
   /// Export-only design presentation; creates no ownership, discovery or flight evidence.
   public static func originalDesignPresentation(
     _ game: Game, shipID: String, time: Double, width: Double, height: Double

@@ -1,0 +1,7 @@
+# Complete the README gallery tape and docking-under-attack screenshot
+
+[Issue 291](https://github.com/stephenlclarke/l337/issues/291) records both direct user requests. Every ship in the actual gallery must appear in the VHS tape for 1.5 full rotations, and the first gameplay screenshot must show an approach aligned with a real station entrance, with multiple ships ahead firing lasers toward the player.
+
+Use the existing game renderer and maintained `make readme-media` export. Preserve the introduction and README history/layout. Derive the catalogue from the same inventory as the ship gallery. Require the actual model-angle sweep, canonical catalogue names, readable captions and unclipped geometry; a sample subset or claimed rotation count is insufficient. The screenshot must use real admitted emitter identities and accepted native laser emissions, not painted lines, outgoing player fire or fabricated beam state.
+
+Source review precedes compiler/render execution. The prior native runs have completed and their evidence is preserved. This composition onto protected main4292 requires its own source/context/admission review before focused tests or rendering. Preserve old media receipts as historical evidence, then retain actual new frame inventory, timing, dimensions, encoded size, screenshot geometry/emission proof and visual inspection before protected merge. Fleet r3 design-only PR290 is already merged separately; no proposed fleet values or new AI behavior are adopted by this export.
