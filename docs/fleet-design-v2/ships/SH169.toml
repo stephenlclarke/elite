@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH169"
+name = "Caracara Mk I"
+family = "caracara"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "light-strike"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Caracara Mk I"
+statsFile = "fleet-specs/SH169.toml"
+statsSHA256 = "d3f5d06b9e86d6fecd8bac655bf4a400c59d6fe7f3e46c254e6e6cf18f066f2d"
+geometryFile = "replacement-hulls/SH169-design.toml"
+geometrySHA256 = "6257767fbb2cd35db071004b197f8f5655251f87ca3398e176343d12c0fb7b1c"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two raised service collars flank a long narrow command hull, with short rectangular shoulder outriggers and broad lower equipment wells."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "light-strike"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 16
+maxSpeed = 46.4
+acceleration = 15.4
+energyCapacity = 340
+energyRecharge = 5.0
+roll = 1.32
+pitch = 1.16
+yaw = 1.08
+shieldCapacityPerBank = 280
+shieldRechargePerBank = 2.0
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 7
+laserFacingMask = 7
+cargoExpansionTonnes = 5
+hullPriceCR = 347000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 3
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

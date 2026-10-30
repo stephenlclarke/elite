@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH005"
+name = "Bison"
+family = "bison"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "container-hauler"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Bison"
+statsFile = "fleet-specs/SH005.toml"
+statsSHA256 = "6d518b0d20a0ca75988bc26165cb7b32397bcbd36864b00ef3a5198c7f025a9d"
+geometryFile = "replacement-hulls/SH005-design.toml"
+geometrySHA256 = "63aba498e570d6b6e33f77c261019502cbe2c23b7aed69629a84c7ac17f52a08"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Exposed longitudinal freight rack, four offset container bays, tall aft bridge and separately framed corner drives."
+dimensionsWHLMetres = [96.0, 38.0, 150.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "container-hauler"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 1108
+maxSpeed = 17.7
+acceleration = 3.44
+energyCapacity = 1120
+energyRecharge = 6.4
+roll = 0.267
+pitch = 0.232
+yaw = 0.215
+shieldCapacityPerBank = 590
+shieldRechargePerBank = 1.7
+fuelTankLY = 13.0
+maxJumpLY = 7.0
+jumpChargeSeconds = 16
+missileCapacity = 7
+laserFacingMask = 15
+cargoExpansionTonnes = 445
+hullPriceCR = 814000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 12
+intrinsicCrewPlaces = 12
+nativeAutonomous = false
+nativeCrew = 12
+playerConversionCrew = 12
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 221
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 48
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

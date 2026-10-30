@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH056"
+name = "Aplomado Interceptor"
+family = "aplomado"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "sprint-interceptor"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Aplomado Interceptor"
+statsFile = "fleet-specs/SH056.toml"
+statsSHA256 = "92bb47688401917bfafd91820264e5f6a20387a5d5a0b44ad7efeaeb939bd786"
+geometryFile = "fleet-completion-20261019/batch-02-native-lod/SH056-design.toml"
+geometrySHA256 = "625559c0932f56b8971d90606d0c861811dca3353318b632a300bdb5fbfcf11f"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Independently authored slender chase rail interceptor with its own structural layout, cockpit, drives, inset hull wells, sparse service details and protected pipe runs."
+dimensionsWHLMetres = [17.0, 7.624, 47.19]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "sprint-interceptor"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 10
+maxSpeed = 56.0
+acceleration = 15.01
+energyCapacity = 260
+energyRecharge = 4.4
+roll = 1.266
+pitch = 1.109
+yaw = 1.042
+shieldCapacityPerBank = 300
+shieldRechargePerBank = 2.0
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 1
+cargoExpansionTonnes = 5
+hullPriceCR = 319000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 2
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 14
+utilityMounts = 1
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

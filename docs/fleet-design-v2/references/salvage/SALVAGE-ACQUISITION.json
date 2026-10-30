@@ -1,0 +1,251 @@
+{
+  "schema": "l337.salvage-acquisition-design/1",
+  "date": "2026-10-30",
+  "status": "Human behaviour requirements recorded; proposed numerical balance is not approved or implemented",
+  "authority": [
+    "Human: replace destruction-based alternative-ship acquisition with EMP disable and physical salvage",
+    "Human: tractor salvage beam upgrades depend on target size and distance; automatically activate salvage laser and scoops in close range",
+    "Human refinement: EMP itself strips shields; upgraded EMP can disable small ships directly and repeated pulses can disable larger ships",
+    "Human: record EMP bank, power, recharge and shot-capacity work item in the single main ledger"
+  ],
+  "workTracking": "WS-SALVAGE-01 / M08.SALVAGE.EMP-01 is recorded by the orchestrator, status assigned-specification / implementation not started. Append to the sole live docs/COMPLETION-LEDGER.md is pending the source integrator safe boundary. This packet is a design input, not a second status ledger.",
+  "acquisition": {
+    "sequence": [
+      "encounter-and-identify",
+      "overcome-shields-with-any-mix-of-lasers-missiles-EMP",
+      "commander-attributed-EMP-electrical-disable",
+      "verify-ownership-and-actual-occupant-clearance",
+      "activate-fitted-salvage-beam",
+      "physically-draw-to-safe-close-range",
+      "automatically-cut-authorised-design-bearing-section-and-scoop-original",
+      "commit-once-only-salvage-receipt",
+      "pay-normal-fabrication-or-purchase-price"
+    ],
+    "laserMissilePreparationRequired": false,
+    "destructionUnlocksBlueprint": false,
+    "disableAloneUnlocksBlueprint": false,
+    "ordinaryHullEvidence": "Same registered actor and type, actual player EMP disable, lawful salvage authority, unique design-bearing section release and physical intake, commander owner, source revision and non-replayable recovery identity. Existing old derelicts can supply finite materials/items but cannot silently substitute for this new capture acquisition sequence.",
+    "scope": "Applies to blueprintFabrication and the independently gated SH171 plughQuestFabrication. Normal sale hulls and never-sale objects retain their explicit policy; salvage cannot turn a station, missile, pod or restricted capital into a purchasable hull.",
+    "wholeHull": "Large hull is not placed in the cargo hold. Beam brings the actual hull within safe surface clearance; cutter releases a finite sample/section. Only released pieces that physically fit may enter scoops. The remaining parent hull and recovered quantities remain saved.",
+    "normalDesignSample": {
+      "status": "Proposed new balance, not historical mass",
+      "massTonnes": 0.05,
+      "countPerSourceHull": 1,
+      "purpose": "Finite authenticated hull-construction sample; no free fitted equipment or cloned cargo"
+    },
+    "legacySaves": "Retain already earned legitimate entitlements and owned/paid hulls. Historical kill facts remain history. A historical kill without an already committed entitlement does not become a new salvage receipt. Preserve already completed story state. An unfinished old Medusa kill-only stage resumes the unlocked salvage checkpoint with a new encounter identity, never repeats clue collection.",
+    "purchaseConsumer": "Both actual ShipTrade quote and final confirmation must consume the authenticated salvage/fabrication entitlement and current build/access rules, rechecked at commit. A discovery readout or producer-only change does not gate purchase. Preserve authentic owned/paid legacy hulls; do not upgrade old death/display facts into a nonexistent entitlement."
+  },
+  "EMP": {
+    "application": "At actual hit, apply pulse drain to impacted shield bank first and then apply remaining pulse power to electrical reserve, never hull survival energy. Other shield banks retain their actual charge. One hit can disable if its remaining power empties reserve; repeated pulses accumulate only against real intervening recharge.",
+    "disablePredicate": "Reserve at zero from an actual attributed EMP hit; laser hull damage, visual effects, labels, selection and script events do not substitute.",
+    "bank": "Dedicated finite EMP capacitor stores actual discharge energy. A release debits one full pulse charge once. Empty/insufficient bank refuses firing. Main electrical supply must pay measured recharge transfer; no bank recharge while main reserve is unavailable, disabled or paused.",
+    "independentUpgrades": [
+      "pulse-power",
+      "bank-recharge-rate",
+      "bank-capacity-shots"
+    ],
+    "compatibility": "Preserve existing effective energy-stage/alien attachment calculation and real ECM/range/occlusion/warmup/heat producers. Resolve a bounded EMP module profile separately; the energy system is not automatically an entitlement to paid EMP upgrades. Do not multiply the same upgrade twice.",
+    "cadence": "Existing ten-second trigger warmup and 1.5-second release cooldown are distinct from bank recharge. Multiple stored shots mean several qualifying releases without waiting for the bank to refill, not a permission to skip warmup/cooldown. Faster bank recharge does not silently change firing cadence.",
+    "bankTransfer": "Store capacitor identity/charge with the physical module. Fit/store/upgrade/ship exchange do not refill it. Charge beyond a reduced bank capacity is discarded with preview, never converted to cash or main energy. A new purchased/loan module starts at its explicitly displayed charge.",
+    "targetRecovery": "Existing temporary disable lifecycle remains real. A recovery timer expiring restores only eligible systems, not lost parts/people. The beam supplies a separately metered suppression hold only after successful EMP disable, and only while a valid safe lock, power and consent remain. Releasing the beam resumes the saved remaining recovery timer; menus/load do not restart it.",
+    "safety": "Existing EMP splash can hit others/player; protected actors and legal consequences remain. New missions may not assume EMP is harmless rescue equipment.",
+    "proposedBalance": {
+      "status": "Proposal for implementation/balance review; no approved prices, bank transfer costs or runtime values claimed",
+      "pulseChargeUnits": 8,
+      "bankTransferEfficiency": 0.8,
+      "powerMultipliers": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "bankShots": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "bankRechargeUnitsPerSecond": [
+        0.4,
+        0.8,
+        1.6,
+        3.2
+      ],
+      "basePulse": "32 * (1 + 0.5 * effectiveEnergyStage) * EMPPowerMultiplier; existing target shield/reserve values stay authoritative",
+      "chargeRule": "8 * bankShots maximum; debit 8 per released pulse; during actual dt transfer min(freeBank,rechargeRate*dt,spareMainReserve*0.8), debit transfer/0.8 from main reserve; warmup cancellation before release debits no pulse",
+      "capacityRule": "Upgrade axes are separate compatible predecessor chains; fit costs/technology/equipment slots must be authored in existing equipment catalogue before purchase is enabled",
+      "examples": [
+        {
+          "energyStage": 0,
+          "powerGrade": 3,
+          "pulsePower": 256,
+          "shield": 140,
+          "reserve": 70,
+          "result": "one hit disables: 140 shield + 70 reserve; excess power is discarded, hull is untouched"
+        },
+        {
+          "energyStage": 0,
+          "powerGrade": 3,
+          "pulsePower": 256,
+          "shield": 640,
+          "reserve": 1260,
+          "result": "at least eight hits absent recharge; a bank with eight stored shots can supply them, but actual target recharge/ECM may require more"
+        }
+      ]
+    },
+    "canonicalWorkItem": "M08.SALVAGE.EMP-01"
+  },
+  "beam": {
+    "installation": "Separate Salvage Beam add-on branch beneath the existing Targeting Computer Salvage Module. Requires installed eligible core, Salvage Module, compatible emitter, salvage laser/cutter and Fuel Scoops. Military grants none of these specialist fittings. Preserve existing Salvage Module/cutter prices; new grades have no invented approved shop price.",
+    "activation": "Explicit Activate Salvage Beam on the current exact target; ordinary selection alone never authorises cutting. Missing prerequisites or forbidden cargo/crew/ownership leave target and bank intact with a precise reason.",
+    "automation": [
+      "verify-current-eligible-disabled-target-and-path",
+      "acquire-tractor-and-meter-power",
+      "draw-target-with-actual-bounded-force",
+      "brake-relative-drift-and-match-safe-spin",
+      "at-safe-tool-envelope-start-fitted-salvage-laser-and-fuel-scoops",
+      "collect-released-items-through-real-scoop-volume",
+      "stop-cutting-on-required-sample-recovery-or-interruption"
+    ],
+    "sizeAndDistance": "Required power rises with calibrated hull volume and actual emitter-to-nearest-surface distance. Payload increases load. Grade must pass BOTH power and maximum-range checks continuously; upgrading range alone cannot move an oversized ship.",
+    "physics": "No teleport, shrinking, overlapping hulls or instant velocity match. Apply force to the actual target, with reaction/compensation bounded by player propulsion/anchor capacity. Check swept hull clearance, relative speed, spin and occlusion every step. A large target may be within grade power but still be unsafe to draw with the selected player hull.",
+    "closeRange": "Use nearest solid-surface clearance, not centre distance. Automatic cutting requires the existing safe cutter work envelope, confirmed empty authorised section, heat/power/line-of-sight, sufficient compatible capacity and no protected original damage. The same authorised activation starts cutting without a second fire input; manual takeover/cancel immediately stops it.",
+    "itemsAndPeople": "Automatic scoops capture eligible physical released lots only. Living pods/people, protected original recorders, cargo owned by others and mission fixtures retain their independent consent/custody admission. Protected evidence can be recovered under its mission permission, without whole-hull salvage authority.",
+    "insufficient": "Show required/rated power, surface distance, predicted safe approach and stronger grade or closer approach remedy. Insufficient power causes no partial entitlement or fake progress. Existing physically released items remain finite and recoverable.",
+    "proposedBalance": {
+      "status": "Proposal only; physical scale/mass/force/tool-safety and equipment price bindings need per-hull authored closure",
+      "load": "L = max(1, calibratedHullEnclosingVolumeM3 / 1000 + carriedPhysicalMassTonnes / 100)",
+      "requiredPower": "P = L * (1 + (surfaceDistanceMetres / 500)^2)",
+      "enclosingVolume": "pi/6 * calibratedLength * calibratedWidth * calibratedHeight; identical method for every hull, with all scale axes included; original normalized showroom coordinates are not metres",
+      "grades": [
+        {
+          "grade": 1,
+          "ratedPower": 8,
+          "maximumRangeMetres": 1000,
+          "equipmentUnitsProposed": 1
+        },
+        {
+          "grade": 2,
+          "ratedPower": 64,
+          "maximumRangeMetres": 2000,
+          "equipmentUnitsProposed": 1
+        },
+        {
+          "grade": 3,
+          "ratedPower": 512,
+          "maximumRangeMetres": 4000,
+          "equipmentUnitsProposed": 2
+        },
+        {
+          "grade": 4,
+          "ratedPower": 4096,
+          "maximumRangeMetres": 8000,
+          "equipmentUnitsProposed": 2
+        },
+        {
+          "grade": 5,
+          "ratedPower": 32768,
+          "maximumRangeMetres": 16000,
+          "equipmentUnitsProposed": 3
+        }
+      ],
+      "cost": "Suggested operating electrical draw = 2 + 0.05*requiredPower units/second, plus the existing cutter and scoop costs. Clamp actual force to available supply; do not let a large label grant unlimited power.",
+      "hold": "Suggested normal work window 50-150 metres nearest-surface clearance, <=1m/s relative speed and <=0.02rad/s spin mismatch; target-specific actual geometry/tool clearance overrides it",
+      "missingCalibration": "Refuse physical use and display the missing calibrated profile. Never derive cubic metres from a normalized picture. Publish validated volume/load and grade requirement in shipyard preview when actual source bindings exist."
+    }
+  },
+  "transactions": "Actor-owned simulation resolves current source/target/equipment facts. Persist the hit, disable episode, suppression, original section release and collection before publication. The fabrication entitlement joins only the same authenticated salvage receipt. No Lua/UI emitted success or arbitrary timestamp claims physical work. Replays/culling/load/foreign-owner records never create new rights.",
+  "interruptions": [
+    "manual-control-or-cancel",
+    "target-changed-or-disappeared",
+    "target-resumed-without-valid-suppression",
+    "crew-or-protected-actor-entered-cutting-volume",
+    "obstruction-or-unsafe-swept-path",
+    "insufficient-bank-or-main-energy",
+    "heat-limit",
+    "cargo-full-or-incompatible",
+    "ownership-or-authority-revoked"
+  ],
+  "missionPrinciples": [
+    "Apply policy to every canonical mission and family using salvage-mission-migration.json",
+    "Do not attack already disabled friendly wrecks or force EMP on non-EMP rescue",
+    "Salvaging an issuer-owned prop is not commander blueprint ownership",
+    "G06/G07/G15 accept destroyed hostile OR actually secured EMP capture; temporary disable alone never settles",
+    "No new clue source or mandatory salvage tutorial is added",
+    "Every finale checkpoint and the 64-source continuity guarantee survives failed captures"
+  ],
+  "acceptance": [
+    "old destruction hook cannot create a new blueprint; preserved old legitimate entitlements still work",
+    "small ship: one upgraded EMP strips shield and reserve without laser/missile damage",
+    "large ship: repeated pulses, actual recharge and ECM; empty bank refuses; no hull damage from EMP",
+    "each upgrade independently affects power/rate/capacity; storage/load/hull swap never refill bank",
+    "beam rejects larger/farther target above rating and accepts after genuine closer approach or stronger fitting",
+    "actual target moves, stops outside physical hull and releases finite sections; scoop crossing is mandatory",
+    "automatic cutter/scoops start only after safe hold; cancel/crew intrusion/full cargo/heat/occlusion stop safely",
+    "all 171 hull policies retained; restricted/nonflyable objects cannot become shipyard purchases",
+    "each campaign/family retains original people/property and distinct physical success tests",
+    "Medusa requires exact encounter EMP+salvage, not a generic kill; retry/loan preserves main-story completion",
+    "atomic save failure/load/retry/culling cannot clone items, bank charge, receipts, payments or entitlements"
+  ],
+  "sourceBaseline": {
+    "sourceCommit": "e10c06e45c36df450b0d60074c8d2faef6b9cd18",
+    "scope": "Read-only frozen source inspection; no execution or current release claim",
+    "files": [
+      {
+        "path": "Sources/L337Core/NativeFleetDiscovery.swift",
+        "sha256": "48a94722d2961e33b4f905394bdf2559edd7d7ba0aba9dff009ff7c876c4b6ff"
+      },
+      {
+        "path": "Sources/L337Core/NativeFleetDiscoverySave.swift",
+        "sha256": "c876e71810fb8c65abc994c8a144d6ba295fcc99e50150b379e9dbe56df282c6"
+      },
+      {
+        "path": "Sources/L337Core/EMPPulseProfile.swift",
+        "sha256": "4f7d0c269a90355d917f4b136b854d872271bff3daeb8ba4290824f20ee40389"
+      },
+      {
+        "path": "Sources/L337Core/EMPPirateBlasterRuntime.swift",
+        "sha256": "7e07f7a1bdba00a534b76f6f382a5aac7c7c090bef46fc371bbad13247a77fb7"
+      },
+      {
+        "path": "Sources/L337Core/EMPElectricalRuntime.swift",
+        "sha256": "1a3f93139f712c7c2041b55248dad3b76b305d319ea4f4a5e7d4e26d11d3c96d"
+      },
+      {
+        "path": "Sources/L337Core/EMPRecoveryRuntime.swift",
+        "sha256": "2c4fb920dcbd950d7a4cb8cbd372ad517a73e0dd8067d481caf09f9b00a8ca55"
+      },
+      {
+        "path": "Sources/L337Core/EMPSalvage.swift",
+        "sha256": "dd0ca7d2e03c1c80b012c81e05d172b605e35393a915209e663a4244b783830b"
+      },
+      {
+        "path": "Sources/L337Core/NativeSalvageCollectionMutation.swift",
+        "sha256": "926c6d1fa9d695450cb95549b19297163fa533d9b2dffcc2f689cfc62b49aea0"
+      },
+      {
+        "path": "Sources/L337Core/NativeSalvageWorkRuntime.swift",
+        "sha256": "d6ffc5881ea87635f478fc509667259b28154b70b4e6f7d69b6aa26b1e7e3140"
+      },
+      {
+        "path": "Sources/L337Core/EquipmentHullTransfer.swift",
+        "sha256": "8989113f04a2b480ac9e52911d8b49c1ab8b3b22ab541d62e873a7065fd04d1e"
+      },
+      {
+        "path": "docs/SALVAGE-GAMEPLAY-DESIGN.json",
+        "sha256": "51e704c09d3f0bfe03cf1b12bf32cf31c87365f5d00204a1c369d7ed65c78a7d"
+      }
+    ]
+  },
+  "workstream": "WS-SALVAGE-01",
+  "canonicalWorkItemReceipt": {
+    "file": "/Users/sclarke/.codex/visualizations/2026/10/13/01a134a1-be40-77d0-9e11-64a775729232/WS-SALVAGE-01-EMP-work-item.json",
+    "sha256": "d7e5e6a440538d168c3a6dc86b2ea494ead06b42e8e20b545aa6b2293fc332c8"
+  },
+  "medusaFlagship": {
+    "specification": "MEDUSA-FLAGSHIP.json",
+    "humanRequirement": "Mission Medusa is not fully upgraded and beatable; player Medusa becomes most powerful after paid PLUGH purchase and actual upgrades",
+    "captureInvariant": "Validate the limited mission fit with actual available/loan equipment. Do not inherit the player maximum-upgrade preset. Preserve original intake and later PLUGH receiving."
+  }
+}

@@ -1,0 +1,42 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH034"
+name = "Frog Station"
+family = "frog"
+classification = "station"
+objectKind = "station"
+capital = true
+origin = "human"
+primaryUse = "station-services"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "dock"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Frog Station"
+statsFile = "fleet-specs/SH034.toml"
+statsSHA256 = "661829617657f2178a336cf6874f78fb02070cb951431f5b869d8e1b55c9d208"
+geometryFile = "replacement-hulls/SH034-design.toml"
+geometrySHA256 = "72b115f13920c18166a75fa9959ec8b0051af4a957773a7da1dccfd3fbb03e4e"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two hollow annular drums linked by a narrow service spine and four peripheral habitation modules, with open axial docking."
+dimensionsWHLMetres = [120.0, 64.0, 180.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "station"
+nativeFaceLimit = 512
+
+[environment]
+playerCrewRequired = false
+purchasePolicy = "never"
+physicalService = "station-services"

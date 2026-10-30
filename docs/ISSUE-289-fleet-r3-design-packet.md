@@ -1,0 +1,5 @@
+# Preserve the reviewed fleet r3 design packet
+
+[Issue 289](https://github.com/stephenlclarke/l337/issues/289) tracks the user's explicit scope: fleet r3 design packet only. Import the immutable 208-file archive into additive `docs/fleet-design-v2`, preserving every file byte and the frozen manifest. Record supersession and later review status outside the packet.
+
+No primary-worktree WIP, runtime resource or Swift changes, Redtail/Besra activation, proposed numerical adoption or authoring-script execution is included. The actual import requires a bounded diff/documentation review and ordinary protected PR checks. The original PR290 native attempt stopped at SDK metadata before any current tests. Its separately reviewed prerequisite fix merged as main7b8525c02667baff17829a4f0d1b60b7c25611c6 through PR293. This design-only rebase preserves the frozen packet and requires its own actual-head review and required checks; subsequent main qualification must use the actual final committed revision before a release plan is generated.

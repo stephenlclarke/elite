@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH157"
+name = "Wolf Scout"
+family = "wolf"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "frontier-recon"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Wolf Scout"
+statsFile = "fleet-specs/SH157.toml"
+statsSHA256 = "7bb36b85fc08c168216cac235827f18d6c65bd6b5f099a037a09126abfb2d873"
+geometryFile = "replacement-hulls/SH157-design.toml"
+geometrySHA256 = "065e52fa27d9d46ea52229e7a7135e5d6b49bb2d39edcb50a16fd1154cf30e0c"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two parallel armoured spines joined by a low crossbridge and forward command pod, with square shoulder hardpoints and deep engine wells."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "frontier-recon"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 16
+maxSpeed = 46.2
+acceleration = 13.2
+energyCapacity = 350
+energyRecharge = 5.1
+roll = 1.07
+pitch = 0.94
+yaw = 0.88
+shieldCapacityPerBank = 330
+shieldRechargePerBank = 2.0
+fuelTankLY = 14.0
+maxJumpLY = 12.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 5
+hullPriceCR = 359000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 3
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 3
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop", "salvageBeam"]
+recommendedRoleKit = ["surveyArray", "flightRecorder"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

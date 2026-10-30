@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH097"
+name = "Wisent Mk II"
+family = "wisent"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "expanded-entry-freighter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Wisent Mk II"
+statsFile = "fleet-specs/SH097.toml"
+statsSHA256 = "36572dfc53c4090d06d912312ea5e5a139d7f46e85507fb71ffa11b3a57feb07"
+geometryFile = "replacement-hulls/SH097-design.toml"
+geometrySHA256 = "c5bff7a81f87ad4b6ad0a05ba8e689fc1114f1812e6e85461b09a4c15aac2b0a"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two deep freight bays separated by an exposed centre rail and bridged at the ends, with broad rear engine walls."
+dimensionsWHLMetres = [44.0, 20.0, 76.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "expanded-entry-freighter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 224
+maxSpeed = 25.6
+acceleration = 7.5
+energyCapacity = 490
+energyRecharge = 4.9
+roll = 0.61
+pitch = 0.54
+yaw = 0.5
+shieldCapacityPerBank = 390
+shieldRechargePerBank = 1.78
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 80
+hullPriceCR = 410000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 4
+intrinsicCrewPlaces = 4
+nativeAutonomous = false
+nativeCrew = 4
+playerConversionCrew = 4
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 44
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 30
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

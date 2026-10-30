@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH042"
+name = "Saker"
+family = "saker"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "border-interceptor"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Saker"
+statsFile = "fleet-specs/SH042.toml"
+statsSHA256 = "6ec7baa6ca072273a2195afaa992512ca59aa9e176daead003112d025eba8c92"
+geometryFile = "fleet-completion-20261019/batch-02-native-lod/SH042-design.toml"
+geometrySHA256 = "8b64ebb1529abe86018b7b2553c45f961c06f0e0a9182321ec1b528cb0a716c8"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Independently authored triad stern shroud pursuit hull with its own structural layout, cockpit, drives, inset hull wells, sparse service details and protected pipe runs."
+dimensionsWHLMetres = [16.13636, 14.512, 41.59]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "border-interceptor"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 12
+maxSpeed = 51.0
+acceleration = 15.68
+energyCapacity = 330
+energyRecharge = 5.2
+roll = 1.288
+pitch = 1.131
+yaw = 1.053
+shieldCapacityPerBank = 290
+shieldRechargePerBank = 2.0
+fuelTankLY = 14.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 3
+cargoExpansionTonnes = 5
+hullPriceCR = 350000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 2
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 16
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

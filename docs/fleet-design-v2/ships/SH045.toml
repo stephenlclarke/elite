@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH045"
+name = "Erne Corvette"
+family = "erne"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "corvette-escort"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Erne Corvette"
+statsFile = "fleet-specs/SH045.toml"
+statsSHA256 = "9feca7316dcfb0350e65964177d4d6b7c739fbd08dbdbe7d139ed3b63a5b42bc"
+geometryFile = "fleet-completion-20261019/batch-02-native-lod/SH045-design.toml"
+geometrySHA256 = "af9e790882ec54bdc368ba1adc7edd757a032c3557d381a50a109bff5abc1ca9"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Independently authored deep twin keel corvette with its own structural layout, cockpit, drives, inset hull wells, sparse service details and protected pipe runs."
+dimensionsWHLMetres = [26.0, 20.82, 63.0]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "corvette-escort"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 32
+maxSpeed = 36.0
+acceleration = 13.2
+energyCapacity = 610
+energyRecharge = 7.0
+roll = 1.07
+pitch = 0.94
+yaw = 0.88
+shieldCapacityPerBank = 330
+shieldRechargePerBank = 2.0
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 9
+laserFacingMask = 15
+cargoExpansionTonnes = 5
+hullPriceCR = 453000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 5
+intrinsicCrewPlaces = 5
+nativeAutonomous = false
+nativeCrew = 5
+playerConversionCrew = 5
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 6
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 28
+utilityMounts = 3
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop", "salvageBeam"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

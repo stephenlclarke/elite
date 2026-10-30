@@ -1,0 +1,93 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH035"
+name = "Stag Liner"
+family = "stag"
+classification = "leisure"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "regional-liner"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Stag Liner"
+statsFile = "fleet-specs/SH035.toml"
+statsSHA256 = "cebf4ffeceac7b4df4b5fb971a04c08cfc61eb8e45ed5224de99b703bc9ebd59"
+geometryFile = "fleet-completion-20261019/batch-02-native-lod/SH035-design.toml"
+geometrySHA256 = "78f0f2a3940b7c50c9dafc17323320da23173b25af19c16a0be427167949334a"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Independently authored tower gallery cruise hull with its own structural layout, cockpit, drives, inset hull wells, sparse service details and protected pipe runs."
+dimensionsWHLMetres = [26.496, 26.5, 69.09]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "regional-liner"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 100
+maxSpeed = 35.0
+acceleration = 10.92
+energyCapacity = 330
+energyRecharge = 4.8
+roll = 0.946
+pitch = 0.834
+yaw = 0.774
+shieldCapacityPerBank = 220
+shieldRechargePerBank = 1.7
+fuelTankLY = 14.0
+maxJumpLY = 11.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 10
+hullPriceCR = 353000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 4
+intrinsicCrewPlaces = 4
+nativeAutonomous = false
+nativeCrew = 4
+playerConversionCrew = 4
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 20
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 34
+utilityMounts = 3
+compatibleUtilities = ["surveyArray", "rescueReceiver", "cargoScoop", "auxiliaryFuelTank"]
+recommendedRoleKit = ["lifeSupportService", "passengerCabin"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+recommendedCabinGrade = "economy"
+recommendedCabinModules = 8
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

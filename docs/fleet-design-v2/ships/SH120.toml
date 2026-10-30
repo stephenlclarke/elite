@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH120"
+name = "Larvaal Seeker"
+family = "larvaal-seeker"
+classification = "alien"
+objectKind = "ship"
+capital = false
+origin = "larvaal"
+primaryUse = "alien-surveyor"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Larvaal Seeker"
+statsFile = "fleet-specs/SH120.toml"
+statsSHA256 = "47e71d35afd56f890ff91949deabcb7e009ad0ecc223126e3876b6f0a7a9b188"
+geometryFile = "fleet-completion-20261019/batch-05/SH120-design.toml"
+geometrySHA256 = "4968b8ce9ac6fc316fe67b58dd04e7fb2297ab8d40aa20e8322a26540437fedc"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Tall sensing vault with a vertically elongated golden nucleus and rear balance lobes. Smooth jade/gold surfaces; no human grilles, plate tiles or machinery silhouette. Approved Sovereign, Warship, Drone and Medusa remain unchanged."
+dimensionsWHLMetres = [26.2, 38.2, 29.5]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "smooth-jade-organic"
+variantFeature = "alien-surveyor"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 34
+maxSpeed = 45.0
+acceleration = 15.6
+energyCapacity = 410
+energyRecharge = 6.8
+roll = 1.25
+pitch = 1.1
+yaw = 1.02
+shieldCapacityPerBank = 320
+shieldRechargePerBank = 2.1
+fuelTankLY = 15.0
+maxJumpLY = 13.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 15
+hullPriceCR = 411000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 6
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 28
+utilityMounts = 4
+compatibleUtilities = ["miningLaser", "cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["surveyArray", "flightRecorder"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "internal-organic"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

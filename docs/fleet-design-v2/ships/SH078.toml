@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH078"
+name = "Oryx Voyager"
+family = "oryx-voyager"
+classification = "leisure"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "expedition-support"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Oryx Voyager"
+statsFile = "fleet-specs/SH078.toml"
+statsSHA256 = "153f946f4ea7d6693debc9b892ac8457e7a40b2a0e2c68d672f386a4c3b587a4"
+geometryFile = "fleet-completion-20261019/batch-03/SH078-design.toml"
+geometrySHA256 = "ca5f64a1c396f81cc062345f1659e36113ee6c81a127ac7d7dad872452184e6c"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original continuous lounge rim voyager; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [35.6, 10.096, 53.6]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "expedition-support"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 80
+maxSpeed = 36.5
+acceleration = 11.5
+energyCapacity = 320
+energyRecharge = 5.2
+roll = 1.03
+pitch = 0.91
+yaw = 0.84
+shieldCapacityPerBank = 230
+shieldRechargePerBank = 1.7
+fuelTankLY = 15.0
+maxJumpLY = 13.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 15
+hullPriceCR = 365000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 3
+intrinsicCrewPlaces = 3
+nativeAutonomous = false
+nativeCrew = 3
+playerConversionCrew = 3
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 16
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 32
+utilityMounts = 4
+compatibleUtilities = ["surveyArray", "rescueReceiver", "cargoScoop", "auxiliaryFuelTank"]
+recommendedRoleKit = ["surveyArray", "flightRecorder"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

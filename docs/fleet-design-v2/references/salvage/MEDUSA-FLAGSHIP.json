@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-30",
+  "authority": "Human clarification: mission Medusa is not fully upgraded and is beatable; Medusa bought at PLUGH showroom and then upgraded is the most powerful ship in the game",
+  "shipID": "SH171",
+  "status": "Clarified human rule recorded; upgrade numbers, exact loadout node bindings and native balancing remain pending",
+  "supersedes": "5c9be58c raw-base-leading/full-strength-donor interpretation; neither is required by the human",
+  "configurations": {
+    "catalogueBase": {
+      "definition": "ships/SH171.json",
+      "meaning": "Unupgraded hull; need not lead every catalogue number",
+      "restoredStockValues": {
+        "cargo": 22,
+        "speed": 50.3,
+        "acceleration": 18.0,
+        "energy": 410,
+        "recharge": 4.7,
+        "roll": 1.37,
+        "pitch": 1.21,
+        "yaw": 1.12,
+        "shield": 300,
+        "shieldRecharge": 2.1,
+        "fuel": 130,
+        "jump": 9,
+        "spool": 12,
+        "missiles": 5,
+        "facings": 15,
+        "cargoExpansion": 10,
+        "price": 288000
+      }
+    },
+    "missionInstance": {
+      "fullyUpgraded": false,
+      "preset": "quest-limited",
+      "baseDefinition": "../gameplay/ships/SH171.json",
+      "installedEquipment": "A separately authored finite lower-grade fit from real compatible catalogue nodes; select and inspect exact installed module identities before native acceptance. Do not inherit the fully upgraded player preset.",
+      "stockComparison": "Base energy 410 and shield 300 per bank precede only the actual limited-fit modifiers; former 2000/800 targets are not mission base values.",
+      "combat": "Beatable with the advertised available equipment; no hidden upgrade, refill, invulnerability or recovery reset during combat. Actual weapon/ECM/ammunition/resource profile must be closed and tested.",
+      "capture": "Real EMP shield/reserve drain, suppression only after disable, actual beam draw/cut/intake; no instant scripted victory."
+    },
+    "plughShowroom": {
+      "purchasePolicy": "plughQuestFabrication",
+      "meaning": "Paid hull and explicit quoted stock equipment after actual quest salvage and AI receiving; upgrades bought/fitted afterwards",
+      "freeMaximumFit": false
+    },
+    "fullyUpgradedPlayer": {
+      "requirement": "Most powerful ship in the game",
+      "meaning": "Actual purchased/fitted legal upgrade ceiling; not automatically applied to mission NPC or new purchase",
+      "comparison": "All fully upgraded catalogue configurations at matched external attachment contributions and condition, including combat damage/endurance, shield/energy recovery, EMP and mobility; no empty-hull versus max-fit proof",
+      "proposedEquipmentBudget": 32,
+      "status": "Proposed expansion target only, pending real fitting/paid-upgrade contract"
+    }
+  },
+  "priorNumericalTargets": {
+    "status": "Prior proposals retained only as candidate fully upgraded targets. Stock comparisons do not certify superiority over other fully upgraded ships; values must be revised from actual complete-loadout comparisons.",
+    "metrics": {
+      "speed": {
+        "stockMedusa": 50.3,
+        "bestOtherStockCatalogue": 65.3,
+        "candidateFullyUpgradedMedusa": 80.0
+      },
+      "acceleration": {
+        "stockMedusa": 18.0,
+        "bestOtherStockCatalogue": 19.3,
+        "candidateFullyUpgradedMedusa": 24.0
+      },
+      "energy": {
+        "stockMedusa": 410,
+        "bestOtherStockCatalogue": 1660,
+        "candidateFullyUpgradedMedusa": 2000
+      },
+      "recharge": {
+        "stockMedusa": 4.7,
+        "bestOtherStockCatalogue": 11.47,
+        "candidateFullyUpgradedMedusa": 14.0
+      },
+      "roll": {
+        "stockMedusa": 1.37,
+        "bestOtherStockCatalogue": 2.03,
+        "candidateFullyUpgradedMedusa": 2.4
+      },
+      "pitch": {
+        "stockMedusa": 1.21,
+        "bestOtherStockCatalogue": 1.79,
+        "candidateFullyUpgradedMedusa": 2.1
+      },
+      "yaw": {
+        "stockMedusa": 1.12,
+        "bestOtherStockCatalogue": 1.66,
+        "candidateFullyUpgradedMedusa": 2.0
+      },
+      "shield": {
+        "stockMedusa": 300,
+        "bestOtherStockCatalogue": 640,
+        "candidateFullyUpgradedMedusa": 800
+      },
+      "shieldRecharge": {
+        "stockMedusa": 2.1,
+        "bestOtherStockCatalogue": 2.3,
+        "candidateFullyUpgradedMedusa": 3.0
+      },
+      "fuel": {
+        "stockMedusa": 130,
+        "bestOtherStockCatalogue": 160,
+        "candidateFullyUpgradedMedusa": 200
+      },
+      "jump": {
+        "stockMedusa": 9,
+        "bestOtherStockCatalogue": 12,
+        "candidateFullyUpgradedMedusa": 15
+      },
+      "spool": {
+        "stockMedusa": 12,
+        "bestOtherStockCatalogue": 10,
+        "candidateFullyUpgradedMedusa": 6
+      }
+    }
+  },
+  "missionRequirements": [
+    "Use actual limited installed equipment; the mission Medusa is not fully upgraded",
+    "Verify beatability and EMP salvage with the actual offered recovery equipment against the limited target fit",
+    "Keep real bank recharge, shield/reserve, heat, ECM, weapons and ammunition; never assume max-player fitting on the target",
+    "Keep all 64 clues, ordered trail, original sample custody, PLUGH AI receiving and unlocked retry",
+    "Paid showroom ownership remains optional for completing the main story"
+  ],
+  "implementationAcceptance": [
+    "Mission inspection/source fixture explicitly shows fullyUpgraded=false and no inherited player-max preset",
+    "PLUGH showroom quote and purchase provide only the displayed stock fit, preserving actual payment, entitlement and storage",
+    "Each installed upgrade consumes real funds/items/slots and changes effective player capabilities; no UI-only maximum label",
+    "Fully upgraded legal Medusa wins the defined overall power comparison against other fully upgraded hulls; assess weapons, sustained defence/energy, EMP and mobility, not cargo-only or price ranking",
+    "Main-story salvage remains beatable with available finite equipment and retries; mission loadout never silently scales to player maximum",
+    "Save/load/ship exchange preserve actual per-instance equipment, condition, bank charge and ammunition"
+  ],
+  "nativeAcceptanceClaimed": false,
+  "fullyUpgradedComparativePowerVerified": false,
+  "staticVerification": {
+    "dateUTC": "2026-10-30T09:26:23.747638+00:00",
+    "configurationCount": 4,
+    "missionNotFullyUpgraded": true,
+    "purchaseDoesNotGrantMaximumFit": true,
+    "baseValuesRestoredFrom": "3c9504d13a2c26df23f0a2ec1cf814d62f8d9ff7",
+    "other170HullRecordsUnchanged": true,
+    "geometryAndArtworkUnchanged": true,
+    "original64CluesAnd7StepSalvageFinaleRetained": true,
+    "markdownLintFilesPassed": 143,
+    "nativeExecution": false,
+    "fullyUpgradedPowerComparison": "Pending actual complete legal loadouts; old stock-only comparison is not proof"
+  }
+}

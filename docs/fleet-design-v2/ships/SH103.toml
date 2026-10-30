@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH103"
+name = "Redtail Mk III"
+family = "redtail"
+classification = "bountyHunter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "heavy-bounty-hunter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Redtail Mk III"
+statsFile = "fleet-specs/SH103.toml"
+statsSHA256 = "902ed193390f5fa4dd4fabf3099717b91a67fb1d09ea95a93d80b654822cdf34"
+geometryFile = "fleet-completion-20261019/batch-04/SH103-design.toml"
+geometrySHA256 = "39ec7a78c9da5b4ff652255b4d278d1169821bb27941e1d34ccc2f97ce61eb90"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original deep ventral radiator pursuit hull; coherent named family construction, closed pressure volumes and independently placed structural parts. Human surfaces retain sparse wells, louvres, piping and instrumentation in the detailed design."
+dimensionsWHLMetres = [22.0, 14.04, 37.0]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "heavy-bounty-hunter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 26
+maxSpeed = 51.4
+acceleration = 13.93
+energyCapacity = 430
+energyRecharge = 6.2
+roll = 1.135
+pitch = 0.998
+yaw = 0.929
+shieldCapacityPerBank = 270
+shieldRechargePerBank = 2.09
+fuelTankLY = 13.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 13
+missileCapacity = 8
+laserFacingMask = 15
+cargoExpansionTonnes = 10
+hullPriceCR = 409000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 5
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 24
+utilityMounts = 3
+compatibleUtilities = ["salvageCutter", "cargoScoop", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

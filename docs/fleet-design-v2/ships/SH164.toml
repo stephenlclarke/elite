@@ -1,0 +1,42 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH164"
+name = "Toad Drug Factory"
+family = "toad-drug-factory"
+classification = "station"
+objectKind = "station"
+capital = true
+origin = "human"
+primaryUse = "station-services"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "dock"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Toad Drug Factory"
+statsFile = "fleet-specs/SH164.toml"
+statsSHA256 = "d97a99b4b1404d01f1584c519dd0d94d95f585528cfd39fb26945fdc661bf010"
+geometryFile = "replacement-hulls/SH164-design.toml"
+geometrySHA256 = "b1563bbc135d0c6ec1ea44ccceabf8f3677363030bbf5af816a7a78d0c51c4e4"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Four tall process stacks, open service gantries and a central rectangular cargo dock, with large external pipe runs and cylindrical storage vessels."
+dimensionsWHLMetres = [120.0, 64.0, 180.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "station"
+nativeFaceLimit = 512
+
+[environment]
+playerCrewRequired = false
+purchasePolicy = "never"
+physicalService = "station-services"

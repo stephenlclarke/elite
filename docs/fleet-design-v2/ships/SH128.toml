@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH128"
+name = "Boar Transport"
+family = "boar"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "medium-freighter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Boar Transport"
+statsFile = "fleet-specs/SH128.toml"
+statsSHA256 = "09d806003f7b01c775c0bd25c1a0a5a90dc112e5cb931cde27aca7a65dd90b73"
+geometryFile = "replacement-hulls/SH128-design.toml"
+geometrySHA256 = "f5b934ab51d55b29d5cdcfc112b9e5300030dbc2d9f0f33d5290562c1b2cd4aa"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Three wide transverse loading bins form a low slab, backed by a narrow upper command gallery and separate corner drives."
+dimensionsWHLMetres = [44.0, 20.0, 76.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "medium-freighter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 374
+maxSpeed = 23.1
+acceleration = 6.2
+energyCapacity = 640
+energyRecharge = 5.2
+roll = 0.49
+pitch = 0.43
+yaw = 0.4
+shieldCapacityPerBank = 450
+shieldRechargePerBank = 1.7
+fuelTankLY = 13.0
+maxJumpLY = 8.0
+jumpChargeSeconds = 14
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 150
+hullPriceCR = 486000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 5
+intrinsicCrewPlaces = 5
+nativeAutonomous = false
+nativeCrew = 5
+playerConversionCrew = 5
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 74
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 32
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH075"
+name = "Dzo Mk II"
+family = "dzo"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "long-endurance-hauler"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Dzo Mk II"
+statsFile = "fleet-specs/SH075.toml"
+statsSHA256 = "f7bb2a71e6ae22a0c69550951d1cc98fce020d7f5037622b7ce5c907ca935858"
+geometryFile = "fleet-completion-20261019/batch-03/SH075-design.toml"
+geometrySHA256 = "6f88aa80d06f3d269d925fde3ad1add3eaa655a64df229e30c0af37bff39397d"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original extended twin tank reserve bridge; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [28.28, 22.164, 52.61]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "long-endurance-hauler"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 480
+maxSpeed = 19.8
+acceleration = 4.73
+energyCapacity = 880
+energyRecharge = 6.0
+roll = 0.353
+pitch = 0.31
+yaw = 0.292
+shieldCapacityPerBank = 510
+shieldRechargePerBank = 1.78
+fuelTankLY = 15.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 14
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 175
+hullPriceCR = 606000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 8
+intrinsicCrewPlaces = 8
+nativeAutonomous = false
+nativeCrew = 8
+playerConversionCrew = 8
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 96
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 40
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

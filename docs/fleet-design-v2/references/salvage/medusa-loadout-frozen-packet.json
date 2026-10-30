@@ -1,0 +1,89 @@
+{
+  "commit": "a91c899589e226c01adb180c4bee6b162cb0ee67",
+  "parent": "5c9be58c7592b57dc0f6c3462b89c247889a4384",
+  "scope": "18 Meridian documentation paths only; no source/native/push",
+  "authority": "User: mission Medusa not fully upgraded and beatable; bought in PLUGH showroom and then upgraded, player Medusa is most powerful in game",
+  "configurations": [
+    "unupgraded catalogue baseline",
+    "limited mission-instance fit",
+    "paid showroom stock fit",
+    "actually upgraded player maximum"
+  ],
+  "supersedes": "Full-strength donor and every-base-stat-leading interpretation from parent. Prior numerical targets now candidate upgraded targets only, not mission/base or comparative proof.",
+  "files": [
+    {
+      "path": "docs/meridian/COVERAGE.json",
+      "sha256": "331574157ff354b142bd55ed75d451bc8dfb648d6b08c696ad3cd2930f4c9bef"
+    },
+    {
+      "path": "docs/meridian/DOCUMENT-VALIDATION.json",
+      "sha256": "ca9396c5c2bc0cac5bdebac963c4694ae6e65c8a5dca34c0b30a70e5d7f4c6b0"
+    },
+    {
+      "path": "docs/meridian/FINAL-GAME-ORACLE.md",
+      "sha256": "45a9ac1c81e1660e76c74f742830475ce6bfaac5a2df01ca441ad7560954f621"
+    },
+    {
+      "path": "docs/meridian/SHIP-REFERENCE.md",
+      "sha256": "a5d8dd0ba8c913fca788962440d731b64ef22f5d6d93d554a717ebe54f3dfae6"
+    },
+    {
+      "path": "docs/meridian/implementation/ISSUE-medusa-flagship.md",
+      "sha256": "0449577dd10e49fd5083a160a08542d4144cd17c00e46c4bb34f38d488e0e17e"
+    },
+    {
+      "path": "docs/meridian/implementation/PR-medusa-flagship.md",
+      "sha256": "232a86177f91e98a4c05a8df732753b708946084b139cc6e5c100f17a0f6e636"
+    },
+    {
+      "path": "docs/meridian/missions/GAMEPLAY.md",
+      "sha256": "1fc3d1ee2938edc3f4b72b7ea560b9ef57e5ff3948bc9a35194acc1299981202"
+    },
+    {
+      "path": "docs/meridian/missions/UNWRITTEN-ROUTE.md",
+      "sha256": "3a8e06e858477aea53da380b5d982a406e2e40486bdd50231193687aad4e4039"
+    },
+    {
+      "path": "docs/meridian/missions/definitions/unwritten-route.json",
+      "sha256": "caa8951d94a23a62920a138fc90c59cd01047a56ea83cab7d4818f5628247288"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/GAMEPLAY-SPECIFICATION.md",
+      "sha256": "72261c13d42ad977dd74891bdaf1b672224efa56b21d2498562ae016c8e0d36d"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/MEDUSA-FLAGSHIP.json",
+      "sha256": "0e2e6639721f77392cdc5566a0df3b9eb41b038d61564d7753b7f64d760b8771"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/MEDUSA-FLAGSHIP.md",
+      "sha256": "6647310bbd7758e6bd571e8aad1c301884ac2e38ce8c509b71ba805ba3b4618c"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/SALVAGE-ACQUISITION.json",
+      "sha256": "7c0d9f9067d69f0ebfc562f8801046d395e7004420729a3a124e2f3a26e2ef04"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/SALVAGE-ACQUISITION.md",
+      "sha256": "7b25d2ed687eb86a21ab4bf6ccb0579536546c9dac77203883072da51db874a5"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/SALVAGE-IMPLEMENTATION.md",
+      "sha256": "e411c3cdc08cf237457456cb5dcb2039628659330b667b7ab434ee34d69edc79"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/salvage-mission-migration.json",
+      "sha256": "7c189377a879cf2ea266dd0025cbade85002d5318199d04abafc06b28e68340d"
+    },
+    {
+      "path": "docs/meridian/missions/gameplay/ships/SH171.json",
+      "sha256": "763bba46e7bb83629f1208adb8592bb9d885fa148e4f326d0fcec51cfe41e96d"
+    },
+    {
+      "path": "docs/meridian/references/SOURCE-INDEX.json",
+      "sha256": "27d981e9ded217ba33a590f10a365db3ae0ed3e2d7009d2e8d70cad3a9d05815"
+    }
+  ],
+  "validation": "466JSON,143Markdownlint, local links/stage/world/clue joins pass. Stock values restored from3c9504d1, other170ships/image/geometry unchanged. Actual upgraded loadout power comparison and mission fit bindings remain pending.",
+  "ledger": "Orchestrator updates existing Q01/SH171/workstream dependencies at safe boundary; no competing ledger."
+}

@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH130"
+name = "Marmot Prospector"
+family = "marmot"
+classification = "miner"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "industrial-miner"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Marmot 11 Prospector"
+statsFile = "fleet-specs/SH130.toml"
+statsSHA256 = "a4ae3329efc18658cfc79644b3acaa9c35b4d15415b2591fe9ede72d5738019e"
+geometryFile = "fleet-completion-20261019/batch-03/SH130-design.toml"
+geometrySHA256 = "585648ea93bf0d9cbd081057b5bc18b15f9de4e06323bb1895fad054ce3086bb"
+nameDecision = "Remove the unrelated 11 model number."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original deep hopper triple bore prospector; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [26.732, 18.06, 54.09]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "industrial-miner"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 200
+maxSpeed = 22.0
+acceleration = 6.9
+energyCapacity = 620
+energyRecharge = 7.2
+roll = 0.54
+pitch = 0.48
+yaw = 0.44
+shieldCapacityPerBank = 390
+shieldRechargePerBank = 1.8
+fuelTankLY = 13.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 14
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 70
+hullPriceCR = 470000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 6
+intrinsicCrewPlaces = 6
+nativeAutonomous = false
+nativeCrew = 6
+playerConversionCrew = 6
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 40
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 38
+utilityMounts = 4
+compatibleUtilities = ["miningLaser", "cargoScoop", "salvageCutter", "surveyArray", "salvageBeam"]
+recommendedRoleKit = ["miningLaser", "cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

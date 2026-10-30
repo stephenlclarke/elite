@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH080"
+name = "Carabao Highliner"
+family = "carabao"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "long-range-highliner"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Carabao Highliner"
+statsFile = "fleet-specs/SH080.toml"
+statsSHA256 = "c10e2aeffd4ba7315a5e11aff81662dfaf4a36dc976fb3a2e44a670f5f460ce3"
+geometryFile = "fleet-completion-20261019/batch-03/SH080-design.toml"
+geometrySHA256 = "e853662580668e4a89c37f46ffd6a49c69aee98b3f324dd0bc77acce960ea009"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original eight block high gallery carrier; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [36.0, 23.28, 77.59]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "long-range-highliner"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 680
+maxSpeed = 21.0
+acceleration = 4.13
+energyCapacity = 1020
+energyRecharge = 6.8
+roll = 0.318
+pitch = 0.284
+yaw = 0.258
+shieldCapacityPerBank = 550
+shieldRechargePerBank = 1.7
+fuelTankLY = 13.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 16
+missileCapacity = 6
+laserFacingMask = 7
+cargoExpansionTonnes = 315
+hullPriceCR = 709000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 10
+intrinsicCrewPlaces = 10
+nativeAutonomous = false
+nativeCrew = 10
+playerConversionCrew = 10
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 136
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 48
+utilityMounts = 4
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["lifeSupportService", "passengerCabin"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

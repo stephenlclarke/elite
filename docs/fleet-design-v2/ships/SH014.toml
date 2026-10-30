@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH014"
+name = "Buffalo Mk II"
+family = "buffalo"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "defended-drum-freighter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Buffalo Mk II"
+statsFile = "fleet-specs/SH014.toml"
+statsSHA256 = "43b6141ef124f103dacfa3a55b8ad9b80c6f35272745c751d2fc9a7b3f9e5a77"
+geometryFile = "replacement-hulls/SH014-design.toml"
+geometrySHA256 = "a0d4eee2241d52161e1442f527bfd22bcd629dcb424f844cd5f7401e34e4b81c"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Wide fan of three parallel cargo drums beneath a short upper command deck, with rear corner thrusters."
+dimensionsWHLMetres = [68.0, 30.0, 110.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "defended-drum-freighter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 460
+maxSpeed = 20.5
+acceleration = 5.5
+energyCapacity = 850
+energyRecharge = 5.9
+roll = 0.41
+pitch = 0.36
+yaw = 0.34
+shieldCapacityPerBank = 510
+shieldRechargePerBank = 1.78
+fuelTankLY = 15.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 14
+missileCapacity = 7
+laserFacingMask = 15
+cargoExpansionTonnes = 175
+hullPriceCR = 590000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 7
+intrinsicCrewPlaces = 7
+nativeAutonomous = false
+nativeCrew = 7
+playerConversionCrew = 7
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 92
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 38
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

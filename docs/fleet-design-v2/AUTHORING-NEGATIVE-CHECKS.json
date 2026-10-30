@@ -1,0 +1,31 @@
+{
+  "scope": "Authoring-only isolated data mutations; no runtime/native/game/compiler execution",
+  "baselineAndRestoredCopies": "PASS",
+  "rejectedMutations": [
+    "free initial cabin",
+    "free included role kit",
+    "Medusa stock cargo",
+    "Medusa stock speed",
+    "Medusa stock acceleration",
+    "Medusa stock energy",
+    "Medusa stock recharge",
+    "Medusa stock roll",
+    "Medusa stock pitch",
+    "Medusa stock yaw",
+    "Medusa stock shield",
+    "Medusa stock shieldRecharge",
+    "Medusa stock fuel",
+    "Medusa stock jump",
+    "Medusa stock spool",
+    "Medusa stock missiles",
+    "Medusa stock facings",
+    "Medusa stock cargoExpansion",
+    "Medusa stock price",
+    "missing Medusa configuration",
+    "changed source fingerprint"
+  ],
+  "negativeCases": 21,
+  "stockFieldsIndividuallyChecked": 17,
+  "liveShipContractsMutated": false,
+  "result": "PASS"
+}

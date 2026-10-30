@@ -1,0 +1,42 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH162"
+name = "Larvaal Probe"
+family = "larvaal-probe"
+classification = "other"
+objectKind = "other"
+capital = false
+origin = "larvaal"
+primaryUse = "mission-probe"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "existing-explicit-native-gallery-milestone; no-purchase-right"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Larvaal Probe"
+statsFile = "fleet-specs/SH162.toml"
+statsSHA256 = "082956604ae23e276747176bd239acd7cc19dd748634884577a9aabb003f5007"
+geometryFile = "replacement-hulls/SH162-design.toml"
+geometrySHA256 = "14d4e261029ca1fcf61a2688c43c192e17c7e523a268ffb9c9b726b087b14151"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Smooth jade teardrop nested inside an offset curved antenna loop, with a thin gold-lit seam and no mechanical panel clutter."
+dimensionsWHLMetres = [8.0, 4.0, 12.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "other"
+nativeFaceLimit = 512
+
+[environment]
+playerCrewRequired = false
+purchasePolicy = "never"
+physicalService = "mission-probe"

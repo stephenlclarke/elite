@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH138"
+name = "Falcon Mk III"
+family = "falcon"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "interceptor-escort"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Falcon Mk III"
+statsFile = "fleet-specs/SH138.toml"
+statsSHA256 = "574dbf787f7ab71314948440856c1db42dfef8637cd91b07268bcb543d17e7b1"
+geometryFile = "replacement-hulls/SH138-design.toml"
+geometrySHA256 = "459a954252a56474df93d17d5e7e103d5cf2918af442c1630a26e65cb5e309ef"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two deep forward keels split around a rounded canopy and upper bridge; compact rear engines and claw-position hardpoint rails complete the outline."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "interceptor-escort"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 14
+maxSpeed = 50.5
+acceleration = 18.37
+energyCapacity = 390
+energyRecharge = 5.8
+roll = 1.546
+pitch = 1.355
+yaw = 1.266
+shieldCapacityPerBank = 290
+shieldRechargePerBank = 2.2
+fuelTankLY = 11.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 11
+missileCapacity = 8
+laserFacingMask = 7
+cargoExpansionTonnes = 5
+hullPriceCR = 381000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 2
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

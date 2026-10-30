@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH069"
+name = "Baza Fighter"
+family = "baza"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "medium-fighter"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Baza Fighter"
+statsFile = "fleet-specs/SH069.toml"
+statsSHA256 = "25c5ec42383b56910654e79f1f6d07fb219fbd8792dc80724c5e2f74c942d366"
+geometryFile = "fleet-completion-20261019/batch-04/SH069-design.toml"
+geometrySHA256 = "02c42c3c40b2a4542db58570f3b689c31dcaa49503c9b8d930f3aae52e1a6bb4"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original short armoured shoulder fighter; coherent named family construction, closed pressure volumes and independently placed structural parts. Human surfaces retain sparse wells, louvres, piping and instrumentation in the detailed design."
+dimensionsWHLMetres = [22.72, 12.42, 28.59]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "medium-fighter"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 16
+maxSpeed = 46.3
+acceleration = 15.4
+energyCapacity = 350
+energyRecharge = 5.2
+roll = 1.32
+pitch = 1.16
+yaw = 1.08
+shieldCapacityPerBank = 280
+shieldRechargePerBank = 2.0
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 7
+laserFacingMask = 7
+cargoExpansionTonnes = 5
+hullPriceCR = 352000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 3
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

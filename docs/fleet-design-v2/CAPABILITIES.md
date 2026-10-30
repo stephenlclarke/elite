@@ -1,0 +1,55 @@
+# Capabilities, equipment and accommodation
+
+## Units and numerical authority
+
+Every `ships/SHnnn.toml` has a complete proposed performance record or an explicit environment-only role. `maxSpeed` and `acceleration` use one native distance-unit system across all hulls. Energy/shields and recharge use the current common gameplay energy system, not source-game tables or SI joules. Cargo is tonnes, rotations rad/s, tank and jump distance LY, charge seconds and prices whole credits. The runtime adapter converts whole credits to its internal money representation exactly once, with overflow checks; it must not assume the old `price` field's representation. Convert LY to any tenths-LY save representation exactly once as well.
+
+The per-ID row in `authoring.py` supplies cargo, speed, energy, recharge, jump, missiles, facing, crew and fitting. Acceleration/rotation retain the independently authored L337 basis with a documented 1.12 interceptor/pursuit/racer handling factor or 0.86 heavy/liner/hauler/gunship factor. The factors are new balance choices, not copied external ratios. Shields and charge retain their original L337 values. Medusa's entire stock performance comes directly from the latest frozen researcher baseline, including its stock 288,000CR authored price and 13-unit equipment budget. Its older high-value/32-unit proposals are separate candidate paid upgrade targets, not stock/mission values or approved upgrade bindings. Baseline hull-price weights for other ships are visible in the maintained generator. Gameplay balancing must use outcomes, not make every ship more expensive merely because its name sounds advanced.
+
+The functional uniqueness check compares all performance values excluding price. No per-ID numerical jitter is used. Uniqueness alone is not adequate balance: each hull must also have a useful task and a visible compromise. The native tank extension on a later drive must not silently increase the maximum range of a single jump.
+
+## Hull fitting versus bought equipment
+
+**Activation boundary:** the units and generic mount counts below are proposal planning/layout weights, not a claim about the current engine's device costs or sockets. The [explicit native conversion map](EQUIPMENT-MAPPING.md) is required before using them in a real quote. The inspected source has zero-unit intrinsic foundation/lasers, one-unit EMP and a distinct +7LY one-unit FuelStorage device. New device bindings, mass, operational power and physical sockets remain implementation dependencies, not approved numeric changes.
+
+`laserFacingMask`: Front=1, Rear=2, Left=4, Right=8. Each supported facing accepts one current combat laser. This is support, not a free laser or four simultaneous forward emitters. Firing the selected facing uses the existing real energy, heat, obstruction and hit rules. Kestrel has internal finite missile storage and no two external missile pylons. All other quoted missile counts require actual physical mounts/magazine space.
+
+In the planning worksheet, one utility position hosts one work device, separate from directional combat facings. The worksheet reserves one unit for mining/cutter/scoops and two for survey/receiver. Its proposed separate auxiliary tank uses two units/5t/+5LY; those are unapproved new-device targets and must not silently alias or change existing FuelStorage. The four-unit foundation is a worksheet reservation, not four actual charged core nodes or a claim that the runtime already reserves them. Resolve every row through the typed native node/socket/cost/mass/power adapter once; do not double-charge intrinsic parts or infer extra free capacity from the difference. Hull upgrades and alien attachments retain real fitting/custody and paid predecessor rules, with no new arbitrary per-family attachment-count cap.
+
+The later [salvage/EMP contract](SALVAGE-ALIGNMENT.md) adds a Salvage Beam emitter mount and grade-dependent fitting. A recommended hostile-hull capture kit includes beam, cutter and scoops, using three mounts. The validator reserves the strongest proposed three-unit beam allowance, not a guessed approved price or automatic grade. Role-fit quotes must resolve the actual grade and known target requirements through the shared salvage authority.
+
+W cycles only fitted, working, context-appropriate weapons/tools. Return operates that selection. A disabled target defaults to a fitted cutter; an asteroid defaults to a fitted mining laser. Neither action grants equipment. Only one selected work tool operates at a time; multiple mounts allow a useful retained loadout without pretending to multiply ore yield.
+
+`recommendedRoleKit` is a purchase/fit suggestion. It is never a free grant. The showroom offers bare hull and a separately itemised role-fit quote with an explicit total, transferred equipment, retained overflow, hold use and missing requirements. No fit, support multiplier or service claim is enabled unless a real installed device supplies it. A flight recorder is a one-equipment-unit internal device with no utility-mount use. The foundation includes ordinary working ship life support, but each purchased cabin must still carry its own working place-level support/stasis state. New utilities use existing activity primitives; missing adapters must be implemented before the quoted capability is enabled.
+
+## Concrete specialist behavior
+
+| Use | Real capability | Limit |
+| --- | --- | --- |
+| Miner | Mining laser, scoop, enough work power and hold; prospecting variants retain survey equipment concurrently | Existing finite rock/fragment/product ownership and yields apply. No automatic refinery, ore creation or cargo duplication. |
+| Survey/recon | Fitted survey array supplies range/measurement evidence to actual consent/dwell/visibility checks; recorder retains the same source receipts | A scan does not bypass required mission equipment, consent, ordered observations or source identity. No invisible scout-only sensor bonus. |
+| Rescue/recovery | Fitted receiver/cutter, working life support, compatible empty cabins and actual consenting people | No people appear merely because the ship is named Rescue. Actual receiving and injury/stasis conditions remain. |
+| Passenger liner | Enough fitting budget and hold for the recommended cabin layout, with access paths and life support drawn into the mesh | Recommended modules are bought; luxury does not create additional places. No free initial cabins. |
+| Dropship | Harpy has a 48t hold and a four-standard-cabin orbital boarding/transport package, giving sixteen real passenger places when bought and working | No planetary landing or ground-combat mechanic is claimed. |
+| Command/support | Gyrfalcon Command/Osprey Support carry survey, ECM, recovery or passenger support fits using their larger equipment budgets | No magic ally damage buff, remote piloting or unimplemented fighter launch bay. |
+| EMP interdictor | Shikra Interdictor has energy/recharge/fitting for the existing purchased EMP | Ten-second charge, shield-first electrical rules, finite energy, splash and ECM cancellation remain. |
+| Tanker | Warthog Tanker has a 19LY authored tank and supports purchased auxiliary tank modules | Long endurance is not long single-jump reach. No free fuel or invented ship-to-ship transfer. |
+| Medusa | Advanced hull with the greatest upgrade potential; after real paid fitting the player's maximum must be the most powerful ship | Mission uses a limited beatable fit; paid PLUGH purchase supplies only its quoted stock fit. Keep 22t cargo, five missiles, one commander and 13 stock equipment units. A 32-unit paid expansion is proposed, not granted. Compare actual complete legal maximum loadouts, not empty hulls. |
+
+## Crew and passenger layout
+
+Per-hull `minimumOperatingCrewIncludingCommander` and `intrinsicCrewPlaces` replace E01. They are original layout estimates to be physically checked, not claims that the crew have been recruited. The intrinsic crew spaces are already outside the usable cargo figure. They cannot also be sold as passenger places. The operating complement must be represented by distinct real assigned people, or the game must truthfully refuse an unsupported fully crewed purchase/launch mode. Do not manufacture crew through a scalar count, a mission acceptance or a saved record. Recruitment/assignment uses existing person identity/consent and native station receiving, following [the bounded crew service](CREW.md). Root must reserve its exact shared paths before implementation.
+
+Each purchased cabin is one physical 5t module and one equipment unit. Grades retain the later accepted layouts: packed stasis20, economy8, standard4, luxury2, single stateroom1, double stateroom2. Whole empty modules can be stored/refitted; occupied modules retain actual people and cannot be silently discarded during exchange. Awake/private/shared/stasis eligibility, medical care, mission reservation and life-support integrity remain separate checks. No capability to carry 100 stasis passengers means the ship can carry 100 private-cabin passengers.
+
+`maximumPhysicalCabinModules` is a hold-space ceiling, not a free fitted loadout. Actual purchasable modules are the minimum of free hold/5, free equipment units, compatible module layout and supported life-support/receiving requirements. Recommended counts leave budget for the four-unit foundation, but still need actual device fits and consent. Show both passenger places and remaining tonnes, including reserved crew places separately.
+
+The current cabin aliases and typed socket distinctions are explicit in EQUIPMENT-MAPPING.md. A passed worksheet count is not native equipment admission, a paid purchase or physical fit evidence; reconcile the actual shared authority before activation.
+
+Where a recommended role kit lists `passengerCabin` and also supplies `recommendedCabinModules`/grade, that entry expands to exactly the stated module count and grade; it does not buy one extra cabin. `lifeSupportService` is a service/check of those same working modules, not an extra free accommodation object. The role-fit quote must include every module's actual shared-authority price and preserve a no-purchase alternative.
+
+## Access and progression
+
+Preserve all 171 base identities. SH163 now has a proposed complete salvage-raider definition and normal blueprint fabrication; Root must replace its old blocker explicitly. Eagle Cruiser, Jaguar and Larvaal Sovereign are capital NPC hulls, unpriced/unpurchasable and not normal player ship selections. Newt remains an escape-only pod. Stations are capital subtypes with docking discovery. Tithe conversions remain under their parent catalogue entries with separate variant discovery/blueprint evidence.
+
+Use the shared chat's useful open progression: starter Peregrine Mk V; optional specialist routes; advanced ships and equipment; separately gated Medusa. A more expensive hull is not a universal improvement. Do not require buying every earlier family mark to buy a later discovered hull; equipment's existing predecessor progression is a different rule.

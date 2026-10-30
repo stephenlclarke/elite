@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH068"
+name = "Badger"
+family = "badger"
+classification = "miner"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "salvage-miner"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Badger"
+statsFile = "fleet-specs/SH068.toml"
+statsSHA256 = "53d9e1b1a354a02f096792d93f576c3ec8a347b4e21d2531383144491f021840"
+geometryFile = "fleet-completion-20261019/batch-03/SH068-design.toml"
+geometrySHA256 = "9a793c007844bbb9fe72ebc51cfe0e5d671739ac087b63628a3d91857e868fe5"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original shielded twin bore mining cabin; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [24.0, 10.4, 39.09]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "salvage-miner"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 116
+maxSpeed = 25.5
+acceleration = 8.3
+energyCapacity = 470
+energyRecharge = 6.4
+roll = 0.67
+pitch = 0.59
+yaw = 0.55
+shieldCapacityPerBank = 310
+shieldRechargePerBank = 1.8
+fuelTankLY = 12.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 7
+cargoExpansionTonnes = 45
+hullPriceCR = 395000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 4
+intrinsicCrewPlaces = 4
+nativeAutonomous = false
+nativeCrew = 4
+playerConversionCrew = 4
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 23
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 32
+utilityMounts = 4
+compatibleUtilities = ["miningLaser", "cargoScoop", "salvageCutter", "surveyArray", "salvageBeam"]
+recommendedRoleKit = ["miningLaser", "cargoScoop", "salvageCutter"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

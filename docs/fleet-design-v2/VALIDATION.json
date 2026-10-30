@@ -1,0 +1,16 @@
+{
+  "scope": "Design data validation only; no runtime, rendering, collision, balance, native test or release proof.",
+  "baseHulls": 171,
+  "performanceRecords": 163,
+  "uniqueFunctionalProfiles": 163,
+  "duplicateFunctionalProfiles": [],
+  "renames": 18,
+  "autonomousVariants": 3,
+  "finiteTitheReserve": 8,
+  "medusaConfigurationCount": 4,
+  "medusaExactStockFieldsChecked": 17,
+  "medusaMaximumGrantedToMissionOrPurchase": false,
+  "fullyUpgradedComparativePowerVerified": false,
+  "equipmentFitModel": "proposal planning weights only; native device/socket/mass/power bindings require EQUIPMENT-MAPPING.md",
+  "result": "PASS"
+}

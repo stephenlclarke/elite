@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH066"
+name = "Rabbit Explorer"
+family = "rabbit"
+classification = "leisure"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "light-explorer"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Rabbit Explorer"
+statsFile = "fleet-specs/SH066.toml"
+statsSHA256 = "768ce6a6e57df0f42b5514c61d75473d895c0f71ffa1fdd1bc93b7669434da4d"
+geometryFile = "replacement-hulls/SH066-design.toml"
+geometrySHA256 = "9ade27660044661f97105983b4995184ab7347aadf2efb5e62ae5d030b0f12e5"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Short oval passenger cabin framed by two shallow curved side runners, broad windows and a small recessed rear drive panel."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "light-explorer"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 28
+maxSpeed = 49.0
+acceleration = 12.5
+energyCapacity = 200
+energyRecharge = 3.5
+roll = 1.07
+pitch = 0.94
+yaw = 0.88
+shieldCapacityPerBank = 200
+shieldRechargePerBank = 1.7
+fuelTankLY = 14.0
+maxJumpLY = 11.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 1
+cargoExpansionTonnes = 10
+hullPriceCR = 297000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 5
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 20
+utilityMounts = 2
+compatibleUtilities = ["surveyArray", "rescueReceiver", "cargoScoop", "auxiliaryFuelTank"]
+recommendedRoleKit = ["surveyArray", "flightRecorder"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

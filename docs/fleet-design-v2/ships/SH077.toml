@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH077"
+name = "Tamaraw"
+family = "tamaraw"
+classification = "transporter"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "regional-bulk-hauler"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Tamaraw"
+statsFile = "fleet-specs/SH077.toml"
+statsSHA256 = "b358d2934911dcdad4d3684ec6adc9b370ea19bffa32165fbfcf59c33e4b02bd"
+geometryFile = "fleet-completion-20261019/batch-03/SH077-design.toml"
+geometrySHA256 = "9d21c021df62f73a9f15b11455f88439fd178cca60ac72d99e1253f0339ac441"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original four shoe enclosed cargo basket; independently placed load structure, pressure volumes and propulsion, with sparse recessed service wells, louvres and instrumentation. Related variants preserve the same major structural layout."
+dimensionsWHLMetres = [35.192, 19.66, 39.59]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "regional-bulk-hauler"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 380
+maxSpeed = 23.2
+acceleration = 4.82
+energyCapacity = 690
+energyRecharge = 5.0
+roll = 0.37
+pitch = 0.327
+yaw = 0.301
+shieldCapacityPerBank = 470
+shieldRechargePerBank = 1.7
+fuelTankLY = 15.0
+maxJumpLY = 10.0
+jumpChargeSeconds = 14
+missileCapacity = 5
+laserFacingMask = 3
+cargoExpansionTonnes = 160
+hullPriceCR = 508000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 5
+intrinsicCrewPlaces = 5
+nativeAutonomous = false
+nativeCrew = 5
+playerConversionCrew = 5
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 76
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 32
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "rescueReceiver", "surveyArray", "auxiliaryFuelTank", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

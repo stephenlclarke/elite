@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH025"
+name = "Peregrine Mk V"
+family = "peregrine"
+classification = "trader"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "starter-multirole"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Peregrine Mk V"
+statsFile = "fleet-specs/SH025.toml"
+statsSHA256 = "f6e76b3b316c9721624060d7cf55738de32c03e356159a3cb39acdff7475dd78"
+geometryFile = "replacement-hulls/SH025-design.toml"
+geometrySHA256 = "5c76051fbb6f681065858b312dadfb1acad3e10ea22559d6da6f62d6684d25cc"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Rounded central command hull and two hooked forward shoulders around an open bow gap; stepped cargo deck below the bridge."
+dimensionsWHLMetres = [28.0, 11.0, 40.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "starter-multirole"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 92
+maxSpeed = 34.3
+acceleration = 9.1
+energyCapacity = 380
+energyRecharge = 4.2
+roll = 0.79
+pitch = 0.7
+yaw = 0.65
+shieldCapacityPerBank = 300
+shieldRechargePerBank = 1.8
+fuelTankLY = 13.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 15
+missileCapacity = 9
+laserFacingMask = 15
+cargoExpansionTonnes = 35
+hullPriceCR = 362000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 18
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 24
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

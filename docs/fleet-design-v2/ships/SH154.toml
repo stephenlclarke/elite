@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH154"
+name = "Osprey Patrol"
+family = "osprey"
+classification = "military"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "endurance-patrol"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Osprey Patrol"
+statsFile = "fleet-specs/SH154.toml"
+statsSHA256 = "076a23245e7fbcea8060f26b5baa7f07b557625c44d0165e47ace172ad047671"
+geometryFile = "replacement-hulls/SH154-design.toml"
+geometrySHA256 = "e629276d66b367e05424ec84ab029be99558b41b76f6670e775c031030f6d790"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Two arched outer booms carry a narrow central cockpit and sheltered engine cores, leaving long open channels visible from above."
+dimensionsWHLMetres = [22.0, 8.0, 30.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "endurance-patrol"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 24
+maxSpeed = 42.0
+acceleration = 12.9
+energyCapacity = 410
+energyRecharge = 6.4
+roll = 1.1
+pitch = 0.97
+yaw = 0.9
+shieldCapacityPerBank = 300
+shieldRechargePerBank = 2.0
+fuelTankLY = 13.0
+maxJumpLY = 11.0
+jumpChargeSeconds = 12
+missileCapacity = 6
+laserFacingMask = 3
+cargoExpansionTonnes = 10
+hullPriceCR = 389000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 4
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 22
+utilityMounts = 3
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop", "salvageBeam"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

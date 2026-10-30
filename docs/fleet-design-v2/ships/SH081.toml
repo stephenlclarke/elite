@@ -1,0 +1,79 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH081"
+name = "Jaguar"
+family = "jaguar"
+classification = "military"
+objectKind = "ship"
+capital = true
+origin = "human"
+primaryUse = "capital-escort"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = false
+purchasePolicy = "never"
+discoveryPolicy = "existing-explicit-native-gallery-milestone; no-purchase-right"
+missionGate = "none"
+normalPurchaseRequiresCrew = false
+
+[source]
+previousName = "Jaguar"
+statsFile = "fleet-specs/SH081.toml"
+statsSHA256 = "5e326c8f2b7f67e55a3575a3144043de71b7a6c07e3939342a047a02c9efb82e"
+geometryFile = "fleet-completion-20261019/batch-04/SH081-design.toml"
+geometrySHA256 = "22f8667772b9461bdd59bb7f6d9ef26bf49303cf174ab1ef5415f34277d72b0d"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Original four corner capital thrust-arm ship; coherent named family construction, closed pressure volumes and independently placed structural parts. Human surfaces retain sparse wells, louvres, piping and instrumentation in the detailed design."
+dimensionsWHLMetres = [50.0, 30.58, 94.0]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "capital-escort"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 144
+maxSpeed = 23.3
+acceleration = 5.4
+energyCapacity = 1480
+energyRecharge = 11.5
+roll = 0.43
+pitch = 0.38
+yaw = 0.35
+shieldCapacityPerBank = 620
+shieldRechargePerBank = 2.0
+fuelTankLY = 14.0
+maxJumpLY = 7.0
+jumpChargeSeconds = 18
+missileCapacity = 10
+laserFacingMask = 15
+cargoExpansionTonnes = 60
+hullPriceCR = 0
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 24
+intrinsicCrewPlaces = 24
+nativeAutonomous = false
+nativeCrew = 24
+playerConversionCrew = 24
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 28
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 58
+utilityMounts = 4
+compatibleUtilities = ["surveyArray", "salvageCutter", "rescueReceiver", "cargoScoop", "salvageBeam"]
+recommendedRoleKit = ["combatLaser", "ECM"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"

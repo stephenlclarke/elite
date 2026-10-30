@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH027"
+name = "Ibex"
+family = "ibex"
+classification = "trader"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "remote-outpost-trader"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Ibex"
+statsFile = "fleet-specs/SH027.toml"
+statsSHA256 = "8683efc69a92c85add48be7022fa1a76040b4407413c5c2a349156d47425b2ed"
+geometryFile = "fleet-completion-20261019/batch-02-native-lod/SH027-design.toml"
+geometrySHA256 = "db3494ecc09b427242eed021bae074124aad87c38fe03b654161d49269952484"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Independently authored deep paired cargo keels with its own structural layout, cockpit, drives, inset hull wells, sparse service details and protected pipe runs."
+dimensionsWHLMetres = [15.664, 16.12, 34.59]
+dimensionStatus = "retained-authored-metres"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "remote-outpost-trader"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 54
+maxSpeed = 36.2
+acceleration = 11.0
+energyCapacity = 270
+energyRecharge = 3.8
+roll = 1.03
+pitch = 0.91
+yaw = 0.84
+shieldCapacityPerBank = 220
+shieldRechargePerBank = 1.5
+fuelTankLY = 13.0
+maxJumpLY = 11.0
+jumpChargeSeconds = 12
+missileCapacity = 4
+laserFacingMask = 3
+cargoExpansionTonnes = 20
+hullPriceCR = 307000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 1
+intrinsicCrewPlaces = 1
+nativeAutonomous = false
+nativeCrew = 1
+playerConversionCrew = 1
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 10
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 18
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"

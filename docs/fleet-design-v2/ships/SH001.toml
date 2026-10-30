@@ -1,0 +1,91 @@
+# Authored design proposal v2. Not installed or playtested.
+schema = "l337.fleet-design/2"
+id = "SH001"
+name = "Mule"
+family = "mule"
+classification = "trader"
+objectKind = "ship"
+capital = false
+origin = "human"
+primaryUse = "modular-courier"
+decisionStatus = "new-authored-design; implementation-and-playtesting-pending"
+
+[access]
+playerFlyable = true
+purchasePolicy = "blueprintFabrication"
+discoveryPolicy = "encounter-then-player-EMP-disable-and-authorised-physical-salvage"
+missionGate = "none"
+normalPurchaseRequiresCrew = true
+
+[source]
+previousName = "Mule"
+statsFile = "fleet-specs/SH001.toml"
+statsSHA256 = "3a4220be92fce975a550650409c9d52b39451ef0dfe63e2d3d7a87268073eafc"
+geometryFile = "replacement-hulls/SH001-design.toml"
+geometrySHA256 = "5a5c99c1ab2c481e0891a90a18f9376b054709f14604c2fa5a45771d4d2817fe"
+nameDecision = "Retain the accepted animal stem and identity."
+
+[geometry]
+basis = "retain-original-family-and-palette; implement-listed-revisions"
+originalIntent = "Long working spine with three pairs of detachable side panniers, a raised forward bridge and a ventral maintenance rail."
+dimensionsWHLMetres = [28.0, 11.0, 40.0]
+dimensionStatus = "new-layout-target-estimate; preserve any later verified active calibration"
+scaleRule = "Verify source units and active per-ID calibration before any geometry rescale."
+cockpitRule = "Opaque connected structural support under all glazing; verify in every view."
+surfaceRule = "sparse-recessed-seamless-human-panels"
+variantFeature = "modular-courier"
+nativeFaceLimit = 512
+
+[performance]
+cargoTonnes = 76
+maxSpeed = 33.2
+acceleration = 9.6
+energyCapacity = 290
+energyRecharge = 4.0
+roll = 0.88
+pitch = 0.77
+yaw = 0.72
+shieldCapacityPerBank = 240
+shieldRechargePerBank = 1.5
+fuelTankLY = 13.0
+maxJumpLY = 9.0
+jumpChargeSeconds = 12
+missileCapacity = 5
+laserFacingMask = 3
+cargoExpansionTonnes = 25
+hullPriceCR = 310000
+
+[accommodation]
+basis = "new-per-hull-design-layout-estimate; not-historical-crew-or-E01"
+minimumOperatingCrewIncludingCommander = 2
+intrinsicCrewPlaces = 2
+nativeAutonomous = false
+nativeCrew = 2
+playerConversionCrew = 2
+initialPurchasedCabins = 0
+cabinModuleMassTonnes = 5
+cabinModuleEquipmentUnits = 1
+maximumPhysicalCabinModules = 15
+holdBasis = "Cargo is usable empty hold after intrinsic crew/core structure; purchased modules consume this hold."
+
+[fitting]
+equipmentBudgetUnits = 20
+utilityMounts = 3
+compatibleUtilities = ["cargoScoop", "salvageCutter", "surveyArray", "rescueReceiver", "salvageBeam"]
+recommendedRoleKit = ["cargoScoop"]
+roleKitIncludedInBareHull = false
+passengerCabinGrades = ["packedStasis", "economy", "standard", "luxury", "singleStateroom", "doubleStateroom"]
+externalMissilePylons = false
+missileStorage = "modelled-mounts-and-magazine"
+
+[acquisition]
+controllingWorkstream = "WS-SALVAGE-01 / M08.SALVAGE.EMP-01"
+method = "commander-EMP-disable; lawful-empty-authorised-section; actual-cut-and-scoop"
+laserMissilePreparationMandatory = false
+destructionGrantsBlueprint = false
+disableAloneGrantsBlueprint = false
+sampleMassTonnes = 0.05
+sampleMassStatus = "researcher-proposed-balance; physical intake still required"
+beamRequirement = "Power and reach depend on calibrated target volume, carried mass and surface distance; unknown until physical contract exists."
+EMPBank = "Separate physical finite capacitor; pulse power, stored shots and recharge are independent paid axes."
+policySource = "references/salvage/SALVAGE-ACQUISITION.json"
