@@ -101,7 +101,8 @@ private struct NativeColdChainFixture {
   }
 
   func runtime(escapeReady: Bool = false, scoopsReady: Bool = false) async throws -> GameRuntime {
-    var game = try ScriptProcurementFixture.freshG03FlightGame()
+    var game = try ScriptProcurementFixture.freshG03FlightGame(escapeReady: escapeReady)
+    if scoopsReady { game.commander.credits = 178_625 }
     game.scriptPacks = [pack]
     try game.prepareG03FlightEquipment()
     if escapeReady {

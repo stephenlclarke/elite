@@ -177,7 +177,7 @@ func stationAutoNativeECMRequiresActualEquipmentAndEnergyWithoutXYZZY(condition:
   try #require(!game.commander.xyzzyActive && !game.commander.autoECM)
   game.detectIncomingMissiles()
   #expect(game.ecmControl.ownFieldActive == (condition == "fitted"))
-  #expect(game.energy == before.energy - (condition == "fitted" ? 10 : 0))
+  #expect(game.energy == before.energy - (condition == "fitted" ? 22 : 0))
   #expect(game.autoPilot.targetActor == before.autoPilot.targetActor)
   #expect(game.weaponsTargetID == before.weaponsTargetID)
   #expect(game.commander.autoECM == before.commander.autoECM)

@@ -1,0 +1,104 @@
+{
+  "status": "FULL_NORMAL_FAILED_NO_RETRY",
+  "source": "e10c06e45c36df450b0d60074c8d2faef6b9cd18",
+  "execution": "69f8b98db8dd71e88368bad7332e89d1968ce208",
+  "run": 41025652854,
+  "attempt": 2,
+  "job": 123963919791,
+  "buildSeconds": 609.17,
+  "testSeconds": 2850.043,
+  "tests": 3434,
+  "failedMethods": 20,
+  "skippedMethods": 6,
+  "passedMethods": 3408,
+  "errors": 0,
+  "reportedIssues": 36,
+  "suites": 400,
+  "failedNames": [
+    {
+      "class": "L337CoreTests.OriginalSealedDispatchNativeTests",
+      "name": "dispatchNativeLossConsumesOriginalWithoutPaymentOrClue(mode:)"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "buyingBoosterRespectsTechnologyCashAndPreventsWeakerTierCharges()"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "appIconExportContainsEveryStandardAndRetinaRepresentation()"
+    },
+    {
+      "class": "L337CoreTests.WayfarerFieldReliefJourneyTests",
+      "name": "actualFailureRetainsOriginalLossAndNeverPaysOrRestocks(cause:)"
+    },
+    {
+      "class": "L337CoreTests.WayfarerFieldReliefJourneyTests",
+      "name": "coldLoadRetainsExactOriginalChainAndTerminalPayment(stage:)"
+    },
+    {
+      "class": "L337CoreTests.OriginalConsentedFreightSupplyLifecycleTests",
+      "name": "supplyActualFatalOrEscapeLossNeverReplenishesBatch(escape:)"
+    },
+    {
+      "class": "L337CoreTests.EquipmentSelectionTests",
+      "name": "existingArrowAndReturnControlsBuyIntoTheSeparateWorkTool()"
+    },
+    {
+      "class": "L337CoreTests.GameplayOrdnanceTests",
+      "name": "missileRetainsOriginalNPCOwnerAfterEmitterDisappearsAndHitsPlayerShields()"
+    },
+    {
+      "class": "L337CoreTests.GameplayOrdnanceTests",
+      "name": "muzzleProtectionEndsBeforeALaterPathCrossesTheEmitter()"
+    },
+    {
+      "class": "L337CoreTests.GameplayOrdnanceTests",
+      "name": "actualMissileImpactUsesProfileDamageOnceWithoutDestroyingSurvivingHull(profile:)"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "nativeColdChainActualEscapeAndFailedWriterNeverResurrectTheOriginalSample()"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "nativeColdChainProtectedTonneBlocksTheActualOrdinaryScoopAtCapacity()"
+    },
+    {
+      "class": "L337CoreTests.NativeUtilityRuntimeTests",
+      "name": "physicalLossWriterFailureThenRetryRetainsActualOriginalLoss(cause:)"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "stationAutoNativeECMRequiresActualEquipmentAndEnergyWithoutXYZZY(condition:)"
+    },
+    {
+      "class": "L337CoreTests.WayfarerRepairLoopNativeTests",
+      "name": "actualEscapeWriterRollbackThenSixFiniteUnitsNeverReplenish()"
+    },
+    {
+      "class": "L337CoreTests.WayfarerSeedTransferNativeTests",
+      "name": "actualSeedEscapeThenNewLotsExhaustSixWithoutRefillingTheSeedBank()"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "legacyMiningStrengthSurvivesPaidWeakerPurchasesStoredWithOriginalIdentity()"
+    },
+    {
+      "class": "L337CoreTests.OriginalColdChainTests",
+      "name": "actualLossUsesNewFiniteStockAndExhaustedBatchNeverReplenishes()"
+    },
+    {
+      "class": "L337CoreTests",
+      "name": "fourMountsStartWithOnlyFrontPulseAndPurchasesReplaceOnlyChosenMount()"
+    },
+    {
+      "class": "L337CoreTests.NativeStationIntegrationTests",
+      "name": "actualXYZZYMissileVolleyDestroysHeadquartersAndRetainsItsTombstoneAcrossLoad()"
+    }
+  ],
+  "phaseLogSHA256": "ceeb0f3259857dcc6e7343e7cac42041954f833313fed32b46ca4d56d8d8091e",
+  "xmlSHA256": "0a3ad969418afe433ee8bf5099cdcd3f2d197b3cfc30366c693c70cd4fb85cf3",
+  "controllerSHA256": "f18049496c0822760cac3c3376964578e91d935f34fb10b9cf16d9d7d6824f12",
+  "cleanup": "Controllerterminal0; actualjobFAIL; registration/credentials absent; diagnostic custody clear underphysicalleases; used1/max1 retained",
+  "limits": "No normal coverage PASS/leak/Sonar/release claim. No unchanged retry. Allrawreports retained."
+}

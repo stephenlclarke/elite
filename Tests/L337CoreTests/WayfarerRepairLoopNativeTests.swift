@@ -14,7 +14,7 @@ struct WayfarerRepairLoopNativeFixture {
   }
   func runtime(escapeReady: Bool = false, mixedColdChain: Bool = false) async throws -> GameRuntime
   {
-    var game = try ScriptProcurementFixture.freshG03FlightGame()
+    var game = try ScriptProcurementFixture.freshG03FlightGame(escapeReady: escapeReady)
     game.commander.system = 85
     game.selectedSystem = 85
     game.market = MarketItem.at(game.currentSystem)

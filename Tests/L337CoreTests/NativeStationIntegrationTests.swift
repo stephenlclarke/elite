@@ -438,7 +438,9 @@ private func verifyNativeHeadquartersDestruction(
   #expect(game.bodies.first { $0.id == hq.id }?.energy == hq.energy - LaserKind.naval.damage + 10)
   await runtime.setControls(Controls())
   var launches = 0
-  for frame in 0..<5000
+  // Finite horizon: ceil((25000 + 100 * 24) / (160 - 100 * 1.1)) + 1 = 549 launches.
+  // Include the last 24s flight; actual impacts, ECM and destruction still decide success.
+  for frame in 0..<6269
   where game.bodies.contains(where: { $0.id == hq.id })
     && game.screen != .gameOver && !game.paused
   {
@@ -452,7 +454,10 @@ private func verifyNativeHeadquartersDestruction(
     game = await runtime.advance(delta: 0.1)
   }
   #expect(launches > 100 && !game.paused && game.screen != .gameOver)
-  #expect(!game.bodies.contains { $0.nativeStationIdentity == identity })
+  #expect(
+    !game.bodies.contains { $0.nativeStationIdentity == identity },
+    "HQ energy after \(launches) launches: \(String(describing: game.bodies.first { $0.nativeStationIdentity == identity }?.energy))"
+  )
   let world = try #require(game.commander.nativeStations)
   let record = try #require(world.ledger.records.first { $0.identity == identity })
   let tombstone = try #require(record.tombstone)

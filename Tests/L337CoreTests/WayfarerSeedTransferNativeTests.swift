@@ -23,7 +23,7 @@ struct WayfarerSeedTransferNativeFixture {
     }
   }
   func runtime(escapeReady: Bool = false, mixedServices: Bool = false) async throws -> GameRuntime {
-    var game = try ScriptProcurementFixture.freshG03FlightGame()
+    var game = try ScriptProcurementFixture.freshG03FlightGame(escapeReady: escapeReady)
     try game.prepareG03FlightEquipment()
     if escapeReady {
       let pod = try #require(Equipment.all.first { $0.name == "Escape Pod" })

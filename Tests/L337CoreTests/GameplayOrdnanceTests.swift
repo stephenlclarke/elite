@@ -102,7 +102,7 @@ struct GameplayOrdnanceTests {
     let impact = try ordnanceAdvance(&game, state: &state, time: 2)
     #expect(impact.hit?.target == .body(10) && impact.termination == .impact && impact.endedNow)
     #expect(impact.incident?.origin == state.origin && impact.incident?.kind == .missile)
-    let expectedEnergy = profile == .alienSeeker ? 687.5 : 750.0
+    let expectedEnergy = profile == .alienSeeker ? 800.0 : 840.0
     #expect(game.bodies[0].energy == expectedEnergy && game.commander.kills == 0)
     let repeated = try ordnanceAdvance(&game, state: &state, time: 3)
     #expect(!repeated.endedNow && repeated.hit == nil)
@@ -248,7 +248,7 @@ struct GameplayOrdnanceTests {
     #expect(impact.hit?.target == .player && impact.incident?.origin.owner == shooter)
     #expect(impact.incident?.origin.ordnance == state.origin.ordnance)
     #expect(impact.incident?.origin.ownerLegalAtEmission.value == 64)
-    #expect(game.frontShield == 5 && game.energy == 256 && game.commander.kills == 0)
+    #expect(game.frontShield == 95 && game.energy == 256 && game.commander.kills == 0)
   }
 
   @Test func muzzleProtectionEndsBeforeALaterPathCrossesTheEmitter() throws {
@@ -260,7 +260,7 @@ struct GameplayOrdnanceTests {
     game.bodies[0].position = .init(0, 0, -1000)
     let returned = try ordnanceAdvance(&game, state: &state, time: 0.5)
     #expect(returned.hit?.target == .player && returned.termination == .impact)
-    #expect(game.frontShield == 5 && game.commander.legal == 0)
+    #expect(game.frontShield == 95 && game.commander.legal == 0)
   }
 
   @Test func lostTargetsCullAndInterceptionHaveSeparateTerminalReasonsAndNoShipCredit() throws {

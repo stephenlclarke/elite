@@ -21,7 +21,7 @@ import Testing
   let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
   defer { try? FileManager.default.removeItem(at: root) }
   try exportAppIcon(at: root)
-  let iconset = root.appendingPathComponent(".build/Elite.iconset")
+  let iconset = root.appendingPathComponent(".build/L337.iconset")
   #expect(try FileManager.default.contentsOfDirectory(atPath: iconset.path).count == 10)
   for size in [16, 32, 128, 256, 512] {
     for scale in [1, 2] {
@@ -32,7 +32,7 @@ import Testing
       #expect(image.width == size * scale && image.height == size * scale)
     }
   }
-  let preview = root.appendingPathComponent("docs/images/elite-icon.png")
+  let preview = root.appendingPathComponent("docs/images/l337-icon.png")
   let source = try #require(CGImageSourceCreateWithURL(preview as CFURL, nil))
   #expect(CGImageSourceCreateImageAtIndex(source, 0, nil)?.width == 1024)
 }

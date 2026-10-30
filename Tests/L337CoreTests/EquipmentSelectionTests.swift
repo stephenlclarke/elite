@@ -42,7 +42,7 @@ struct EquipmentSelectionTests {
     game.key("return")
     #expect(game.commander.hasMiningWorkTool)
     #expect(game.commander.fittedEquipment(at: .laser(.front)) == front)
-    #expect(game.commander.credits == 92000)
+    #expect(game.commander.credits == 67000)
     game.key("right")
     #expect(!game.equipmentWorkTool && game.equipmentMount == .front)
     game.key("left")

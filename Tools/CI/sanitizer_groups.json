@@ -6,7 +6,7 @@
       "name": "appkit-shared-process",
       "reason": "Shared NSApplication and MainActor renderer caches; keep audited AppKit consumers together.",
       "sources": {
-        "Tests/L337CoreTests/AppIconTests.swift": "c83dcfcbda676407ec09321309954b4f2012738ec0fe46fa08506fcdca07d52d",
+        "Tests/L337CoreTests/AppIconTests.swift": "e49539385d9709235cef04b60e2c49ffe6c69865df06229b0227e70ab992052d",
         "Tests/L337CoreTests/CelestialDrawingModeTests.swift": "e32ddf68cafb41485641eee57727a0e4a40bbb936cb3252ea01058e15323f8b0",
         "Tests/L337CoreTests/CelestialRenderingTests.swift": "24cf9a29e58d2d473da3b8f701bedd5eeeb7a257fe757cf79b4427d4d75649dc",
         "Tests/L337CoreTests/FlightControlInputTests.swift": "6f2b805ccdb6b31e37eecd1d47a8d640e6cc7724b7a640a6f94ec97d463151ae",

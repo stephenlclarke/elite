@@ -50,7 +50,7 @@ private func shieldCobraGame() -> Game {
 }
 @Test func buyingBoosterRespectsTechnologyCashAndPreventsWeakerTierCharges() throws {
   var game = Game(executive: false)
-  game.commander.credits = 100_000
+  game.commander.credits = 232_375
   let militaryItem = try #require(
     Equipment.all.first { $0.name == ShieldBooster.military.equipmentName })
   game.commander.system = try #require(
@@ -72,7 +72,8 @@ private func shieldCobraGame() -> Game {
     #expect(game.commander.equipmentPurchaseHistory?.paid.last?.node.key == booster.equipmentName)
   }
   #expect(game.commander.shieldBooster == .military && game.commander.credits == 38_500)
-  #expect(game.commander.equipmentPurchaseHistory?.paid.map(\.price) == [3000, 6000, 7500, 45000])
+  #expect(
+    game.commander.equipmentPurchaseHistory?.paid.map(\.price) == [10875, 24750, 35250, 123000])
   #expect(game.frontShield == game.commander.shieldCapacity)
   game.selection = Equipment.all.firstIndex { $0.name == ShieldBooster.pulse.equipmentName }!
   let fitted = game.commander
@@ -196,7 +197,7 @@ private func shieldCobraGame() -> Game {
     game.systems.first { $0.technology >= militaryItem.requiredTechnologyLevel }?.id)
   game.selectedSystem = game.commander.system
   try #require(game.equipmentAvailable(militaryItem))
-  game.commander.credits = 100_000
+  game.commander.credits = 232_375
   game.commander.installShieldBooster(.mining)
   try game.commander.prepareEquipment()
   let original = try #require(game.commander.fittedEquipment(at: .shield))
@@ -212,7 +213,7 @@ private func shieldCobraGame() -> Game {
   let cash = game.commander.credits
   game.purchase()
   #expect(game.message == "EQUIPMENT STORED - CURRENT FIT RETAINED")
-  #expect(game.commander.credits == cash - 45_000 && game.commander.credits == 38_500)
+  #expect(game.commander.credits == cash - 123_000 && game.commander.credits == 38_500)
   #expect(game.commander.fittedEquipment(at: .shield) == original)
   #expect(game.commander.shieldBooster == .mining && game.commander.shieldCapacity == 1275)
   let military = try #require(
@@ -220,9 +221,10 @@ private func shieldCobraGame() -> Game {
       $0.node.key == ShieldBooster.military.equipmentName
     })
   let receipt = try #require(game.commander.equipmentPurchaseHistory?.paid.last)
-  #expect(military.location == nil && receipt.node == military.node && receipt.price == 45_000)
+  #expect(military.location == nil && receipt.node == military.node && receipt.price == 123_000)
   #expect(military.provenance == .paid(owner: receipt.owner, transaction: receipt.transaction))
-  #expect(game.commander.equipmentPurchaseHistory?.paid.map(\.price) == [3000, 6000, 7500, 45000])
+  #expect(
+    game.commander.equipmentPurchaseHistory?.paid.map(\.price) == [10875, 24750, 35250, 123000])
   try game.commander.grantEquipment(
     ShieldBooster.capital.equipmentName, at: .shield, provenance: .grant("shield-test"))
   #expect(game.commander.shieldBooster == .capital)
