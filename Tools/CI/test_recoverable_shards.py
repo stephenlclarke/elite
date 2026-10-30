@@ -170,7 +170,7 @@ class PlanningTests(Fixture):
         root = Path(__file__).resolve().parents[2]
         manifest = shards.load_json(root / "Tools/CI/sanitizer_groups.json")
         self.assertEqual([(len(group["members"]), len(group["sources"]))
-                          for group in manifest["groups"]], [(175, 33), (13, 2)])
+                          for group in manifest["groups"]], [(179, 34), (13, 2)])
         methods = []
         for group in manifest["groups"]:
             for member in group["members"]:

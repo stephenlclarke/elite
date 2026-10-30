@@ -45,3 +45,15 @@ Format reference: [GIF89a specification](https://www.w3.org/Graphics/GIF/spec-gi
 ## Streaming source review and qualification boundary
 
 The exact six-path streaming candidate received independent source reviewda60f3e8 with no actionable findings. Its production code and four new test methods are composed byte-for-byte on the owned media branch. Patch validation, documentation lint and unchanged-outside-media checks passed. The four new methods remain UNRUN; actual Swift compilation, complete current-head normal coverage/zero-leak checks and the full6375-frame resource/output run are still pending. The prior174-case result belongs to source550a only. PR294 remains unmerged and both final media assets remain unqualified.
+
+## AppKit participation correction from the actual hosted planning failure
+
+The a64dc91e source event41137060943 attempt1 did not reach native tests. Its real PlanningTests class reported seven passes and one error: test_real_audited_groups_remain_whole_in_both_modes reached grouping_policy and rejected the new AppKit consumer source set. The source-review clear for the GIF code remains retained; no native test/render result is claimed for that source.
+
+Current-source metadata has33 AppKit sources and175 members. ReadmeGIFStreamTests imports L337Mac and declares four tests, so this narrow child adds its exact source hash and four declared members to the existing appkit-shared-process group:34 sources/179 members. Every prior source pin/member/order/name/reason remains unchanged, as does the complete salvage group (two sources/13 members), grouping schema, routes, guard code and CI conditions. The maintained PlanningTests cardinality fixture changes only the corresponding175/33 expectation to179/34. Later source-only34/182 registration packets are not adopted.
+
+The existing actually failing audited-group regression is retained as the correction check. The eight PlanningTests fake methods will run through the maintained Python test path only after source clearance; they do not run native compilers or sanitizers. Fresh corrected-head hosted barriers and complete native coverage/leaks remain required. The four new ImageIO methods remain UNRUN, and both final README outputs remain unqualified. No preservation/checkout/installation/rerun was executed for the superseded c578 binding.
+
+## Corrected AppKit planning regression result
+
+After independent source/fake-route reviewb6928cb8, G1 applied the exact ccb165/e052 correction on the owned branch and ran the maintained PlanningTests class from Tools/CI. All eight fake methods passed (0.201 seconds reported by unittest); resultddae3112 and the raw log are retained. The original hosted7PASS1ERROR remains unchanged. This is fake planning evidence only: four ImageIO methods and the changed-head full native/render gates remain UNRUN/pending. A new committed head/event is required; c578 authority and its failed event are not reused.

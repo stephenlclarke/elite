@@ -38,7 +38,8 @@
         "Tests/L337CoreTests/StartupFrameObservationTests.swift": "17763f7920621c31dca708c61d55501453840e545ac087ced20242741261be92",
         "Tests/L337CoreTests/StartupSaveRegistrationTests.swift": "4c175ba6701a614762e725dbf7fa2d66c2ad08ce58d46ebc1445eed0f0470f4e",
         "Tests/L337CoreTests/StartupSaveTests.swift": "3b7b4b1195b66736320ec37acdb3f881724212c35c457bd0767ca59ab32b40eb",
-        "Tests/L337CoreTests/WantedBoardTests.swift": "f8e0648cfb3959a07fca98d2f0923b9d3a7cef75d1de7dae8c73d489ada21bb0"
+        "Tests/L337CoreTests/WantedBoardTests.swift": "f8e0648cfb3959a07fca98d2f0923b9d3a7cef75d1de7dae8c73d489ada21bb0",
+        "Tests/L337CoreTests/ReadmeGIFStreamTests.swift": "1e29e5daf4dbc22fea1e38ac433bf4a380de29d341092db53db146c7b2203311"
       },
       "members": [
         "L337CoreTests.FlightControlInputTests/actorSafetyStopSurvivesAnActualRefusedHotWorkFlush(key:)",
@@ -215,7 +216,11 @@
         "L337CoreTests/wireCelestialRasterCannotReachDashboard()",
         "L337CoreTests/wireCelestialsShareClippedGeometryAndOnlyChangeInk()",
         "L337CoreTests.NativeViewTests/l337DefaultsKeepCommanderAndPackNamespacesTogether()",
-        "L337CoreTests.NativeViewTests/freshPreferenceDomainDoesNotImportAnotherDomainsRememberedSave()"
+        "L337CoreTests.NativeViewTests/freshPreferenceDomainDoesNotImportAnotherDomainsRememberedSave()",
+        "L337CoreTests.ReadmeGIFStreamTests/writesFramesBeforeFinishingAndDecodesEveryIndependentPalette()",
+        "L337CoreTests.ReadmeGIFStreamTests/incompleteOrRejectedFramesCannotReplaceThePublishedTape()",
+        "L337CoreTests.ReadmeGIFStreamTests/publicationFailurePreservesTheExistingDestinationAndClosesTheWriter()",
+        "L337CoreTests.ReadmeGIFStreamTests/realSingleFramePayloadRefusesEveryTruncatedPrefixAndTrailingGarbage()"
       ]
     },
     {
