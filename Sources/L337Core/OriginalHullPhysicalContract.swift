@@ -141,6 +141,22 @@ struct OriginalHullPhysicalContract: Sendable {
       definition: definition, model: OriginalFleetShowroomModels.model(for: "SH035"))
   }
 
+  static let redtailMkIII: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH103") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH103"))
+  }
+
+  static let besra: Result<Self, any Error> = Result {
+    guard let definition = OriginalFleetDefinitionData.definition(for: "SH108") else {
+      throw Failure.unsupportedSource
+    }
+    return try Self(
+      definition: definition, model: OriginalFleetShowroomModels.model(for: "SH108"))
+  }
+
   static let burro: Result<Self, any Error> = Result {
     guard let definition = OriginalFleetDefinitionData.definition(for: "SH029") else {
       throw Failure.unsupportedSource
@@ -271,6 +287,26 @@ struct OriginalHullPhysicalContract: Sendable {
       else { throw Failure.unsupportedSource }
       metresPerSourceUnit = 1
       unitBasis = "Approved native LOD in authored metres."
+    case "SH103":
+      guard definition.name == "Redtail Mk III",
+        definition.sourceSHA256
+          == "902ed193390f5fa4dd4fabf3099717b91a67fb1d09ea95a93d80b654822cdf34",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH103-design.toml",
+        model.sourceSHA256 == "39ec7a78c9da5b4ff652255b4d278d1169821bb27941e1d34ccc2f97ce61eb90"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
+    case "SH108":
+      guard definition.name == "Besra",
+        definition.sourceSHA256
+          == "6618c94a78caafe83aabe1e2fd5761b0f16849307e4af82f44cb609cd4d420fe",
+        model.coordinateUnits == "metres",
+        model.sourcePath == "fleet-completion-20261019/batch-04/SH108-design.toml",
+        model.sourceSHA256 == "ef7d78789eed53b721c6f9417abe5f79a0394613540ff901d8af1fd9c76e13f1"
+      else { throw Failure.unsupportedSource }
+      metresPerSourceUnit = 1
+      unitBasis = "Approved native LOD in authored metres."
     case "SH029":
       guard definition.name == "Burro",
         definition.sourceSHA256
@@ -351,6 +387,8 @@ extension CatalogueShip {
     case "SH032": result = OriginalHullPhysicalContract.pantherExplorer
     case "SH033": result = OriginalHullPhysicalContract.pantherScout
     case "SH035": result = OriginalHullPhysicalContract.stagLiner
+    case "SH103": result = OriginalHullPhysicalContract.redtailMkIII
+    case "SH108": result = OriginalHullPhysicalContract.besra
     case "SH029": result = OriginalHullPhysicalContract.burro
     case "SH061": result = OriginalHullPhysicalContract.haflinger
     default: return nil
