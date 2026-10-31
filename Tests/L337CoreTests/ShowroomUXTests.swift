@@ -49,6 +49,49 @@ struct ShowroomComparisonUnitTests {
     }
   }
 
+  @Test func quotedHullRowsDoNotOverlapTheBrowseHeadingAtCompactAndWideSizes() throws {
+    for width in [512.0, 768, 1000, 1512] {
+      for height in [518.0, 540, 900] {
+        for ship in ["SH103", "SH108"] {
+          for credits in [0, 10_000_000] {
+            var game = Game(executive: false)
+            game.viewportWidth = width
+            game.viewportHeight = height
+            game.screen = .showroom
+            game.showroom.selection = ship
+            game.commander.credits = credits
+            let before = game.commander
+            let quote = try #require(game.shipTradeQuote)
+            let frame = Display.showroomScreen(game, width: width, height: height)
+            let heading = try #require(frame.labels.first { $0.text == "> Ships" })
+            let rows = frame.labels.filter {
+              $0.text.hasPrefix("Price ") || $0.text.hasPrefix("Pay ")
+                || $0.text.hasPrefix("Credit ") || $0.text.hasPrefix("Trade blocked")
+                || $0.text.hasPrefix("Review fit, then")
+            }
+            try #require(rows.count == 3)
+            #expect(
+              rows.contains {
+                $0.text.hasPrefix(quote.allowed ? "Review fit, then" : "Trade blocked")
+              })
+            for row in rows {
+              let a = row.bounds
+              let b = heading.bounds
+              #expect(a.maxX <= b.x || b.maxX <= a.x || a.maxY <= b.y || b.maxY <= a.y)
+              #expect(a.x >= 0 && a.maxX <= width && a.maxY < height - 42)
+            }
+            #expect(heading.bounds.maxY < height - 42)
+            let layout = ShowroomLayout(width: width, height: height, detail: false)
+            #expect(layout.list.maxY < height - 42)
+            #expect(layout.model.maxY < height - 42)
+            if !layout.wide { #expect(layout.list.maxY < layout.model.y) }
+            #expect(game.commander == before)
+          }
+        }
+      }
+    }
+  }
+
   @Test func bothRenderedPreviewsKeepTheSamePitchRollAndYawThroughRotationAndPause() throws {
     for width in [512.0, 768, 1000, 1512] {
       var game = game(width: width)

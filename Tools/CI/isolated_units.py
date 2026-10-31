@@ -541,6 +541,7 @@ METHODS = {
         "nativePrecisionAndCrossProfileCapacityPolicyRemainUnchanged",
     ),
     "ShowroomComparisonUnitTests": (
+        "quotedHullRowsDoNotOverlapTheBrowseHeadingAtCompactAndWideSizes",
         "compactAndWideSpecsShowBothCurrentAndPinnedModelsWithoutChangingBrowseMode",
         "bothRenderedPreviewsKeepTheSamePitchRollAndYawThroughRotationAndPause",
         "comparisonMatchesQuotedPriceAndActualTransferredFitWithHonestRatings",
