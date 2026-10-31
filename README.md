@@ -367,7 +367,7 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 ## Install on macOS
 
-Download the signed, notarized **L337 1.6.0** app below for **Apple silicon and Intel Macs running macOS 14 or later**, without Xcode or Swift. L337 uses `~/.xyzzy/l337/` for saved commanders and mission packs. The published Homebrew tap still installs historical **Elite 1.4.0**; its [Elite 1.5.1 update](https://github.com/stephenlclarke/homebrew-tap/pull/10) awaits the required independent approval and merge. The new [L337 cask](Casks/l337.rb) records the verified release, but does not change the tap until a separate tap update passes review and merges.
+Download the signed, notarized **L337 1.6.0** app below for **Apple silicon and Intel Macs running macOS 14 or later**, without Xcode or Swift. L337 uses `~/.xyzzy/l337/` for saved commanders and mission packs. The published Homebrew tap installs historical **Elite 1.5.1** after its [reviewed update](https://github.com/stephenlclarke/homebrew-tap/pull/10) merged. The new [L337 cask](Casks/l337.rb) records the verified release, but does not change the tap until a separate tap update passes review and merges.
 
 ### Historical Elite installation with Homebrew
 
