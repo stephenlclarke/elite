@@ -35,7 +35,7 @@ sanitizers-check:
 leaks: sanitizer-checkpoints-check
 	python3 Tools/CI/quality_phase_checkpoints.py leaks
 readme-media:
-	swift run L337 --readme-media
+	swift run --jobs 1 -Xswiftc -disable-batch-mode L337 --readme-media
 	mkdir -p Resources
 	iconutil -c icns .build/L337.iconset -o Resources/L337.icns
 
