@@ -34,8 +34,9 @@ public struct ShowroomLayout: Sendable {
     }
     trade = .init(x: left, y: 132, width: available * 0.68 - 8, height: 32)
     pane = .init(x: trade.maxX + 16, y: 132, width: available - trade.width - 16, height: 32)
+    // Narrow browsing shares the quote column; leave all three quote rows above its heading.
     list = .init(
-      x: 16, y: 222, width: wide ? 240 : width - 32,
+      x: 16, y: wide ? 222 : 238, width: wide ? 240 : width - 32,
       height: wide ? height - 282 : min(160, height * 0.25))
     let modelTop = wide || detail ? 222 : list.maxY + 14
     let modelHeight = wide || detail ? min(240, height * 0.24) : max(80, height - modelTop - 60)
