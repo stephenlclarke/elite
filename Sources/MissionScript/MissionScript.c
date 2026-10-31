@@ -123,18 +123,21 @@ static void write_bytes(lua_State *L, const void *bytes, size_t count) {
   EMSContext *ctx = context(L);
   if (count > ctx->limits.output_bytes - ctx->result.count) luaL_error(L, "Output budget exceeded.");
   size_t needed = ctx->result.count + count;
-  if (needed > ctx->output_capacity) {
-    size_t capacity = needed < 4096 ? 4096 : needed * 2;
+  size_t capacity = ctx->output_capacity;
+  unsigned char *next = ctx->result.bytes;
+  if (needed > capacity) {
+    capacity = needed < 4096 ? 4096 : needed * 2;
     if (capacity > ctx->limits.output_bytes) capacity = ctx->limits.output_bytes;
-    void *next = realloc(ctx->result.bytes, capacity);
-    if (!next) {
-      luaL_error(L, "Output allocation failed.");
-    }
+    next = realloc(ctx->result.bytes, capacity);
+  }
+  if (next) {
     ctx->result.bytes = next;
     ctx->output_capacity = capacity;
+    memcpy(next + ctx->result.count, bytes, count);
+    ctx->result.count = needed;
+  } else {
+    luaL_error(L, "Output allocation failed.");
   }
-  memcpy(ctx->result.bytes + ctx->result.count, bytes, count);
-  ctx->result.count = needed;
 }
 
 static void write_tag(lua_State *L, unsigned char tag) { write_bytes(L, &tag, 1); }
