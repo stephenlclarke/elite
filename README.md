@@ -9,7 +9,7 @@
   <a href="https://github.com/stephenlclarke/l337/actions/workflows/dependency-review.yml"><img alt="Dependency Review" src="https://github.com/stephenlclarke/l337/actions/workflows/dependency-review.yml/badge.svg?event=pull_request" /></a>
   <a href=".github/dependabot.yml"><img alt="Dependabot: daily update configuration" src="https://img.shields.io/badge/Dependabot-daily_updates-blue.svg" /></a>
   <a href="https://github.com/stephenlclarke/l337/security"><img alt="GitHub security overview" src="https://img.shields.io/badge/Security-GitHub-blue.svg" /></a>
-  <a href="https://github.com/stephenlclarke/elite/releases/latest"><img alt="Historical Elite public release" src="https://img.shields.io/github/v/release/stephenlclarke/elite" /></a>
+  <a href="https://github.com/stephenlclarke/l337/releases/latest"><img alt="L337 public release" src="https://img.shields.io/github/v/release/stephenlclarke/l337" /></a>
   <a href="https://github.com/stephenlclarke/homebrew-tap/blob/main/Casks/elite.rb"><img alt="Install the historical Elite Homebrew cask" src="https://img.shields.io/badge/Homebrew-install-blue.svg" /></a>
   <a href="LICENSE"><img alt="&#9878; License: MIT" src="https://img.shields.io/badge/%E2%9A%96%20License-MIT-blue.svg" /></a>
   <a href="https://sonarcloud.io/summary/new_code?id=stephenlclarke_elite"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=stephenlclarke_elite&amp;metric=alert_status" /></a>
@@ -28,7 +28,7 @@
 <br clear="left" />
 <!-- markdownlint-enable MD033 -->
 
-L337 is a native Swift macOS space trading game with keyboard and trackpad flight, shaded ship panels, a colour cockpit scanner and eight authored original galaxies. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. A fresh current-source game starts as Commander Rowan Calder at Avenor in an SH025 with 720 CR and full fuel. Restoring a current save preserves its commander identity. Entering XYZZY preserves that name, refits a Cobra Mk III with maximum hardware and grants 1,000,000 CR on first activation; white and coloured wireframes remain selectable. The [published historical Elite 1.5.1 app](#install-on-macos) is a separate delivery; these current-source descriptions do not establish a new L337 release.
+L337 is a native Swift macOS space trading game with keyboard and trackpad flight, shaded ship panels, a colour cockpit scanner and eight authored original galaxies. Its historical reference is the BBC Micro 6502 Second Processor Executive version of Elite. A fresh current-source game starts as Commander Rowan Calder at Avenor in an SH025 with 720 CR and full fuel. Restoring a current save preserves its commander identity. Entering XYZZY preserves that name, refits a Cobra Mk III with maximum hardware and grants 1,000,000 CR on first activation; white and coloured wireframes remain selectable. The [signed L337 1.6.0 download](#install-on-macos) is built from the qualified source recorded in its release manifest. Historical Elite downloads and later source-only proposals remain separate deliveries.
 
 For historical comparison, Elite 1.4.0 starts normal games as Commander Jameson with a standard Cobra Mk III and 100 credits; its XYZZY identity is Commander Clarke. Its Right-On Commander title and release verification belong to that [historical delivery](docs/MACOS-DISTRIBUTION.md#historical-elite-delivery-evidence).
 
@@ -137,7 +137,7 @@ Keyboard alternatives are [ for anticlockwise, ] for clockwise, and held - / = o
 
 Prototype defaults are 12 degrees/second initially, 6 degrees/second of rate adjustment per second, a 60 degrees/second cap and a 24 degrees/second-per-second response limit. Contact counts must remain stable for 120 ms before changing rate. Circles need at least 300 degrees of consistent motion, 16 samples and 85% direction consistency, at a normalized radius of 0.12-0.46 around the pad centre; jumps over 45 degrees between samples are rejected. Two-finger aiming starts from a fresh reference whenever the count changes, with a 2% dead zone and full deflection after 25% of pad travel. These are tunable prototype values, not findings from player testing. Native touch hardware and macOS gesture interaction still require an on-device check; no global gesture settings are changed by the game.
 
-In the current development source, a new commander prepares `~/.xyzzy/l337/commander.json` as its destination when that path is free; this creates no save file. After a failed restore, Start New uses a separate `new-commander-…/commander.json` folder under `~/.xyzzy/l337/`, preserving the selected file or missing path. Only a successful save remembers the new location for the next launch. Save As chooses another destination. Saving is atomic, and the first write at a new destination refuses any file that has appeared there in the meantime. Loading validates the entire commander before replacing actor state. Save, Reload and Open run in the order you choose them; failed saves or loads preserve your Commander and active save location. Invalid Commander JSON inputs and inputs larger than 4 MiB are refused. This startup correction is awaiting final quality/release acceptance and is not claimed for the historical Elite 1.4.0 app.
+In the current development source, a new commander prepares `~/.xyzzy/l337/commander.json` as its destination when that path is free; this creates no save file. After a failed restore, Start New uses a separate `new-commander-…/commander.json` folder under `~/.xyzzy/l337/`, preserving the selected file or missing path. Only a successful save remembers the new location for the next launch. Save As chooses another destination. Saving is atomic, and the first write at a new destination refuses any file that has appeared there in the meantime. Loading validates the entire commander before replacing actor state. Save, Reload and Open run in the order you choose them; failed saves or loads preserve your Commander and active save location. Invalid Commander JSON inputs and inputs larger than 4 MiB are refused. This startup correction is included in L337 1.6.0; physical window and trackpad acceptance remains separate from its automated validation.
 
 Current development mission calendars charge 600 seconds per launch and `distance² * 3600` seconds per completed jump, using the original worlds’ Cartesian light-year coordinates. Generated contract deadlines use this game calendar, including travel time. This calendar unit correction awaits integrated quality acceptance.
 
@@ -367,9 +367,9 @@ This is an Oolite expansion adaptation with documented custody, wanted-level and
 
 ## Install on macOS
 
-The direct download below provides the published historical **Elite 1.5.1** app. The published Homebrew tap still installs **Elite 1.4.0**; its [1.5.1 update](https://github.com/stephenlclarke/homebrew-tap/pull/10) awaits the required independent approval and merge. Both versions support **Apple silicon and Intel Macs running macOS 14 or later**, without Xcode or Swift. To use the current L337 source, follow [Build and run](#build-and-run); that produces `dist/L337.app` with its separate `~/.xyzzy/l337/` data folder.
+Download the signed, notarized **L337 1.6.0** app below for **Apple silicon and Intel Macs running macOS 14 or later**, without Xcode or Swift. L337 uses `~/.xyzzy/l337/` for saved commanders and mission packs. The published Homebrew tap still installs historical **Elite 1.4.0**; its [Elite 1.5.1 update](https://github.com/stephenlclarke/homebrew-tap/pull/10) awaits the required independent approval and merge. The new [L337 cask](Casks/l337.rb) records the verified release, but does not change the tap until a separate tap update passes review and merges.
 
-### Install with Homebrew
+### Historical Elite installation with Homebrew
 
 With [Homebrew](https://brew.sh/) installed:
 
@@ -391,17 +391,19 @@ To uninstall:
 brew uninstall --cask stephenlclarke/tap/elite
 ```
 
-### Download Elite 1.5.1 directly
+### Download L337 1.6.0 directly
 
 <!-- current-release:start -->
-The latest signed release is [Elite 1.5.1](https://github.com/stephenlclarke/elite/releases/tag/v1.5.1). Its [universal Mac download](https://github.com/stephenlclarke/elite/releases/download/v1.5.1/Elite-1.5.1-universal.zip) includes the matching checksum, signing manifest, release plan and Apple notarization report. The Homebrew badge links to the actual published tap cask; tap updates pass review separately.
+The latest signed release is [L337 1.6.0](https://github.com/stephenlclarke/l337/releases/tag/v1.6.0). Its [universal Mac download](https://github.com/stephenlclarke/l337/releases/download/v1.6.0/L337-1.6.0-universal.zip) includes the matching checksum, signing manifest, release plan and Apple notarization report. The Homebrew badge links to the actual published tap cask; tap updates pass review separately.
 <!-- current-release:end -->
 
-Download the universal ZIP and its matching checksum from that release, verify the checksum, extract the ZIP and move **Elite.app** into **Applications**. Open **Elite** from Applications. Keep the release manifest and notarization report with the archive when checking its source and signing identity.
+Download the universal ZIP and its matching checksum from that release, verify the checksum, extract the ZIP and move **L337.app** into **Applications**. Open **L337** from Applications. Keep the release manifest and notarization report with the archive when checking its source and signing identity.
 
-Uninstalling the published Elite app preserves its saved commanders and mission packs in `~/.xyzzy/elite/`. The new L337 development product uses the separate `~/.xyzzy/l337/` namespace. See [Homebrew distribution](docs/HOMEBREW.md) for the maintained cask, checksums and release synchronization.
+Removing L337.app preserves its saved commanders and mission packs in `~/.xyzzy/l337/`. Historical Elite uses the separate `~/.xyzzy/elite/` folder. See [Homebrew distribution](docs/HOMEBREW.md) for the maintained casks, checksums and release synchronization.
 
-### Historical Elite 1.5 download
+### Historical Elite downloads
+
+The signed [Elite 1.5.1 release](https://github.com/stephenlclarke/l337/releases/tag/v1.5.1) remains available. The older 1.5.0 download is retained below:
 
 1. Open the [Elite 1.5 release](https://github.com/stephenlclarke/elite/releases/tag/v1.5.0).
 2. Under **Assets**, download `Elite-1.5.0-universal.zip`. The same app supports Apple silicon and Intel.
@@ -414,7 +416,7 @@ Each release includes a matching `.sha256` checksum, build/signing `.json` manif
 
 For development builds, use the separate [Build and run](#build-and-run) instructions.
 
-Signed local development candidates, their exact source identities and validation limits are recorded in the [completion ledger](docs/COMPLETION-LEDGER.md). Start a candidate by activating the game window and pressing **Space** or **Return**. Development features below are separate from the historical Elite 1.4.0 app; full project quality and public/notarized release gates remain pending.
+The [completion ledger](docs/COMPLETION-LEDGER.md) records L337 1.6.0, historical candidates and their separate validation limits. Start the game by activating its window and pressing **Space** or **Return**. Later source-only proposals and outstanding physical gameplay acceptance are not completed by publishing this release.
 
 Version 1.4.0 adds graphical route alternatives on both charts, with explicit preview, Set route and Back controls. Its signed, notarized app identifies binary source checkpoint `36fa5cfef1e781f68dcb1fdbf7dae1e1e1f76224`; the release tag also includes the later archive and documentation commit. See the [packaging verification](docs/MACOS-DISTRIBUTION.md).
 

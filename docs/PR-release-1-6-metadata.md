@@ -1,0 +1,9 @@
+# docs(release): link the verified L337 1.6.0 delivery
+
+The README now links the published L337 1.6.0 app, its universal download and separate save folder. It retains clearly labelled historical Elite Homebrew commands and explains that a repository cask does not update the published tap. Homebrew and macOS distribution documents use the same release identity, while historical delivery records remain unchanged. The current-release paragraph and new cask use the maintained pure renderers with the existing authoritative plan and signed manifest.
+
+The portable delivery receipt records the exact released source, both full source test runs separately, zero leaks, Sonar closure, five published artifact hashes, notarization and fresh public download trust. Independent source, local artifact and public artifact reviews cleared those existing results. The original curl script is retained, but raw per-request stdout/stderr and an environment snapshot were not retained; the receipt states this limit.
+
+This candidate changes eight metadata paths. It preserves every runtime, test, tool, CI, historical Elite cask and generated image byte. The existing completion ledger receives an append only. Source-only later work and physical trackpad/window acceptance remain pending. The public binary remains bound to source `05b3cd499058b1d2b2b532dd79a1018fae61c1bc`; a future metadata commit does not inherit that commit's quality evidence.
+
+Validation of this metadata candidate is pending. Markdown formatting, Ruby syntax and exact patch/outside/inverse checks will be recorded before integration. Required current-head checks, independent review and ordinary protected merge still apply. No new app release, tap merge, source feature or release plan is part of this change. [Problem and scope](ISSUE-release-1-6-metadata.md).

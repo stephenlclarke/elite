@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "status": "PUBLISHED_AND_INDEPENDENTLY_VERIFIED",
+  "version": "1.6.0",
+  "tag": "v1.6.0",
+  "repository": "stephenlclarke/l337",
+  "sourceRevision": "05b3cd499058b1d2b2b532dd79a1018fae61c1bc",
+  "sourceTree": "8a00999a0637ce79630eeb10b0c7858830f0fffc",
+  "releaseId": 429771601,
+  "releaseURL": "https://github.com/stephenlclarke/l337/releases/tag/v1.6.0",
+  "publishedAt": "2026-10-31T06:48:39Z",
+  "planRawSHA256": "1c5684cabb01271ddfbb18e958f26250ff1f9d85b2768b59a620e7c61892128f",
+  "planCanonicalSHA256": "76684978bd2e59ef03b6b0f011e964023b3a901c5eadbb8684ee115262446d5c",
+  "historySha256": "8c970a37b5bfd19f8811751a1d6c3cb49de87ff3dec3cc19cc5bc64829ae6b6a",
+  "baseTag": "v1.5.1",
+  "commitCount": 6,
+  "sourceQuality": {
+    "runId": 41169584011,
+    "attempt": 2,
+    "normalRuns": [
+      {
+        "uniqueMethods": 3445,
+        "passed": 3439,
+        "declaredSkips": 6,
+        "failures": 0,
+        "errors": 0,
+        "suites": 403,
+        "frameworkSeconds": 2551.796,
+        "coveredLines": 116149,
+        "totalLines": 128339
+      },
+      {
+        "uniqueMethods": 3445,
+        "passed": 3439,
+        "declaredSkips": 6,
+        "failures": 0,
+        "errors": 0,
+        "suites": 403,
+        "frameworkSeconds": 2564.464,
+        "coveredLines": 116169,
+        "totalLines": 128339
+      }
+    ],
+    "countLimit": "The same unique test inventory ran twice; do not sum it as unique methods.",
+    "leaks": 0,
+    "leakedBytes": 0,
+    "lifecycle": "PASS",
+    "sonarAnalysis": "a400c912-1002-46a2-b1a8-e25dca437175",
+    "sonarProjectVersion": "05b3cd499058b1d2b2b532dd79a1018fae61c1bc",
+    "sonarGate": "OK",
+    "newCodeDefinition": "PreviousVersion",
+    "automaticAnalysis": false,
+    "S3807": "CLOSED/FIXED",
+    "retainedSixS1763": "CLOSED/FIXED",
+    "openBugs": 0,
+    "ratings": {
+      "reliability": "A",
+      "security": "A",
+      "maintainability": "A"
+    },
+    "overallCoveragePercent": 90.5,
+    "newCoveragePercent": 100.0,
+    "globalDuplicationPercent": 4.5,
+    "codeSmells": 430
+  },
+  "releaseArtifact": {
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "minimumMacOS": "14.0",
+    "developerTeam": "4MEB7MUTAV",
+    "hardenedRuntime": true,
+    "secureTimestamp": true,
+    "appleNotarizationJob": "21478354-bd4d-4884-8c5c-35af91a7bebb",
+    "appleStatus": "Accepted",
+    "staple": "PASS",
+    "gatekeeper": "Accepted Notarized Developer ID",
+    "exactResources": "PASS",
+    "freshPublicDiagnostics": "PASS"
+  },
+  "publicAssets": [
+    {
+      "name": "L337-1.6.0-universal-notarization.json",
+      "url": "https://github.com/stephenlclarke/l337/releases/download/v1.6.0/L337-1.6.0-universal-notarization.json",
+      "httpStatus": 200,
+      "bytes": 1313,
+      "sha256": "c39de1c9882b5debd79635d09d9a9eb541fa6c866c28a7c592a4906e8e01d677"
+    },
+    {
+      "name": "L337-1.6.0-universal-release-plan.json",
+      "url": "https://github.com/stephenlclarke/l337/releases/download/v1.6.0/L337-1.6.0-universal-release-plan.json",
+      "httpStatus": 200,
+      "bytes": 1540,
+      "sha256": "1c5684cabb01271ddfbb18e958f26250ff1f9d85b2768b59a620e7c61892128f"
+    },
+    {
+      "name": "L337-1.6.0-universal.json",
+      "url": "https://github.com/stephenlclarke/l337/releases/download/v1.6.0/L337-1.6.0-universal.json",
+      "httpStatus": 200,
+      "bytes": 1624,
+      "sha256": "5785a9b270ccacea3a0f10264441e5228977c3b0e2f630dbab7a1f63b527bba0"
+    },
+    {
+      "name": "L337-1.6.0-universal.sha256",
+      "url": "https://github.com/stephenlclarke/l337/releases/download/v1.6.0/L337-1.6.0-universal.sha256",
+      "httpStatus": 200,
+      "bytes": 91,
+      "sha256": "1a327c957d4ad1956d56eb4799ef95b3d41d4c7c3a3a5e6710efbabf2f2502e0"
+    },
+    {
+      "name": "L337-1.6.0-universal.zip",
+      "url": "https://github.com/stephenlclarke/l337/releases/download/v1.6.0/L337-1.6.0-universal.zip",
+      "httpStatus": 200,
+      "bytes": 48737174,
+      "sha256": "f8e3ee6aaa785975273ee959635c0a9b1dca14f0d7c181cdfb6edb7db7b777a2"
+    }
+  ],
+  "independentReviews": {
+    "sourceQualitySHA256": "2ebc7b7a5e9cbb20e987aeef1d65dc7c7b7152adc3ce12dcd7c6bceb0a8ae041",
+    "localArtifactSHA256": "a4a5fd5c9ae18824fa5291267a3113b55eda41fcd6f2c0aaf18d3b1ad77c68e8",
+    "publicArtifactSHA256": "21485df2dbf818b629340a29dd40086f13564b9bb6bf4cc6d64f9e0362579def"
+  },
+  "provenanceLimits": [
+    "Original executed curl script and parsed per-request HTTP status, size, exit, duration and hash are retained. Curl used -q and supplied no authentication options. Its environment was inherited; no environment snapshot, raw per-request stdout/stderr, OS argv trace or network wire trace was retained.",
+    "Static universal and minimum-OS metadata does not establish native Intel or physical Sonoma gameplay.",
+    "Release binary trust and diagnostics are separate from debug source coverage and leak-tested images.",
+    "This receipt qualifies source 05b3 and its published artifact. Later metadata commits and the 125-method/174-case source-only queue receive no automatic quality or release credit.",
+    "Physical window and trackpad acceptance remains pending. The published Homebrew tap remains historical Elite 1.4.0; its Elite 1.5.1 PR10 requires independent other-account approval. A repository L337 cask does not publish a tap update."
+  ]
+}
