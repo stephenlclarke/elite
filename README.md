@@ -38,15 +38,15 @@ The [completion ledger](docs/COMPLETION-LEDGER.md) is the current player-facing 
 
 ASAN and TSAN are optional manual diagnostics and are no longer required CI or release steps. CI continues to require complete normal tests, coverage, zero leaks, static checks and committed-main SonarQube analysis. Historical sanitizer results remain retained; incomplete runs are not promoted to passes.
 
-![L337 gameplay](docs/l337.png)
+![L337 aligned with a station docking entrance while four hostile ships fire incoming lasers](docs/l337.png)
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-  <img src="docs/start-sequence.gif" width="512" alt="L337 demo and launch montage, followed by rotating Gyrfalcon Assault and Stag Liner original designs from the game renderer" />
+  <img src="docs/start-sequence.gif" width="512" alt="L337 startup scenes followed by all 171 gallery ships, each making one and a half rotations with its canonical name and materials" />
 </p>
 <!-- markdownlint-enable MD033 -->
 
-The screenshot and startup montage above are development exports from the game renderer. Browse [all 171 ship animations and specifications](docs/SHIP-CATALOGUE.md) for the authored designs, and [Showroom](docs/SHIP-SHOWROOM.md) for in-game viewing and exchange rules. The [M03 media receipt](docs/evidence/M03-renderer-media.json) records the existing exports; [gallery regeneration evidence](docs/evidence/M03-ship-gallery-regeneration.json) records the ship renders. README media is generated with `make readme-media`; ship animations use `make ships`.
+The screenshot shows the real station entrance aligned for docking while four admitted hostile ships fire their native lasers. The tape includes all 171 gallery ships, each with its canonical name and one and a half rotations. Both are development exports from the game renderer; the [full-fleet media receipt](docs/evidence/M03-full-fleet-readme-media.json) records the verified output. Browse [all 171 ship animations and specifications](docs/SHIP-CATALOGUE.md) and [Showroom](docs/SHIP-SHOWROOM.md) for authored designs and in-game exchange rules. Earlier [M03 media](docs/evidence/M03-renderer-media.json) and [gallery regeneration](docs/evidence/M03-ship-gallery-regeneration.json) receipts remain historical evidence. README media uses `make readme-media`; individual ship animations use `make ships`.
 
 ## Build and run
 
@@ -590,7 +590,7 @@ The SonarQube project is public so its metrics and badges are readable. Analysis
 
 Automatic analysis is disabled, including on the legacy duplicate `stephenlclarke_elite2` project. The authoritative project is `stephenlclarke_elite`, linked by the badges above; its main-only scanner verifies this setting before analysis.
 
-The README screenshot and animated tape are generated from deterministic scenes using the same drawing commands as the live game, following the Pacman and Defender README media convention. Regenerate both with `make readme-media`. The 80-frame tape includes rotating design presentations of Gyrfalcon Assault (SH002) and Stag Liner (SH035), rendered from their authored meshes and materials. Playable hull support is recorded separately in the [completion ledger](docs/COMPLETION-LEDGER.md).
+The README screenshot and animated tape use deterministic scenes and the live game drawing commands, following the Pacman and Defender README media convention. Regenerate both with `make readme-media`. The 1024x768 tape has 6,375 frames: 48 startup frames followed by 37 rotation samples for each of the 171 gallery ships. Each ship makes one and a half rotations with its authored mesh, materials and canonical name. The tape lasts 640.38 seconds and is a 95.5 MB download. The docking screenshot uses four real admitted hostile actors and accepted incoming laser emissions. Playable hull support is recorded separately in the [completion ledger](docs/COMPLETION-LEDGER.md).
 
 ## Fidelity and references
 
